@@ -1,6 +1,5 @@
 package cinnamon
 
-import cinnamon.global.Constants
 import org.dom4j.Document
 import org.dom4j.DocumentHelper
 import org.dom4j.Element
@@ -91,24 +90,24 @@ class FolderService {
     }
 
     public List<ObjectSystemData> getFolderContent(Folder folder, Boolean recursive, Boolean latestHead, Boolean latestBranch){
+        List<ObjectSystemData> osds
         if(latestHead != null && latestBranch != null){
-            q = ObjectSystemData.findAllByParent("findOsdsByParentAndLatestHeadOrLatestBranch");
-            q.setParameter("latestHead", true);
-            q.setParameter("latestBranch", true);
+            osds = ObjectSystemData.findAll("from ObjectSystemData o where o.parent=:parent and (o.latestHead=:latestHead or o.latestBranch=:latestBranch)",
+                    [parent: folder, latestHead:latestHead, latestBranch:latestBranch]
+            );
         }
         else if(latestHead != null){
-            q = getSession().createNamedQuery("findOsdsByParentAndLatestHead");
-            q.setParameter("latestHead", true);
+            osd s= ObjectSystemData.findAll("from ObjectSystemData o where o.parent=:parent and o.latestHead=:latestHead",
+                [parent: folder, latestHead: latestHead]);
         }
         else if(latestBranch != null){
-            q = getSession().createNamedQuery("findOsdsByParentAndLatestBranch");
-            q.setParameter("latestBranch", true);
+            osds = ObjectSystemData.findAll("from ObjectSystemData o where o.parent=:parent and o.latestBranch=:latestBranch",
+                    [parent: folder, latestBranch: latestBranch]
+            );
         }
         else{
-            q = getSession().createNamedQuery("findOsdsByParent");
+            osds= ObjectSystemData.findAll("from ObjectSystemData o where o.parent=:parent", [parent: folder]);
         }
-        q.setParameter("parent", folder);
-        List<ObjectSystemData> osds = q.getResultList();
         if(recursive){
             List<Folder> subFolders = getSubfolders(folder);
             for(Folder f : subFolders){
@@ -227,7 +226,7 @@ class FolderService {
      * @return the number of affected rows.
      */
     public Integer prepareReIndex() {
-        return Folder.executeUpdate("UPDATE Folder f SET f.indexOk=NULL")
+        return Folder.executeUpdate("UPDATE Folder f SET f.indexOk is NULL")
     }
 
     /**
