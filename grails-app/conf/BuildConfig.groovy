@@ -44,6 +44,7 @@ grails.project.dependency.resolution = {
         runtime 'postgresql:postgresql:9.1-901.jdbc4'
         runtime 'dom4j:dom4j:1.6.1'
         runtime 'jaxen:jaxen:1.1-beta-6'
+        compile 'org.codehaus.gpars:gpars:1.0-beta-1'
     }
 
     plugins {
@@ -57,6 +58,6 @@ grails.project.dependency.resolution = {
         //runtime ":yui-minify-resources:0.1.4"
 
         build ":tomcat:$grailsVersion"
-        compile 'cinnamon:cinnamon-db:0.1.11'
+        compile 'cinnamon:cinnamon-db:0.1.16'
     }
 }

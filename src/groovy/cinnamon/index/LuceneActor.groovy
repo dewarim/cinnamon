@@ -34,6 +34,9 @@ import org.slf4j.LoggerFactory
 
 import org.apache.lucene.xmlparser.CoreParser
 import org.apache.lucene.xmlparser.ParserException
+import cinnamon.index.queryBuilder.WildcardQueryBuilder
+import cinnamon.index.queryBuilder.RegexQueryBuilder
+import cinnamon.exceptions.CinnamonException
 
 /**
  * Actor class which does the heavy lifting in searching and indexing.
@@ -165,7 +168,7 @@ class LuceneActor extends
 
             ContentContainer content;
             if(indexable.hasXmlContent()){
-                content = new ContentContainer(indexable, repository);
+                content = new ContentContainer(indexable, repository.name);
             }
             else{
                 content = new ContentContainer("<empty />".getBytes());
@@ -190,7 +193,7 @@ class LuceneActor extends
 //							log.debug("indexObject for field '"+item.fieldname+"' with content: "+content);
                     item.indexObject(content, metadata, systemMetadata, doc);
                 } catch (Exception e) {
-                    log.debug("*** failed *** to execute IndexItem " + item.getId(), e);
+                    log.debug("*** failed *** to execute IndexItem " + item.myId(), e);
                 }
             }
 
@@ -210,7 +213,7 @@ class LuceneActor extends
     }
 
     Document storeStandardFields(Indexable indexable, Document doc) {
-        String hibernateId = indexable.getId()
+        String hibernateId = indexable.myId()
         String className = indexable.class.name
         String uniqueId = "${className}@${hibernateId}"
         log.debug("indexing of: ${uniqueId}")
@@ -231,9 +234,12 @@ class LuceneActor extends
      * @param params input for XML-Query-Parser
      * @return a ResultCollector, which contains a collection of all documents found.
      */
-    public ResultCollector search(String params) {
+    // TODO: XML-Search is not working yet in v3, refactor.
+    public ResultCollector search(String params, repository) {
         log.debug("starting search");
         ResultCollector results = new ResultCollector();
+        def analyzer =  new StandardAnalyzer(Version.LUCENE_34)
+        def searcher =  repository.indexSearcher
         try {
             InputStream bais = new ByteArrayInputStream(params.getBytes("UTF-8"));
             CoreParser coreParser = new CoreParser("content", analyzer);
@@ -241,9 +247,6 @@ class LuceneActor extends
             coreParser.addQueryBuilder("RegexQuery", new RegexQueryBuilder());
             Query query = coreParser.parse(bais);
 
-            acquireLock();
-
-            IndexSearcher searcher = new IndexSearcher(indexDir, true);
             results.setSearcher(searcher);
             searcher.search(query, results);
             searcher.close();
@@ -252,7 +255,7 @@ class LuceneActor extends
         } catch (ParserException e) {
             throw new CinnamonException("error.parsing.lucene.query", e, params);
         } finally {
-            releaseLock();
+            
         }
         log.debug("finished search; results: " + results.getDocuments().size());
         return results;
