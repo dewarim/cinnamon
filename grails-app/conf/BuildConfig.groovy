@@ -42,6 +42,8 @@ grails.project.dependency.resolution = {
         runtime('org.apache.lucene:lucene-xml-query-parser:3.5.0')
         runtime('org.apache.lucene:lucene-queries:3.5.0')
         runtime 'postgresql:postgresql:9.1-901.jdbc4'
+        runtime 'dom4j:dom4j:1.6.1'
+        runtime 'jaxen:jaxen:1.1-beta-6'
     }
 
     plugins {
