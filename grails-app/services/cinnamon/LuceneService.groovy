@@ -15,6 +15,7 @@ import cinnamon.index.IndexCommand
 import cinnamon.index.CommandType
 import cinnamon.index.LuceneResult
 import cinnamon.index.SearchableDomain
+import humulus.Environment
 
 class LuceneService {
 
@@ -34,11 +35,12 @@ class LuceneService {
     void initialize() {
         Analyzer standardAnalyzer = new StandardAnalyzer(Version.LUCENE_CURRENT)
 
-        grailsApplication.config.repositories.repository.each {name ->
+        Environment.list().each {repo ->
+            def name = repo.dbName
             log.debug("create repository object for ${name}")
             try {
                 Analyzer analyzer = new LimitTokenCountAnalyzer(standardAnalyzer, Integer.MAX_VALUE)
-                File indexFolder = new File(grailsApplication.config.luceneIndexPath, name)
+                File indexFolder = new File(grailsApplication.config.luceneIndexPath, name.toString())
                 Directory indexDir = new SimpleFSDirectory(indexFolder, new SingleInstanceLockFactory())
                 Repository repository = new Repository(name: name,
                         indexDir: indexDir, indexFolder: indexFolder,
