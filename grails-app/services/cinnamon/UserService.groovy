@@ -17,30 +17,30 @@ class UserService {
     def springSecurityService
     def healthService
 
-    Boolean isSuperuser(UserAccount user){
-        def auth = springSecurityService.authentication 
+    Boolean isSuperuser(UserAccount user) {
+        def auth = springSecurityService.authentication
         def authorities = auth.authorities
-        return authorities.find{
+        return authorities.find {
             log.debug("authority: ${it.authority}")
             it.authority?.equals(Constants.GROUP_SUPERUSERS)
         } != null
     }
 
-    UserAccount getUser(){
+    UserAccount getUser() {
         def principal = springSecurityService.getPrincipal();
 //        log.debug("principal: $principal")
-        if(principal instanceof GrailsUser){
+        if (principal instanceof GrailsUser) {
             return UserAccount.get(principal.getId())
         }
         return null
     }
 
-    void addUserToUsersGroup(UserAccount user){
+    void addUserToUsersGroup(UserAccount user) {
         def usersGroup = CmnGroup.findByName(Constants.GROUP_USERS)
-        if(! usersGroup){
+        if (!usersGroup) {
             usersGroup = healthService.createGroup(Constants.GROUP_USERS)
         }
-        CmnGroupUser gu = new CmnGroupUser(user, usersGroup)
+        CmnGroupUser gu = new CmnGroupUser(usersGroup, user)
         user.addToGroupUsers(gu)
         usersGroup.addToGroupUsers(gu)
         gu.save()
@@ -56,35 +56,35 @@ class UserService {
      * @param source current owner
      * @param target new owner of assets
      */
-    void transferAssets(UserAccount source, UserAccount target){
+    void transferAssets(UserAccount source, UserAccount target) {
         transferGroupMembership(source, target)
         // refreshAclCache for target?
         transferFolderOwnership(source, target)
-        transferOsdOwnership(source,target)
+        transferOsdOwnership(source, target)
         removeSessions(source)
     }
 
-    Boolean transferAssetsAllowed(String repositoryName){
+    Boolean transferAssetsAllowed(String repositoryName) {
         Conf conf = ConfThreadLocal.getConf()
-        String xpath = 'repositories/repository[name="'+repositoryName+'"]/security/transferAssetsAllowed'
+        String xpath = 'repositories/repository[name="' + repositoryName + '"]/security/transferAssetsAllowed'
         return conf.getField(xpath, 'false').equals('true')
     }
 
-    Boolean deleteUserAllowed(String repositoryName){
+    Boolean deleteUserAllowed(String repositoryName) {
         Conf conf = ConfThreadLocal.getConf()
-        String xpath = 'repositories/repository[name="'+repositoryName+'"]/security/deleteUserAllowed'
+        String xpath = 'repositories/repository[name="' + repositoryName + '"]/security/deleteUserAllowed'
         return conf.getField(xpath, 'false').equals('true')
     }
 
-    void transferGroupMembership(UserAccount source, UserAccount target){
+    void transferGroupMembership(UserAccount source, UserAccount target) {
         def groupUsers = CmnGroupUser.findAllByUserAccount(source)
-        groupUsers.each{gu ->
-            if(CmnGroupUser.findByUserAccountAndCmnGroup(target, gu.cmnGroup)){
+        groupUsers.each {gu ->
+            if (CmnGroupUser.findByUserAccountAndCmnGroup(target, gu.cmnGroup)) {
                 // simply delete old user's CmnGroupUser object as both
                 // old and new are in the same group
                 gu.delete()
             }
-            else{
+            else {
                 // take over groupUser from other user.
                 log.debug("transfer group ${gu.cmnGroup.name} to user ${target.name}")
                 gu.userAccount = target
@@ -92,25 +92,25 @@ class UserService {
         }
     }
 
-    void transferFolderOwnership(UserAccount source, UserAccount target){
-        Folder.findAllByOwner(source).each{folder ->
+    void transferFolderOwnership(UserAccount source, UserAccount target) {
+        Folder.findAllByOwner(source).each {folder ->
             log.debug("transfer folder ownership of ${folder.name} to user ${target.name}")
             folder.owner = target
         }
     }
 
-    Boolean userHasAssets(UserAccount user){
-        if( ObjectSystemData.findByOwner(user) ||
-            ObjectSystemData.findByModifier(user) ||
-            ObjectSystemData.findByCreator(user) ||
+    Boolean userHasAssets(UserAccount user) {
+        if (ObjectSystemData.findByOwner(user) ||
+                ObjectSystemData.findByModifier(user) ||
+                ObjectSystemData.findByCreator(user) ||
                 ObjectSystemData.findByLocker(user)
-        ){
+        ) {
             return true
         }
-        if(Folder.findByOwner(user)){
+        if (Folder.findByOwner(user)) {
             return true
         }
-        if(CmnGroupUser.findByUserAccount(user)){
+        if (CmnGroupUser.findByUserAccount(user)) {
             return true
         }
         return false
@@ -121,28 +121,28 @@ class UserService {
      * @param source The original owner / modifier / creator / lock owner.
      * @param target The new user who replaces the source user in all cases.
      */
-    void transferOsdOwnership(UserAccount source, UserAccount target){
-        ObjectSystemData.findAllByOwner(source).each{osd ->
+    void transferOsdOwnership(UserAccount source, UserAccount target) {
+        ObjectSystemData.findAllByOwner(source).each {osd ->
             log.debug("transfer object ownership of #${osd.id} to user ${target.name}")
             osd.owner = target
         }
-        ObjectSystemData.findAllByModifier(source).each{osd ->
+        ObjectSystemData.findAllByModifier(source).each {osd ->
             log.debug("transfer modifier label of #${osd.id} to user ${target.name}")
             osd.modifier = target
         }
-        ObjectSystemData.findAllByCreator(source).each{osd ->
+        ObjectSystemData.findAllByCreator(source).each {osd ->
             log.debug("transfer creator label of #${osd.id} to user ${target.name}")
             osd.creator = target
         }
-        ObjectSystemData.findAllByLocker(source).each{osd ->
+        ObjectSystemData.findAllByLocker(source).each {osd ->
             log.debug("transfer lock_owner label of #${osd.id} to user ${target.name}")
             osd.locker = target
         }
     }
 
-    void removeSessions(UserAccount source){
+    void removeSessions(UserAccount source) {
         log.debug("remove sessions of user ${source.name}")
-        Session.findAllByUserAccount(source).each {userSession ->
+        cinnamon.Session.findAllByUser(source).each {userSession ->
             userSession.delete()
         }
     }
@@ -154,42 +154,41 @@ class UserService {
      * @param user the user object which will be serialized
      * @return the new dom4j element.
      */
-    public Element asElement(String elementName, UserAccount user){
-        log.debug("UserAsElement with element "+elementName);
+    public Element asElement(String elementName, UserAccount user) {
+        log.debug("UserAsElement with element " + elementName);
 
-        if(user != null){
-            if(user.xmlNode != null){
-                user.xmlNode.setName(elementName);
-                return (Element) ParamParser.parseXml(user.xmlNode.asXML(), null);
-            }
-            else{
+        if (user != null) {
+//            if (user.xmlNode != null) {
+//                user.xmlNode.setName(elementName);
+//                return (Element) ParamParser.parseXml(user.xmlNode.asXML(), null);
+//            }
+//            else {
                 Element e = DocumentHelper.createElement(elementName);
-
                 log.debug("user is not null");
                 e.addElement("id").addText(String.valueOf(user.getId()));
                 e.addElement("name").addText(user.name)
                 e.addElement("fullname").addText(user.fullname);
                 e.addElement("description").addText(user.description);
                 e.addElement("activated").addText(String.valueOf(user.activated))
-                e.addElement("isSuperuser").addText( user.verifySuperuserStatus(em).toString());
+                e.addElement("isSuperuser").addText(user.verifySuperuserStatus().toString());
                 e.addElement("sudoer").addText(user.sudoer.toString());
                 e.addElement("sudoable").addText(user.sudoable.toString());
                 Element userEmail = e.addElement("email");
-                if(user.getEmail() != null){
+                if (user.getEmail() != null) {
                     userEmail.addText(user.getEmail());
                 }
-                if(user.getLanguage() != null){
+                if (user.getLanguage() != null) {
                     user.getLanguage().toXmlElement(e);
                 }
-                else{
+                else {
                     e.addElement("language");
                 }
                 log.debug("finished adding elements.");
-                user.xmlNode = e;
+//                user.xmlNode = e;
                 return (Element) ParamParser.parseXml(e.asXML(), null);
-            }
+//            }
         }
-        else{
+        else {
             return DocumentHelper.createElement(elementName);
         }
     }
@@ -199,28 +198,28 @@ class UserService {
      * @return the new UUID string token 
      * @throws cinnamon.exceptions.CinnamonException if maxTokensPerDay has been reached.
      */
-    String createToken(UserAccount user){
+    String createToken(UserAccount user) {
         /*
-           * reset tokens_today if token_age > 24 hours
-           * get maxTokens a user may create per day
-           * throw exception if too many tokens have already been created
-           * create a new token
-           */
+         * reset tokens_today if token_age > 24 hours
+         * get maxTokens a user may create per day
+         * throw exception if too many tokens have already been created
+         * create a new token
+         */
 
         // just using Date-86400s would also work...
         Calendar today = Calendar.getInstance();
         Calendar tokenCal = Calendar.getInstance();
         tokenCal.setTime(user.tokenAge);
-        if(! ( today.get(Calendar.DAY_OF_MONTH) == (tokenCal.get(Calendar.DAY_OF_MONTH)) )){
+        if (!(today.get(Calendar.DAY_OF_MONTH) == (tokenCal.get(Calendar.DAY_OF_MONTH)))) {
             user.tokensToday = 0;
         }
-        else{
+        else {
             user.tokensToday++;
         }
 
         String maxTokensPerDay = ConfThreadLocal.getConf().getField("maxTokensPerDay", "3");
         Integer maxTokens = Integer.parseInt(maxTokensPerDay);
-        if(user.tokensToday >= maxTokens){ // we start tokensToday with 0, so >= it is.
+        if (user.tokensToday >= maxTokens) { // we start tokensToday with 0, so >= it is.
             throw new CinnamonException("error.too_many_tokens");
         }
 
@@ -231,7 +230,42 @@ class UserService {
     /**
      * Sets the token field to a random value.
      */
-    void clearToken(user){
-        user.token = Math.random()+"::"+Math.random();
+    void clearToken(user) {
+        user.token = Math.random() + "::" + Math.random();
     }
+
+    public List getUsersPermissions(user, acl) {
+        if (user.verifySuperuserStatus()) {
+            return Permission.list();
+        }
+
+        log.debug("groupUsers for user " + user.getName() + ": " + user.getGroupUsers().size());
+
+        Set<CmnGroup> groups = user.findAllGroups();
+        log.debug("number of groups for this user: " + groups.size());
+
+        Set<Permission> permissions = new HashSet<Permission>();
+        for (CmnGroup group : groups) {
+            /*
+             * If there are many groups whose AclEntries point to the
+             * same Acls, it could be better to first collect the
+             * entries before adding their Permissions.
+             */
+            log.debug("working on group:" + group.getName());
+            for (AclEntry ae : group.getAclEntries()) {
+                log.debug("working on AclEntry for Acl:" + ae.getAcl().getName());
+                Long aclId = ae.getAcl().getId();
+                if (aclId.equals(acl.id)) {
+                    log.debug("found acl");
+                    Set<AclEntryPermission> aepSet = ae.getAePermissions();
+                    for (AclEntryPermission aep : aepSet) {
+                        permissions.add(aep.getPermission());
+                    }
+                }
+            }
+        }
+        log.debug("number of permissions for this user: " + permissions.size());
+        return permissions
+    }
+
 }
