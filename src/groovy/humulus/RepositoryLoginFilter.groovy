@@ -21,11 +21,11 @@ import javax.servlet.http.HttpServletResponse
  */
 class RepositoryLoginFilter extends UsernamePasswordAuthenticationFilter implements InitializingBean {
 
-    RepositoryLoginFilter () {
+    RepositoryLoginFilter() {
         this.postOnly = false
     }
 
-    RepositoryLoginFilter (String defaultFilterProcessesUrl) {
+    RepositoryLoginFilter(String defaultFilterProcessesUrl) {
         this.filterProcessesUrl = defaultFilterProcessesUrl
         this.postOnly = false
     }
@@ -38,12 +38,11 @@ class RepositoryLoginFilter extends UsernamePasswordAuthenticationFilter impleme
 
     @Override
     public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain) throws IOException, ServletException {
-//        try{
         def params = request.parameterMap
         def httpServletRequest = (HttpServletRequest) request
         def uri = httpServletRequest.getRequestURI()
         def contextPath = httpServletRequest.getContextPath()
-        if(uri =~ /${contextPath}\/(?:plugins\/[-_.a-zA-Z0-9]+\/)?(?:images|css|js)\/.*(?:css|js|png|jpe?g|gif)$/){
+        if (uri =~ /${contextPath}\/(?:plugins\/[-_.a-zA-Z0-9]+\/)?(?:images|css|js)\/.*(?:css|js|png|jpe?g|gif)$/) {
             log.debug("do not filter $uri")
             chain.doFilter(request, response)
             return
@@ -51,42 +50,16 @@ class RepositoryLoginFilter extends UsernamePasswordAuthenticationFilter impleme
         else {
             log.debug("continue with: $uri")
         }
-      
+
         def session = httpServletRequest.session
         log.warn("EnvironmentHolder: " + EnvironmentHolder.getEnvironment()?.id)
 
-        params.each { k, v ->
-            log.debug("$k :: ${params.get(v)}")
-        }
+//        params.each { k, v ->
+//            log.debug("$k :: ${params.get(v)}")
+//        }
 
-        if (!params.environment) {
-            if (session.getAttribute('environment')) {
-                /*
-                 * we got a session, so we initialize the ThreadLocal EnvironmentHolder with
-                 * our per-session-environment.
-                 */
-
-                /*
-                 currently, we do not close any connections, since
-                  ds.getConnection will return *new* connections or pooled connections,
-                  which are not very useful to close.
-                  */
-
-                EnvironmentHolder.setEnvironment(session.getAttribute('environment'))
-                def ds = getDataSourceForEnv()
-                def con = ds.getConnection() // necessary to make sure we _can_ connect.
-                log.debug("connected to: ${con}")
-
-            }
-            else {
-                /*
-                * we have not got a session, which means that our EnvironmentHolder is most
-                 * likely invalid.
-                 */
-                log.warn("invalid EnvironmentHolder: " + EnvironmentHolder.getEnvironment()?.id)
-            }
-        }
-        else {
+        if (params.environment) {
+//            log.debug("params.environment: ${params.environment}")
             def id = Integer.parseInt(params.environment[0])
             def env = Environment.list().find {it.id == id}
             if (!env) {
@@ -96,7 +69,7 @@ class RepositoryLoginFilter extends UsernamePasswordAuthenticationFilter impleme
 
             //test connection
             EnvironmentHolder.setEnvironment(env)
-            def ds = getDataSourceForEnv()
+            def ds = getDataSourceForEnv(null)
             log.debug("datasource: ${ds.dump()}")
 
             try {
@@ -110,21 +83,44 @@ class RepositoryLoginFilter extends UsernamePasswordAuthenticationFilter impleme
                 log.debug("error: ", e)
                 throw new RuntimeException("Unable to connect to database", e)
             }
+
         }
-//        }
-//        catch (Exception e){
-//            log.debug("Exception during filtering:",e)
-//            throw new RuntimeException(e)
-//        }
+        else {
+            if (session.getAttribute('environment')) {
+                /*
+                 * we got a session, so we initialize the ThreadLocal EnvironmentHolder with
+                 * our per-session-environment.
+                 */
+
+                /*
+                 currently, we do not close any connections, since
+                  ds.getConnection will return *new* connections or pooled connections,
+                  which are not very useful to close.
+                  */
+
+                EnvironmentHolder.setEnvironment(session.getAttribute('environment'))
+                def ds = getDataSourceForEnv(null)
+                def con = ds.getConnection() // necessary to make sure we _can_ connect.
+                log.debug("connected to: ${con}")
+
+            }
+            else {
+                /*
+                * we have not got a session, which means that our EnvironmentHolder is most
+                 * likely invalid.
+                 */
+                log.warn("invalid EnvironmentHolder: " + EnvironmentHolder.getEnvironment()?.id)
+            }
+        }
         chain.doFilter(request, response)
     }
 
     private def getDataSourceForEnv(env) {
-	        def servletContext = ServletContextHolder.servletContext
-	        def ctx = servletContext
-	                  .getAttribute(ApplicationAttributes.APPLICATION_CONTEXT)
-	        return ctx.dataSource
-	}
+        def servletContext = ServletContextHolder.servletContext
+        def ctx = servletContext
+                .getAttribute(ApplicationAttributes.APPLICATION_CONTEXT)
+        return ctx.dataSource
+    }
 
 
 }
