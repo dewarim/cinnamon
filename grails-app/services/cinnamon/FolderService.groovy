@@ -9,6 +9,7 @@ import org.apache.commons.compress.archivers.ArchiveStreamFactory
 import cinnamon.global.ConfThreadLocal
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
 import org.apache.commons.compress.utils.IOUtils
+import cinnamon.global.PermissionName
 
 class FolderService {
 
@@ -226,7 +227,7 @@ class FolderService {
      * @return the number of affected rows.
      */
     public Integer prepareReIndex() {
-        return Folder.executeUpdate("UPDATE Folder f SET f.indexOk is NULL")
+        return Folder.executeUpdate("UPDATE Folder f SET f.indexOk=NULL")
     }
 
     /**
@@ -316,5 +317,63 @@ class FolderService {
         return zipFile;
     }
     
+    
+    Boolean mayBrowseFolder(Folder folder, user){
+        def validator = new Validator(user)
+        try{
+            log.debug("validate browse permission on: ${folder.name} (acl: ${folder.acl.name})")
+            validator.validatePermission(folder.acl, PermissionName.BROWSE_FOLDER)
+        }
+        catch (Exception e){            
+            log.debug("user does not have browse permission.",e)
+            return false
+        }
+        return true
+    }
+
+    /**
+     * Create a set of
+     * @param folderId
+     * @param osdId
+     * @return
+     */
+    Set<String> createTriggerSet(folderId, osdId){
+        log.debug("createTriggerSet")
+        def folderList = new ArrayList<Folder>()
+        def triggerSet = new HashSet<String>()
+        if(folderId){
+            Folder folder = Folder.get(folderId)
+            if(folder){
+                folderList.addAll(folder.getParentFolders(folder)?.reverse())
+                triggerSet.addAll(folderList.collect {"fetchLink_"+it.id})
+                folderList.add(folder)
+            }
+        }
+        log.debug("triggerSet: ${triggerSet}")
+        return triggerSet
+    }
+
+
+    List<ObjectSystemData> getObjects(UserAccount user, Folder parent, String repositoryName, String versions){
+        String versionPred = ObjectSystemData.fetchVersionPredicate(versions);
+        def osdList = ObjectSystemData.findAll("from ObjectSystemData as o where o.parent=:parent $versionPred order by id", 
+                [parent: parent])
+        def filteredList = []
+        try{
+            def validator = new Validator(user)
+            validator.filterUnbrowsableObjects(osdList)
+        }
+        catch (RuntimeException e){
+            log.debug("Failed to load objects",e)
+            throw new RuntimeException(e)
+        }
+        return filteredList
+    }
+    
+    List getFoldersInside(user, folder){
+        def folders = Folder.findAllByParent(folder)
+        def validator = new Validator(user)
+        return validator.filterUnbrowsableFolders(folders) 
+    }
 }
 
