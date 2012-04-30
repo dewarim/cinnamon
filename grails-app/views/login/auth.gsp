@@ -84,7 +84,7 @@
 
 <body onLoad="showForm();">
 <div class="login_logo" style="text-align:center; margin-top:2ex;">
-    <img src="${resource(dir: 'images', file: 'cinnamon-screen.jpg')}" alt="Cinnamon">
+    <r:img uri="/images/cinnamon-screen.jpg" alt="Cinnamon"/>
 </div>
 
 <div id='login'>
