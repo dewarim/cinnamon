@@ -488,7 +488,7 @@ span.folder_name_no_content{
 }
 
 div.object_version_select{
-    margin-top: -2ex;
+    /*margin-top: -2ex;*/
 }
 
 img.folder_info{
