@@ -53,25 +53,25 @@
 
 
 
-<script type="text/javascript" src="<g:resource dir="/js/CodeMirror-2.01/lib" file="codemirror.js"/>"></script>
-<link rel="stylesheet" href="<g:resource dir="/js/CodeMirror-2.01/lib" file="codemirror.css"/>">
-<script type="text/javascript" src="<g:resource dir="/js/CodeMirror-2.01/mode/xml" file="xml.js"/>"></script>
-<link rel="stylesheet" href="<g:resource dir="/js/CodeMirror-2.01/mode/xml" file="xml.css"/>">
+<script type="text/javascript" src="<g:resource dir="/js/codemirror/lib" file="codemirror.js"/>"></script>
+<link rel="stylesheet" href="<g:resource dir="/js/codemirror/lib" file="codemirror.css"/>">
+<script type="text/javascript" src="<g:resource dir="/js/codemirror/mode/xml" file="xml.js"/>"></script>
+<%-- <link rel="stylesheet" href="<g:resource dir="/js/CodeMirror-2.24/mode/xml" file="xml.css"/>"> --%>
 <script type="text/javascript"
-        src="<g:resource dir="/js/CodeMirror-2.01/mode/htmlmixed" file="htmlmixed.js"/>"></script>
+        src="<g:resource dir="/js/codemirror/mode/htmlmixed" file="htmlmixed.js"/>"></script>
 
-<script src='<g:resource dir="js/CodeMirrorUI/js" file="codemirror-ui.js"/>' type="text/javascript"></script>
-<link rel="stylesheet" href="<g:resource dir="js/CodeMirrorUI/css/" file="codemirror-ui.css"/>" type="text/css"
+<script src='<g:resource dir="js/codemirror-ui/js" file="codemirror-ui.js"/>' type="text/javascript"></script>
+<link rel="stylesheet" href="<g:resource dir="js/codemirror-ui/css/" file="codemirror-ui.css"/>" type="text/css"
       media="screen"/>
 
-<r:script>
+<r:script disposition="head">
     $.ajaxSetup({
         type:'POST'
     });
 
     var codeMirrorEditor;
     function createEditor(id) {
-        var uiOptions = { path:'<g:resource dir="js/CodeMirrorUI/" file="js" />/', searchMode:'popup' };
+        var uiOptions = { path:'<g:resource dir="js/codemirror-ui/" file="js" />/', searchMode:'popup' };
         var cmOptions = {
             mode:'application/xml',
             lineNumbers:true
@@ -143,7 +143,7 @@
     }
 
     function showSpinner(id) {
-        $("#" + id).prepend('<img src="<g:resource dir="/images" file="spinner.gif" plugin="humulus"/>" alt="<g:message code="message.loading"/>" id="' + id + '_spinner">');
+        $("#" + id).prepend('<img src="<g:resource dir="/images" file="spinner.gif"/>" alt="<g:message code="message.loading"/>" id="' + id + '_spinner">');
     }
 
     function hideSpinner(id) {
@@ -154,7 +154,7 @@
         var msg = $("#message");
 
         msg.append('<a class="close_button" href="#" onclick="hideClearButton();return false;">' +
-'<r:img border="0" uri="/images/no.png" plugin="humulus"/>"' +
+'<r:img border="0" uri="/images/no.png"/>"' +
 ' alt="${message(code:"message.clear").encodeAsJavaScript()}"></a> ');
         msg.addClass('error_message');
 
