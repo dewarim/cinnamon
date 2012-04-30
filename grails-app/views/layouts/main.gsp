@@ -154,8 +154,8 @@
         var msg = $("#message");
 
         msg.append('<a class="close_button" href="#" onclick="hideClearButton();return false;">' +
-'<r:img border="0" uri="/images/no.png"/>"' +
-' alt="${message(code:"message.clear").encodeAsJavaScript()}"></a> ');
+'<r:img border="0" uri="/images/no.png" alt="${message(code:"message.clear").encodeAsJavaScript()}"/>' +
+'</a> ');
         msg.addClass('error_message');
 
     }
