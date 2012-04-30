@@ -64,6 +64,8 @@ grails.gorm.default.mapping = {
     cache false
 }
 
+grails.gorm.autoFlush = true
+
 // set per-environment serverURL stem for creating absolute links
 environments {
     development {
@@ -82,7 +84,7 @@ log4j = {
     //
     appenders {
         'null' name:'stacktrace'
-        console name:'stdout', layout:pattern(conversionPattern: '%c %m%n')
+        console name:'stdout', layout:pattern(conversionPattern: '%d{ISO8601} %c %m%n')
     }
 
     error  'org.codehaus.groovy.grails.web.servlet',  //  controllers
