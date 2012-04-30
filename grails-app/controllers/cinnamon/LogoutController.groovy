@@ -13,7 +13,10 @@ class LogoutController {
 	def index = {
 		// TODO  put any pre-logout code here
         UserAccount user = userService.user
-        repositoryService.removeUserFromCache(user, session.repositoryName)
+        if (session.ticket) {
+            def cmnSession = Session.findByTicket(session.ticket)
+            cmnSession?.delete()
+        }
 
 		redirect uri: SpringSecurityUtils.securityConfig.logout.filterProcessesUrl // '/j_spring_security_logout'
 	}
