@@ -11,20 +11,19 @@ class FolderController {
     def folderService
     def userService
 
-    protected Set<String> loadUserPermissions(Acl acl){
+    protected Set<String> loadUserPermissions(Acl acl) {
         Set<String> permissions
         try {
             log.debug("us: ${userService.user} acl: ${acl} repo: ${session.repositoryName}")
             permissions = userService.getUsersPermissions(userService.user, acl)
-//            log.debug("found permissions: ${permissions.dump()}")
         } catch (RuntimeException ex) {
-            log.debug("getUserPermissions failed",ex)
-            render(status:503, text:message(code:'error.access.failed'))
+            log.debug("getUserPermissions failed", ex)
+            render(status: 503, text: message(code: 'error.access.failed'))
             throw new IgnorableException("error.access.failed")
         }
         return permissions
     }
-    
+
     def index() {
         try {
             Folder rootFolder = Folder.findRootFolder()
@@ -62,7 +61,7 @@ class FolderController {
 
         }
         catch (Exception e) {
-            log.debug("failed to show index:",e)
+            log.debug("failed to show index:", e)
             def logoutMessage = message(code: 'error.loading.folders', args: [e.getMessage()])
             return redirect(controller: 'logout', action: 'info', params: [logoutMessage: logoutMessage])
         }
@@ -79,7 +78,7 @@ class FolderController {
         return validator.filterUnbrowsableFolders(folderList)
     }
 
-    protected Validator fetchValidator(){
+    protected Validator fetchValidator() {
         UserAccount user = userService.user
         return new Validator(user)
     }
@@ -93,55 +92,54 @@ class FolderController {
         return validator.filterUnbrowsableFolders(folderList)
     }
 
-    def fetchFolder(){
-        Folder folder = Folder.get(params.folder)
-        if (!folder) {
-            return render(status: 503, text: message(code: 'error.folder.not.found'))
-        }
-        
-        if (!folderService.mayBrowseFolder(folder, userService.user)) {
-            return render(status: 401, text: message(code: 'error.access.denied'))
-        }
-        
-        def childFolders = fetchChildFolders(folder)
-        def grandChildren = [:]
+    def fetchFolder() {
+        try {
+            Folder folder = fetchAndFilterFolder(params.folder)
 
-        def childrenWithContent = fetchChildrenWithContent(folder)
-        Set<Folder> contentSet = new HashSet<Folder>()
-        contentSet.addAll(childrenWithContent)
+            def childFolders = fetchChildFolders(folder)
+            def grandChildren = [:]
 
-        childFolders.each {child ->
-            def gc = fetchChildFolders(child)
-            if (gc.isEmpty()) {
-                log.debug("${child.name} has no subfolders.")
+            def childrenWithContent = fetchChildrenWithContent(folder)
+            Set<Folder> contentSet = new HashSet<Folder>()
+            contentSet.addAll(childrenWithContent)
+
+            childFolders.each {child ->
+                def gc = fetchChildFolders(child)
+                if (gc.isEmpty()) {
+                    log.debug("${child.name} has no subfolders.")
+                }
+                else {
+                    log.debug("${child.name} has subfolders.")
+                }
+                grandChildren.put(child, gc)
+
+                def grandChildrenWithContent = fetchChildrenWithContent(child)
+                contentSet.addAll(grandChildrenWithContent)
+
             }
-            else {
-                log.debug("${child.name} has subfolders.")
+
+            def triggerSet = null
+            if (session.triggerFolder) {
+                triggerSet = folderService.createTriggerSet(session.triggerFolder, session.triggerOsd)
             }
-            grandChildren.put(child, gc)
 
-            def grandChildrenWithContent = fetchChildrenWithContent(child)
-            contentSet.addAll(grandChildrenWithContent)
-
+            return render(
+                    template: "/folder/subFolders",
+                    model: [folder: folder,
+                            children: childFolders,
+                            grandChildren: grandChildren,
+                            contentSet: contentSet,
+                            triggerSet: triggerSet,
+                            triggerFolder: session.triggerFolder,
+                    ])
         }
-
-        def triggerSet = null
-        if (session.triggerFolder) {
-            triggerSet = folderService.createTriggerSet(session.triggerFolder, session.triggerOsd)
+        catch (Exception e) {
+            log.debug("fetchFolder failed", e)
+            return render(status: 500, text: message(code: e.message))
         }
-
-        return render(
-                template: "/folder/subFolders",
-                model: [folder: folder,
-                        children: childFolders,
-                        grandChildren: grandChildren,
-                        contentSet: contentSet,
-                        triggerSet: triggerSet,
-                        triggerFolder: session.triggerFolder,
-                ])
     }
 
-    def fetchFolderContent () {
+    def fetchFolderContent() {
         def repositoryName = session.repositoryName
         Folder folder
         try {
@@ -200,11 +198,98 @@ class FolderController {
             ])
         }
         catch (Exception e) {
-            log.debug("fetchFolderContent failed",e)
+            log.debug("fetchFolderContent failed", e)
             return render(status: 500, text: message(code: e.message))
         }
     }
-    
-    
-    
+
+    def fetchFolderMeta() {
+        try {
+            Folder folder = fetchAndFilterFolder(params.folder)
+
+            Set<String> permissions
+            try {
+                permissions = loadUserPermissions(folder.acl)
+            } catch (RuntimeException ex) {
+                log.debug("getUserPermissions failed", ex)
+                return render(status: 503, text: message(code: 'error.access.failed'))
+            }
+
+            return render(template: '/folder/folderMeta', model: [folder: folder, permissions: permissions])
+        }
+        catch (Exception e) {
+            log.debug("renderMetadata failed", e)
+            return render(status: 500, text: message(code: e.message))
+        }
+    }
+
+    def renderMetadata() {
+        try {
+            Folder folder = fetchAndFilterFolder(params.folder)
+            return render(template: 'renderMetadata', model: [folder: folder])
+        }
+        catch (Exception e) {
+            log.debug("renderMetadata failed", e)
+            return render(status: 500, text: message(code: e.message))
+        }
+
+    }
+
+    protected Folder fetchAndFilterFolder(id) {
+        def folder = Folder.get(id)
+        if (!folder) {
+            throw new RuntimeException('error.folder.not.found')
+        }
+        if (!folderService.mayBrowseFolder(folder, userService.user)) {
+            throw new RuntimeException('error.access.denied')
+        }
+        return folder
+    }
+
+    def editMetadata() {
+        try {
+            Folder folder = fetchAndFilterFolder(params.folder)
+            return render(template: '/folder/editMetadata', model: [folder: folder])
+        }
+        catch (Exception e) {
+            log.debug("editMetadata failed", e)
+            return render(status: 500, text: message(code: e.message))
+        }
+    }
+
+    def saveMetadata() {
+        Folder folder = null
+        try {
+            folder = fetchAndFilterFolder(params.folder)
+
+            def metadata = params.metadata
+            if (!metadata || metadata.trim().length() == 0) {
+                metadata = '<meta/>'
+            }
+
+            // only save if folder has changed:
+            if (!folder.metadata.equals(metadata)) {
+                log.debug("trying to save metadata '$metadata'")
+                folder.metadata = metadata
+            }
+            else {
+                log.debug("metadata is unchanged")
+            }
+            return render(template: 'renderMetadata',
+                    model: [folder: folder, permissions: loadUserPermissions(folder.acl)])
+        }
+        catch (Exception e) {
+            log.debug("failed to update folder metadata: ", e)
+            if (folder){
+                return render(template: 'editMetadata', model: [folder: folder,saveMetaError:message(code: e.message), 
+                        metadata:params.metadata
+                ])
+            }
+            else{
+                return render(status: 500, message(code: e.message))
+            }
+        }
+
+    }
+
 }
