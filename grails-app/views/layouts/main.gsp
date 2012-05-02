@@ -77,7 +77,7 @@
             lineNumbers:true
         };
         codeMirrorEditor = new CodeMirrorUI(id, uiOptions, cmOptions);
-        codeMirrorEditor.refresh();
+        codeMirrorEditor.mirror.refresh();
     }
 
     function hideChildren(id) {
