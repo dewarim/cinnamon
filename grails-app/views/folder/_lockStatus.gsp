@@ -1,18 +1,18 @@
-<g:if test="${osd.locked_by}">
-    <g:if test="${osd.locked_by.equals(user) || superuserStatus}">
+<g:if test="${osd.locker}">
+    <g:if test="${osd.locker.equals(user) || superuserStatus}">
         <span class="unlockLink" title="${message(code: 'osd.locked.by.you')}">
             <g:remoteLink controller="osd" action="unlockOsd" params="[osd:osd.id]"
                           update="[success:'folderContent', failure:'message']" asynchronous="false">
                 <r:img uri="/images/icons/document_locked_self.png" plugin="humulus"
                      width="16" height="16" border="0"
-                     alt="${message(code: 'osd.locked.by.you')}"/>  ${osd.locked_by.name}
+                     alt="${message(code: 'osd.locked.by.you')}"/>  ${osd.locker.name}
             </g:remoteLink>
         </span>
     </g:if>
     <g:else>
         <r:img uri="/images/icons/document_locked_other.png" plugin="humulus" border="0"
-             width="16" height="16" title="${message(code: 'osd.locked.by.user', args: [osd.locked_by.name])}"
-             alt="${message(code: 'osd.locked.by.user')}"/>  ${osd.locked_by.name}
+             width="16" height="16" title="${message(code: 'osd.locked.by.user', args: [osd.locker.name])}"
+             alt="${message(code: 'osd.locked.by.user')}"/>  ${osd.locker.name}
     </g:else>
 </g:if>
 <g:else>

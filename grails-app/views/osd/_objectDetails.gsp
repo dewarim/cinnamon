@@ -77,7 +77,7 @@ return false;" title="${message(code: 'table.hide')}">
     </tr>
     <tr class="even">
         <td><g:message code="osd.lockedBy"/></td>
-        <td>${osd.locked_by?.name ?: ''}</td>
+        <td>${osd.locker?.name ?: ''}</td>
         <td>&nbsp;</td>
     </tr>
     <tr class="odd">
