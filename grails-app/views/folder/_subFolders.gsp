@@ -6,7 +6,7 @@
                 <span id="hideChildren_${folder.id}" style="display:none;">
                     <a href="#" onClick="hideChildren('${folder.id}');
                     return false;">
-                        <r:img uri="/images/icons/folder_open.png" height="16" width="16" plugin="humulus"
+                        <r:img uri="/images/icons/folder_open.png" height="16" width="16"
                                alt="${message(code: 'folder.close.view')}"
                                title="${message(code: 'folder.close.view')}"/>
                     </a>
@@ -20,7 +20,7 @@
                                   onLoading="showSpinner('folder_${folder.id}');"
                                   onLoaded="hideSpinner('folder_${folder.id}');"
                                   onFailure="hideSpinner('folder_${folder.id}');showClearButton();">
-                        <r:img uri="/images/icons/folder.png"  plugin="humulus" height="16" width="16"
+                        <r:img uri="/images/icons/folder.png"  height="16" width="16"
                                alt="${message(code: 'folder.open.view')}"
                                title="${message(code: 'folder.open.view')}"/>
                     </g:remoteLink>
