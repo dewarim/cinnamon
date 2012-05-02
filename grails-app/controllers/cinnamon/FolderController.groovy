@@ -141,21 +141,10 @@ class FolderController {
 
     def fetchFolderContent() {
         def repositoryName = session.repositoryName
+        def user = userService.user
         Folder folder
         try {
-            if (params.folder) {
-                folder = Folder.get(params.folder) // called by OSD
-            }
-            else {
-                folder = Folder.get(params.id) // called by remoteFunction
-            }
-            if (!folder) {
-                throw new RuntimeException('error.folder.not.found')
-            }
-            UserAccount user = userService.user
-            if (!folderService.mayBrowseFolder(folder, user)) {
-                return render(status: 401, text: message(code: 'error.access.denied'))
-            }
+            folder = fetchAndFilterFolder(params.folder ?: params.id)
 
             log.debug("found folder. ${params.folder}: $folder")
             if (!params.versions?.trim()?.matches('^all|head|branch$')) {
@@ -185,8 +174,6 @@ class FolderController {
                 log.debug("getUserPermissions failed", ex)
                 throw new RuntimeException('error.access.failed')
             }
-
-            log.debug("superuserStatus: ${userService.isSuperuser(user)}")
 
             return render(template: "/folder/folderContent", model: [folder: folder,
                     osdList: osdList,

@@ -22,7 +22,7 @@ class FolderService {
      */
 
     Boolean hasContent(Folder folder) {
-        return ObjectSystemData.findWhere(parent:folder) != null
+        return ObjectSystemData.countByParent(folder) > 0
     }
 
     public List<Folder> getSubfolders(Folder parent) {
@@ -358,16 +358,14 @@ class FolderService {
         String versionPred = ObjectSystemData.fetchVersionPredicate(versions);
         def osdList = ObjectSystemData.findAll("from ObjectSystemData as o where o.parent=:parent $versionPred order by id", 
                 [parent: parent])
-        def filteredList = []
         try{
             def validator = new Validator(user)
-            validator.filterUnbrowsableObjects(osdList)
+            return validator.filterUnbrowsableObjects(osdList)
         }
         catch (RuntimeException e){
             log.debug("Failed to load objects",e)
             throw new RuntimeException(e)
         }
-        return filteredList
     }
     
     List getFoldersInside(user, folder){
