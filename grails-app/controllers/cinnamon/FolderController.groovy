@@ -6,24 +6,8 @@ import cinnamon.exceptions.IgnorableException
 import grails.plugins.springsecurity.Secured
 
 @Secured(["isAuthenticated()"])
-class FolderController {
-
-    def folderService
-    def userService
-
-    protected Set<String> loadUserPermissions(Acl acl) {
-        Set<String> permissions
-        try {
-            log.debug("us: ${userService.user} acl: ${acl} repo: ${session.repositoryName}")
-            permissions = userService.getUsersPermissions(userService.user, acl)
-        } catch (RuntimeException ex) {
-            log.debug("getUserPermissions failed", ex)
-            render(status: 503, text: message(code: 'error.access.failed'))
-            throw new IgnorableException("error.access.failed")
-        }
-        return permissions
-    }
-
+class FolderController extends BaseController {
+   
     def index() {
         try {
             Folder rootFolder = Folder.findRootFolder()
@@ -67,20 +51,6 @@ class FolderController {
         }
 
 
-    }
-
-    // not in folderService because it needs access to session.
-    protected Collection<Folder> fetchChildFolders(Folder folder) {
-        Collection<Folder> folderList = Folder.findAll("from Folder as f where f.parent=:parent and f.id != :id",
-                [parent: folder, id: folder.id])
-
-        Validator validator = fetchValidator()
-        return validator.filterUnbrowsableFolders(folderList)
-    }
-
-    protected Validator fetchValidator() {
-        UserAccount user = userService.user
-        return new Validator(user)
     }
 
     // not in folderService because it needs access to session.
@@ -220,17 +190,6 @@ class FolderController {
             return render(status: 500, text: message(code: e.message))
         }
 
-    }
-
-    protected Folder fetchAndFilterFolder(id) {
-        def folder = Folder.get(id)
-        if (!folder) {
-            throw new RuntimeException('error.folder.not.found')
-        }
-        if (!folderService.mayBrowseFolder(folder, userService.user)) {
-            throw new RuntimeException('error.access.denied')
-        }
-        return folder
     }
 
     def editMetadata() {
