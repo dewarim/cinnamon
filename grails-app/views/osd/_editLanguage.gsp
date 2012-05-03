@@ -1,7 +1,7 @@
 <%@ page import="cinnamon.i18n.Language;" %>
 <g:form onsubmit="return false;">
 	<input type="hidden" name="osd" value="${osd.id}">
-    <input type="hidden" name="fieldName" value="language_id" />
+    <input type="hidden" name="fieldName" value="language" />
     <g:select from="${Language.list()}" name="fieldValue" value="${osd.language.id}"
         optionKey="id" optionValue="isoCode"/>
 	<g:submitToRemote url="[action:'saveField', controller:'osd']"

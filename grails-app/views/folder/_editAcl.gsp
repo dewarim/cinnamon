@@ -1,7 +1,7 @@
 <%@ page import="cinnamon.Acl" %>
 <g:form>
 	<input type="hidden" name="folder" value="${folder.id}">
-    <input type="hidden" name="fieldName" value="aclid">
+    <input type="hidden" name="fieldName" value="acl">
 	<g:select from="${Acl.list()}" name="fieldValue" value="${folder.acl.id}"
 			optionKey="id" optionValue="name"/>
 

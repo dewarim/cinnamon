@@ -12,6 +12,7 @@ hibernate {
 environments {
     development {
         dataSource {
+            configClass = cinnamon.hibernate.FieldAccessHibernateConfiguration
             dbCreate = "update" // one of 'create', 'create-drop', 'update', 'validate', ''
 //            url = "jdbc:h2:mem:devDb;MVCC=TRUE"
         }
@@ -24,6 +25,7 @@ environments {
     }
     production {
         dataSource {
+            configClass = cinnamon.hibernate.FieldAccessHibernateConfiguration
             dbCreate = "none"
 //            url = "jdbc:h2:prodDb;MVCC=TRUE"
             pooled = true

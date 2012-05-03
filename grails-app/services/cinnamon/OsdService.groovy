@@ -9,9 +9,12 @@ import javax.persistence.EntityManager
 import cinnamon.relation.Relation
 import cinnamon.relation.RelationType
 import humulus.EnvironmentHolder
+import cinnamon.global.PermissionName
 
 class OsdService {
 
+    def inputValidationService
+    
     /**
      * Turn a collection of data objects into an XML document. Any exceptions encountered during
      * serialization are turned into error-Elements which contain the exception's message.
@@ -192,11 +195,93 @@ class OsdService {
 
     public void delete(Long id) {
         log.debug("before loading osd");
-        ObjectSystemData osd = get(id);
+        ObjectSystemData osd = ObjectSystemData.get(id);
         if(osd == null) {
             throw new CinnamonException("error.object.not.found");
         }
         delete(osd);
     }
 
+    Boolean mayBrowseObject(ObjectSystemData osd, user){
+        def validator = new Validator(user)
+        try{
+            log.debug("validate browse permission on: ${osd.name} (acl: ${osd.acl.name})")
+            validator.validatePermission(osd.acl, PermissionName.BROWSE_OBJECT)
+        }
+        catch (Exception e){
+            log.debug("user does not have browse permission.",e)
+            return false
+        }
+        return true
+    }
+    
+    void acquireLock(osd, user){
+        if (osd.locker){
+            throw new RuntimeException('error.locked.already')
+        }
+        osd.locker = user
+    }
+    void unlock(osd, user){
+        // should we raise an exception if this osd is not locked at all? 
+        osd.locker = null 
+    }
+    
+    Boolean checkPermissions(ObjectSystemData osd, UserAccount user, List permissions){
+        Validator val = new Validator(user)
+        try{
+            val.validatePermissions(osd, permissions)
+        }
+        catch (Exception e){
+            log.debug("${user?.name} failed permission check:",e)
+            return false
+        }
+        return true
+    }
+    
+    void storeContent(osd, contentType, file, repositoryName){
+        Format format = (Format) inputValidationService.checkObject(Format.class, params.format, true)
+        if (!format) {
+            throw new RuntimeException('error.missing.format')
+        }
+        def uploadedFile = new UploadedFile(file.absolutePath, UUID.randomUUID().toString(), osd.name, contentType,file.length())
+        def contentPath = ContentStore.upload(uploadedFile, repositoryName);
+        osd.setContentPath(contentPath, repositoryName);
+        if (osd.getContentPath() != null &&
+                osd.getContentPath().length() == 0) {
+            throw new CinnamonException("error.storing.upload");
+        }
+        
+    }
+
+    Map<String,List> deleteList(idList){
+        def msgMap = [:]
+        idList.each{ id ->
+            try{
+                log.debug("delete: $id")
+                delete(Long.parseLong(id));
+                msgMap.put(id, ['osd.delete.ok'])
+            }
+            catch (Exception e){
+                msgMap.put(id, ['osd.delete.fail', e.message])
+            }
+        }
+        return msgMap
+
+    }
+
+    Map<String,List> deleteAllVersions(idList){
+        def msgMap = [:]
+        idList.each{ id ->
+            try{
+                deleteAllVersions(Long.parseLong(id));
+                msgMap.put(id, ['osd.delete.all.ok'])
+            }
+            catch (Exception e){
+                msgMap.put(id, ['osd.delete.all.fail', e.message])
+            }
+        }
+        return msgMap
+
+    }
+    
 }

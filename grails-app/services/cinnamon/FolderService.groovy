@@ -373,5 +373,21 @@ class FolderService {
         def validator = new Validator(user)
         return validator.filterUnbrowsableFolders(folders) 
     }
+
+    Map<String,List> deleteList(idList){
+        def msgMap = [:]
+        idList.each{ id ->
+            try{
+                log.debug("delete folder: $id")
+                deleteFolder(Long.parseLong(id));
+                msgMap.put(id, ['folder.delete.ok'])
+            }
+            catch (Exception e){
+                msgMap.put(id, ['folder.delete.fail', e.message])
+            }
+        }
+        return msgMap
+    }
+    
 }
 

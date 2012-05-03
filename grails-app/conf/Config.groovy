@@ -131,5 +131,5 @@ grails.logging.jul.usebridge = false
  The default page is responsible for connecting to the right database,
  so we always redirect the user there:
 */
-grails.plugins.springsecurity.successHandler.alwaysUseDefault=true
+grails.plugins.springsecurity.successHandler.alwaysUseDefault=false
 grails.plugins.springsecurity.http.useExpressions=false
