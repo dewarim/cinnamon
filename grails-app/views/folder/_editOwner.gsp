@@ -1,7 +1,7 @@
 <%@ page import="cinnamon.UserAccount" %>
 <g:form>
 	<input type="hidden" name="folder" value="${folder.id}">
-    <input type="hidden" name="fieldName" value="ownerid">
+    <input type="hidden" name="fieldName" value="owner">
 	<g:select from="${UserAccount.list()}" name="fieldValue" value="${folder.owner.id}"
 			optionKey="id" optionValue="name"/>
 

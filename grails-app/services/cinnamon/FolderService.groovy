@@ -388,6 +388,17 @@ class FolderService {
         }
         return msgMap
     }
-    
+
+    Boolean checkPermissions(Folder folder, UserAccount user, List permissions){
+        Validator val = new Validator(user)
+        try{
+            val.validatePermissions(folder, permissions)
+        }
+        catch (Exception e){
+            log.debug("${user?.name} failed permission check:",e)
+            return false
+        }
+        return true
+    }
 }
 

@@ -4,10 +4,12 @@ import humulus.EnvironmentHolder
 
 import cinnamon.exceptions.IgnorableException
 import grails.plugins.springsecurity.Secured
+import cinnamon.global.PermissionName
+import cinnamon.i18n.Language
 
 @Secured(["isAuthenticated()"])
 class FolderController extends BaseController {
-   
+
     def index() {
         try {
             Folder rootFolder = Folder.findRootFolder()
@@ -167,6 +169,7 @@ class FolderController extends BaseController {
             Set<String> permissions
             try {
                 permissions = loadUserPermissions(folder.acl)
+                log.debug("permissions. $permissions")
             } catch (RuntimeException ex) {
                 log.debug("getUserPermissions failed", ex)
                 return render(status: 503, text: message(code: 'error.access.failed'))
@@ -226,16 +229,92 @@ class FolderController extends BaseController {
         }
         catch (Exception e) {
             log.debug("failed to update folder metadata: ", e)
-            if (folder){
-                return render(template: 'editMetadata', model: [folder: folder,saveMetaError:message(code: e.message), 
-                        metadata:params.metadata
+            if (folder) {
+                return render(template: 'editMetadata', model: [folder: folder, saveMetaError: message(code: e.message),
+                        metadata: params.metadata
                 ])
             }
-            else{
+            else {
                 return render(status: 500, message(code: e.message))
             }
         }
 
+    }
+
+    def editName() {
+        try {
+            def folder = fetchAndFilterFolder(params.folder)
+            render(template: 'editName', model: [folder: folder])
+        }
+        catch (Exception e) {
+            log.debug("failed: editName", e)
+            renderException(e)
+        }
+    }
+
+    def editAcl() {
+        try {
+            def folder = fetchAndFilterFolder(params.folder)
+            render(template: 'editAcl', model: [folder: folder])
+        }
+        catch (Exception e) {
+            log.debug("failed: editAcl",e)
+            renderException(e)
+        }
+    }
+
+    def editOwner() {
+        try {
+            def folder = fetchAndFilterFolder(params.folder)
+            render(template: 'editOwner', model: [folder: folder])
+        }
+        catch (Exception e) {
+            log.debug("failed: editOwner",e)
+            renderException(e)
+        }
+    }
+
+    def editType = {
+        try {
+            def folder = fetchAndFilterFolder(params.folder)
+            render(template: 'editType', model: [folder: folder])
+        }
+        catch (Exception e) {
+            log.debug("failed: editType",e)
+            renderException(e)
+        }
+    }
+
+    static List<String> allowedFields = ['name', 'acl', 'type', 'owner']
+
+    protected Boolean fieldNameAllowed(String name) {
+        return allowedFields.contains(name)
+    }
+
+    def saveField() {
+        try {
+            def folder = fetchAndFilterFolder(params.folder, [PermissionName.EDIT_FOLDER])
+
+
+            if (fieldNameAllowed(params.fieldName)) {
+                def id = params.fieldValue
+                switch (params.fieldName) {
+                    case 'name': folder.name = params.fieldValue; break;
+                    case 'owner': folder.owner = UserAccount.get(id); break;
+//                    case 'format':osd.format= Format.get(id);break;
+                    case 'type': folder.type = FolderType.get(id); break;
+                    case 'acl': fetchAndFilterFolder(params.folder, [PermissionName.SET_ACL]).acl = Acl.get(id); break;
+                }
+
+                fetchFolderMeta()
+            }
+            else {
+                render(status: 401, text: message(code: 'error.illegal.parameter', args: [params.fieldName?.encodeAsHTML()]))
+            }
+        } catch (Exception e) {
+            log.debug("failed to save field: ",e)
+            renderException(e)
+        }
     }
 
 }

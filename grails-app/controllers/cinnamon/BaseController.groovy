@@ -55,11 +55,15 @@ abstract class BaseController {
     }
 
     protected Folder fetchAndFilterFolder(id) {
+        return fetchAndFilterFolder(id, [PermissionName.BROWSE_FOLDER])
+    }
+    
+    protected Folder fetchAndFilterFolder(id, permissions) {
         def folder = Folder.get(id)
         if (!folder) {
             throw new RuntimeException('error.folder.not.found')
         }
-        if (!folderService.mayBrowseFolder(folder, userService.user)) {
+        if (!folderService.checkPermissions(folder, userService.user, permissions)) {
             throw new RuntimeException('error.access.denied')
         }
         return folder

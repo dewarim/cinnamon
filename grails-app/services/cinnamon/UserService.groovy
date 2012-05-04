@@ -236,7 +236,7 @@ class UserService {
 
     public List getUsersPermissions(user, acl) {
         if (user.verifySuperuserStatus()) {
-            return Permission.list();
+            return Permission.list().collect{it.name};
         }
 
         log.debug("groupUsers for user " + user.getName() + ": " + user.getGroupUsers().size());
@@ -244,7 +244,7 @@ class UserService {
         Set<CmnGroup> groups = user.findAllGroups();
         log.debug("number of groups for this user: " + groups.size());
 
-        Set<Permission> permissions = new HashSet<Permission>();
+        Set<String> permissions = new HashSet<String>();
         for (CmnGroup group : groups) {
             /*
              * If there are many groups whose AclEntries point to the
@@ -259,7 +259,7 @@ class UserService {
                     log.debug("found acl");
                     Set<AclEntryPermission> aepSet = ae.getAePermissions();
                     for (AclEntryPermission aep : aepSet) {
-                        permissions.add(aep.getPermission());
+                        permissions.add(aep.getPermission().name);
                     }
                 }
             }
