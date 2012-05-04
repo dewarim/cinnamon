@@ -317,4 +317,38 @@ class FolderController extends BaseController {
         }
     }
 
+    def create() {
+        def parent = null
+        try {
+            parent = fetchAndFilterFolder(params.parent, [PermissionName.CREATE_FOLDER])
+            render(template: '/folder/create', model: [parent: parent])
+        }
+        catch (Exception e) {
+            log.debug("create folder failed: ",e)
+            flash.message = message(code: e.message)
+            return redirect(controller: 'folder', action: 'index', model: [folder: parent?.id])
+        }
+    }
+
+    def save () {
+        def parentFolder = null
+        try {
+            // TODO: validation of new folder.
+            parentFolder = fetchAndFilterFolder(params.parent, [PermissionName.CREATE_FOLDER])
+            def folder = new Folder()
+            folder.parent = parentFolder
+            folder.name = params.name
+            folder.type = FolderType.get(params.folderType)
+            folder.acl = parentFolder.acl
+            folder.owner = userService.user
+            folder.save()
+            return redirect(controller: 'folder', action: 'index', params: [folder: folder.id])
+        }
+        catch (Exception e) {
+            log.debug("save folder failed: ",e)
+            flash.message = message(code: e.message)
+            return redirect(controller: 'folder', action: 'index', params: [folder: parentFolder?.id])
+        }
+    }
+    
 }
