@@ -272,7 +272,7 @@ class OsdController extends BaseController {
     def create() {
         def folder = null
         try {
-            folder = fetchAndFilterFolder(params.folder, PermissionName.CREATE_OBJECT)
+            folder = fetchAndFilterFolder(params.folder, [PermissionName.CREATE_OBJECT])
             return [folder: folder]
         }
         catch (Exception e) {
@@ -285,7 +285,7 @@ class OsdController extends BaseController {
         Folder folder = null
         try {
             UserAccount user = userService.user
-            folder = fetchAndFilterFolder(params.folder, PermissionName.CREATE_OBJECT)
+            folder = fetchAndFilterFolder(params.folder, [PermissionName.CREATE_OBJECT])
             ObjectType objectType = (ObjectType) inputValidationService.checkObject(ObjectType.class, params.objectType, true)
             if (!objectType) {
                 throw new RuntimeException('error.missing.objectType')
@@ -316,7 +316,7 @@ class OsdController extends BaseController {
                 def repositoryName = session.repositoryName
                 def uploadedFile = new UploadedFile(tempFile.absolutePath, UUID.randomUUID().toString(), name, file.contentType, tempFile.length())
                 def contentPath = ContentStore.upload(uploadedFile, repositoryName);
-                osd.setContentPath(contentPath, repositoryName);
+                osd.setContentPath(uploadedFile.fileName, repositoryName);
                 if (osd.getContentPath() != null &&
                         osd.getContentPath().length() == 0) {
                     throw new CinnamonException("error.storing.upload");
