@@ -14,14 +14,11 @@
             code="home"/></a></span>
 </div>
 
-
 <div class="content">
-    <div id="folderTree" class="folder_tree">
-        <g:render template="/folder/subFolders"
-                  model="[children: children, grandChildren: grandChildren, contentSet: contentSet, triggerSet: triggerSet]"/>
-    </div>
-
     <div id="message"><g:if test="${flash.message}"><g:message code="${flash.message}"/>
+        <script type="text/javascript">
+            showClearButton();
+        </script>
     </g:if>
         <g:if test="${msgList}">
             <div id="msgList">
@@ -37,6 +34,12 @@
 
     </div>
 
+    <div id="folderTree" class="folder_tree">
+        <g:render template="/folder/subFolders"
+                  model="[children: children, grandChildren: grandChildren, contentSet: contentSet, triggerSet: triggerSet]"/>
+    </div>
+       
+   
     <div id="searchResults" class="search_results"></div>
 
     <div id="folderContent" class="folder_content"></div>
