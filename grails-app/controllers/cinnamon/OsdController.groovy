@@ -3,7 +3,7 @@ package cinnamon
 import org.springframework.web.multipart.MultipartFile
 import grails.plugins.springsecurity.Secured
 import cinnamon.global.Conf
-import cinnamon.exceptions.IgnorableException
+
 import cinnamon.global.PermissionName
 import cinnamon.relation.Relation
 import cinnamon.global.ConfThreadLocal
@@ -290,7 +290,7 @@ class OsdController extends BaseController {
             if (!objectType) {
                 throw new RuntimeException('error.missing.objectType')
             }
-            def osd
+            ObjectSystemData osd
             String name = params.name
             MultipartFile file = request.getFile('file')
 
@@ -322,7 +322,8 @@ class OsdController extends BaseController {
                     throw new CinnamonException("error.storing.upload");
                 }
             }
-            osd.save()
+            osd.setCmnVersion('1')
+            osd.save(flush: true)
             log.debug("created object with id: ${osd.id}")
             return redirect(controller: 'folder', action: 'index', params: [folder: folder.id, osd: osd.id])
         }
@@ -384,7 +385,7 @@ class OsdController extends BaseController {
         }
     }
 
-    def newVersion = {
+    def newVersion() {
         def repositoryName = session.repositoryName
         try {
             def user = userService.user
@@ -392,8 +393,9 @@ class OsdController extends BaseController {
             ObjectSystemData osd = new ObjectSystemData(pre, user);
             osd.root = pre.root
             osd.predecessor = pre
+            osd.cmnVersion = osd.createNewVersionLabel()
             osd.save()
-
+            log.debug("version of new osd: ${osd.cmnVersion}")
             def osdList = folderService.getObjects(user, osd.parent, repositoryName, params.versions)
 
             return render(template: '/folder/folderContent', model: [folder: osd.parent,
