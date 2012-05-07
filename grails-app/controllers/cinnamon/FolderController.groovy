@@ -6,6 +6,9 @@ import cinnamon.exceptions.IgnorableException
 import grails.plugins.springsecurity.Secured
 import cinnamon.global.PermissionName
 import cinnamon.i18n.Language
+import cinnamon.exceptions.CinnamonException
+import cinnamon.global.Constants
+import cinnamon.utils.ZippedFolder
 
 @Secured(["isAuthenticated()"])
 class FolderController extends BaseController {
@@ -42,7 +45,7 @@ class FolderController extends BaseController {
                     triggerSet: triggerSet,
                     triggerFolder: params.folder,
                     envId: EnvironmentHolder.getEnvironment()?.get('id'),
-                    msgList: flash.msgList
+                    msgList: flash.msgList,
             ]
 
         }
@@ -348,6 +351,72 @@ class FolderController extends BaseController {
             log.debug("save folder failed: ",e)
             flash.message = message(code: e.message)
             return redirect(controller: 'folder', action: 'index', params: [folder: parentFolder?.id])
+        }
+    }
+
+    def zipFolder() {
+        def folder = null
+        try {
+            folder = fetchAndFilterFolder(params.folder)
+            def latestHead = params.versions == 'head' || params.latest_head == 'true' ?: false
+            def latestBranch = params.versions == 'branch' || params.latest_branch == 'true' ?: false
+            if (params.versions == 'all'){
+                latestBranch = null
+                latestHead = null
+            }
+            log.debug("versions: latestHead = ${latestHead} latestBranch = ${latestBranch}")
+            def repositoryName = session.repositoryName
+            def user = userService.user
+            def validator = new Validator(user)
+            ZippedFolder zf = folder.createZippedFolder(latestHead, latestBranch, validator, repositoryName);
+            File zipFile = zf.getZipFile();
+            if (params.target_folder_id) {
+                // create an OSD and store zip file.
+                Folder targetFolder = fetchAndFilterFolder(params.target_folder_id, [PermissionName.CREATE_OBJECT])
+                validator.validateCreate(targetFolder);
+                ObjectType objectType = ObjectType.findByName(params.object_type_name ?: Constants.OBJTYPE_DEFAULT)
+                Format format = Format.findByName("zip");
+                if (format == null) {
+                    throw new CinnamonException("error.missing.format", "zip");
+                }
+                final String filename = folder.getName() + "_archive";
+                ObjectSystemData osd = new ObjectSystemData(filename, user, targetFolder);
+                osd.setType(objectType);
+                if (params.object_meta) {
+                    osd.setMetadata(params.object_meta)
+                }
+                try {
+                    String contentPath = ContentStore.copyToContentStore(zipFile.getAbsolutePath(), repositoryName);
+                    if (contentPath.length() == 0) {
+                        throw new CinnamonException("error.store.upload");
+                    }
+                    osd.setContentPathAndFormat(contentPath, format, repositoryName);
+                }
+                catch (IOException e) {
+                    throw new CinnamonException("error.store.upload", e);
+                }
+                osd.save()
+                luceneService.addToIndex(osd, repositoryName);
+//                XmlResponse resp = new XmlResponse(res);
+//                resp.addTextNode("objectId", String.valueOf(osd.getId()));
+//                return resp;
+            }
+            else {
+//                return new FileResponse(res, zipFile.getAbsolutePath(), zipFile.length(), zipFile.getName());
+
+
+                response.setHeader("Content-disposition", "attachment; filename=${zipFile.getName().encodeAsURL()}.zip");
+                response.setContentType('application/zip')
+                response.outputStream << zipFile.newInputStream()
+                response.outputStream.flush()
+                return null
+            }
+
+        }
+        catch (Exception e) {
+            log.debug("zip folder failed: ", e)
+            flash.message = message(code: 'zip.folder.fail', args: [e.message])
+            return redirect(controller: 'folder', action: 'index', params: [folder: folder?.id])
         }
     }
     
