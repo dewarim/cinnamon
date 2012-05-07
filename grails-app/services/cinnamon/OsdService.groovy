@@ -91,7 +91,7 @@ class OsdService {
 
 
     public List<ObjectSystemData> findAllVersions(ObjectSystemData osd) {
-        if(! osd.getVersion().equals("1")){
+        if(! osd.getCmnVersion().equals("1")){
             osd = osd.root
         }
         return ObjectSystemData.findAll("from ObjectSystemData o where o.root=:root order by o.id desc",
@@ -184,7 +184,7 @@ class OsdService {
            */
         if(predecessor != null){
             predecessor.setLatestBranch(true);
-            if(! predecessor.getVersion().contains(".")){
+            if(! predecessor.getCmnVersion().contains(".")){
                 predecessor.setLatestHead(true);
             }
         }
@@ -262,6 +262,7 @@ class OsdService {
                 msgMap.put(id, ['osd.delete.ok'])
             }
             catch (Exception e){
+                log.debug("delete failed.",e)
                 msgMap.put(id, ['osd.delete.fail', e.message])
             }
         }
@@ -273,10 +274,21 @@ class OsdService {
         def msgMap = [:]
         idList.each{ id ->
             try{
-                deleteAllVersions(Long.parseLong(id));
+                def osd = ObjectSystemData.get(id)
+                if(osd){
+//                    def osds = ObjectSystemData.findAll("from ObjectSystemData o where o.root=:root order by id desc",
+//                    [root: osd.root ?: osd]
+//                    )
+//                    deleteList(osds.collect{it.id.toString()})
+                    delete(osd, true, false)
+                }
+                else{
+                    log.debug("osd $id was not found - probably already deleted.")
+                }
                 msgMap.put(id, ['osd.delete.all.ok'])
             }
             catch (Exception e){
+                log.debug("deleteAllVersions fail:",e)
                 msgMap.put(id, ['osd.delete.all.fail', e.message])
             }
         }
