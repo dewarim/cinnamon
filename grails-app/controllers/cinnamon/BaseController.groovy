@@ -13,6 +13,7 @@ abstract class BaseController {
     def osdService
     def folderService
     def userService
+    def luceneService
     def springSecurityService
     def inputValidationService
 
