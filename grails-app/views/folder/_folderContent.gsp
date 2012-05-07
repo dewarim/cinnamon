@@ -22,7 +22,7 @@
 </g:if>
 <br>
 <g:if test="${folders.size() > 0 || osdList.size() > 0}">
-    <g:link controller="folder" action="zipFolder" params="[folder:folder.id]" class="zipFolderLink">
+    <g:link controller="folder" action="zipFolder" params="[folder:folder.id, versions:selectedVersion]" class="zipFolderLink">
         <g:message code="folder.zipFolder.link"/>
     </g:link>
 </g:if>
