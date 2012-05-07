@@ -227,7 +227,7 @@ class OsdController extends BaseController {
         }
     }
 
-    def editType = {
+    def editType() {
         try {
             def osd = fetchAndFilterOsd(params.osd)
             render(template: 'editType', model: [osd: osd])
