@@ -65,6 +65,7 @@ grails.gorm.default.mapping = {
 }
 
 grails.gorm.autoFlush = true
+grails.gorm.failOnError = true
 
 // set per-environment serverURL stem for creating absolute links
 environments {
@@ -127,6 +128,7 @@ grails.plugins.springsecurity.auth.loginFormUrl='/login/auth'
 // grails.plugins.springsecurity.failureHandler.defaultFailureUrl='/login/index'
 
 grails.logging.jul.usebridge = false
+
 /*
  The default page is responsible for connecting to the right database,
  so we always redirect the user there:
