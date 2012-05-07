@@ -13,13 +13,13 @@ environments {
     development {
         dataSource {
             configClass = cinnamon.hibernate.FieldAccessHibernateConfiguration
-            dbCreate = "update" // one of 'create', 'create-drop', 'update', 'validate', ''
+            dbCreate = "none" // one of 'create', 'create-drop', 'update', 'validate', ''
 //            url = "jdbc:h2:mem:devDb;MVCC=TRUE"
         }
     }
     test {
         dataSource {
-            dbCreate = "update"
+            dbCreate = "none"
 //            url = "jdbc:h2:mem:testDb;MVCC=TRUE"
         }
     }
