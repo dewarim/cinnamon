@@ -24,7 +24,7 @@
                     </span>
                 </td>
                 <td><g:message code="${relation.rightOSD.type.name}"/></td>
-                <td><g:message code="${relation.rightOSD.version}"/></td>
+                <td><g:message code="${relation.rightOSD.cmnVersion}"/></td>
                 <td>
                     <div class="relationMetadata">
                         ${relation.metadata.encodeAsHTML()}
@@ -58,7 +58,7 @@
                 </span>
                 </td>
                 <td><g:message code="${relation.leftOSD.type.name}"/></td>
-                <td><g:message code="${relation.leftOSD.version}"/></td>
+                <td><g:message code="${relation.leftOSD.cmnVersion}"/></td>
                 <td>
                     <div class="relationMetadata">
                         ${relation.metadata.encodeAsHTML()}

@@ -30,7 +30,7 @@ return false;" title="${message(code: 'table.hide')}">
     </tr>
     <tr class="odd">
         <td><g:message code="osd.version.number"/></td>
-        <td>${osd.version}</td>
+        <td>${osd.cmnVersion}</td>
         <td>&nbsp;</td>
     </tr>
     <tr class="even">

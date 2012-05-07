@@ -21,7 +21,7 @@
     </g:if>
 </td>
 <td>${osd.name}</td>
-<td class="center">${osd.version}</td>
+<td class="center">${osd.cmnVersion}</td>
 <td>${osd.format?.name ?: ''}</td>
 <td>${osd.type.name}</td>
 <td>${osd.contentSize ?: ''}</td>
