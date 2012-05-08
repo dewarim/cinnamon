@@ -148,52 +148,6 @@ class UserService {
     }
 
     /**
-     * Add the UserAccount's fields as child-elements to a new element with the given name.
-     * If the user is null, simply return an empty element.
-     * @param elementName the element to which the serialized user object will be appended.
-     * @param user the user object which will be serialized
-     * @return the new dom4j element.
-     */
-    public Element asElement(String elementName, UserAccount user) {
-        log.debug("UserAsElement with element " + elementName);
-
-        if (user != null) {
-//            if (user.xmlNode != null) {
-//                user.xmlNode.setName(elementName);
-//                return (Element) ParamParser.parseXml(user.xmlNode.asXML(), null);
-//            }
-//            else {
-                Element e = DocumentHelper.createElement(elementName);
-                log.debug("user is not null");
-                e.addElement("id").addText(String.valueOf(user.getId()));
-                e.addElement("name").addText(user.name)
-                e.addElement("fullname").addText(user.fullname);
-                e.addElement("description").addText(user.description);
-                e.addElement("activated").addText(String.valueOf(user.activated))
-                e.addElement("isSuperuser").addText(user.verifySuperuserStatus().toString());
-                e.addElement("sudoer").addText(user.sudoer.toString());
-                e.addElement("sudoable").addText(user.sudoable.toString());
-                Element userEmail = e.addElement("email");
-                if (user.getEmail() != null) {
-                    userEmail.addText(user.getEmail());
-                }
-                if (user.getLanguage() != null) {
-                    user.getLanguage().toXmlElement(e);
-                }
-                else {
-                    e.addElement("language");
-                }
-                log.debug("finished adding elements.");
-//                user.xmlNode = e;
-                return (Element) ParamParser.parseXml(e.asXML(), null);
-//            }
-        }
-        else {
-            return DocumentHelper.createElement(elementName);
-        }
-    }
-
-    /**
      * Create a new UUID token and store it in {@link UserAccount#token} for email validation and password reset.
      * @return the new UUID string token 
      * @throws cinnamon.exceptions.CinnamonException if maxTokensPerDay has been reached.
