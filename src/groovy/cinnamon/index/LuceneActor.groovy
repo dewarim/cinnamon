@@ -37,6 +37,9 @@ import org.apache.lucene.xmlparser.ParserException
 import cinnamon.index.queryBuilder.WildcardQueryBuilder
 import cinnamon.index.queryBuilder.RegexQueryBuilder
 import cinnamon.exceptions.CinnamonException
+import humulus.Environment
+import humulus.EnvironmentHolder
+import cinnamon.ObjectSystemData
 
 /**
  * Actor class which does the heavy lifting in searching and indexing.
@@ -59,11 +62,16 @@ class LuceneActor extends
                 try {
                     LuceneResult result = new LuceneResult()
 //                    log.debug("LuceneActor received: $command")
-                    switch (command.type) {
-                        case CommandType.ADD_TO_INDEX: addToIndex(command); break
-                        case CommandType.REMOVE_FROM_INDEX: removeFromIndex(command); break
-                        case CommandType.UPDATE_INDEX: removeFromIndex(command); addToIndex(command); break
-                        case CommandType.SEARCH: result = search(command); break;
+                    def env = Environment.list().find {it.dbName == command.repository}
+//                    log.debug("found env: $env")
+                    EnvironmentHolder.setEnvironment(env)
+                    ObjectSystemData.withTransaction {
+                        switch (command.type) {
+                            case CommandType.ADD_TO_INDEX: addToIndex(command); break
+                            case CommandType.REMOVE_FROM_INDEX: removeFromIndex(command); break
+                            case CommandType.UPDATE_INDEX: removeFromIndex(command); addToIndex(command); break
+                            case CommandType.SEARCH: result = search(command); break;
+                        }
                     }
                     log.debug("reply & finish")
                     reply result
@@ -151,6 +159,7 @@ class LuceneActor extends
         def repository = repositories.get(command.repository)
         IndexSearcher indexSearcher = repository.indexSearcher
         try {
+            indexable = indexable.class.get(indexable.id)
             // check that the document does not already exist - otherwise, remove it.
             String uniqueId = "${indexable.class.name}@${indexable.id}"
             Term t = new Term("uniqueId", uniqueId)
@@ -167,10 +176,10 @@ class LuceneActor extends
             doc = storeStandardFields(indexable, doc)
 
             ContentContainer content;
-            if(indexable.hasXmlContent()){
+            if (indexable.hasXmlContent()) {
                 content = new ContentContainer(indexable, repository.name);
             }
-            else{
+            else {
                 content = new ContentContainer("<empty />".getBytes());
             }
 //                String content = indexable.getContent(repository);
@@ -183,6 +192,7 @@ class LuceneActor extends
             log.debug("got sysMetadata, start indexObject loop");
 
             for (IndexItem item : IndexItem.list()) {
+                log.debug("indexItem: $item.name")
                 /*
                 * At the moment, the OSDs and Folders do not cache
                 * their responses to getSystemMetadata or getContent.
@@ -191,9 +201,10 @@ class LuceneActor extends
                 */
                 try {
 //							log.debug("indexObject for field '"+item.fieldname+"' with content: "+content);
+                    log.debug("item.indexType: ${item.indexType}")
                     item.indexObject(content, metadata, systemMetadata, doc);
                 } catch (Exception e) {
-                    log.debug("*** failed *** to execute IndexItem " + item.myId(), e);
+                    log.debug("*** failed *** to execute IndexItem " + item.name, e);
                 }
             }
 
@@ -202,14 +213,13 @@ class LuceneActor extends
             indexable.indexed = new Date()
             //            indexWriter.commit()
         } catch (OutOfMemoryError e) {
-            log.error("OOM-error: ", e)
+            log.error("indexing failed: ", e)
             indexable.indexOk = false
         }
         finally {
             repository.indexWriter.close(true)
             repository.createWriter()
         }
-
     }
 
     Document storeStandardFields(Indexable indexable, Document doc) {
@@ -226,7 +236,6 @@ class LuceneActor extends
         return doc
     }
 
-
     /**
      * Search for all documents matching the given params, which must be an
      * Lucene XML-Query-Parser document.
@@ -238,8 +247,8 @@ class LuceneActor extends
     public ResultCollector search(String params, repository) {
         log.debug("starting search");
         ResultCollector results = new ResultCollector();
-        def analyzer =  new StandardAnalyzer(Version.LUCENE_34)
-        def searcher =  repository.indexSearcher
+        def analyzer = new StandardAnalyzer(Version.LUCENE_34)
+        def searcher = repository.indexSearcher
         try {
             InputStream bais = new ByteArrayInputStream(params.getBytes("UTF-8"));
             CoreParser coreParser = new CoreParser("content", analyzer);
@@ -255,7 +264,7 @@ class LuceneActor extends
         } catch (ParserException e) {
             throw new CinnamonException("error.parsing.lucene.query", e, params);
         } finally {
-            
+
         }
         log.debug("finished search; results: " + results.getDocuments().size());
         return results;

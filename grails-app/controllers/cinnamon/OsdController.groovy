@@ -31,6 +31,7 @@ class OsdController extends BaseController {
             ObjectSystemData osd = fetchAndFilterOsd(params.osd)
             if (!osd.metadata.equals(params.metadata)) {
                 osd.metadata = params.metadata
+                luceneService.updateIndex(osd, session.repositoryName)
             }
             return render(template: 'objectDetails', model: [osd: osd, permissions: loadUserPermissions(osd.acl)])
         }
@@ -44,6 +45,7 @@ class OsdController extends BaseController {
             ObjectSystemData osd = fetchAndFilterOsd(params.osd)
             UserAccount user = userService.user
             osd.locker = null
+            luceneService.updateIndex(osd, session.repositoryName)
             render(template: '/folder/lockStatus', model: [user: user, osd: osd,
                     superuserStatus: userService.isSuperuser(user)])
         }
@@ -57,6 +59,7 @@ class OsdController extends BaseController {
             ObjectSystemData osd = fetchAndFilterOsd(params.osd)
             UserAccount user = userService.user
             osdService.acquireLock(osd, user)
+            luceneService.updateIndex(osd, session.repositoryName)
             render(template: '/folder/lockStatus', model: [user: user, osd: osd,
                     superuserStatus: userService.isSuperuser(user)])
 
@@ -258,7 +261,7 @@ class OsdController extends BaseController {
                     case 'objtype': osd.type = ObjectType.get(id); break;
                     case 'acl': fetchAndFilterOsd(params.osd, [PermissionName.SET_ACL]).acl = Acl.get(id); break;
                 }
-
+                luceneService.updateIndex(osd, session.repositoryName)
                 fetchObjectDetails()
             }
             else {
@@ -325,6 +328,9 @@ class OsdController extends BaseController {
             osd.setCmnVersion('1')
             osd.save(flush: true)
             log.debug("created object with id: ${osd.id}")
+            log.debug("repo: ${session.repositoryName}")
+            luceneService.addToIndex(osd, session.repositoryName)
+            
             return redirect(controller: 'folder', action: 'index', params: [folder: folder.id, osd: osd.id])
         }
         catch (Exception e) {
@@ -356,6 +362,7 @@ class OsdController extends BaseController {
                 osdService.storeContent(osd, file.contentType, tempFile, session.repositoryName)
                 osdService.unlock(osd, user)
                 osd.save()
+                luceneService.updateIndex(osd, session.repositoryName)
             }
             // on success: redirect fetchFolderContent
             log.debug("set content on object #${osd.id}")
@@ -396,6 +403,7 @@ class OsdController extends BaseController {
             osd.cmnVersion = osd.createNewVersionLabel()
             osd.save()
             log.debug("version of new osd: ${osd.cmnVersion}")
+            luceneService.addToIndex(osd, repositoryName)
             def osdList = folderService.getObjects(user, osd.parent, repositoryName, params.versions)
 
             return render(template: '/folder/folderContent', model: [folder: osd.parent,
@@ -425,18 +433,18 @@ class OsdController extends BaseController {
                 // nothing to do
                 return redirect(controller: 'folder', action: 'index')
             }
-
+            def repository = session.repositoryName
             if (params.delete) {
-                msgMap = osdService.deleteList(idList)
+                msgMap = osdService.deleteList(idList, repository)
                 msgList.addAll(convertMsgMap(msgMap))
-                msgMap = folderService.deleteList(folderList)
+                msgMap = folderService.deleteList(folderList, repository)
                 msgList.addAll(convertMsgMap(msgMap))
             }
             else if (params.deleteAll) {
-                msgMap = osdService.deleteAllVersions(idList)
+                msgMap = osdService.deleteAllVersions(idList, repository)
                 log.debug("msgMap in deleteAll: $msgMap")
                 msgList.addAll(convertMsgMap(msgMap))
-                msgMap = folderService.deleteList(folderList)
+                msgMap = folderService.deleteList(folderList, repository)
                 msgList.addAll(convertMsgMap(msgMap))
             }
         }

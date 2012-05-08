@@ -7,7 +7,7 @@ import humulus.RepositoryLoginFilter
 
 // Place your Spring DSL code here
 beans = {
-
+    
 //    objectTreeCopier(ObjectTreeCopier){
 //        osdService = ref('OsdService')
 //    }
@@ -35,6 +35,7 @@ beans = {
             if (env.password) {
                 password = env.password
             }
+            
         }
     }
 

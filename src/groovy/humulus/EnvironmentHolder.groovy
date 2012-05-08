@@ -1,7 +1,6 @@
 package humulus
 
-public class EnvironmentHolder { 
-
+public class EnvironmentHolder {
 
     private static final ThreadLocal contextHolder  = new ThreadLocal();
 
@@ -16,5 +15,4 @@ public class EnvironmentHolder {
     static void clear() {
         contextHolder.remove();
     }
-	
 }

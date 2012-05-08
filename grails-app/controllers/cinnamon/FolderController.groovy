@@ -223,6 +223,7 @@ class FolderController extends BaseController {
             if (!folder.metadata.equals(metadata)) {
                 log.debug("trying to save metadata '$metadata'")
                 folder.metadata = metadata
+                luceneService.updateIndex(folder, session.repositoryName)
             }
             else {
                 log.debug("metadata is unchanged")
@@ -308,7 +309,7 @@ class FolderController extends BaseController {
                     case 'type': folder.type = FolderType.get(id); break;
                     case 'acl': fetchAndFilterFolder(params.folder, [PermissionName.SET_ACL]).acl = Acl.get(id); break;
                 }
-
+                luceneService.updateIndex(folder, session.repositoryName)
                 fetchFolderMeta()
             }
             else {
@@ -345,6 +346,7 @@ class FolderController extends BaseController {
             folder.acl = parentFolder.acl
             folder.owner = userService.user
             folder.save()
+            luceneService.addToIndex(folder, session.repositoryName)
             return redirect(controller: 'folder', action: 'index', params: [folder: folder.id])
         }
         catch (Exception e) {

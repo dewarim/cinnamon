@@ -14,6 +14,7 @@ import cinnamon.global.PermissionName
 class FolderService {
 
     def osdService
+    def luceneService
 
     /**
      * Check if a folder has content objects (meaning OSD, not sub-folders)
@@ -98,7 +99,7 @@ class FolderService {
             );
         }
         else if(latestHead != null){
-            osd s= ObjectSystemData.findAll("from ObjectSystemData o where o.parent=:parent and o.latestHead=:latestHead",
+            osds= ObjectSystemData.findAll("from ObjectSystemData o where o.parent=:parent and o.latestHead=:latestHead",
                 [parent: folder, latestHead: latestHead]);
         }
         else if(latestBranch != null){
@@ -118,10 +119,6 @@ class FolderService {
         return osds;
     }
 
-
-
-
-
      boolean folderExists(long id){
 		Folder f = Folder.get(id);
 		return f != null;
@@ -135,7 +132,7 @@ class FolderService {
         return folderExists(folder.id)
     }
 
-    public void deleteFolder(Long id ) {
+    public void deleteFolder(Long id, String repository ) {
         log.debug("before loading folder");
         Folder folder;
         if (id == 0L) {
@@ -161,6 +158,7 @@ class FolderService {
         }
 
         folder.delete();
+        luceneService.removeFromIndex(folder, repository)
     }
 
     public List<Folder> findAllByPath(String path){
@@ -374,12 +372,12 @@ class FolderService {
         return validator.filterUnbrowsableFolders(folders) 
     }
 
-    Map<String,List> deleteList(idList){
+    Map<String,List> deleteList(idList, repository){
         def msgMap = [:]
         idList.each{ id ->
             try{
                 log.debug("delete folder: $id")
-                deleteFolder(Long.parseLong(id));
+                deleteFolder(Long.parseLong(id), repository);
                 msgMap.put(id, ['folder.delete.ok'])
             }
             catch (Exception e){

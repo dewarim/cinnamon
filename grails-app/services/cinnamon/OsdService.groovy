@@ -14,6 +14,7 @@ import cinnamon.global.PermissionName
 class OsdService {
 
     def inputValidationService
+    def luceneService
     
     /**
      * Turn a collection of data objects into an XML document. Any exceptions encountered during
@@ -128,11 +129,11 @@ class OsdService {
         }
     }
 
-    void delete(ObjectSystemData osd){
-        delete(osd, false, false);
+    void delete(ObjectSystemData osd, String repository){
+        delete(osd, false, false, repository);
     }
 
-    void delete(ObjectSystemData osd, Boolean killDescendants, Boolean removeLeftRelations){
+    void delete(ObjectSystemData osd, Boolean killDescendants, Boolean removeLeftRelations, String repository){
         log.debug("Found osd");
         ObjectSystemData predecessor = osd.getPredecessor();
 
@@ -141,7 +142,7 @@ class OsdService {
         if (killDescendants && hasDescendants) {
             def preds = ObjectSystemData.findAll("from ObjectSystemData o where o.predecessor=:pred order by id desc",[pred:osd])
             preds.each{pre ->
-                delete(pre, killDescendants, removeLeftRelations);
+                delete(pre, killDescendants, removeLeftRelations, repository);
             }
         }
         else if (hasDescendants){
@@ -191,15 +192,16 @@ class OsdService {
 
         ContentStore.deleteObjectFile(osd);
         osd.delete(flush: true)
+        luceneService.removeFromIndex(osd, repository)
     }
 
-    public void delete(Long id) {
+    public void delete(Long id, String repository) {
         log.debug("before loading osd");
         ObjectSystemData osd = ObjectSystemData.get(id);
         if(osd == null) {
             throw new CinnamonException("error.object.not.found");
-        }
-        delete(osd);
+        }        
+        delete(osd, repository);        
     }
 
     Boolean mayBrowseObject(ObjectSystemData osd, user){
@@ -253,12 +255,12 @@ class OsdService {
         
     }
 
-    Map<String,List> deleteList(idList){
+    Map<String,List> deleteList(idList, repository){
         def msgMap = [:]
         idList.each{ id ->
             try{
                 log.debug("delete: $id")
-                delete(Long.parseLong(id));
+                delete(Long.parseLong(id), repository);
                 msgMap.put(id, ['osd.delete.ok'])
             }
             catch (Exception e){
@@ -270,7 +272,7 @@ class OsdService {
 
     }
 
-    Map<String,List> deleteAllVersions(idList){
+    Map<String,List> deleteAllVersions(idList, repository){
         def msgMap = [:]
         idList.each{ id ->
             try{
@@ -280,7 +282,7 @@ class OsdService {
 //                    [root: osd.root ?: osd]
 //                    )
 //                    deleteList(osds.collect{it.id.toString()})
-                    delete(osd, true, false)
+                    delete(osd, true, false, repository)
                 }
                 else{
                     log.debug("osd $id was not found - probably already deleted.")

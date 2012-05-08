@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory
 class Environment {
 
     static Logger log = LoggerFactory.getLogger(Environment.class)
-
+    
     static environments = []
 
     static {
