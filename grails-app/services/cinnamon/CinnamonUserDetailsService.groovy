@@ -89,8 +89,6 @@ class CinnamonUserDetailsService implements GrailsUserDetailsService {
 
         // create a client which accesses Cinnamon over the official API.
         def env = EnvironmentHolder.getEnvironment()
-//        String repositoryName = env?.dbname
-//        String url = env?.cinnamonServerUrl
 
         // gain access to unencrypted password which we need to login remotely to the server:
         def params = SecurityRequestHolder.request.parameterMap

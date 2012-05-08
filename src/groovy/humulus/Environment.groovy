@@ -41,13 +41,13 @@ class Environment {
                     maxActive: 30,
                     initialSize: 10,
                     maxPoolSize: 30,
-                    dbname: env.dbname,
+                    dbName: env.dbName,
                     dbType: env.dbType,
                     dbUser: env.dbUser,
                     dbPassword: env.dbPassword,
                     persistenceUnit: env.persistenceUnit ?: 'cinnamon',
                     dbConnectionUrl: Conf.createDatabaseConnectionURL(
-                            env.dbname, env.dbType, env.jdbcType, env.host, env.dbUser, env.dbPassword
+                            env.dbName, env.dbType, env.jdbcType, env.host, env.dbUser, env.dbPassword
                     )
             ]
         }

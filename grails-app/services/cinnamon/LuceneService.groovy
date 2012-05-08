@@ -48,6 +48,7 @@ class LuceneService {
                 repository.createWriter()
                 repositories.put(name, repository)
             } catch (IOException e) {
+                log.debug("failed to initialize lucene for repository $name",e)
                 throw new RuntimeException("error.lucene.IO", e);
             }
         }

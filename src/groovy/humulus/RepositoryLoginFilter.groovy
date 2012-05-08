@@ -76,7 +76,7 @@ class RepositoryLoginFilter extends UsernamePasswordAuthenticationFilter impleme
                 def con = ds.getConnection()
                 log.debug("connected to $con")
                 session.setAttribute('environment', env)
-                session.setAttribute('repositoryName', env.dbname)
+                session.setAttribute('repositoryName', env.dbName)
 
                 log.debug('Environment change complete.')
             } catch (e) {
