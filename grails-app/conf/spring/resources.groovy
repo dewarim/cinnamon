@@ -4,6 +4,7 @@ import humulus.SwitchableDataSource
 import cinnamon.CinnamonUserDetailsService
 import humulus.CinnamonPasswordEncoder
 import humulus.RepositoryLoginFilter
+import cinnamon.trigger.impl.RelationChangeTrigger
 
 // Place your Spring DSL code here
 beans = {

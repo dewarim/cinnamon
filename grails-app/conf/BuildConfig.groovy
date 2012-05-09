@@ -59,6 +59,6 @@ grails.project.dependency.resolution = {
         //runtime ":yui-minify-resources:0.1.4"
 
         build ":tomcat:$grailsVersion"
-        compile 'cinnamon:cinnamon-db:0.1.90'
+        compile 'cinnamon:cinnamon-db:0.2.3'
     }
 }

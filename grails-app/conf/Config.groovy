@@ -106,7 +106,9 @@ log4j = {
             'org.codehaus.groovy.grails.context',
             'org.apache.catalina'
     debug   'cinnamon',
-            'humulus'
+            'humulus',
+            'cinnamon.TriggerFilters'
+    
 //    trace 'org.hibernate.tool.hbm2ddl.SchemaUpdate'
     root{
         debug 'stdout'

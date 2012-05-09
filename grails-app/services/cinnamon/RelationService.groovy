@@ -17,7 +17,7 @@ class RelationService {
      * @param changedOsd OSD which has already been updated (or does not need an update).
      */
     void updateRelations(ObjectSystemData changedOsd){
-        for(ObjectSystemData osd : ObjectSystemData.findAllVersions(changedOsd)){
+        for(ObjectSystemData osd : ObjectSystemData.findAllByRoot(changedOsd.root)){
             for(Relation relation : Relation.findAllByLeftOSD(osd)){
                 relation.leftOSD = relation.getType().findOsdVersion(relation, osd, RelationSide.LEFT);
             }
