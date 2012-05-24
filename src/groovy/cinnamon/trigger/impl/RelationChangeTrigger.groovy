@@ -63,9 +63,7 @@ public class RelationChangeTrigger implements ITrigger {
         }
         else if (action.equals("create")) {
             // latestHead / latestBranch may have changed, among others
-            String responseContent = poBox.response.getContent();
-            String id = ParamParser.parseXmlToDocument(responseContent).selectSingleNode("objectId").getText();
-            osd = ObjectSystemData.get((String) params.get(id));
+            osd = poBox.model.osd; // TODO: make sure /osd/create does use 'osd' as model name.
         }
 
         if (osd == null) {
