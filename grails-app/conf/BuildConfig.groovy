@@ -5,6 +5,7 @@ grails.project.test.reports.dir = "target/test-reports"
 grails.project.target.level = 1.6
 grails.project.source.level = 1.6
 //grails.project.war.file = "target/${appName}-${appVersion}.war"
+grails.project.repos.default = "myRepo"
 
 grails.project.dependency.resolution = {
     // inherit Grails' default dependencies
@@ -59,6 +60,6 @@ grails.project.dependency.resolution = {
         //runtime ":yui-minify-resources:0.1.4"
 
         build ":tomcat:$grailsVersion"
-        compile 'cinnamon:cinnamon-db:0.2.3'
+        runtime 'cinnamon:cinnamon-db:0.2.6'
     }
 }
