@@ -30,7 +30,7 @@ class FolderService {
         if (parent == null) {
             return [Folder.findRootFolder()];
         } else {
-            return Folder.findAll("select f from Folder f where f.parent=:parent and f.parent != f order by f.name",[parent:parent])
+            return Folder.findAll("from Folder f where f.parent=:parent and f.parent != f order by f.name",[parent:parent])
         }
     }
 
@@ -40,7 +40,7 @@ class FolderService {
      * @return List of folders or an empty list.
      */
     public List<Folder> getSubfolders(Folder parentFolder, Boolean recursive){
-        List<Folder> folders = Folder.findAll("select f from Folder f where f.parent=:parent and f.parent != f order by f.name",[parent:parentFolder])
+        List<Folder> folders = Folder.findAll("from Folder f where f.parent=:parent and f.parent != f order by f.name",[parent:parentFolder])
         List<Folder> newFolders = new ArrayList<Folder>();
         if(recursive){
             for(Folder folder : folders){
