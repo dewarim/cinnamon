@@ -180,15 +180,15 @@ class LuceneActor extends
                 content = new ContentContainer(indexable, repository.name);
             }
             else {
-                content = new ContentContainer("<empty />".getBytes());
+                content = new ContentContainer(indexable, "<empty />".getBytes())
             }
 //                String content = indexable.getContent(repository);
             log.debug("finished: getContent");
-            ContentContainer metadata = new ContentContainer(indexable.getMetadata().getBytes());
+            ContentContainer metadata = new ContentContainer(indexable, indexable.getMetadata().getBytes());            
 //                String metadata = indexable.getMetadata();
             log.debug("store systemMetadata");
 //                String systemMetadata = indexable.getSystemMetadata();
-            ContentContainer systemMetadata = new ContentContainer(indexable.getSystemMetadata().getBytes());
+            ContentContainer systemMetadata = new ContentContainer(indexable, indexable.getSystemMetadata().getBytes());
             log.debug("got sysMetadata, start indexObject loop");
 
             for (IndexItem item : IndexItem.list()) {
