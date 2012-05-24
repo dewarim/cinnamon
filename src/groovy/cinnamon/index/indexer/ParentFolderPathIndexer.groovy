@@ -47,7 +47,7 @@ public class ParentFolderPathIndexer extends DefaultIndexer{
 			if(nodeValue != null){
 								
 				// fieldValue should be: osd.parent or folder.parent
-				Folder folder = (Folder) Folder.get(nodeValue);
+				Folder folder = (Folder) data.indexable.get(nodeValue);
                 String path = folder.fetchPath();
 				log.debug("fieldname: "+fieldname+" value: "+ path);
 				doc.add(new Field(fieldname, path.toLowerCase(), store, index));

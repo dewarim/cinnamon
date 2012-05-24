@@ -107,7 +107,8 @@ log4j = {
             'org.apache.catalina'
     debug   'cinnamon',
             'humulus',
-            'cinnamon.TriggerFilters'
+            'cinnamon.TriggerFilters',
+            'cinnamon.index.indexer.ParentFolderPathIndexer'
     
 //    trace 'org.hibernate.tool.hbm2ddl.SchemaUpdate'
     root{
