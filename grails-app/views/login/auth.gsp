@@ -84,17 +84,21 @@
 
 <body onLoad="showForm();">
 <div class="login_logo" style="text-align:center; margin-top:2ex;">
-    <r:img uri="/images/cinnamon-screen.jpg" alt="Cinnamon"/>
+    <g:if test="${logo}">
+        <img src="<g:createLink controller="cinnamon" action="showLogo" id="${logo.id}"/>" alt="${message(code: 'alt.logo')}">
+    </g:if>
+    <g:else>
+        <r:img uri="/images/cinnamon-screen.jpg" alt="Cinnamon"/>
+    </g:else>
 </div>
 
 <div id='login'>
     <div class='inner'>
-        <g:set var="localAppName" value="app.${grailsApplication.metadata['app.name']}"/>
         <g:if test="${ message(code:localAppName) == localAppName}">
             <h1 class="title"><g:message code="login.title"/></h1>
         </g:if>
         <g:else>
-            <h1 class="appName"><g:message code="app.${grailsApplication.metadata['app.name']}"/></h1>
+            <h1 class="appName"><g:message code="${localAppName}"/></h1>
             <h2 class="title"><g:message code="login.title"/></h2>
         </g:else>
 
