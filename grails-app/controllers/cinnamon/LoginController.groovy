@@ -52,7 +52,21 @@ class LoginController {
             flash.message = message(code:params.logoutMessage.encodeAsHTML())
         }
 		String postUrl = "${request.contextPath}${config.apf.filterProcessesUrl}"
+        
+        def logoConfig = ConfigEntry.findByName('login.screen.config')
+        def logo = null
+        def localAppName = "app.${grailsApplication.metadata['app.name']}"
+        if (logoConfig){
+            
+            def xml = new XmlSlurper().parseText(logoConfig.config)
+            logo = ObjectSystemData.get(xml.logoId?.text())
+            localAppName = xml.name?.text()
+        }
+        
+        
 		return [postUrl: postUrl,
+                logo:logo,
+                localAppName:localAppName,
 		        rememberMeParameter: config.rememberMe.parameter,
                 repositories: Environment.list()
         ]
