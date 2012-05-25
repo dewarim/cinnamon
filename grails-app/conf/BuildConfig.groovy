@@ -46,7 +46,7 @@ grails.project.dependency.resolution = {
         runtime 'dom4j:dom4j:1.6.1'
         runtime 'jaxen:jaxen:1.1-beta-6'
         compile 'org.codehaus.gpars:gpars:1.0-beta-1'
-        runtime 'cinnamon:humulus:0.0.3'
+        runtime 'cinnamon:humulus:0.0.5'
     }
 
     plugins {
@@ -61,6 +61,6 @@ grails.project.dependency.resolution = {
         //runtime ":yui-minify-resources:0.1.4"
 
         build ":tomcat:$grailsVersion"
-        runtime 'cinnamon:cinnamon-db:0.2.6'
+        runtime 'cinnamon:cinnamon-db:0.2.8'
     }
 }
