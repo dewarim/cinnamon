@@ -40,6 +40,8 @@ import cinnamon.exceptions.CinnamonException
 import humulus.Environment
 import humulus.EnvironmentHolder
 import cinnamon.ObjectSystemData
+import org.apache.lucene.analysis.Analyzer
+import org.apache.lucene.analysis.LimitTokenCountAnalyzer
 
 /**
  * Actor class which does the heavy lifting in searching and indexing.
@@ -86,9 +88,22 @@ class LuceneActor extends
 
     LuceneResult search(IndexCommand command) {
         def repository = repositories.get(command.repository)
-        QueryParser queryParser = new QueryParser(Version.LUCENE_34, "content", new StandardAnalyzer(Version.LUCENE_34))
-        Query query = queryParser.parse(command.query);
+        Query query
 
+        if (command.xmlQuery){
+            Analyzer standardAnalyzer = new StandardAnalyzer(Version.LUCENE_34);
+            def analyzer = new LimitTokenCountAnalyzer(standardAnalyzer, Integer.MAX_VALUE);
+            InputStream bais = new ByteArrayInputStream(command.query.getBytes("UTF-8"));
+            CoreParser coreParser = new CoreParser("content", analyzer);
+            coreParser.addQueryBuilder("WildcardQuery", new WildcardQueryBuilder());
+            coreParser.addQueryBuilder("RegexQuery", new RegexQueryBuilder());
+            query = coreParser.parse(bais);
+        }
+        else{
+            QueryParser queryParser = new QueryParser(Version.LUCENE_34, "content", new StandardAnalyzer(Version.LUCENE_34))
+            query = queryParser.parse(command.query);
+        }
+        
         IndexSearcher searcher = repository.indexSearcher
         ResultCollector collector = new ResultCollector(reader: repository.indexReader,
                 searcher: repository.indexSearcher, domain: command.domain)
