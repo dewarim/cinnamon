@@ -27,7 +27,9 @@ import cinnamon.ItemService
 class LuceneResult {
 
     transient Logger log = LoggerFactory.getLogger(this.class)
-
+    
+    List<String> resultMessages = []
+    
     Map<String, Set<Long>> itemIdMap = new HashMap<String, Set<Long>>()
 
     /**
