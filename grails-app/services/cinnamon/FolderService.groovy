@@ -398,5 +398,12 @@ class FolderService {
         }
         return true
     }
+    
+    Folder fetchFolder(id){
+        if(id == '0' || id == 0){
+            return Folder.findRootFolder()
+        }
+        return Folder.get(id)        
+    }
 }
 
