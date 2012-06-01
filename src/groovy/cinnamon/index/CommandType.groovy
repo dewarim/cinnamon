@@ -27,6 +27,7 @@ public enum CommandType {
     ADD_TO_INDEX,
     REMOVE_FROM_INDEX,
     UPDATE_INDEX,
-    SEARCH
+    SEARCH,
+    RE_INDEX
 
 }

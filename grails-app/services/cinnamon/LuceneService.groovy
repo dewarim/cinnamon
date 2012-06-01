@@ -14,8 +14,9 @@ import cinnamon.index.Indexable
 import cinnamon.index.IndexCommand
 import cinnamon.index.CommandType
 import cinnamon.index.LuceneResult
-import cinnamon.index.SearchableDomain
 import humulus.Environment
+import cinnamon.index.SearchableDomain
+import cinnamon.index.LuceneBackgroundActor
 
 class LuceneService {
 
@@ -26,10 +27,13 @@ class LuceneService {
     static Map<String, Repository> repositories = new HashMap<String, Repository>()
 
     static LuceneActor lucene
+    static LuceneBackgroundActor backgroundActor
 
     static {
         lucene = new LuceneActor()
         lucene.start()
+        backgroundActor = new LuceneBackgroundActor(lucene)
+        backgroundActor.start()
     }
 
     void initialize() {
@@ -53,7 +57,12 @@ class LuceneService {
             }
         }
         lucene.repositories = repositories
-
+        backgroundActor.repositories = Environment.list().collect {it.dbName}
+        def reIndexCommand = new IndexCommand(type: CommandType.RE_INDEX)
+        backgroundActor.sendAndContinue(reIndexCommand){ LuceneResult result ->
+            log.debug("received re-index result: ${result.resultMessages}")
+        }
+        
     }
 
     void addToIndex(Indexable indexable, String database) {
@@ -79,12 +88,28 @@ class LuceneService {
      * @param query a simple query string
      * @param database the database which stores the object. Must be specified, as this may change per request,
      *        depending on customer.
-     * @param domainRestriction currently, the domain class name
+     * @param domain currently, the domain class name
      * @return
      */
     LuceneResult search(String query, String database, SearchableDomain domain) {
         def cmd = new IndexCommand(repository: database, type: CommandType.SEARCH,
                 query: query, domain: domain)
+        LuceneResult result = lucene.sendAndWait(cmd)
+        log.debug("LuceneService received: ${result}")
+        return result
+    }
+    
+    /**
+     *
+     * @param query an XML query string
+     * @param database the database which stores the object. Must be specified, as this may change per request,
+     *        depending on customer.
+     * @param domain currently, the domain class name, may be null
+     * @return
+     */
+    LuceneResult searchXml(String query, String database, SearchableDomain domain) {
+        def cmd = new IndexCommand(repository: database, type: CommandType.SEARCH,
+                query: query, domain: domain, xmlQuery:true)
         LuceneResult result = lucene.sendAndWait(cmd)
         log.debug("LuceneService received: ${result}")
         return result
