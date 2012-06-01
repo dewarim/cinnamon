@@ -20,7 +20,9 @@ environments {
     test {
         dataSource {
             dbCreate = "none"
-//            url = "jdbc:h2:mem:testDb;MVCC=TRUE"
+            username = 'cinnamon'
+            password = 'cinnamon'
+            url = 'jdbc:postgresql://localhost/demo?user=cinnamon&password=cinnamon'
         }
     }
     production {
