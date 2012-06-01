@@ -9,6 +9,9 @@ import cinnamon.i18n.Language
 import cinnamon.exceptions.CinnamonException
 import cinnamon.global.Constants
 import cinnamon.utils.ZippedFolder
+import cinnamon.relation.RelationType
+import org.dom4j.DocumentHelper
+import org.dom4j.Element
 
 @Secured(["isAuthenticated()"])
 class FolderController extends BaseController {
@@ -262,7 +265,7 @@ class FolderController extends BaseController {
             render(template: 'editAcl', model: [folder: folder])
         }
         catch (Exception e) {
-            log.debug("failed: editAcl",e)
+            log.debug("failed: editAcl", e)
             renderException(e)
         }
     }
@@ -273,7 +276,7 @@ class FolderController extends BaseController {
             render(template: 'editOwner', model: [folder: folder])
         }
         catch (Exception e) {
-            log.debug("failed: editOwner",e)
+            log.debug("failed: editOwner", e)
             renderException(e)
         }
     }
@@ -284,7 +287,7 @@ class FolderController extends BaseController {
             render(template: 'editType', model: [folder: folder])
         }
         catch (Exception e) {
-            log.debug("failed: editType",e)
+            log.debug("failed: editType", e)
             renderException(e)
         }
     }
@@ -316,7 +319,7 @@ class FolderController extends BaseController {
                 render(status: 401, text: message(code: 'error.illegal.parameter', args: [params.fieldName?.encodeAsHTML()]))
             }
         } catch (Exception e) {
-            log.debug("failed to save field: ",e)
+            log.debug("failed to save field: ", e)
             renderException(e)
         }
     }
@@ -328,13 +331,13 @@ class FolderController extends BaseController {
             render(template: '/folder/create', model: [parent: parent])
         }
         catch (Exception e) {
-            log.debug("create folder failed: ",e)
+            log.debug("create folder failed: ", e)
             flash.message = message(code: e.message)
             return redirect(controller: 'folder', action: 'index', model: [folder: parent?.id])
         }
     }
 
-    def save () {
+    def save() {
         def parentFolder = null
         try {
             // TODO: validation of new folder.
@@ -350,7 +353,7 @@ class FolderController extends BaseController {
             return redirect(controller: 'folder', action: 'index', params: [folder: folder.id])
         }
         catch (Exception e) {
-            log.debug("save folder failed: ",e)
+            log.debug("save folder failed: ", e)
             flash.message = message(code: e.message)
             return redirect(controller: 'folder', action: 'index', params: [folder: parentFolder?.id])
         }
@@ -362,7 +365,7 @@ class FolderController extends BaseController {
             folder = fetchAndFilterFolder(params.folder)
             def latestHead = params.versions == 'head' || params.latest_head == 'true' ?: false
             def latestBranch = params.versions == 'branch' || params.latest_branch == 'true' ?: false
-            if (params.versions == 'all'){
+            if (params.versions == 'all') {
                 latestBranch = null
                 latestHead = null
             }
@@ -421,5 +424,98 @@ class FolderController extends BaseController {
             return redirect(controller: 'folder', action: 'index', params: [folder: folder?.id])
         }
     }
-    
+
+    // AJAX
+    def fetchRelationTypeDialog() {
+        RelationType rt = RelationType.get(params.relationType)
+        return render(template: 'fetchRelationTypeDialog', model: [relationType: rt])
+    }
+
+    //-----------------------------------------------------------------
+    // Methods used by the desktop client (expecting XML responses)
+    def fetchSubFolders() {
+        def user = userService.user
+        Folder folder
+        try {
+            def id = [params.folder, params.id, params.parentid].find {it}
+            folder = fetchAndFilterFolder(id)
+
+            log.debug("found folder. ${params.folder}: $folder")
+
+            Set<String> permissions
+            try {
+                permissions = loadUserPermissions(folder.acl)
+            } catch (RuntimeException ex) {
+                log.debug("getUserPermissions failed", ex)
+                throw new RuntimeException('error.access.failed')
+            }
+            def val = new Validator(user)
+            def folders = val.filterUnbrowsableFolders(folderService.getSubfolders(folder))
+            def doc = DocumentHelper.createDocument()
+            def root = doc.addElement('folders')
+            folders.each {f ->
+                f.toXmlElement(root)
+            }
+            return render(contentType: 'application/xml', text: doc.asXML())
+        }
+        catch (Exception e) {
+            log.debug("fetchFolderContent failed for ${params}", e)
+            return render(status: 500, text: message(code: e.message))
+        }
+    }
+
+    def fetchFolderByPath() {
+        try {
+            String path = params.path;
+            Boolean autoCreate = params.autocreate && params.autocreate.equals("true");
+
+            Validator validator = new Validator(userService.user);
+            List<Folder> folderList = folderService.findAllByPath(path, autoCreate, validator);
+            log.debug("*** folder list ***")
+            log.debug "$folderList"
+            def doc = DocumentHelper.createDocument()
+            def root = doc.addElement('folders')
+            folderList.each {folder ->
+                try {
+                    validator.validateGetFolder(folder);
+                } catch (Exception e) {
+                    log.debug("", e);
+                    return
+                }
+                folder.toXmlElement(root);
+            }
+            return render(contentType: 'application/xml', text: doc.asXML())
+        }
+        catch (Exception e) {
+            log.debug("fetchFolderByPath: ",e)
+            renderExceptionXml(e)
+        }
+    }
+
+    def fetchFolderXml() {
+        log.debug("Getfolderbyid: " + params.id);
+        try {
+            Folder folder = Folder.get(params.id);
+            def validator = new Validator(userService.user)
+            validator.validateGetFolder(folder);
+            List<Folder> folderList = new ArrayList<Folder>();
+            folderList.add(folder);
+            // TODO: permission check on ancestor folders?
+            folderList.addAll(folder.getAncestors());
+            // validator.filterUnbrowsableFolders()
+
+            def doc = DocumentHelper.createDocument()
+            Element root = doc.addElement("folders");
+            folderList.each {
+                it.toXmlElement(root)
+            }      
+            log.debug"fetchFolderXml output:\n${doc.asXML()}"
+            render(contentType: 'application/xml', text: doc.asXML())
+        }
+        catch (Exception e) {
+            log.debug("fetchFolderXml failed: ", e)
+            renderExceptionXml(e)
+        }
+    }
+
 }

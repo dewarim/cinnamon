@@ -9,6 +9,7 @@ import cinnamon.relation.Relation
 import cinnamon.global.ConfThreadLocal
 import cinnamon.i18n.Language
 import cinnamon.exceptions.CinnamonException
+import org.dom4j.Document
 
 /**
  *
@@ -104,7 +105,7 @@ class OsdController extends BaseController {
                             hasRelations: hasRelations])
         }
         catch (Exception e) {
-            log.debug("failed to fetchObjectDetails: ",e)
+            log.debug("failed to fetchObjectDetails: ", e)
             renderException(e)
         }
     }
@@ -330,7 +331,7 @@ class OsdController extends BaseController {
             log.debug("created object with id: ${osd.id}")
             log.debug("repo: ${session.repositoryName}")
             luceneService.addToIndex(osd, session.repositoryName)
-            
+
             return redirect(controller: 'folder', action: 'index', params: [folder: folder.id, osd: osd.id])
         }
         catch (Exception e) {
@@ -468,6 +469,30 @@ class OsdController extends BaseController {
             }
         }
         return msgList
+    }
+
+    //-----------------------------------------------------------------
+    // commands used by the desktop client:
+    //-----------------------------------------------------------------
+
+    def fetchObjects() {
+        try {
+            def folder = folderService.fetchFolder(params.parentid)        
+            if (! folder){
+                throw new RuntimeException('error.folder.not.found')
+            }
+            def user = userService.user
+            List<ObjectSystemData> results = folderService.getObjects(user, folder, session.repositoryName, params.versions)
+            Validator val = new Validator(user);
+            results = val.filterUnbrowsableObjects(results);
+            Document doc = osdService.generateQueryObjectResultDocument(results);
+            log.debug("objects for folder ${folder.id} / ${folder.name}:\n ${doc.asXML()}")
+            return render(contentType: 'application/xml', text: doc.asXML())
+        }
+        catch (Exception e) {
+            log.debug("failed to fetch objects: ", e)
+            renderExceptionXml(e)
+        }
     }
 
 }
