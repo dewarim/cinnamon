@@ -27,7 +27,7 @@
                 <td><g:message code="${relation.rightOSD.cmnVersion}"/></td>
                 <td>
                     <div class="relationMetadata">
-                        ${relation.metadata.encodeAsHTML()}
+                        ${relation.metadata}
                     </div>
                 </td>
             </tr>
@@ -61,7 +61,7 @@
                 <td><g:message code="${relation.leftOSD.cmnVersion}"/></td>
                 <td>
                     <div class="relationMetadata">
-                        ${relation.metadata.encodeAsHTML()}
+                        ${relation.metadata}
                     </div>
                 </td>
             </tr>
