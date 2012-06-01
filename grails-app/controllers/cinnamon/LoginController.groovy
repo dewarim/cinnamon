@@ -53,16 +53,14 @@ class LoginController {
         }
 		String postUrl = "${request.contextPath}${config.apf.filterProcessesUrl}"
         
-        def logoConfig = ConfigEntry.findByName('login.screen.config')
         def logo = null
+        def logoConfig = ConfigEntry.findByName('login.screen.config')
         def localAppName = "app.${grailsApplication.metadata['app.name']}"
-        if (logoConfig){
-            
+        if (logoConfig){            
             def xml = new XmlSlurper().parseText(logoConfig.config)
             logo = ObjectSystemData.get(xml.logoId?.text())
             localAppName = xml.name?.text()
         }
-        
         
 		return [postUrl: postUrl,
                 logo:logo,
@@ -118,7 +116,7 @@ class LoginController {
 				msg = SpringSecurityUtils.securityConfig.errors.login.fail
 			}
 		}
-
+        log.debug("authfail: exception: ${exception} - msg: ${msg}")
 		if (springSecurityService.isAjax(request)) {
 			render([error: msg] as JSON)
 		}
