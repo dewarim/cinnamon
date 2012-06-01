@@ -21,10 +21,11 @@ grails.project.dependency.resolution = {
         mavenLocal()
         mavenRepo name:'myRepo'
         grailsRepo "http://grails.org/plugins"
+        mavenCentral()
+        
         grailsPlugins()
         grailsHome()
         grailsCentral()
-        mavenCentral()
 
         // uncomment these to enable remote dependency resolution from public Maven repositories
         //mavenCentral()
@@ -61,6 +62,7 @@ grails.project.dependency.resolution = {
         //runtime ":yui-minify-resources:0.1.4"
 
         build ":tomcat:$grailsVersion"
-        runtime 'cinnamon:cinnamon-db:0.2.8'
+        runtime 'cinnamon:cinnamon-db:0.2.14'
+        test ':spock:0.6'
     }
 }
