@@ -49,17 +49,14 @@
 
 </r:script>
 
-
-
 <script type="text/javascript" src="<g:resource dir="/js/codemirror/lib" file="codemirror.js"/>"></script>
 <link rel="stylesheet" href="<g:resource dir="/js/codemirror/lib" file="codemirror.css"/>">
 <script type="text/javascript" src="<g:resource dir="/js/codemirror/mode/xml" file="xml.js"/>"></script>
-<%-- <link rel="stylesheet" href="<g:resource dir="/js/CodeMirror-2.24/mode/xml" file="xml.css"/>"> --%>
-<script type="text/javascript"
-        src="<g:resource dir="/js/codemirror/mode/htmlmixed" file="htmlmixed.js"/>"></script>
+<script type="text/javascript"  src="<g:resource dir="/js/codemirror/mode/htmlmixed" file="htmlmixed.js"/>"></script>
 
 <script src='<g:resource dir="js/codemirror-ui/js" file="codemirror-ui.js"/>' type="text/javascript"></script>
-<link rel="stylesheet" href="<g:resource dir="js/codemirror-ui/css/" file="codemirror-ui.css"/>" type="text/css"
+<link rel="stylesheet" href="<g:resource dir="js/codemirror-ui/css/" file="codemirror-ui.css"/>" 
+      type="text/css"
       media="screen"/>
 
 <r:script disposition="head">
@@ -164,6 +161,7 @@
         msg.removeClass("error_message");
     }
 
+<%--
     function copyFolder(id, targetId) {
         jQuery.ajax({
             url:'<g:resource dir="folder" file="copyFolder"/>',
@@ -180,10 +178,11 @@
             async:true
         })
     }
-
+--%>
+    
     function showRelationType(id) {
         var dialog = $('<div class="hidden"></div>').appendTo('body');
-        var url = '<g:resource dir="/folder" file="fetchRelationTypeDialog"/>?relationType=' + id;
+        var url = '<g:createLink controller="/folder" action="fetchRelationTypeDialog"/>?relationType=' + id;
         dialog.load(
                 url,
                 {},
