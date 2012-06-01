@@ -18,9 +18,11 @@ class BootStrap {
             grailsApplication.config.merge(configScript)
         }
 
+        SpringSecurityUtils.clientRegisterFilter('requestTicketAuthenticationFilter',
+                SecurityFilterPosition.PRE_AUTH_FILTER.getOrder() + 15) 
         SpringSecurityUtils.clientRegisterFilter('repositoryLoginFilter',
                 SecurityFilterPosition.PRE_AUTH_FILTER.getOrder() + 20)
-
+        
         luceneService.initialize()
 
         // migrate legacy data:

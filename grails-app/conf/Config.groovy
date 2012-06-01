@@ -101,14 +101,22 @@ log4j = {
            'net.sf.ehcache.hibernate',
             'org.apache.tomcat.util',
             'org.apache.coyote',
+            'org.apache.commons.beanutils',
             'org.grails.plugin.resource',
             'grails.app.taglib.org.grails.plugin.resource',
             'org.codehaus.groovy.grails.context',
             'org.apache.catalina'
+    warn    'cinnamon.RequestTicketAuthenticationFilter'
+    warn    'cinnamon.debug.ProviderManager'
+    warn    'humulus.RepositoryLoginFilter'
+    warn    'cinnamon.CinnamonUserDetailsService'
+    warn    'grails.app.filters.TriggerFilters'
     debug   'cinnamon',
             'humulus',
             'cinnamon.TriggerFilters',
-            'cinnamon.index.indexer.ParentFolderPathIndexer'
+            'cinnamon.index.indexer.ParentFolderPathIndexer',
+            'org.springframework.security.authentication',
+            'cinnamon.PreAuthenticatedAuthenticationProvider'
     
 //    trace 'org.hibernate.tool.hbm2ddl.SchemaUpdate'
     root{
@@ -129,6 +137,12 @@ grails.plugins.springsecurity.userLookup.authoritiesPropertyName='groupUsers'
 grails.plugins.springsecurity.successHandler.defaultTargetUrl='/folder/index'
 grails.plugins.springsecurity.auth.loginFormUrl='/login/auth'
 // grails.plugins.springsecurity.failureHandler.defaultFailureUrl='/login/index'
+grails.plugins.springsecurity.providerNames = ['preauthAuthProvider','daoAuthenticationProvider', 'anonymousAuthenticationProvider']//, 'anonymousAuthenticationProvider']
+
+//grails.plugins.springsecurity.filterNames = ['repositoryLoginFilter', 'requestTicketAuthenticationFilter','anonymousAuthenticationFilter']
+//grails.plugins.springsecurity.filterChain.filterNames = ['requestTicketAuthenticationFilter', 'repositoryLoginFilter', 'anonymousAuthenticationFilter']
+
+
 
 grails.logging.jul.usebridge = false
 

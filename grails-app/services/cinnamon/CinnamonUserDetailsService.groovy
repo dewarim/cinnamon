@@ -24,7 +24,7 @@ import humulus.EnvironmentHolder
 class CinnamonUserDetailsService implements GrailsUserDetailsService {
 
     /*
-    Note: this service must be injected in spring/resources,
+     Note: this service must be injected in spring/resources,
      it will not be automatically injected.
      */
     def repositoryService
@@ -91,7 +91,7 @@ class CinnamonUserDetailsService implements GrailsUserDetailsService {
         def env = EnvironmentHolder.getEnvironment()
 
         // gain access to unencrypted password which we need to login remotely to the server:
-        def params = SecurityRequestHolder.request.parameterMap
+//        def params = SecurityRequestHolder.request.parameterMap
 //        Client client = new Client(url, username, (String) params.get('j_password')[0], repositoryName)
 //        repositoryService.addClient(client)
 

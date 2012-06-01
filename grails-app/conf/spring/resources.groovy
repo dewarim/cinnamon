@@ -4,7 +4,14 @@ import humulus.SwitchableDataSource
 import cinnamon.CinnamonUserDetailsService
 import humulus.CinnamonPasswordEncoder
 import humulus.RepositoryLoginFilter
-import cinnamon.trigger.impl.RelationChangeTrigger
+
+import cinnamon.RequestTicketAuthenticationFilter
+
+import cinnamon.CinnamonPreAuthUserDetailsService
+import cinnamon.CinnamonAuthenticationDetailsSource
+
+import cinnamon.debug.PreAuthAuthProvider
+import cinnamon.debug.ProviderManager
 
 // Place your Spring DSL code here
 beans = {
@@ -60,12 +67,39 @@ beans = {
         userDetailsService = ref('userDetailsService')
     }
 
-    authenticationManager(org.springframework.security.authentication.ProviderManager){
-        providers = ref('authenticationProvider')
+    preAuthenticatedUserDetailsService(CinnamonPreAuthUserDetailsService){
+        grailsApplication = ref('grailsApplication')
+        cinnamonUserDetailsService = ref('cinnamonUserDetailsService')
     }
 
-    repositoryLoginFilter(RepositoryLoginFilter){
-        authenticationManager = ref('authenticationManager')
+//    preauthAuthProvider(PreAuthenticatedAuthenticationProvider){
+    preauthAuthProvider(PreAuthAuthProvider){ // custom provider for debugging
+        preAuthenticatedUserDetailsService = ref('preAuthenticatedUserDetailsService')
     }
+
+//    authenticationManager(org.springframework.security.authentication.ProviderManager){
+    authenticationManager(ProviderManager){ // custom providerManager for debugging
+        providers = ref('authenticationProvider')
+    }  
+    
+////    preAuthManager(org.springframework.security.authentication.ProviderManager){
+//    preAuthManager(org.springframework.security.authentication.ProviderManager){
+//        providers = ref('preauthAuthProvider')
+//    }
+
+    repositoryLoginFilter(RepositoryLoginFilter){
+        authenticationManager = ref('authenticationManager')       
+    }
+
+    cinnamonAuthenticationDetailsSource(CinnamonAuthenticationDetailsSource){
+        grailsApplication = ref('grailsApplication')
+    }
+    
+    requestTicketAuthenticationFilter(RequestTicketAuthenticationFilter){
+        authenticationManager = ref('authenticationManager')
+        authenticationDetailsSource = ref('cinnamonAuthenticationDetailsSource')
+        customProvider = ref('preauthAuthProvider') // customProvider will be added to authenticationManager during afterPropertiesSet. 
+    }
+    
 
 }
