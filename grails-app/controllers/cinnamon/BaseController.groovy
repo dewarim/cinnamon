@@ -16,6 +16,7 @@ abstract class BaseController {
     def luceneService
     def springSecurityService
     def inputValidationService
+    def itemService
 
     protected Set<String> loadUserPermissions(Acl acl) {
         Set<String> permissions
@@ -39,6 +40,15 @@ abstract class BaseController {
     protected void renderException(Exception e){
         render(status:500, text:message(code:e.getMessage()))
     }
+    
+    protected void renderExceptionXml(Exception e){
+        render(contentType: 'application/xml'){
+            error{
+                code(e.message)
+                "message"(message(code:e.message))
+            }
+        }
+    }
 
     protected ObjectSystemData fetchAndFilterOsd(id) {
         fetchAndFilterOsd(id, [PermissionName.BROWSE_OBJECT])
@@ -60,7 +70,15 @@ abstract class BaseController {
     }
     
     protected Folder fetchAndFilterFolder(id, permissions) {
-        def folder = Folder.get(id)
+        def folder
+        if (id == '0'){
+            log.debug("find root folder")
+            folder = Folder.findRootFolder()
+        }
+        else{
+            log.debug("looking for folder #$id")
+            folder = Folder.get(id)
+        }
         if (!folder) {
             throw new RuntimeException('error.folder.not.found')
         }
