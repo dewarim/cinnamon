@@ -94,11 +94,11 @@
 
 <div id='login'>
     <div class='inner'>
-        <g:if test="${ message(code:localAppName) == localAppName}">
-            <h1 class="title"><g:message code="login.title"/></h1>
+        <g:if test="${ localAppName }">
+            <h1 class="title"><g:message code="${localAppName}"/></h1>
+            <h2 class="title"><g:message code="login.title"/></h2>
         </g:if>
         <g:else>
-            <h1 class="appName"><g:message code="${localAppName}"/></h1>
             <h2 class="title"><g:message code="login.title"/></h2>
         </g:else>
 
