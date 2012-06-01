@@ -28,5 +28,6 @@ class IndexCommand {
     CommandType type
     Indexable indexable
     String query
-
+    Boolean xmlQuery = false
+    
 }
