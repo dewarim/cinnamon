@@ -174,7 +174,6 @@ class LuceneActor extends
         def repository = repositories.get(command.repository)
         IndexSearcher indexSearcher = repository.indexSearcher
         try {
-            indexable = indexable.class.get(indexable.id)
             // check that the document does not already exist - otherwise, remove it.
             String uniqueId = "${indexable.class.name}@${indexable.id}"
             Term t = new Term("uniqueId", uniqueId)
