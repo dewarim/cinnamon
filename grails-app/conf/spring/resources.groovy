@@ -1,17 +1,16 @@
 import org.springframework.jdbc.datasource.DriverManagerDataSource
 import humulus.Environment
 import humulus.SwitchableDataSource
-import cinnamon.CinnamonUserDetailsService
 import humulus.CinnamonPasswordEncoder
 import humulus.RepositoryLoginFilter
 
-import cinnamon.RequestTicketAuthenticationFilter
-
-import cinnamon.CinnamonPreAuthUserDetailsService
 import cinnamon.CinnamonAuthenticationDetailsSource
-
+import cinnamon.CinnamonPreAuthUserDetailsService
+import cinnamon.CinnamonUserDetailsService
+import cinnamon.RequestTicketAuthenticationFilter
 import cinnamon.debug.PreAuthAuthProvider
 import cinnamon.debug.ProviderManager
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 
 // Place your Spring DSL code here
 beans = {
@@ -63,7 +62,7 @@ beans = {
     }
     passwordEncoder(CinnamonPasswordEncoder)
 
-    authenticationProvider(org.springframework.security.authentication.dao.DaoAuthenticationProvider){
+    authenticationProvider(DaoAuthenticationProvider){
         userDetailsService = ref('userDetailsService')
     }
 
