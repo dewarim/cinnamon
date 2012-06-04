@@ -405,5 +405,31 @@ class FolderService {
         }
         return Folder.get(id)        
     }
+
+
+    static final def folderConfigProperties = ['controller', 'action', 'template']
+
+    /**
+     * Add a folder type's config to the map folderConfig if necessary.
+     * This method changes the folderConfig map.
+     * @param type the FolderType
+     * @folderConfig the folderConfig map, is a [folderType:FolderConfig] map.
+     * @return
+     */
+    Map addToFolderConfigs(Folder folder, Map folderConfigs){
+        FolderType type = folder.type
+        if(! folderConfigs.containsKey(type)){
+            def xml = new XmlSlurper().parseText(type.config)
+            FolderConfig fc = new FolderConfig()
+            folderConfigProperties.each{field ->
+                if(xml."$field".text()){
+                    fc."$field" = xml."$field".text()
+                }
+            }
+            log.debug("adding folderConfig. $fc")
+            folderConfigs.put(type, fc)
+        }
+        return folderConfigs    
+    }
 }
 

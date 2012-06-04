@@ -32,9 +32,9 @@
                 </g:if>
             </g:if>
             <span id="fetchFolderContentLink_${folder.id}">
-
-                <g:remoteLink action="fetchFolderContent"
-                              controller="folder"
+                
+                <g:remoteLink action="${folderConfigs.get(folder.type).action}"
+                              controller="${folderConfigs.get(folder.type).controller}"
                               update='[success:"folderContent", failure:"message"]'
                               params="[folder:folder.id]"
                               onSuccess="setLinkActive('folderName_${folder.id}');"

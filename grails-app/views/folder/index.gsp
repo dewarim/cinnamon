@@ -36,7 +36,8 @@
 
     <div id="folderTree" class="folder_tree">
         <g:render template="/folder/subFolders"
-                  model="[children: children, grandChildren: grandChildren, contentSet: contentSet, triggerSet: triggerSet]"/>
+                  model="[children: children, grandChildren: grandChildren,
+                          contentSet: contentSet, triggerSet: triggerSet, folderConfigs:folderConfigs]"/>
     </div>
        
    

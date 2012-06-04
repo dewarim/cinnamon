@@ -25,8 +25,10 @@ class FolderController extends BaseController {
             }
             Collection childFolders = fetchChildFolders(rootFolder)
             Map grandChildren = [:]
+            Map folderConfigs = [:]
             Set<Folder> contentSet = new HashSet<Folder>()
             childFolders.each { child ->
+                folderConfigs = folderService.addToFolderConfigs(child, folderConfigs)
                 Collection<Folder> gc = fetchChildFolders(child)
                 grandChildren.put(child, gc)
 
@@ -39,16 +41,17 @@ class FolderController extends BaseController {
             }
             def triggerSet = folderService.createTriggerSet(params.folder, params.osd)
             session.triggerFolder = params.folder
-            session.triggerOsd = params.osd
-
+            session.triggerOsd = params.osd                       
+            
             return [rootFolder: rootFolder,
                     contentSet: contentSet,
-                    grandChildren: grandChildren,
+                    grandChildren: grandChildren,                    
                     children: childFolders,
                     triggerSet: triggerSet,
                     triggerFolder: params.folder,
                     envId: EnvironmentHolder.getEnvironment()?.get('id'),
                     msgList: flash.msgList,
+                    folderConfigs: folderConfigs,
             ]
 
         }
@@ -80,8 +83,9 @@ class FolderController extends BaseController {
             def childrenWithContent = fetchChildrenWithContent(folder)
             Set<Folder> contentSet = new HashSet<Folder>()
             contentSet.addAll(childrenWithContent)
-
+            def folderConfigs = [:]
             childFolders.each {child ->
+                folderConfigs = folderService.addToFolderConfigs(child, folderConfigs)
                 def gc = fetchChildFolders(child)
                 if (gc.isEmpty()) {
                     log.debug("${child.name} has no subfolders.")
@@ -109,6 +113,7 @@ class FolderController extends BaseController {
                             contentSet: contentSet,
                             triggerSet: triggerSet,
                             triggerFolder: session.triggerFolder,
+                            folderConfigs: folderConfigs
                     ])
         }
         catch (Exception e) {
@@ -152,8 +157,14 @@ class FolderController extends BaseController {
                 log.debug("getUserPermissions failed", ex)
                 throw new RuntimeException('error.access.failed')
             }
-
-            return render(template: "/folder/folderContent", model: [folder: folder,
+            
+            def folderConfig = new XmlSlurper().parseText(folder.type.config)
+            def folderTemplate = '/folder/folderContent'
+            if (folderConfig.template){
+                folderTemplate = folderConfig.template.text()
+            }
+            
+            return render(template: folderTemplate, model: [folder: folder,
                     osdList: osdList,
                     permissions: permissions,
                     folders: folderService.getFoldersInside(user, folder),
