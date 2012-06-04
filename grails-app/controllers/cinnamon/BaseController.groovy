@@ -96,4 +96,21 @@ abstract class BaseController {
         return validator.filterUnbrowsableFolders(folderList)
     }
 
+    void setListParams() {
+        params.offset = params.offset ? inputValidationService.checkAndEncodeInteger(params, "offset", "offset") : 0
+        params.sort = params.sort ? inputValidationService.checkAndEncodeText(params, "sort", "sort") : 'id'
+        params.max = params.max ? inputValidationService.checkAndEncodeInteger(params, 'max', 'paginate.max') : 10
+        params.firstResult = params.firstResult ? inputValidationService.checkAndEncodeInteger(params, 'firstResult', 'paginate.firstResult') : 0
+    }
+
+    protected ObjectSystemData fetchLogo() {
+        def logo = null
+        def logoConfig = ConfigEntry.findByName('login.screen.config')
+        if (logoConfig) {
+            def xml = new XmlSlurper().parseText(logoConfig.config)
+            logo = ObjectSystemData.get(xml.logoId?.text())
+            log.debug("logo: $logo")
+        }
+        return logo
+    }
 }
