@@ -20,7 +20,7 @@ class OsdController extends BaseController {
     def editMetadata() {
         try {
             ObjectSystemData osd = fetchAndFilterOsd(params.osd)
-            return render(template: '/osd/editMetadata', model: [osd: osd])
+            return render(template: mapTemplate('/osd/editMetadata'), model: [osd: osd])
         }
         catch (Exception e) {
             renderException(e)
@@ -34,7 +34,7 @@ class OsdController extends BaseController {
                 osd.metadata = params.metadata
                 luceneService.updateIndex(osd, session.repositoryName)
             }
-            return render(template: 'objectDetails', model: [osd: osd, permissions: loadUserPermissions(osd.acl)])
+            return render(template: mapTemplate('/osd/objectDetails'), model: [osd: osd, permissions: loadUserPermissions(osd.acl)])
         }
         catch (Exception e) {
             renderException(e)
@@ -47,7 +47,7 @@ class OsdController extends BaseController {
             UserAccount user = userService.user
             osd.locker = null
             luceneService.updateIndex(osd, session.repositoryName)
-            render(template: '/folder/lockStatus', model: [user: user, osd: osd,
+            render(template: mapTemplate('/folder/lockStatus'), model: [user: user, osd: osd,
                     superuserStatus: userService.isSuperuser(user)])
         }
         catch (Exception e) {
@@ -61,7 +61,7 @@ class OsdController extends BaseController {
             UserAccount user = userService.user
             osdService.acquireLock(osd, user)
             luceneService.updateIndex(osd, session.repositoryName)
-            render(template: '/folder/lockStatus', model: [user: user, osd: osd,
+            render(template: mapTemplate('/folder/lockStatus'), model: [user: user, osd: osd,
                     superuserStatus: userService.isSuperuser(user)])
 
         }
@@ -80,7 +80,7 @@ class OsdController extends BaseController {
             def leftRelations = Relation.findAllByLeftOSD(osd)
             def rightRelations = Relation.findAllByRightOSD(osd)
 
-            return render(template: '/osd/listRelations',
+            return render(template: mapTemplate('/osd/listRelations'),
                     model: [leftRelations: leftRelations, rightRelations: rightRelations,
                             osd: osd
                     ]
@@ -99,7 +99,7 @@ class OsdController extends BaseController {
                     [o1: osd, o2: osd]) ? true : false
             def permissions = loadUserPermissions(osd.acl)
             def user = userService.user
-            return render(template: "/osd/objectDetails",
+            return render(template: mapTemplate("/osd/objectDetails"),
                     model: [osd: osd, permissions: permissions,
                             superuserStatus: userService.isSuperuser(user),
                             hasRelations: hasRelations])
@@ -115,7 +115,7 @@ class OsdController extends BaseController {
             ObjectSystemData osd = fetchAndFilterOsd(params.osd)
             UserAccount user = userService.user
             def osdContent = osd.getContent(session.repositoryName)
-            return render(template: 'objectPreview', model: [osd: osd, ctype: osd.format?.contenttype, osdContent: osdContent])
+            return render(template: mapTemplate('/osd/objectPreview'), model: [osd: osd, ctype: osd.format?.contenttype, osdContent: osdContent])
         }
         catch (Exception e) {
             renderException(e)
@@ -125,7 +125,7 @@ class OsdController extends BaseController {
     def renderMetadata() {
         try {
             ObjectSystemData osd = fetchAndFilterOsd(params.osd)
-            return render(template: 'renderMetadata', model: [osd: osd])
+            return render(template: mapTemplate('/osd/renderMetadata'), model: [osd: osd])
         }
         catch (Exception e) {
             renderException(e)
@@ -186,14 +186,14 @@ class OsdController extends BaseController {
         }
         catch (Exception e) {
             flash.mesasge = message(code: e.message)
-            return redirect(controller: 'folder', action: 'index', params: [folder: folder?.id])
+            defaultRedirect([folder: folder?.id])
         }
     }
 
     def editName() {
         try {
             def osd = fetchAndFilterOsd(params.osd)
-            render(template: 'editName', model: [osd: osd])
+            render(template: mapTemplate('/osd/editName'), model: [osd: osd])
         }
         catch (Exception e) {
             log.debug("failed: editName", e)
@@ -204,7 +204,7 @@ class OsdController extends BaseController {
     def editAcl() {
         try {
             def osd = fetchAndFilterOsd(params.osd)
-            render(template: 'editAcl', model: [osd: osd])
+            render(template: mapTemplate('/osd/editAcl'), model: [osd: osd])
         }
         catch (Exception e) {
             renderException(e)
@@ -214,7 +214,7 @@ class OsdController extends BaseController {
     def editLanguage() {
         try {
             def osd = fetchAndFilterOsd(params.osd)
-            render(template: 'editLanguage', model: [osd: osd])
+            render(template: mapTemplate('/osd/editLanguage'), model: [osd: osd])
         }
         catch (Exception e) {
             renderException(e)
@@ -224,7 +224,7 @@ class OsdController extends BaseController {
     def editOwner() {
         try {
             def osd = fetchAndFilterOsd(params.osd)
-            render(template: 'editOwner', model: [osd: osd])
+            render(template: mapTemplate('/osd/editOwner'), model: [osd: osd])
         }
         catch (Exception e) {
             renderException(e)
@@ -234,7 +234,7 @@ class OsdController extends BaseController {
     def editType() {
         try {
             def osd = fetchAndFilterOsd(params.osd)
-            render(template: 'editType', model: [osd: osd])
+            render(template: mapTemplate('/osd/editType'), model: [osd: osd])
         }
         catch (Exception e) {
             renderException(e)
@@ -281,7 +281,7 @@ class OsdController extends BaseController {
         }
         catch (Exception e) {
             flash.message = message(code: e.message)
-            return redirect(controller: 'folder', action: 'index', model: [folder: folder?.id])
+            return defaultRedirect([folder: folder?.id])
         }
     }
 
@@ -332,7 +332,7 @@ class OsdController extends BaseController {
             log.debug("repo: ${session.repositoryName}")
             luceneService.addToIndex(osd, session.repositoryName)
 
-            return redirect(controller: 'folder', action: 'index', params: [folder: folder.id, osd: osd.id])
+            return defaultRedirect([folder: folder.id, osd: osd.id])
         }
         catch (Exception e) {
             flash.message = message(code: e.message)
@@ -375,6 +375,7 @@ class OsdController extends BaseController {
             if (!osd) {
                 return redirect(controller: 'folder', action: 'index')
             }
+            
             return redirect(controller: 'osd', action: 'setContent', params: [folder: params.folder, osd: params.osd])
         }
     }
@@ -389,7 +390,7 @@ class OsdController extends BaseController {
         }
         catch (RuntimeException e) {
             flash.message = message(code: e.getMessage())
-            return redirect(controller: 'folder', action: 'index', params: [folder: params.folder, osd: params.osd])
+            defaultRedirect([folder: params.folder, osd: params.osd])
         }
     }
 
@@ -426,13 +427,13 @@ class OsdController extends BaseController {
     def iterate() {
         def msgMap
         def msgList = []
-        try {
 
+        try {
             def idList = params.list("osd")
             def folderList = params.list("folder")
             if (idList.isEmpty() && folderList.isEmpty()) {
                 // nothing to do
-                return redirect(controller: 'folder', action: 'index')
+                defaultRedirect(params)
             }
             def repository = session.repositoryName
             if (params.delete) {
@@ -454,8 +455,8 @@ class OsdController extends BaseController {
             flash.message = message(code: 'iterate.fail', args: [message(code: e.message)])
         }
 
-        flash.msgList = msgList
-        return redirect(controller: 'folder', action: 'index')
+        flash.msgList = msgList        
+        defaultRedirect([])
     }
 
     protected List convertMsgMap(msgMap) {
