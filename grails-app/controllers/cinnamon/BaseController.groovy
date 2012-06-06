@@ -9,7 +9,7 @@ import cinnamon.global.PermissionName
  * controllers require.
  */
 abstract class BaseController {
-    
+
     def osdService
     def folderService
     def userService
@@ -36,16 +36,16 @@ abstract class BaseController {
         return new Validator(user)
     }
 
-  
-    protected void renderException(Exception e){
-        render(status:500, text:message(code:e.getMessage()))
+
+    protected void renderException(Exception e) {
+        render(status: 500, text: message(code: e.getMessage()))
     }
-    
-    protected void renderExceptionXml(Exception e){
-        render(contentType: 'application/xml'){
-            error{
+
+    protected void renderExceptionXml(Exception e) {
+        render(contentType: 'application/xml') {
+            error {
                 code(e.message)
-                "message"(message(code:e.message))
+                "message"(message(code: e.message))
             }
         }
     }
@@ -53,8 +53,8 @@ abstract class BaseController {
     protected ObjectSystemData fetchAndFilterOsd(id) {
         fetchAndFilterOsd(id, [PermissionName.BROWSE_OBJECT])
     }
-    
-    protected ObjectSystemData fetchAndFilterOsd(id, List permissions){
+
+    protected ObjectSystemData fetchAndFilterOsd(id, List permissions) {
         def osd = ObjectSystemData.get(id)
         if (!osd) {
             throw new RuntimeException('error.object.not.found')
@@ -68,14 +68,14 @@ abstract class BaseController {
     protected Folder fetchAndFilterFolder(id) {
         return fetchAndFilterFolder(id, [PermissionName.BROWSE_FOLDER])
     }
-    
+
     protected Folder fetchAndFilterFolder(id, permissions) {
         def folder
-        if (id == '0'){
+        if (id == '0') {
             log.debug("find root folder")
             folder = Folder.findRootFolder()
         }
-        else{
+        else {
             log.debug("looking for folder #$id")
             folder = Folder.get(id)
         }
@@ -96,7 +96,7 @@ abstract class BaseController {
         return validator.filterUnbrowsableFolders(folderList)
     }
 
-    void setListParams() {
+    protected void setListParams() {
         params.offset = params.offset ? inputValidationService.checkAndEncodeInteger(params, "offset", "offset") : 0
         params.sort = params.sort ? inputValidationService.checkAndEncodeText(params, "sort", "sort") : 'id'
         params.max = params.max ? inputValidationService.checkAndEncodeInteger(params, 'max', 'paginate.max') : 10
@@ -112,5 +112,33 @@ abstract class BaseController {
             log.debug("logo: $logo")
         }
         return logo
+    }
+
+    /**
+     * Redirect to the a default page, which is /folder/index for a vanilla Cinnamon 3 installation.
+     * You may configure this via the config file values defaultController and defaultAction.
+     * @param myParams the parameter map for the redirect
+     */
+    protected void defaultRedirect(myParams) {
+        def myController = grailsApplication.config.defaultController ?: 'folder'
+        def myAction = grailsApplication.config.defaultAction ?: 'index'
+        redirect(controller: myController, action: myAction, params: myParams)
+    }
+
+    /**
+     * Lookup the name of a template in the configuration file. You may configure a
+     * map of templateMappings like this:
+     * <pre>
+     *     templateMapping = [
+     *      '/project/editName':'/osd/editName',
+     *      '/project/editAcl':'/osd/editAcl',
+     *      ]
+     * </pre>
+     * and the as a result for a given template key parameter the value will be returned.
+     * @param template the name of the template
+     * @return the mapping if it is defined, or the original template string value.
+     */
+    protected String mapTemplate(String template) {
+        return grailsApplication.config.templateMapping?."$template" ?: template
     }
 }
