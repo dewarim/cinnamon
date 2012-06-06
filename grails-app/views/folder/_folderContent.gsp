@@ -1,15 +1,5 @@
 <%@ page import="cinnamon.global.PermissionName" %>
 
-<!--currently not used - folders should be selected for deletion. -->
-<!--
-<div class="folder_delete">
-    <g:form controller="folder" action="delete" onsubmit="return confirm('${message(code:'folder.delete.confirm', args:[folder.name])}');">
-        <input type="hidden" name="folder" value="${folder.id}">
-        <g:submitButton name="deleteFolder" value="${message(code:'folder.delete.submit', args:[folder.name])}"/>
-    </g:form>
-</div>
--->
-
 <h2><g:message code="folder.content.folders"/></h2>
 <g:if test="${permissions.contains(PermissionName.CREATE_FOLDER)}">
     <div id="createFolder" class="create_folder"></div>
