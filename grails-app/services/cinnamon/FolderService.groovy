@@ -156,7 +156,7 @@ class FolderService {
         if ( contents > 0) {
             throw new CinnamonException("error.folder.has_content");
         }
-
+        folder.setMetadata("<meta />")
         folder.delete();
         luceneService.removeFromIndex(folder, repository)
     }

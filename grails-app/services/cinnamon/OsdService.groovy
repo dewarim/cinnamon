@@ -191,6 +191,9 @@ class OsdService {
         }
 
         ContentStore.deleteObjectFile(osd);
+        
+        // delete metadata and metasets:
+        osd.setMetadata("<meta />")
         osd.delete(flush: true)
         luceneService.removeFromIndex(osd, repository)
     }
