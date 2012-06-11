@@ -2,7 +2,9 @@ package cinnamon
 
 import org.dom4j.Element
 import org.dom4j.DocumentHelper
+import grails.plugins.springsecurity.Secured
 
+@Secured(["isAuthenticated()"])
 class FolderTypeController extends BaseController{
 
     def listXml() {

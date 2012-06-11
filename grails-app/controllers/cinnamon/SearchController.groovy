@@ -8,7 +8,9 @@ import org.dom4j.Document
 import org.dom4j.Node
 import cinnamon.index.Indexable
 import cinnamon.index.ResultCollector
+import grails.plugins.springsecurity.Secured
 
+@Secured(["isAuthenticated()"])
 class SearchController extends BaseController {
 
     def searchObjects(){

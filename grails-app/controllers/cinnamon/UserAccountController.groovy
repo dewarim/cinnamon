@@ -6,7 +6,7 @@ import org.dom4j.DocumentHelper
 import grails.plugins.springsecurity.Secured
 
 @Secured(["hasRole('_users')"])
-class UserAccountController {
+class UserAccountController extends BaseController{
 
     def list(){
         Document doc = DocumentHelper.createDocument()

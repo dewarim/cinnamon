@@ -2,8 +2,10 @@ package cinnamon
 
 import org.dom4j.Element
 import org.dom4j.DocumentHelper
+import grails.plugins.springsecurity.Secured
 
-class AclController {
+@Secured(["isAuthenticated()"])
+class AclController extends BaseController {
 
     def list(){
         List<Acl> results = new ArrayList<Acl>();

@@ -2,8 +2,10 @@ package cinnamon
 
 import org.dom4j.Element
 import org.dom4j.DocumentHelper
+import grails.plugins.springsecurity.Secured
 
-class ObjectTypeController {
+@Secured(["isAuthenticated()"])
+class ObjectTypeController extends BaseController{
 
     def list(){
         def doc = DocumentHelper.createDocument()

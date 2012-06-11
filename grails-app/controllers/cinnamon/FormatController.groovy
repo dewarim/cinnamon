@@ -2,8 +2,10 @@ package cinnamon
 
 import org.dom4j.Element
 import org.dom4j.DocumentHelper
+import grails.plugins.springsecurity.Secured
 
-class FormatController {
+@Secured(["isAuthenticated()"])
+class FormatController extends BaseController {
 
     def list(){
         List<Format> formats = new ArrayList<Format>();
