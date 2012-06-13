@@ -1,6 +1,6 @@
 <div class="osd_content">
     <g:if test="${ctype =~ '^image/.*'}">
-        <img src="<g:resource dir="/osd/imageLoader" file="${ String.valueOf(osd.id)}"/>" alt="${osd.name}">
+        <img src="<g:createLink controller="osd" action="imageLoader" id="${osd.id}"/>" alt="${osd.name}">
     </g:if>
     <g:elseif test="${ctype =~ 'xml'}">
         <pre>${osdContent?.encodeAsHTML()}</pre>
