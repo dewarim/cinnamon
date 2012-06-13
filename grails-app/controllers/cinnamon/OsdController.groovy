@@ -114,9 +114,9 @@ class OsdController extends BaseController {
     def renderPreview() {
         try {
             ObjectSystemData osd = fetchAndFilterOsd(params.osd)
-            UserAccount user = userService.user
             def osdContent = osd.getContent(session.repositoryName)
-            return render(template: mapTemplate('/osd/objectPreview'), model: [osd: osd, ctype: osd.format?.contenttype, osdContent: osdContent])
+            return render(template: mapTemplate('/osd/objectPreview'), 
+                    model: [osd: osd, ctype: osd.format?.contenttype, osdContent: osdContent])
         }
         catch (Exception e) {
             renderException(e)
@@ -135,7 +135,7 @@ class OsdController extends BaseController {
 
     def imageLoader() {
         try {
-            ObjectSystemData osd = fetchAndFilterOsd(params.osd)
+            ObjectSystemData osd = fetchAndFilterOsd(params.id)
             if (!osd.format?.contenttype?.startsWith('image/')) {
                 return render(status: 503, text: message(code: 'error.wrong.format'))
             }
@@ -155,6 +155,7 @@ class OsdController extends BaseController {
             return null
         }
         catch (Exception e) {
+            log.debug("imageLoader fail:",e)
             renderException(e)
         }
     }
@@ -278,7 +279,7 @@ class OsdController extends BaseController {
         def folder = null
         try {
             folder = fetchAndFilterFolder(params.folder, [PermissionName.CREATE_OBJECT])
-            return [folder: folder]
+            return [folder: folder, logo:fetchLogo()]
         }
         catch (Exception e) {
             flash.message = message(code: e.message)
