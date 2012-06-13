@@ -62,7 +62,7 @@ grails.project.dependency.resolution = {
         //runtime ":yui-minify-resources:0.1.4"
 
         build ":tomcat:$grailsVersion"
-        runtime 'cinnamon:cinnamon-db:0.2.17'
+        runtime 'cinnamon:cinnamon-db:0.2.20'
         test ':spock:0.6'
     }
 }

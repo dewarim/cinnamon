@@ -10,6 +10,7 @@ import cinnamon.global.ConfThreadLocal
 import cinnamon.i18n.Language
 import cinnamon.exceptions.CinnamonException
 import org.dom4j.Document
+import cinnamon.global.Constants
 
 /**
  *
@@ -292,26 +293,26 @@ class OsdController extends BaseController {
             folder = fetchAndFilterFolder(params.folder, [PermissionName.CREATE_OBJECT])
             ObjectType objectType = (ObjectType) inputValidationService.checkObject(ObjectType.class, params.objectType, true)
             if (!objectType) {
-                throw new RuntimeException('error.missing.objectType')
+                objectType = ObjectType.findByName(Constants.OBJTYPE_DEFAULT)
+//                throw new RuntimeException('error.missing.objectType')
             }
             ObjectSystemData osd
             String name = params.name
             MultipartFile file = request.getFile('file')
-
+            
             if (file.isEmpty()) {
                 if (!name) {
                     throw new RuntimeException('error.missing.name')
                 }
-                osd = new ObjectSystemData(name, user, folder)
-                osd.type = objectType
+                osd = new ObjectSystemData(name, user, folder)                
             }
             else {
-                osd = new ObjectSystemData(name, user, folder)
-                File tempFile = File.createTempFile('cinnamon_upload_', null)
-                file.transferTo(tempFile)
                 if (!name) {
                     name = file.originalFilename
                 }
+                osd = new ObjectSystemData(name, user, folder)
+                File tempFile = File.createTempFile('cinnamon_upload_', null)
+                file.transferTo(tempFile)
 
                 Format format = (Format) inputValidationService.checkObject(Format.class, params.format, true)
                 if (!format) {
@@ -320,12 +321,14 @@ class OsdController extends BaseController {
                 def repositoryName = session.repositoryName
                 def uploadedFile = new UploadedFile(tempFile.absolutePath, UUID.randomUUID().toString(), name, file.contentType, tempFile.length())
                 def contentPath = ContentStore.upload(uploadedFile, repositoryName);
-                osd.setContentPath(uploadedFile.fileName, repositoryName);
+                log.debug("contentPath: $contentPath")
+                osd.setContentPathAndFormat(contentPath, format, repositoryName);
                 if (osd.getContentPath() != null &&
                         osd.getContentPath().length() == 0) {
                     throw new CinnamonException("error.storing.upload");
                 }
             }
+            osd.type = objectType
             osd.setCmnVersion('1')
             osd.save(flush: true)
             log.debug("created object with id: ${osd.id}")
@@ -356,11 +359,11 @@ class OsdController extends BaseController {
             if (file.isEmpty()) {
                 throw new RuntimeException('error.missing.content')
             }
-            else {
+            else {                
                 osdService.acquireLock(osd, user)
                 File tempFile = File.createTempFile('illicium_upload_', null)
                 file.transferTo(tempFile)
-                osdService.storeContent(osd, file.contentType, tempFile, session.repositoryName)
+                osdService.storeContent(osd, file.contentType, params.format, tempFile, session.repositoryName)
                 osdService.unlock(osd, user)
                 osd.save()
                 luceneService.updateIndex(osd, session.repositoryName)
@@ -382,7 +385,7 @@ class OsdController extends BaseController {
 
     def setContent() {
         try {
-            ObjectSystemData osd = fetchAndFilterOsd(params.osd, [PermissionName.WRITE_OBJECT_CONTENT])
+            ObjectSystemData osd = fetchAndFilterOsd(params.osd, [PermissionName.WRITE_OBJECT_CONTENT])            
             return [
                     osd: osd,
                     folder: osd.parent

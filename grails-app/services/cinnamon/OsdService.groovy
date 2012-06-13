@@ -220,12 +220,16 @@ class OsdService {
         return true
     }
     
-    void acquireLock(osd, user){
+    void acquireLock(osd, user){        
         if (osd.locker){
+            if(osd.locker == user){
+                return
+            }
             throw new RuntimeException('error.locked.already')
         }
         osd.locker = user
     }
+    
     void unlock(osd, user){
         // should we raise an exception if this osd is not locked at all? 
         osd.locker = null 
@@ -243,19 +247,19 @@ class OsdService {
         return true
     }
     
-    void storeContent(osd, contentType, file, repositoryName){
-        Format format = (Format) inputValidationService.checkObject(Format.class, params.format, true)
+    void storeContent(ObjectSystemData osd, String contentType, String formatId, File file, String repositoryName){
+        Format format = (Format) inputValidationService.checkObject(Format.class, formatId, true)
         if (!format) {
             throw new RuntimeException('error.missing.format')
         }
-        def uploadedFile = new UploadedFile(file.absolutePath, UUID.randomUUID().toString(), osd.name, contentType,file.length())
-        def contentPath = ContentStore.upload(uploadedFile, repositoryName);
-        osd.setContentPath(contentPath, repositoryName);
+        
+        def uploadedFile = new UploadedFile(file.absolutePath, UUID.randomUUID().toString(), osd.name, contentType, file.length())
+        def contentPath = ContentStore.upload(uploadedFile, repositoryName);        
+        osd.setContentPathAndFormat(contentPath, format, repositoryName);
         if (osd.getContentPath() != null &&
                 osd.getContentPath().length() == 0) {
             throw new CinnamonException("error.storing.upload");
         }
-        
     }
 
     Map<String,List> deleteList(idList, repository){
