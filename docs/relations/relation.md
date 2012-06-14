@@ -1,6 +1,6 @@
 # Relations and Relation Types
 ## What are relations?
-Relations are used to define a link between two objects. For example, a HTML document 
+Relations are used to define a link between two objects. For example, an HTML document 
 may contain several images which are required for display. Cinnamon detects this dependency
 and creates a relation between the document and the image object in the repository. Of course,
 you can create relations between arbitrary objects manually if needed.
