@@ -8,6 +8,8 @@ import cinnamon.global.ConfThreadLocal
 import cinnamon.exceptions.CinnamonException
 import cinnamon.global.Conf
 import org.codehaus.groovy.grails.plugins.springsecurity.GrailsUser
+import humulus.EnvironmentHolder
+import cinnamon.i18n.UiLanguage
 
 /**
  *
@@ -190,7 +192,7 @@ class UserService {
 
     public List getUsersPermissions(user, acl) {
         if (user.verifySuperuserStatus()) {
-            return Permission.list().collect{it.name};
+            return Permission.list().collect {it.name};
         }
 
         log.debug("groupUsers for user " + user.getName() + ": " + user.getGroupUsers().size());
@@ -222,4 +224,29 @@ class UserService {
         return permissions
     }
 
+    /**
+     * Return the current session ticket for a user - or create a new one if he does not yet have one.
+     * @param userAccount
+     * @return a session ticket string, consisting of UUID.random + @ + repositoryName 
+     */
+    String fetchTicket(UserAccount userAccount) {
+        if (userAccount == null) {
+            userAccount = getUser()
+        }
+        Session session = Session.find("from Session s where s.user=:user order by expires desc", 
+                [user: userAccount], [max: 1])
+        if (!session || session.expires < new Date()) {
+            def uiLanguage = userAccount.language
+            if(uiLanguage == null){
+                // a user *should* have at least the 'undetermined' language (und), 
+                // but it seems like that's not always the case.
+                uiLanguage = UiLanguage.findByIsoCode('und')
+                userAccount.language = uiLanguage
+                userAccount.save()
+            }
+            session = new Session(EnvironmentHolder.environment.dbName, userAccount, 'localhost', uiLanguage)
+            session.save()
+        }
+        return session.ticket
+    }
 }

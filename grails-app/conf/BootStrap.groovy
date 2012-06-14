@@ -10,7 +10,6 @@ class BootStrap {
 
     def init = { servletContext ->
 
-
         if (!grailsApplication.config.configLoaded) {
             log.warn("merge config file by hand")
             def configFile = new File("${System.env.CINNAMON_HOME_DIR}/cinnamon-config.groovy")
