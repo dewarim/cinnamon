@@ -36,7 +36,6 @@ abstract class BaseController {
         return new Validator(user)
     }
 
-
     protected void renderException(Exception e) {
         render(status: 500, text: message(code: e.getMessage()))
     }
