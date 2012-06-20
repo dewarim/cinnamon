@@ -1,0 +1,34 @@
+<h1 id="user-accounts-in-cinnamon">User accounts in Cinnamon</h1>
+<h2 id="what-are-user-accounts-used-for">What are user accounts used for?</h2>
+<h3 id="ownership-of-objects">Ownership of objects</h3>
+<p>To keep track of which user created an object or made the last modification to it, Cinnamon stores the creator, owner of each object (and each version of it), along with the most recent user who modified it. The date/time of creation and modification are also stored.</p>
+<p>Folders only have owners, so they are not tracked with the same level of detail, but up to now this has proved to be sufficient. If you need further logging and more specific metadata (for example &quot;list of all changes made to files inside this folder&quot;), a Change Trigger can be programmed to store this kind of custom metadata.</p>
+<h3 id="authentification">Authentification</h3>
+<p>With the exception of retrieving the list of available repositories, all API methods of the Cinnamon server require some kind of authentication by the client. A user has to connect to the server with a valid combination of login name and password to receive a session ticket. This ticket is then used on all subsequent actions by this client (until it expires or the client disconnects).</p>
+<h3 id="authorization">Authorization</h3>
+<p>A user may be a member of one or more groups, and whenever he wants to access or modify content on the repository, the triple combination of {group, acl, permissions} is checked to see if he actually is authorized to do this.</p>
+<h2 id="model">Model</h2>
+<p>A user account object has the following fields:</p>
+<ul>
+<li>Name (== login name)</li>
+<li>Full name</li>
+<li>Description (of role or position in the customer's company)</li>
+<li>Password (may be stored encrypted or unencrypted)</li>
+<li>Email</li>
+<li>A boolean flag if the account is activated or not. A new account is always activated.</li>
+<li>Sudoer: this user may impersonate other users. This is intended for automatic processes which act on behalf of a user and create / modify objects for him.</li>
+<li>is sudoable: if this flag is set, a user may be the target of the sudo API call. Some user accounts should not be made sudoable, for example superusers, since this would pose a security risk.</li>
+</ul>
+<div class="figure">
+<img src="users_00100.png" alt="Edit view of a user's account" /><p class="caption">Edit view of a user's account</p>
+</div>
+<h2 id="deactivating-and-deleting-users">Deactivating and Deleting users</h2>
+<p>Under normal circumstances, Users can be deactivated, but not deleted as this may leave objects orphaned without a valid owner or creator.</p>
+<p>If the configuration allows it, users may be replaced before a complete deletion. This way all objects depending on this account will be removed or transferred. The administration tool offers a useful form for this very purpose:</p>
+<div class="figure">
+<img src="users_00200.png" alt="Replace user dialog" /><p class="caption">Replace user dialog</p>
+</div>
+<p>This will transfer all assets from one user to another. Afterwards, the user can be deleted:</p>
+<div class="figure">
+<img src="users_00300.png" alt="Delete user dialog" /><p class="caption">Delete user dialog</p>
+</div>
