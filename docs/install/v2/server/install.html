@@ -1,0 +1,86 @@
+<h1 id="installation-from-source-cinnamon-server-2">Installation from source: Cinnamon server 2</h1>
+<h2 id="dependencies">Dependencies</h2>
+<p>You will need the following:</p>
+<ul>
+<li>Java 6 JDK (better: Java 7)</li>
+<li>An RDBMS (recommended: PostgreSQL or MSSQL), although it should run with any Hibernate compatible RDBMS (DB2, Oracle, MySQL etc)</li>
+<li>A servlet container (Tomcat 7, alternatives: Jetty, Glassfish)</li>
+<li>A lot of open source libraries, so it's recommended you download the developer library bundle. The required files and their versions can be seen in the build.exmple.xml in the server's source package.</li>
+</ul>
+<h2 id="checkout-the-source-code">Checkout the source code</h2>
+<p>The Cinnamon server is split into several modules:</p>
+<ul>
+<li>CinnamonBase (essential classes used in all modules)</li>
+<li>Dandelion (The administration GUI - a Grails application)</li>
+<li>EntityLib (the database classes)</li>
+<li>Humulus (Login and Database connection management for Dandelion and Illicium)</li>
+<li>Illicium (rudimentary webclient - a Grails application)</li>
+<li>Safran (Java client library, used for testing and direct API access)</li>
+<li>Server (the View and Controller)<br /></li>
+<li>Tools (optional code for migration and repository cleanup)</li>
+<li>Utils (Configuration, constans, database session management)</li>
+</ul>
+<p>To install from source, you will need to check out and compile at least the following projects: CinnamonBase, EntityLib, Server.</p>
+<p>The Repositories for the projects are:</p>
+<pre><code>https://cinnamon.svn.sourceforge.net/svnroot/cinnamon/CinnamonBase/trunk
+https://cinnamon.svn.sourceforge.net/svnroot/cinnamon/Server/trunk
+https://cinnamon.svn.sourceforge.net/svnroot/cinnamon/EntityLib/trunk
+https://cinnamon.svn.sourceforge.net/svnroot/cinnamon/Utils/trunk
+https://cinnamon.svn.sourceforge.net/svnroot/cinnamon/Dandelion/trunk
+https://cinnamon.svn.sourceforge.net/svnroot/cinnamon/Humulus/trunk
+https://cinnamon.svn.sourceforge.net/svnroot/cinnamon/Illicium/trunk    
+https://cinnamon.svn.sourceforge.net/svnroot/cinnamon/CinnamonClient/Safran/   
+https://cinnamon.svn.sourceforge.net/svnroot/cinnamon/Utils/trunk
+https://cinnamon.svn.sourceforge.net/svnroot/cinnamon/Tools/trunk    
+</code></pre>
+<p>Currently, we use Subversion as our version control system (VCS), so you will need to either install its command line client or a GUI tool for it.</p>
+<p>In your Workspace, on the command line, issue the following commands:</p>
+<pre><code>svn co https://cinnamon.svn.sourceforge.net/svnroot/cinnamon/Server/trunk/. Server/.
+svn co https://cinnamon.svn.sourceforge.net/svnroot/cinnamon/EntityLib/trunk/. EntityLib/.
+svn co https://cinnamon.svn.sourceforge.net/svnroot/cinnamon/Utils/trunk/. Utils/.
+svn co https://cinnamon.svn.sourceforge.net/svnroot/cinnamon/CinnamonBase/trunk/. CinnamonBase/.
+svn co https://cinnamon.svn.sourceforge.net/svnroot/cinnamon/CinnamonClient/Safran
+</code></pre>
+<p>If you want to install the Grails applications for administration and web access, you may also add:</p>
+<pre><code>svn co https://cinnamon.svn.sourceforge.net/svnroot/cinnamon/Dandelion/trunk/. Dandelion/.
+svn co https://cinnamon.svn.sourceforge.net/svnroot/cinnamon/Humulus/trunk/. Humulus/.
+svn co https://cinnamon.svn.sourceforge.net/svnroot/cinnamon/Illicium/trunk/. Illicium/.        
+</code></pre>
+<h2 id="configure-the-build-environment">Configure the build environment</h2>
+<h3 id="edit-ant-build-script">edit ant build script</h3>
+<p>Please edit the ant build script in Server/build.example.xml to match your environment (and copy it to Server/build.xml). The script is intended to be executed in the parent folder of Server/, so the paths should be relative to that.</p>
+<h3 id="edit-persistence.xml">edit persistence.xml</h3>
+<p>Edit the hibernate persistence configuration in Server/META-INF/persistence. There are three variables that should be set via the build.xml file, and if you are going to use the default configuration (postgres), you do not need to change them:</p>
+<ol style="list-style-type: decimal">
+<li>hibernate.dialect</li>
+<li>hibernate.connection.driver_class</li>
+<li>hibernate.jdbc.use_streams_for_binary</li>
+</ol>
+<p>The variables are set in the &quot;use$databaseName&quot; targets:</p>
+<pre><code>&lt;target name=&quot;usePostgres&quot; depends=&quot;copyPersistenceSource&quot;&gt;
+    &lt;replace file=&quot;${server.home}/META-INF/persistence.xml&quot; token=&quot;@hibernate.dialect@&quot;
+             value=&quot;org.hibernate.dialect.PostgreSQLDialect&quot;/&gt;
+    &lt;replace file=&quot;${server.home}/META-INF/persistence.xml&quot; token=&quot;@hibernate.connection.driver_class@&quot;
+             value=&quot;org.postgresql.Driver&quot;/&gt;
+    &lt;replace file=&quot;${server.home}/META-INF/persistence.xml&quot; token=&quot;@hibernate.jdbc.use_streams_for_binary@&quot;
+             value=&quot;false&quot;/&gt;
+    &lt;property name=&quot;lib.database&quot; value=&quot;${lib.postgres}&quot;/&gt;
+    &lt;copy todir=&quot;${build.home}/WEB-INF/lib&quot; file=&quot;${lib.database}&quot;/&gt;
+&lt;/target&gt;
+</code></pre>
+<p>And they are used in the persistence.xml:</p>
+<pre><code> &lt;property name=&quot;hibernate.dialect&quot; value=&quot;@hibernate.dialect@&quot;/&gt;
+ &lt;property name=&quot;hibernate.connection.driver_class&quot; value=&quot;@hibernate.connection.driver_class@&quot;/&gt;
+ &lt;property name=&quot;hibernate.jdbc.use_streams_for_binary&quot; value=&quot;@hibernate.jdbc.use_streams_for_binary@&quot;/&gt;
+</code></pre>
+<h3 id="edit-c3p0.properties">edit c3p0.properties</h3>
+<p>In EntityLib, copy c3p0.example.properties to c3p0.properties and edit it. You can find out more about the available properties in the <a href="http://www.mchange.com/projects/c3p0/">c3p0 documentation</a> (It's a library that manages groups of database connections).</p>
+<h2 id="run-the-build-script">Run the build script</h2>
+<p>Start the ant build script in the directory that contains the checked out modules of the Cinnamon server with the command:</p>
+<pre><code>ant -f build.example.xml dist_public
+</code></pre>
+<p>If everything works correctly, after some seconds you should see a &quot;BUILD SUCCESSFUL&quot; message:</p>
+<div class="figure">
+<img src="install_00100.png" alt="Screenshot: Build Successful" /><p class="caption">Screenshot: Build Successful</p>
+</div>
+<p>Congratulations, you have now a ready-to-deploy cinnamon.war :)</p>
