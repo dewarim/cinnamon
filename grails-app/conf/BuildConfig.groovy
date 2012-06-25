@@ -63,6 +63,7 @@ grails.project.dependency.resolution = {
 
         build ":tomcat:$grailsVersion"
         runtime 'cinnamon:cinnamon-db:0.2.20'
+        compile ":remote-pagination:0.3"
         test ':spock:0.6'
     }
 }
