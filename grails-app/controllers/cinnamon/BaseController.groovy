@@ -17,6 +17,7 @@ abstract class BaseController {
     def springSecurityService
     def inputValidationService
     def itemService
+    def aclEntryService
 
     protected Set<String> loadUserPermissions(Acl acl) {
         Set<String> permissions

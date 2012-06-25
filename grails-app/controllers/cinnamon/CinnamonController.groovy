@@ -174,7 +174,7 @@ class CinnamonController extends BaseController {
         switch (myAction) {
             case 'connect': forward(action: 'connect'); break
             case 'test': forward(action: 'test'); break
-            case 'getusers': forward(controller: 'userAccount', action: 'list'); break
+            case 'getusers': forward(controller: 'userAccount', action: 'listXml'); break
             case 'searchobjects': params.xmlQuery = true; forward(controller: 'search', action: 'searchObjects'); break
             case 'getformats': forward(controller: 'format', action: 'list'); break
             case 'getacls': forward(controller: 'acl', action: 'list'); break
