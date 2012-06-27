@@ -12,6 +12,10 @@
 <div class="nav">
     <span class="menuButton"><a class="home" href="${resource(dir: 'folder', file: 'index')}"><g:message
             code="home"/></a></span>
+    <sec:ifAllGranted roles="_superusers">
+    <span class="menuButton"><a class="admin" href="${createLink(controller: 'admin', action: 'index')}"><g:message
+    code="link.to.administration"/></a></span>
+    </sec:ifAllGranted>
 </div>
 
 <div class="content">

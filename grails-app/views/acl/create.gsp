@@ -11,7 +11,7 @@
 			<g:homeButton><g:message code="home"/></g:homeButton>
             <span class="menuButton"><g:link class="list" action="list"><g:message code="acl.list"/></g:link></span>
         </div>
-        <div class="body">
+        <div class="content">
             <h1><g:message code="acl.create.title"/></h1>
             <g:if test="${flash.message}">
             <div class="message">${flash.message}</div>
@@ -22,7 +22,6 @@
             </div>
             </g:hasErrors>
             <g:form action="save" method="post" >
-                <div class="dialog">
                     <table>
                         <tbody>
                         
@@ -47,7 +46,6 @@
                         
                         </tbody>
                     </table>
-                </div>
                 <div class="buttons">
                     <span class="button"><input class="save" type="submit" value="${message(code:'create')}" /></span>
                 </div>

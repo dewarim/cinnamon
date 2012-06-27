@@ -11,7 +11,7 @@
 	<span class="menuButton"><g:link class="list" action="list"><g:message code="acl.list"/></g:link></span>
 	<span class="menuButton"><g:link class="create" action="create"><g:message code="acl.create"/></g:link></span>
 </div>
-<div class="body">
+<div class="content">
 	<h1><g:message code="acl.edit.title"/></h1>
 	<g:if test="${flash.message}">
 		<div class="message">${flash.message}</div>
@@ -23,7 +23,6 @@
 	</g:hasErrors>
 	<g:form method="post">
 		<input type="hidden" name="id" value="${acl?.id}"/>
-		<div class="dialog">
 			<table>
 				<tbody>
 
@@ -51,7 +50,6 @@
 			<div class="buttons">
 				<span class="button"><g:actionSubmit class="save" value="${message(code:'update')}"/></span>
 			</div>
-		</div>
 
 	</g:form>
 	<br>

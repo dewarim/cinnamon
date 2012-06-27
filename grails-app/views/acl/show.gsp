@@ -13,7 +13,7 @@
 	<span class="menuButton"><g:link action="list" controller="aclEntry" params="[aclId:acl?.id]">
 		<g:message code="aclEntry.link.show"/></g:link></span>
 </div>
-<div class="body">
+<div class="content">
 	<h1><g:message code="acl.show.title"/></h1>
 	<g:if test="${flash.message}">
 		<div class="message">${flash.message}</div>
@@ -26,7 +26,6 @@
 			</ul>
 		</div>
 	</g:if>
-	<div class="dialog">
 		<table>
 			<tbody>
 
@@ -68,7 +67,6 @@
 			</tr>
 			</tbody>
 		</table>
-	</div>
 
 </div>
 

@@ -11,7 +11,7 @@
 			<g:homeButton><g:message code="home"/></g:homeButton>
             <span class="menuButton"><g:link class="create" action="create"><g:message code="acl.create"/></g:link></span>
         </div>
-        <div class="body">
+        <div class="content">
             <h1><g:message code="acl.list.title"/></h1>
             <g:if test="${flash.message}">
             <div class="message">${flash.message}</div>
