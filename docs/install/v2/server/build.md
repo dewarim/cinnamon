@@ -1,4 +1,6 @@
-# Installation from source: Cinnamon server 2
+# Build Cinnamon server from source
+
+(for version 2.x of the Cinnamon server)
 
 ## Dependencies
 
@@ -53,13 +55,22 @@ If you want to install the Grails applications for administration and web access
 
     svn co https://cinnamon.svn.sourceforge.net/svnroot/cinnamon/Dandelion/trunk/. Dandelion/.
     svn co https://cinnamon.svn.sourceforge.net/svnroot/cinnamon/Humulus/trunk/. Humulus/.
-    svn co https://cinnamon.svn.sourceforge.net/svnroot/cinnamon/Illicium/trunk/. Illicium/.		
+    svn co https://cinnamon.svn.sourceforge.net/svnroot/cinnamon/Illicium/trunk/. Illicium/.	
     
 ## Configure the build environment
 
 ### edit ant build script
 Please edit the ant build script in Server/build.example.xml to match your environment (and copy it to Server/build.xml).
 The script is intended to be executed in the parent folder of Server/, so the paths should be relative to that.
+
+If you have not checked out Dandelion (the administration tool), you have to disable copying of the library jar files
+to the Dandelion folder by commenting out the instructions:
+
+    <!--
+    <copy todir="${dandelion.lib}" file="${utils.jar}"/>
+    -->
+
+(Same for entitylib.jar and cinnamonBase.jar)
 
 ### edit persistence.xml
 Edit the hibernate persistence configuration in Server/META-INF/persistence. There are three variables that should be set
@@ -102,3 +113,26 @@ If everything works correctly, after some seconds you should see a "BUILD SUCCES
 ![Screenshot: Build Successful](install_00100.png)
 
 Congratulations, you have now a ready-to-deploy cinnamon.war :)
+
+# Build the administration tool from source 
+
+## Dependencies
+
+To create Dandelion, the administration tool, 
+you will need a working Grails development environment, which basically means: 
+download and install the current version of Grails from [Grails.org](http://grails.org). 
+
+You will also need the source code of Dandelion, as described above in the "checkout the source code" section .
+
+## Build Dandelion
+
+1. On the command line, change to the Dandelion directory.
+2. Run "grails war". This should generate the dandelion-2.x.x.war in the target folder.
+3. Install the database and configure Cinnamon as described on the install page.
+4. Stop Tomcat, copy target/dandelion-2.x.x.war to Tomcat/webapps/dandelion.war and restart the web server.
+5. Visit http://_your_server_ip_:8080/dandelion where you can login with your admin account.
+
+
+
+
+

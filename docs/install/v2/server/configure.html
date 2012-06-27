@@ -1,0 +1,256 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+</head>
+<body>
+<div id="TOC">
+<ul>
+<li><a href="#configuration-of-the-cinnamon-server">Configuration of the Cinnamon server</a><ul>
+<li><a href="#data_root">data_root</a></li>
+<li><a href="#encryptpasswords">encryptPasswords</a></li>
+<li><a href="#logback_configuration_path">logback_configuration_path</a></li>
+<li><a href="#maxtokensperday">maxTokensPerDay</a></li>
+<li><a href="#minimalpasswordlength">minimalPasswordLength</a></li>
+<li><a href="#passwordrounds">passwordRounds</a></li>
+<li><a href="#server-url">server-url</a></li>
+<li><a href="#startindexserver">startIndexServer</a></li>
+<li><a href="#startworkflowserver">startWorkflowServer</a></li>
+<li><a href="#system_root">system_root</a></li>
+<li><a href="#system-administrator">system-administrator</a></li>
+<li><a href="#use_session_logging">use_session_logging</a></li>
+<li><a href="#global-database-settings">Global database settings</a></li>
+<li><a href="#email-configuration">Email configuration</a></li>
+<li><a href="#repositories">Repositories</a></li>
+<li><a href="#example-cinnamon_config.xml">Example cinnamon_config.xml</a><ul>
+<li><a href="#example-logback.xml">Example logback.xml</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+<h1 id="configuration-of-the-cinnamon-server"><a href="#TOC">Configuration of the Cinnamon server</a></h1>
+<p>This text describes the main configuration file of the Cinnamon server (version 2.x).</p>
+<style type="text/css">
+ .codeBlock{ background-color:lightblue;padding:1ex;border:1px solid black;}
+</style>
+
+<p>The cinnamon_config.xml file is the main configuration file of the Cinnamon server. It is used for global settings like the database driver and connection URL as well as the settings for specific repositories and their API settings. All currently available elements are listed below, along with an example file.</p>
+<p>Please note that plugins may query the configuration file for information, too. ## Server wide configuration settings</p>
+<h3 id="data_root"><a href="#TOC">data_root</a></h3>
+<p>The path to where the Cinnamon server should store the content of documents. Note that currently uploaded data is saved in this place in the file system, not in the database. The database holds the metadata (both custom and systemic), and the content is stored on disc in a folder structure which consists of: $data_root + $repository_name + $UUID-folder/filename</p>
+<h3 id="encryptpasswords"><a href="#TOC">encryptPasswords</a></h3>
+<p>If set to true, all passwords of new user accounts will be stored in encrypted form (as a jBcrypt-hash). All login passwords will be hashed and checked against the database. If you still have legacy user accounts with clear text passwords or you are a server developer, you may opt to have this set to false. Otherwise, you should really enable encryption of passwords.</p>
+<h3 id="logback_configuration_path"><a href="#TOC">logback_configuration_path</a></h3>
+<p>The path to your Logback configuration file. Cinnamon uses Logback for logging (if possible, some legacy APIs or Apache libs still use commons-logging).</p>
+<h3 id="maxtokensperday"><a href="#TOC">maxTokensPerDay</a></h3>
+<p>Every time a user requests a link to reset his or her password or verify an email address, a unique token is generated. The maxTokensPerDay setting defines how often a user may call one of those API methods. The default is 3 times per day. This limit exists so that a malicious person cannot request thousands of &quot;reset your password&quot;-emails.</p>
+<h3 id="minimalpasswordlength"><a href="#TOC">minimalPasswordLength</a></h3>
+<p>The minimal length which is required of a user's password. The default is 4 (for historic reasons). Change this to improve password safety.</p>
+<h3 id="passwordrounds"><a href="#TOC">passwordRounds</a></h3>
+<p>The number of rounds used to generate the bcrypt salt. Valid values are from 4..31, the default is 12. Password hashing takes exponentially longer the higher this number is. The passwordRounds parameter is only useful if you encrypt passwords.</p>
+<h3 id="server-url"><a href="#TOC">server-url</a></h3>
+<p>The URL where this server can be contacted, for example: http://localhost:8080/cinnamon/cinnamon. This is currently used for the links inside mails for password reset or email verification.</p>
+<h3 id="startindexserver"><a href="#TOC">startIndexServer</a></h3>
+<p>If this element is set to true, an extra Thread is started for each repository. It contains the IndexServer, a class which is used for asynchronous indexing of the database. Usually, all changes to documents and folders are picked up by the LuceneBridge class and the index is refreshed synchronously, that is: as soon as you update an object, its index is updated too. But when you make changes to the way Cinnamon indexes objects or if your Lucene index becomes corrupted (for example, due to a disc failure), you may need to regenerate the index as a whole. This is the job of the IndexServer, which will re-index each object and folder which has its index_ok column set to NULL.</p>
+<p>If the IndexServer encounters a permanent problem (for example, an object with a broken XML content file), it will set the index_ok field of this object or folder to 'false'. If the item was successfully indexed, the field is set to 'true'.</p>
+<h3 id="startworkflowserver"><a href="#TOC">startWorkflowServer</a></h3>
+<p>If this element is set to true, an extra Thread is started for each repository. It contains the WorkflowServer, which is running in the background (of the background server process...) and is responsible for the automatic transition of workflow tasks from one state to another. This feature only needs to be enabled if you are actually using the workflow engine of Cinnamon.</p>
+<h3 id="system_root"><a href="#TOC">system_root</a></h3>
+<p>The file system path to the place where you are want to store the cinnamon system files (like log files). On Windows systems, you need to escape &quot;&quot;, for example: &quot;C:\system-root&quot;.</p>
+<h3 id="system-administrator"><a href="#TOC">system-administrator</a></h3>
+<p>Email address of the system's administrator. Used as default for the admin user's email address by the Initializer class. May be used as contact information in error messages.</p>
+<h3 id="use_session_logging"><a href="#TOC">use_session_logging</a></h3>
+<p>Set this to 'true' to request separate log files per session. See below for an example Logback configuration file which contains the necessary setup to create those log files.</p>
+<h2 id="global-database-settings"><a href="#TOC">Global database settings</a></h2>
+<p>At the moment, a Cinnamon server will connect to only one database. (Unless you configure custom connections).</p>
+<p>The data needed (along with the given examples) should be self explanatory.</p>
+<ul>
+<li>sql_host = 127.0.0.1</li>
+<li>sql_user = cinnamon</li>
+<li>sql_pwd = cinnamon</li>
+<li>db_type = postgresql (or: mssql mssql2000 mysql)</li>
+<li>jdbc_driver = one of:
+<ul>
+<li>net.sourceforge.jtds.jdbc.Driver</li>
+<li>com.mysql.jdbc.Driver</li>
+<li>org.postgresql.Driver</li>
+</ul></li>
+</ul>
+<p>Other database drivers will most likely work if they are supported by Hibernate, but they are currently untested.</p>
+<h2 id="email-configuration"><a href="#TOC">Email configuration</a></h2>
+<p>For Cinnamon to be able to send emails (for email verification or workflow events), you have to configure a smtp account.</p>
+<div class="codeBlock">
+
+<pre><code>&lt;mail&gt;
+    &lt;from&gt;CinnamonServer@lolhost&lt;/from&gt;
+&lt;smtp-host&gt;example.invalid&lt;/smtp-host&gt;  
+&lt;user&gt;cinnamon&lt;/user&gt;  
+&lt;password&gt;_cinnamon's_password&lt;/password&gt;  
+&lt;/mail&gt;
+</code></pre>
+</div>
+
+<ul>
+<li>from = this is added as the sender for mails from the server.</li>
+<li>smtp-host = the domain name of your mail server (like cinnamon-cms.de)</li>
+<li>user = the user account on the mail server via which mails will be sent.</li>
+<li>password = the password for the mail account.</li>
+</ul>
+<h2 id="repositories"><a href="#TOC">Repositories</a></h2>
+<p>Each repository consists of a database, a folder in $data_root and a Lucene index. The repository element should have the following child nodes:</p>
+<ul>
+<li>name = name of the database, for example cmn_test</li>
+<li>auto-initialize = if set to &quot;true&quot;, this will initialize an empty repository with the necessary data structures. The database for the repository must exist before you start the server.</li>
+<li>initialize-tests = if set to &quot;true&quot;, the auto-initialize-feature (if enabled) will setup some objects for the test scripts.</li>
+<li>sessionExpirationTime = how long an inactive user session is valid (in milliseconds). Upon a user's action, the session timeout is reset to this value.</li>
+<li>persistence_unit = should be set to 'cinnamon'. For testing purposes developers may use 'cmn_test'. It is best to leave this one alone, unless you are about to make changes in META-INF/persistence.xml.</li>
+<li>[optional] sudoers = contains a list of 'name' elements of users who are allowed to use the sudo API method.</li>
+<li>apiClasses = you can enable or disable specific parts of the Cinnamon API by including or excluding modules. The only required 'apiClass' element is the one with &quot;server.CmdInterpreter&quot; as it's responsible for login to the server. Most other currently available modules enable administrative interfaces used for testing (but which may also be used for custom development or extensions). Current modules:
+<ul>
+<li>server.extension.Initializer (used to create basic IndexItems, Admin user, Permissions etc. Turns a blank repository into a rudimentary useful one).</li>
+<li>server.extension.Translation</li>
+<li>server.extension.TransformationEngine</li>
+<li>server.extension.WorkflowAPI</li>
+<li>server.extension.QueryCustomTable: old API which allows logged in users to send direct SQL statements to the database on preconfigured database connections. This is a potential security hole and should not be enabled, unless you absolutely need it.</li>
+<li>server.extension.admin.UserManager: Allows you to create user accounts. For a nice GUI to do this, look at Dandelion, the AdminTool.</li>
+<li>server.extension.admin.ObjectTypeManager</li>
+<li>server.extension.admin.AclManager</li>
+<li>server.extension.admin.PermissionManager</li>
+<li>server.extension.admin.FormatManager</li>
+<li>server.extension.admin.GroupManager</li>
+<li>server.extension.admin.RelationTypeManager</li>
+<li>server.extension.admin.FolderTypeManager</li>
+<li>server.extension.LifeCycleApi</li>
+</ul></li>
+</ul>
+<h2 id="example-cinnamon_config.xml"><a href="#TOC">Example cinnamon_config.xml</a></h2>
+<a href="cinnamon_config.xml">Download cinnamon_config.xml</a>
+<div class="codeBlock">
+
+<pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+
+&lt;cinnamon_config&gt;
+  &lt;startIndexServer&gt;true&lt;/startIndexServer&gt;
+  &lt;startWorkflowServer&gt;false&lt;/startWorkflowServer&gt;
+  &lt;encryptPasswords&gt;true&lt;/encryptPasswords&gt;
+
+  &lt;system_root&gt;/home/ingo/cinnamon/system/&lt;/system_root&gt;
+  &lt;data_root&gt;/home/ingo/cinnamon/data/&lt;/data_root&gt;
+
+  &lt;mail&gt;
+    &lt;smtp-host&gt;example.invalid&lt;/smtp-host&gt;
+    &lt;user&gt;cinnamon&lt;/user&gt;
+    &lt;password&gt;_cinnamon's_password&lt;/password&gt;
+  &lt;/mail&gt;
+
+  &lt;repositories&gt;
+
+    &lt;repository&gt;
+        &lt;name&gt;cmn_dev&lt;/name&gt;
+        &lt;persistence_unit&gt;cinnamon&lt;/persistence_unit&gt;
+    &lt;/repository&gt;
+
+    &lt;repository&gt;
+        &lt;name&gt;cmn_test&lt;/name&gt;
+        &lt;auto-initialize&gt;true&lt;/auto-initialize&gt;
+        &lt;persistence_unit&gt;cinnamon_test&lt;/persistence_unit&gt;
+        &lt;sessionExpirationTime&gt;360000&lt;/sessionExpirationTime&gt;
+        &lt;apiClasses&gt;
+            &lt;!-- The only obligatory apiClass: --&gt;
+        &lt;apiClass&gt;server.CmdInterpreter&lt;/apiClass&gt;
+        &lt;/apiClasses&gt;
+        &lt;sudoers&gt;
+            &lt;name&gt;admin&lt;/name&gt;
+        &lt;/sudoers&gt;
+    &lt;/repository&gt;
+&lt;/repositories&gt;
+
+&lt;logback_configuration_path&gt;/home/cinnamon/logback.xml&lt;/logback_configuration_path&gt;
+
+&lt;!-- Postgres: --&gt;
+&lt;db_type&gt;postgresql&lt;/db_type&gt;
+&lt;jdbc_protocol&gt;postgresql&lt;/jdbc_protocol&gt;
+&lt;jdbc_driver&gt;org.postgresql.Driver&lt;/jdbc_driver&gt;
+&lt;sql_host&gt;172.16.168.134&lt;/sql_host&gt;
+&lt;sql_user&gt;cinnamon&lt;/sql_user&gt;
+&lt;sql_pwd&gt;cinnamon&lt;/sql_pwd&gt;
+
+&lt;use_session_logging&gt;false&lt;/use_session_logging&gt;
+
+&lt;/cinnamon_config&gt;
+</code></pre>
+</div>
+
+<h3 id="example-logback.xml"><a href="#TOC">Example logback.xml</a></h3>
+<a href="logback.xml">Download logback.xml</a>
+<div class="codeBlock">
+
+<pre><code>&lt;configuration&gt;
+  &lt;property name=&quot;logFolder&quot; value=&quot;/home/zimt/cinnamon-system/global/log&quot;/&gt;
+
+&lt;appender name=&quot;STDOUT&quot; class=&quot;ch.qos.logback.core.ConsoleAppender&quot;&gt;
+        &lt;layout class=&quot;ch.qos.logback.classic.PatternLayout&quot;&gt;
+    &lt;Pattern&gt;%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n&lt;/Pattern&gt;
+   &lt;/layout&gt;
+  &lt;/appender&gt;
+
+&lt;appender name=&quot;FILE&quot; class=&quot;ch.qos.logback.core.rolling.RollingFileAppender&quot;&gt; 
+ &lt;File&gt;${logFolder}/cinnamon.log&lt;/File&gt; 
+  &lt;Append&gt;true&lt;/Append&gt;  
+  &lt;layout class=&quot;ch.qos.logback.classic.PatternLayout&quot;&gt; 
+   &lt;Pattern&gt;%-4relative [%thread] %-5level %logger{35} - %msg%n&lt;/Pattern&gt; 
+    &lt;/layout&gt;
+
+&lt;rollingPolicy class=&quot;ch.qos.logback.core.rolling.TimeBasedRollingPolicy&quot;&gt;
+  &lt;FileNamePattern&gt;${logFolder}/${session}.%d{yyyy-MM-dd}.gz&lt;/FileNamePattern&gt;
+  &lt;!-- keep 30 days' worth of history --&gt;
+  &lt;MaxHistory&gt;30&lt;/MaxHistory&gt;
+&lt;/rollingPolicy&gt;
+
+&lt;/appender&gt; 
+
+&lt;appender name=&quot;SIFT&quot; class=&quot;ch.qos.logback.classic.sift.SiftingAppender&quot;&gt;
+  &lt;discriminator&gt;  
+    &lt;Key&gt;session&lt;/Key&gt;
+    &lt;DefaultValue&gt;unknown_session&lt;/DefaultValue&gt;
+  &lt;/discriminator&gt;
+  &lt;sift&gt;  
+    &lt;appender name=&quot;FILE-${session}&quot; class=&quot;ch.qos.logback.core.rolling.RollingFileAppender&quot;&gt;
+      &lt;File&gt;${logFolder}/${session}.log&lt;/File&gt;
+      &lt;Append&gt;true&lt;/Append&gt;
+      &lt;ImmediateFlush&gt;true&lt;/ImmediateFlush&gt;
+          &lt;!--  false == 1.4 to 3 times faster, some risk of message loss on crash --&gt;
+
+     &lt;rollingPolicy class=&quot;ch.qos.logback.core.rolling.TimeBasedRollingPolicy&quot;&gt;
+      &lt;FileNamePattern&gt;${logFolder}/${session}.%d{yyyy-MM-dd}.gz&lt;/FileNamePattern&gt;
+      &lt;!-- keep 30 days' worth of history --&gt;
+      &lt;MaxHistory&gt;30&lt;/MaxHistory&gt;
+    &lt;/rollingPolicy&gt;      
+
+   &lt;layout class=&quot;ch.qos.logback.classic.PatternLayout&quot;&gt;
+    &lt;!-- note: remove %L to increase speed at the expense of loosing the line numbers.--&gt;  
+       &lt;Pattern&gt;%-4relative [%thread] %-5level %mdc{user} %mdc{repo} %logger{35} %L - %msg%n&lt;/Pattern&gt;
+    &lt;/layout&gt;
+    &lt;/appender&gt;
+  &lt;/sift&gt;
+&lt;/appender&gt; 
+
+
+  &lt;root level=&quot;DEBUG&quot;&gt;
+    &lt;appender-ref ref=&quot;FILE&quot; /&gt;
+  &lt;/root&gt;
+ &lt;logger name=&quot;org.mortbay.log&quot; level=&quot;INFO&quot;/&gt;
+ &lt;logger name=&quot;org.hibernate&quot; level=&quot;INFO&quot;/&gt;
+ &lt;logger name=&quot;server.CmdInterpreter&quot; level=&quot;DEBUG&quot;/&gt;
+
+&lt;/configuration&gt;
+</code></pre>
+</div>
+
+<p>This logger outputs all log messages to the location specified in the 'File' element. It also can generate one log file per session.</p>
+<p>See http://logback.qos.ch/ for more information about how to configure Logback.</p>
+<p>You can change the 'root' level from &quot;DEBUG&quot; to &quot;INFO&quot; or &quot;ERROR&quot; to get Cinnamon to be a little more quiet.</p>
+</body>
+</html>

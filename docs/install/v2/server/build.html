@@ -1,5 +1,32 @@
-<h1 id="installation-from-source-cinnamon-server-2">Installation from source: Cinnamon server 2</h1>
-<h2 id="dependencies">Dependencies</h2>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+</head>
+<body>
+<div id="TOC">
+<ul>
+<li><a href="#build-cinnamon-server-from-source">Build Cinnamon server from source</a><ul>
+<li><a href="#dependencies">Dependencies</a></li>
+<li><a href="#checkout-the-source-code">Checkout the source code</a></li>
+<li><a href="#configure-the-build-environment">Configure the build environment</a><ul>
+<li><a href="#edit-ant-build-script">edit ant build script</a></li>
+<li><a href="#edit-persistence.xml">edit persistence.xml</a></li>
+<li><a href="#edit-c3p0.properties">edit c3p0.properties</a></li>
+</ul></li>
+<li><a href="#run-the-build-script">Run the build script</a></li>
+</ul></li>
+<li><a href="#build-the-administration-tool-from-source">Build the administration tool from source</a><ul>
+<li><a href="#dependencies-1">Dependencies</a></li>
+<li><a href="#build-dandelion">Build Dandelion</a></li>
+</ul></li>
+</ul>
+</div>
+<h1 id="build-cinnamon-server-from-source"><a href="#TOC">Build Cinnamon server from source</a></h1>
+<p>(for version 2.x of the Cinnamon server)</p>
+<h2 id="dependencies"><a href="#TOC">Dependencies</a></h2>
 <p>You will need the following:</p>
 <ul>
 <li>Java 6 JDK (better: Java 7)</li>
@@ -7,7 +34,7 @@
 <li>A servlet container (Tomcat 7, alternatives: Jetty, Glassfish)</li>
 <li>A lot of open source libraries, so it's recommended you download the developer library bundle. The required files and their versions can be seen in the build.exmple.xml in the server's source package.</li>
 </ul>
-<h2 id="checkout-the-source-code">Checkout the source code</h2>
+<h2 id="checkout-the-source-code"><a href="#TOC">Checkout the source code</a></h2>
 <p>The Cinnamon server is split into several modules:</p>
 <ul>
 <li>CinnamonBase (essential classes used in all modules)</li>
@@ -44,12 +71,18 @@ svn co https://cinnamon.svn.sourceforge.net/svnroot/cinnamon/CinnamonClient/Safr
 <p>If you want to install the Grails applications for administration and web access, you may also add:</p>
 <pre><code>svn co https://cinnamon.svn.sourceforge.net/svnroot/cinnamon/Dandelion/trunk/. Dandelion/.
 svn co https://cinnamon.svn.sourceforge.net/svnroot/cinnamon/Humulus/trunk/. Humulus/.
-svn co https://cinnamon.svn.sourceforge.net/svnroot/cinnamon/Illicium/trunk/. Illicium/.        
+svn co https://cinnamon.svn.sourceforge.net/svnroot/cinnamon/Illicium/trunk/. Illicium/.    
 </code></pre>
-<h2 id="configure-the-build-environment">Configure the build environment</h2>
-<h3 id="edit-ant-build-script">edit ant build script</h3>
+<h2 id="configure-the-build-environment"><a href="#TOC">Configure the build environment</a></h2>
+<h3 id="edit-ant-build-script"><a href="#TOC">edit ant build script</a></h3>
 <p>Please edit the ant build script in Server/build.example.xml to match your environment (and copy it to Server/build.xml). The script is intended to be executed in the parent folder of Server/, so the paths should be relative to that.</p>
-<h3 id="edit-persistence.xml">edit persistence.xml</h3>
+<p>If you have not checked out Dandelion (the administration tool), you have to disable copying of the library jar files to the Dandelion folder by commenting out the instructions:</p>
+<pre><code>&lt;!--
+&lt;copy todir=&quot;${dandelion.lib}&quot; file=&quot;${utils.jar}&quot;/&gt;
+--&gt;
+</code></pre>
+<p>(Same for entitylib.jar and cinnamonBase.jar)</p>
+<h3 id="edit-persistence.xml"><a href="#TOC">edit persistence.xml</a></h3>
 <p>Edit the hibernate persistence configuration in Server/META-INF/persistence. There are three variables that should be set via the build.xml file, and if you are going to use the default configuration (postgres), you do not need to change them:</p>
 <ol style="list-style-type: decimal">
 <li>hibernate.dialect</li>
@@ -73,9 +106,9 @@ svn co https://cinnamon.svn.sourceforge.net/svnroot/cinnamon/Illicium/trunk/. Il
  &lt;property name=&quot;hibernate.connection.driver_class&quot; value=&quot;@hibernate.connection.driver_class@&quot;/&gt;
  &lt;property name=&quot;hibernate.jdbc.use_streams_for_binary&quot; value=&quot;@hibernate.jdbc.use_streams_for_binary@&quot;/&gt;
 </code></pre>
-<h3 id="edit-c3p0.properties">edit c3p0.properties</h3>
+<h3 id="edit-c3p0.properties"><a href="#TOC">edit c3p0.properties</a></h3>
 <p>In EntityLib, copy c3p0.example.properties to c3p0.properties and edit it. You can find out more about the available properties in the <a href="http://www.mchange.com/projects/c3p0/">c3p0 documentation</a> (It's a library that manages groups of database connections).</p>
-<h2 id="run-the-build-script">Run the build script</h2>
+<h2 id="run-the-build-script"><a href="#TOC">Run the build script</a></h2>
 <p>Start the ant build script in the directory that contains the checked out modules of the Cinnamon server with the command:</p>
 <pre><code>ant -f build.example.xml dist_public
 </code></pre>
@@ -84,3 +117,17 @@ svn co https://cinnamon.svn.sourceforge.net/svnroot/cinnamon/Illicium/trunk/. Il
 <img src="install_00100.png" alt="Screenshot: Build Successful" /><p class="caption">Screenshot: Build Successful</p>
 </div>
 <p>Congratulations, you have now a ready-to-deploy cinnamon.war :)</p>
+<h1 id="build-the-administration-tool-from-source"><a href="#TOC">Build the administration tool from source</a></h1>
+<h2 id="dependencies-1"><a href="#TOC">Dependencies</a></h2>
+<p>To create Dandelion, the administration tool, you will need a working Grails development environment, which basically means: download and install the current version of Grails from <a href="http://grails.org">Grails.org</a>.</p>
+<p>You will also need the source code of Dandelion, as described above in the &quot;checkout the source code&quot; section .</p>
+<h2 id="build-dandelion"><a href="#TOC">Build Dandelion</a></h2>
+<ol style="list-style-type: decimal">
+<li>On the command line, change to the Dandelion directory.</li>
+<li>Run &quot;grails war&quot;. This should generate the dandelion-2.x.x.war in the target folder.</li>
+<li>Install the database and configure Cinnamon as described on the install page.</li>
+<li>Stop Tomcat, copy target/dandelion-2.x.x.war to Tomcat/webapps/dandelion.war and restart the web server.</li>
+<li>Visit http://<em>your_server_ip</em>:8080/dandelion where you can login with your admin account.</li>
+</ol>
+</body>
+</html>

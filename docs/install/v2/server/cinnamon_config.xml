@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cinnamon_config>
+  <startIndexServer>true</startIndexServer>
+  <startWorkflowServer>false</startWorkflowServer>
+  <encryptPasswords>true</encryptPasswords>
+
+  <system_root>/home/ingo/cinnamon/system/</system_root>
+  <data_root>/home/ingo/cinnamon/data/</data_root>
+
+  <mail>
+    <smtp-host>example.invalid</smtp-host>
+    <user>cinnamon</user>
+    <password>_cinnamon's_password</password>
+  </mail>
+
+  <repositories>
+
+    <repository>
+        <name>cmn_dev</name>
+        <persistence_unit>cinnamon</persistence_unit>
+    </repository>
+
+    <repository>
+        <name>cmn_test</name>
+        <auto-initialize>true</auto-initialize>
+        <persistence_unit>cinnamon_test</persistence_unit>
+        <sessionExpirationTime>360000</sessionExpirationTime>
+        <apiClasses>
+            <!-- The only obligatory apiClass: -->
+        <apiClass>server.CmdInterpreter</apiClass>
+        </apiClasses>
+        <sudoers>
+            <name>admin</name>
+        </sudoers>
+    </repository>
+</repositories>
+
+<logback_configuration_path>/home/cinnamon/logback.xml</logback_configuration_path>
+
+<!-- Postgres: -->
+<db_type>postgresql</db_type>
+<jdbc_protocol>postgresql</jdbc_protocol>
+<jdbc_driver>org.postgresql.Driver</jdbc_driver>
+<sql_host>172.16.168.134</sql_host>
+<sql_user>cinnamon</sql_user>
+<sql_pwd>cinnamon</sql_pwd>
+
+<use_session_logging>false</use_session_logging>
+
+</cinnamon_config>

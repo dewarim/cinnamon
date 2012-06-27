@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+      <property name="logFolder" value="/home/zimt/cinnamon-system/global/log"/>
+ 
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+            <layout class="ch.qos.logback.classic.PatternLayout">
+	    <Pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Pattern>
+       </layout>
+      </appender>
+  
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender"> 
+     <File>${logFolder}/cinnamon.log</File> 
+      <Append>true</Append>  
+      <layout class="ch.qos.logback.classic.PatternLayout"> 
+       <Pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</Pattern> 
+        </layout>
+    
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+      <FileNamePattern>${logFolder}/${session}.%d{yyyy-MM-dd}.gz</FileNamePattern>
+      <!-- keep 30 days' worth of history -->
+      <MaxHistory>30</MaxHistory>
+    </rollingPolicy>
+       
+    </appender> 
+
+    <appender name="SIFT" class="ch.qos.logback.classic.sift.SiftingAppender">
+      <discriminator>  
+      	<Key>session</Key>
+       	<DefaultValue>unknown_session</DefaultValue>
+      </discriminator>
+      <sift>  
+      	<appender name="FILE-${session}" class="ch.qos.logback.core.rolling.RollingFileAppender">
+      	  <File>${logFolder}/${session}.log</File>
+      	  <Append>true</Append>
+      	  <ImmediateFlush>true</ImmediateFlush>
+              <!--  false == 1.4 to 3 times faster, some risk of message loss on crash -->
+  	  
+      	 <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+          <FileNamePattern>${logFolder}/${session}.%d{yyyy-MM-dd}.gz</FileNamePattern>
+          <!-- keep 30 days' worth of history -->
+          <MaxHistory>30</MaxHistory>
+        </rollingPolicy>  	  
+  	    
+       <layout class="ch.qos.logback.classic.PatternLayout">
+       	<!-- note: remove %L to increase speed at the expense of loosing the line numbers.-->  
+           <Pattern>%-4relative [%thread] %-5level %mdc{user} %mdc{repo} %logger{35} %L - %msg%n</Pattern>
+        </layout>
+        </appender>
+      </sift>
+    </appender> 
+
+
+      <root level="DEBUG">
+        <appender-ref ref="FILE" />
+      </root>
+     <logger name="org.mortbay.log" level="INFO"/>
+     <logger name="org.hibernate" level="INFO"/>
+     <logger name="server.CmdInterpreter" level="DEBUG"/>
+
+</configuration>

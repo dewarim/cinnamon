@@ -1,4 +1,9 @@
-# Installing Cinnamon Server v2 - Configuration and Deployment
+# Deployment
+
+(for version 2.x of the Cinnamon server)
+
+This text describes how to configure and install the cinnamon.war. 
+To continue, You need to either build it from source or download the package from [Cinnamon-cms.de](http://cinnamon-cms.de/).
 
 ## configuration files: Server
 
@@ -9,14 +14,15 @@ which points to the same directory.
 
 ### cinnamon_config.xml
 
-The main [Cinnamon configuration file](../configure/config.md) has its own page which explain all the settings.
+The main [Cinnamon configuration file](configure.md) has its own page which explain all the settings.
 You need to edit the file to supply the correct connection parameters for the database and to tell Cinnamon 
 where to store data and index files.
 
 ### logback.xml
 
 Cinnamon uses [Logback](http://logback.qos.ch/) as its main logging framework.
-Copy Server/logback.example.xml to logback.xml.
+Copy Server/logback.example.xml to cinnamon-system/logback.xml if you are building from source, 
+otherwise use the logback.xml from the binary package download.
 
 To change the logging level or enable/disable certain logging behaviours, edit this file.
 Activating all log options on debug level will create *very* large log files (GBytes) in short time,
@@ -101,10 +107,62 @@ prefix must be identical. The id must be unique. Breaking this file makes for in
 ## configure database
 
 The default configuration of cinnamon expects a database owner with username and password "cinnamon".
-If you are using Postgresql, you can just import the downloadable demo database. 
+The name of the database has to be entered in the database-config.groovy (in the above dbconnections entry, replace 'demo' with
+the actual database's name) and in cinnamon_config.xml (replace content of the 'name' element of the repository).
 
-// TODO: link to download.
-// TODO: tutorial for bootstrapping on other platforms.
+### importing the demo database
+
+If you are using Postgresql, you can just import the downloadable demo database:
+
+    psql -f demo.sql demo
+
+On Ubuntu you may have to use sudo for this operation:
+    
+    sudo -u postgres psql -f demo.sql demo
+
+Note that you will also need to
+
+* unpack the demo files into cinnamon-data/$repositoyName, for example cinnamon-data/demo
+* copy the Lucene index files into cinnamon-system/index/$repositoryName
+
+On Linux make sure that the webserver (Tomcat) has write permisson on both folder paths. Better yet,
+make the Tomcat user the owner of both cinnamon-data and cinnamon-system to prevent IO-permission problems.
+
+### bootstrapping the database (create a new repository)
+
+If you want to install Cinnamon on a different database system or wish to create a repository from scratch,
+use the bootstrapping option _instead_ of importing the demo.sql file:
+
+    --- create the database with this SQL script
+    --- (adopt to your RDBMS dialect):
+        create user cinnamon2 password 'cinnamon2';
+        create database cinnamon2 owner cinnamon2;
+        grant all on database cinnamon2 to cinnamon2;
+    
+Add this section to your cinnamon_config.xml:
+
+    <repository>
+        <name>cinnamon2</name>
+	  <auto-initialize>true</auto-initialize>	  
+          <persistence_unit>cinnamon_test</persistence_unit>
+       <!-- ... other settings ... -->
+    </repository>
+
+Add a new section for the new database to the database-config.groovy (see above "database-config.groovy" for details).
+
+*IMPORTANT* after the first start of the servlet configure, it will create all the tables and a bare minimum of
+system objects (admin user with password admin, default object types, formats etc). Test this by logging in as
+admin and, if everything works, *SHUT DOWN THE SERVER* and in cinnamon_config.xml
+
+    change
+        <auto-initialize>true</auto-initialize>	  
+        <persistence_unit>cinnamon_test</persistence_unit>    
+    to
+        <auto-initialize>false</auto-initialize>	  
+        <persistence_unit>cinnamon</persistence_unit>
+    
+    
+Otherwise your database will be re-initialized *on every startup*!
 
 ## configure servlet container
 
@@ -143,11 +201,10 @@ If the database is ready, the servlet container is configured and the configurat
 you are now ready to deploy the cinnamon.war:
 
 1.    stop your webserver/servlet container,
-2.    remove the old Cinnamon server installation
-3.    copy the new cinnamon.war into the webserver's webapps directory
-4.    start your webserver
+2.    remove the old Cinnamon server installation if it exists,
+3.    copy the new cinnamon.war (and dandelion.war) into the webserver's webapps directory
+4.    re-start your webserver
 
 If your servlet container has auto-deploy enabled, it should pick up and install the cinnamon.war automatically from its webapps directory. 
 More advanced servers may be able to do this on-the-fly, but this can break existing database connection pooling and 
-(in some cases on Tomcat 6) may also exhaust PermGenSpace in the virtual machine,
- so stop-deploy-restart is the recommended way.
+(in some cases on Tomcat 6) may also exhaust PermGenSpace in the virtual machine, so stop-deploy-restart is the recommended way.

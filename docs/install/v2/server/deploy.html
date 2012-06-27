@@ -1,16 +1,50 @@
-<h1 id="installing-cinnamon-server-v2---configuration-and-deployment">Installing Cinnamon Server v2 - Configuration and Deployment</h1>
-<h2 id="configuration-files-server">configuration files: Server</h2>
-<p>The configuration files should be placed in the cinnamon-system direcotry. Then you have to add an environment variable CINNAMON_HOME_DIR which points to this directory. If you want to use the administrative tool, define a DANDELION_HOME_DIR variable which points to the same directory.</p>
-<h3 id="cinnamon_config.xml">cinnamon_config.xml</h3>
-<p>The main <a href="../configure/config.md">Cinnamon configuration file</a> has its own page which explain all the settings. You need to edit the file to supply the correct connection parameters for the database and to tell Cinnamon where to store data and index files.</p>
-<h3 id="logback.xml">logback.xml</h3>
-<p>Cinnamon uses <a href="http://logback.qos.ch/">Logback</a> as its main logging framework. Copy Server/logback.example.xml to logback.xml.</p>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+</head>
+<body>
+<div id="TOC">
+<ul>
+<li><a href="#deployment-of-the-binary-package">Deployment of the binary package</a><ul>
+<li><a href="#configuration-files-server">configuration files: Server</a><ul>
+<li><a href="#cinnamon_config.xml">cinnamon_config.xml</a></li>
+<li><a href="#logback.xml">logback.xml</a></li>
+<li><a href="#lucene.properties">lucene.properties</a></li>
+</ul></li>
+<li><a href="#configuration-files-administrators-gui">configuration files: Administrator's GUI</a><ul>
+<li><a href="#dandelion-config.groovy">dandelion-config.groovy</a></li>
+<li><a href="#dandelion.log4j.properties">dandelion.log4j.properties</a></li>
+<li><a href="#database-config.groovy">database-config.groovy</a></li>
+</ul></li>
+<li><a href="#configure-database">configure database</a><ul>
+<li><a href="#importing-the-demo-database">importing the demo database</a></li>
+<li><a href="#bootstrapping-the-database-create-a-new-repository">bootstrapping the database (create a new repository)</a></li>
+</ul></li>
+<li><a href="#configure-servlet-container">configure servlet container</a><ul>
+<li><a href="#tomcat-7">Tomcat 7</a></li>
+</ul></li>
+<li><a href="#actual-deployment">actual deployment</a></li>
+</ul></li>
+</ul>
+</div>
+<h1 id="deployment-of-the-binary-package"><a href="#TOC">Deployment of the binary package</a></h1>
+<p>(for version 2.x of the Cinnamon server)</p>
+<p>This text describes how to configure and install the cinnamon.war. To continue, You need to either build it from source or download the package from <a href="http://cinnamon-cms.de/">Cinnamon-cms.de</a>.</p>
+<h2 id="configuration-files-server"><a href="#TOC">configuration files: Server</a></h2>
+<p>The configuration files should be placed in the cinnamon-system directory. Then you have to add an environment variable CINNAMON_HOME_DIR which points to this directory. If you want to use the administrative tool, define a DANDELION_HOME_DIR variable which points to the same directory.</p>
+<h3 id="cinnamon_config.xml"><a href="#TOC">cinnamon_config.xml</a></h3>
+<p>The main <a href="configure.md">Cinnamon configuration file</a> has its own page which explain all the settings. You need to edit the file to supply the correct connection parameters for the database and to tell Cinnamon where to store data and index files.</p>
+<h3 id="logback.xml"><a href="#TOC">logback.xml</a></h3>
+<p>Cinnamon uses <a href="http://logback.qos.ch/">Logback</a> as its main logging framework. Copy Server/logback.example.xml to cinnamon-system/logback.xml if you are building from source, otherwise use the logback.xml from the binary package download.</p>
 <p>To change the logging level or enable/disable certain logging behaviours, edit this file. Activating all log options on debug level will create <em>very</em> large log files (GBytes) in short time, so you should watch out for out-of-disk space during debugging (or configure logback to only use debug settings on the relevant classes)</p>
-<h3 id="lucene.properties">lucene.properties</h3>
-<p>Cinnamon uses the Lucene search library for indexing and searching content. In most cases, it sould suffice to use the synchronous indexing facilities. But if you want to index many objects at once, for example when after changes to the index items a re-built of the index is necessary, you can use the background thread of the Lucene indexer. This will be configured in the lucene.properties file, which defines the following properties:</p>
+<h3 id="lucene.properties"><a href="#TOC">lucene.properties</a></h3>
+<p>Cinnamon uses the Lucene search library for indexing and searching content. In most cases, it should suffice to use the synchronous indexing facilities. But if you want to index many objects at once, for example when after changes to the index items a re-built of the index is necessary, you can use the background thread of the Lucene indexer. This will be configured in the lucene.properties file, which defines the following properties:</p>
 <ul>
 <li>indexDir: where the index will be stored. Your servlet container (for example, Tomcat 7) needs read/write permissions on this folder.</li>
-<li>sleepBetweenRuns: to prevent the IndexServer from querying the database all the time, it should &quot;rest&quot; once in a while. You can specify how many miliseconds it should wait before starting with the next batch.</li>
+<li>sleepBetweenRuns: to prevent the IndexServer from querying the database all the time, it should &quot;rest&quot; once in a while. You can specify how many milliseconds it should wait before starting with the next batch.</li>
 <li>itemsPerRun: how many objects should be indexed in one run.</li>
 </ul>
 <p>Example file:</p>
@@ -19,8 +53,8 @@ indexDir=/home/cinnamon/cinnamon-system/index
 sleepBetweenRuns=3000
 itemsPerRun=100
 </code></pre>
-<h2 id="configuration-files-administrators-gui">configuration files: Administrator's GUI</h2>
-<h3 id="dandelion-config.groovy">dandelion-config.groovy</h3>
+<h2 id="configuration-files-administrators-gui"><a href="#TOC">configuration files: Administrator's GUI</a></h2>
+<h3 id="dandelion-config.groovy"><a href="#TOC">dandelion-config.groovy</a></h3>
 <p>The Dandelion configuration file defines the names of several types of classes which are used to customize Cinnamon server object types.</p>
 <ul>
 <li><em>indexers</em>: used for IndexItems (Lucene configuration)</li>
@@ -34,9 +68,9 @@ itemsPerRun=100
 <p>Example entry:</p>
 <pre><code>indexers = [ 'cinnamon.index.indexer.DefaultIndexer', ]
 </code></pre>
-<h3 id="dandelion.log4j.properties">dandelion.log4j.properties</h3>
+<h3 id="dandelion.log4j.properties"><a href="#TOC">dandelion.log4j.properties</a></h3>
 <p>Standard log4j configuration file, see the <a href="http://logging.apache.org/log4j/1.2/manual.html">official introduction to log4j</a> for more details.</p>
-<h3 id="database-config.groovy">database-config.groovy</h3>
+<h3 id="database-config.groovy"><a href="#TOC">database-config.groovy</a></h3>
 <p>The database-config.groovy file contains the database connections and repository layout for all Grails based tools that may access Cinnamon. Currently in Cinnamon 2, those are Dandelion for administration and Illicium the web client.</p>
 <pre><code>dbconnections {
     demo { 
@@ -59,16 +93,54 @@ itemsPerRun=100
 }
 </code></pre>
 <p>The prefix is used in the selection menu on the login page. For legacy reasons, the name of the connection and the prefix must be identical. The id must be unique. Breaking this file makes for interesting times.</p>
-<h2 id="configure-database">configure database</h2>
-<p>The default configuration of cinnamon expects a database owner with username and password &quot;cinnamon&quot;. If you are using Postgreql, you can just import the downloadable demo database.</p>
-<p>// TODO: link to download. // TODO: tutorial for bootstrapping on other platforms.</p>
-<h2 id="configure-servlet-container">configure servlet container</h2>
+<h2 id="configure-database"><a href="#TOC">configure database</a></h2>
+<p>The default configuration of cinnamon expects a database owner with username and password &quot;cinnamon&quot;. The name of the database has to be entered in the database-config.groovy (in the above dbconnections entry, replace 'demo' with the actual database's name) and in cinnamon_config.xml (replace content of the 'name' element of the repository).</p>
+<h3 id="importing-the-demo-database"><a href="#TOC">importing the demo database</a></h3>
+<p>If you are using Postgresql, you can just import the downloadable demo database:</p>
+<pre><code>psql -f demo.sql demo
+</code></pre>
+<p>On Ubuntu you may have to use sudo for this operation:</p>
+<pre><code>sudo -u postgres psql -f demo.sql demo
+</code></pre>
+<p>Note that you will also need to</p>
+<ul>
+<li>unpack the demo files into cinnamon-data/$repositoyName, for example cinnamon-data/demo</li>
+<li>copy the Lucene index files into cinnamon-system/index/$repositoryName</li>
+</ul>
+<p>On Linux make sure that the webserver (Tomcat) has write permisson on both folder paths. Better yet, make the Tomcat user the owner of both cinnamon-data and cinnamon-system to prevent IO-permission problems.</p>
+<h3 id="bootstrapping-the-database-create-a-new-repository"><a href="#TOC">bootstrapping the database (create a new repository)</a></h3>
+<p>If you want to install Cinnamon on a different database system or wish to create a repository from scratch, use the bootstrapping option <em>instead</em> of importing the demo.sql file:</p>
+<pre><code>--- create the database with this SQL script
+--- (adopt to your RDBMS dialect):
+    create user cinnamon2 password 'cinnamon2';
+    create database cinnamon2 owner cinnamon2;
+    grant all on database cinnamon2 to cinnamon2;
+</code></pre>
+<p>Add this section to your cinnamon_config.xml:</p>
+<pre><code>&lt;repository&gt;
+    &lt;name&gt;cinnamon2&lt;/name&gt;
+  &lt;auto-initialize&gt;true&lt;/auto-initialize&gt;     
+      &lt;persistence_unit&gt;cinnamon_test&lt;/persistence_unit&gt;
+   &lt;!-- ... other settings ... --&gt;
+&lt;/repository&gt;
+</code></pre>
+<p>Add a new section for the new database to the database-config.groovy (see above &quot;database-config.groovy&quot; for details).</p>
+<p><em>IMPORTANT</em> after the first start of the servlet configure, it will create all the tables and a bare minimum of system objects (admin user with password admin, default object types, formats etc). Test this by logging in as admin and, if everything works, <em>SHUT DOWN THE SERVER</em> and in cinnamon_config.xml</p>
+<pre><code>change
+    &lt;auto-initialize&gt;true&lt;/auto-initialize&gt;   
+    &lt;persistence_unit&gt;cinnamon_test&lt;/persistence_unit&gt;    
+to
+    &lt;auto-initialize&gt;false&lt;/auto-initialize&gt;      
+    &lt;persistence_unit&gt;cinnamon&lt;/persistence_unit&gt;
+</code></pre>
+<p>Otherwise your database will be re-initialized <em>on every startup</em>!</p>
+<h2 id="configure-servlet-container"><a href="#TOC">configure servlet container</a></h2>
 <p>Generally, you will have to increase the amount of RAM that the JVM of the web server has available:</p>
 <pre><code>-Xmx1200m -Xms1200m -XX:PermSize=500m -XX:MaxPermSize=500m 
 </code></pre>
 <p>are good values for a medium sized production ready setting where users may upload 50MByte of XML content and do expect fast indexing.</p>
-<p>You must set the environmnet variables CINNAMON_HOME_DIR and DANDELION_HOME_DIR, which should point to the cinnamon-system directory (for example, CINNAMON_HOME_DIR=/home/cinnamon/cinnamon-system). Depending on your machine, a restart may be necessary afterwards to test / ensure that the environment variables are loaded at boot time.</p>
-<h3 id="tomcat-7">Tomcat 7</h3>
+<p>You must set the environment variables CINNAMON_HOME_DIR and DANDELION_HOME_DIR, which should point to the cinnamon-system directory (for example, CINNAMON_HOME_DIR=/home/cinnamon/cinnamon-system). Depending on your machine, a restart may be necessary afterwards to test / ensure that the environment variables are loaded at boot time.</p>
+<h3 id="tomcat-7"><a href="#TOC">Tomcat 7</a></h3>
 <p>Tomcat may not have access to the same environment variables as the average user. So depending on your system layout, you can add the environment variables to the Tomcat startup script or configuration files. On Ubuntu 12.04 server, that would be /etc/default/tomcat7, and the variables something like:</p>
 <pre><code>export CINNAMON_HOME_DIR=/home/cinnamon/data
 export DANDELION_HOME_DIR=/home/cinnamon/data
@@ -80,12 +152,14 @@ export DANDELION_HOME_DIR=/home/cinnamon/data
            URIEncoding=&quot;UTF-8&quot;
            redirectPort=&quot;8443&quot; /&gt;
 </code></pre>
-<h2 id="actual-deployment">actual deployment</h2>
+<h2 id="actual-deployment"><a href="#TOC">actual deployment</a></h2>
 <p>If the database is ready, the servlet container is configured and the configuration files have been setup correctly, you are now ready to deploy the cinnamon.war:</p>
 <ol style="list-style-type: decimal">
 <li>stop your webserver/servlet container,</li>
-<li>remove the old Cinnamon server installation</li>
-<li>copy the new cinnamon.war into the webserver's webapps direcotry</li>
-<li>start your webserver</li>
+<li>remove the old Cinnamon server installation if it exists,</li>
+<li>copy the new cinnamon.war (and dandelion.war) into the webserver's webapps directory</li>
+<li>re-start your webserver</li>
 </ol>
 <p>If your servlet container has auto-deploy enabled, it should pick up and install the cinnamon.war automatically from its webapps directory. More advanced servers may be able to do this on-the-fly, but this can break existing database connection pooling and (in some cases on Tomcat 6) may also exhaust PermGenSpace in the virtual machine, so stop-deploy-restart is the recommended way.</p>
+</body>
+</html>
