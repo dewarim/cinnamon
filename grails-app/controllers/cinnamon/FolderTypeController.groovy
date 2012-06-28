@@ -7,15 +7,6 @@ import grails.plugins.springsecurity.Secured
 @Secured(["isAuthenticated()"])
 class FolderTypeController extends BaseController{
 
-    def listXml() {
-        def doc = DocumentHelper.createDocument()
-        Element root = doc.addElement("folderTypes");
-        FolderType.list().each{folderType ->
-            root.add(FolderType.asElement("folderType", folderType));
-        }
-        return render(contentType: 'application/xml', text: doc.asXML())
-    }
-
     def create() {
 //        FolderType ft = new FolderType(params)
 //        return [folderType:null]
@@ -25,6 +16,7 @@ class FolderTypeController extends BaseController{
         redirect(action: 'list')
     }
 
+    @Secured(["hasRole('_superusers')"])
     def save() {
 
         FolderType folderType = new FolderType(
@@ -62,10 +54,12 @@ class FolderTypeController extends BaseController{
         return redirect(action: 'list', controller: 'folderType')
     }
 
+    @Secured(["hasRole('_superusers')"])
     def edit () {
         [folderType: FolderType.get(params.id)]
     }
 
+    @Secured(["hasRole('_superusers')"])
     def delete () {
         FolderType ft = FolderType.get(params.id)
         try {
@@ -79,6 +73,7 @@ class FolderTypeController extends BaseController{
         return redirect(action: 'list')
     }
 
+    @Secured(["hasRole('_superusers')"])
     def update () {
         FolderType ft = FolderType.get(params.id)
         ft.properties = params
@@ -97,5 +92,17 @@ class FolderTypeController extends BaseController{
         setListParams()
         render(template: 'folderTypeList', model: [folderTypeList: FolderType.list(params)])
     }
-    
+
+    //---------------------------------------------------
+    // Cinnamon XML Server API
+    def listXml() {
+        def doc = DocumentHelper.createDocument()
+        Element root = doc.addElement("folderTypes");
+        FolderType.list().each{folderType ->
+            root.add(FolderType.asElement("folderType", folderType));
+        }
+        return render(contentType: 'application/xml', text: doc.asXML())
+    }
+
+
 }

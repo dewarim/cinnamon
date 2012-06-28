@@ -7,19 +7,23 @@ import grails.plugins.springsecurity.Secured
 @Secured(["isAuthenticated()"])
 class FormatController extends BaseController {
 
+    @Secured(["hasRole('_superusers')"])
     def index () {
         redirect(action:'list', controller:'format')
     }
 
+    @Secured(["hasRole('_superusers')"])
     def list () {
         setListParams()
         return [formatList:Format.list(params)]
     }
 
+    @Secured(["hasRole('_superusers')"])
     def create() {
         
     }
 
+    @Secured(["hasRole('_superusers')"])
     def edit () {
         Format format = Format.get(params.id)
         if(format){
@@ -29,6 +33,7 @@ class FormatController extends BaseController {
         return redirect(action:'list', controller:'format')
     }
 
+    @Secured(["hasRole('_superusers')"])
     def show () {
         if(params.id){
             Format format = Format.get(params.id)
@@ -40,6 +45,7 @@ class FormatController extends BaseController {
         return redirect(action:'list', controller:'format')
     }
 
+    @Secured(["hasRole('_superusers')"])
     def delete () {
         def format = Format.get(params.id)
         if( ! format){
@@ -58,6 +64,7 @@ class FormatController extends BaseController {
         return redirect(action: 'list')
     }
 
+    @Secured(["hasRole('_superusers')"])
     def save () {
         if (!params.name || !params.name.trim()) {
             flash.error = message(code: 'format.empty.name')
@@ -76,6 +83,7 @@ class FormatController extends BaseController {
         }
     }
 
+    @Secured(["hasRole('_superusers')"])
     def update () {
         Format format = Format.get(params.id)
         if (!params.name || !params.name.trim()) {
@@ -90,6 +98,7 @@ class FormatController extends BaseController {
         return redirect(action:'show', controller:'format', id:format.id)
     }
 
+    @Secured(["hasRole('_superusers')"])
     def updateList () {
         setListParams()
         render(template: 'listTable', model:[formatList:Format.list(params)])
