@@ -3,12 +3,36 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title><g:layoutTitle default="Grails"/></title>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<r:require modules="jquery"/>
+<script type="text/javascript">
+    function limitText(limitField, limitNum) {
+        if (limitField.value.length > limitNum) {
+            limitField.value = limitField.value.substring(0, limitNum);
+        }
+    }
+
+    function showInfoMessage(info){
+        var infoElement = $('#infoMessage');
+        infoElement.text(info);
+        if(infoElement.text().length > 0){
+            infoElement.show();
+        }
+    }
+
+</script>
+
+<link rel="stylesheet" href="${resource(dir:'css', file:'main.css')}">
+<link rel="shortcut icon" href="${resource(dir:'images',file:'favicon.ico')}" type="image/x-icon">
+
 <g:layoutHead/>
 
 <link rel="stylesheet" href="${resource(dir: 'css', file: 'main.css')}"/>
 <link rel="shortcut icon" href="${resource(dir: 'images', file: 'favicon.ico')}" type="image/x-icon"/>
 
-<r:require modules="jquery"/>
+
 
 <r:script>
     $.ajaxSetup({
@@ -238,7 +262,7 @@ var s4 = '#' + id + ': ' + name + '</a></div>';
             <r:img uri="/images/illicium_100.jpg" alt="${message(code: 'app.illicium')}" border="0"/>
         </a>
 
-        <h1 id="TITLE">Illicium</h1>
+        <h1 id="TITLE"><g:message code="${grailsApplication.config.appName}"/></h1>
 
         <div class="searchForm">
             <g:form onsubmit="\$('#searchFormSubmit').click();return false;" name="simpleSearchForm"
