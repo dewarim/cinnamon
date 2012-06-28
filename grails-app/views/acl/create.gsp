@@ -2,7 +2,6 @@
 <html>
 <head>
     <meta name="layout" content="main"/>
-<g:render template="/shared/header"/>
 
         <title><g:message code="acl.create.title"/></title>
     </head>

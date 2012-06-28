@@ -1,19 +1,17 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-    <g:render template="/shared/header"/>
-
+    <meta name="layout" content="main"/>
     <title><g:message code="folderType.create.title"/></title>
 </head>
 
 <body>
-<g:render template="/shared/logo"/>
 <div class="nav">
     <g:homeButton><g:message code="home"/></g:homeButton>
     <span class="menuButton"><g:link class="list" action="list"><g:message code="folderType.list.link"/></g:link></span>
 </div>
 
-<div class="body">
+<div class="content">
     <h1><g:message code="folderType.create.title"/></h1>
     <g:if test="${flash.message}">
         <div class="message">${flash.message}</div>
@@ -61,5 +59,4 @@
     </g:form>
 </div>
 
-<g:render template="/shared/footer"/>
 </body></html>
