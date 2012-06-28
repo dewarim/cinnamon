@@ -180,7 +180,7 @@ class CinnamonController extends BaseController {
             case 'getacls': forward(controller: 'acl', action: 'list'); break
             case 'getfoldertypes': forward(controller: 'folderType', action: 'listXml'); break;
             case 'getsubfolders': forward(controller: 'folder', action: 'fetchSubFolders'); break
-            case 'getobjtypes' : forward(controller:'objectType', action: 'list');break
+            case 'getobjtypes' : forward(controller:'objectType', action: 'listXml');break
             case 'getfolderbypath' : forward(controller:'folder', action: 'fetchFolderByPath');break
             case 'getobjects' : forward(controller:'osd', action: 'fetchObjects');break
             case 'getfolder': forward(controller: 'folder', action: 'fetchFolderXml');break
