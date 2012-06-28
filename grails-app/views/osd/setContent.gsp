@@ -11,7 +11,7 @@
 			code="home"/></a></span>
 </div>
 
-<div class="body">
+<div class="content">
     <h1><g:message code="osd.setContent.head" args="[osd.id, osd.name]"/></h1>
 
     	<g:if test="${flash.message}">
