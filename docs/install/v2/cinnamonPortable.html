@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+</head>
+<body>
+<div id="TOC">
+<ul>
+<li><a href="#cinnamon---portable-edition">Cinnamon - Portable edition</a><ul>
+<li><a href="#requirements">Requirements</a></li>
+<li><a href="#start-the-server">start the server</a></li>
+<li><a href="#start-the-client">start the client</a></li>
+<li><a href="#administration">Administration</a></li>
+<li><a href="#stop-the-server">stop the server</a></li>
+<li><a href="#stop-the-database">stop the database</a></li>
+</ul></li>
+<li><a href="#using-dita">Using DITA</a></li>
+<li><a href="#license-information">License Information</a><ul>
+<li><a href="#support">Support</a></li>
+</ul></li>
+</ul>
+</div>
+<h1 id="cinnamon---portable-edition"><a href="#TOC">Cinnamon - Portable edition</a></h1>
+<p>This is the standalone version of Cinnamon, which includes everything needed to run Cinnamon (both the server and the client) in one big zip archive.</p>
+<p>You should use this version if you just want to try and see what Cinnamon has to offer. It is not intended for production purposes and has some technical limitations (due to the scripted environment - in all other regards, this version is feature complete).</p>
+<h2 id="requirements"><a href="#TOC">Requirements</a></h2>
+<p>This version was tested on Windows Server 2008 64 Bit. It should run on all modern Windows systems (32/64 Bit) - if you encounter problems, please contact us so we can improve your Cinnamon experience.</p>
+<ul>
+<li>You will need about 1 GByte of RAM.</li>
+<li>Port 8080 on your machine must be available.</li>
+<li>You must have .NET Framework 4.0 installed <a href="http://www.microsoft.com/en-us/download/details.aspx?id=17718">download for free from Microsoft</a></li>
+<li>In &quot;My Documents&quot; create a folder 'cinnamon' with a sub folder 'checkout'. (The client expects this to exist).</li>
+</ul>
+<h2 id="start-the-server"><a href="#TOC">start the server</a></h2>
+<p>Double click on cinnamon.bat. Two windows will open, a command line window with some script output, and a java.exe window with incredible amounts of log messages. Even on a fast machine, this may take a minute or two.</p>
+<p><img src="portableImages/cmd.png" alt="cmd.exe output" /> <img src="portableImages/java.png" alt="java.exe output" /></p>
+<h2 id="start-the-client"><a href="#TOC">start the client</a></h2>
+<ul>
+<li>Open the folder &quot;client&quot; and double click on &quot;CinnamonDesktopClient.exe&quot;.</li>
+<li>The repository list should show a green lighted Cinnamon server with a demo repository. Right-click on &quot;demo&quot; and log on as user admin with password 'admin'.</li>
+</ul>
+<div class="figure">
+<img src="portableImages/login.png" alt="Login Dialog" /><p class="caption">Login Dialog</p>
+</div>
+<ul>
+<li>Right-click on the admin user, choose &quot;repository navigation&quot; and you will see the repository window.</li>
+</ul>
+<div class="figure">
+<img src="portableImages/demo.png" alt="Repository View" /><p class="caption">Repository View</p>
+</div>
+<h2 id="administration"><a href="#TOC">Administration</a></h2>
+<p>Go to (http://127.0.0.1:8080/dandelion) to use Dandelion, the administration tool.</p>
+<div class="figure">
+<img src="portableImages/dandelion.png" alt="Dandelion" /><p class="caption">Dandelion</p>
+</div>
+<h2 id="stop-the-server"><a href="#TOC">stop the server</a></h2>
+<p>After testing, stop the server by selecting the java window and pressing CTRL-C. It's possible that the process does not shut down cleanly - sorry, that seems to be the only annoying problem remaining... you may have to terminate the Java process via the task manager (or have a 500 MByte huge mean Java-process hanging around in the background, scaring other programs and blocking your 8080 port until shutdown).</p>
+<h2 id="stop-the-database"><a href="#TOC">stop the database</a></h2>
+<p>Select the cmd.exe window and press any key. The database should now shut down. If it takes too long, just close the window...</p>
+<h1 id="using-dita"><a href="#TOC">Using DITA</a></h1>
+<p>The Cinnamon portable edition comes with the current DITA Open Toolkit, but is not yet properly configured to use this, as the batch command script used to start the server does not play well with the environment variables needed by the toolkit. You can check out the demo DITA files in the repository and edit them with your DITA aware editor, though. Just remember that to get the full integration, you will have to either properly install Cinnamon or try to follow the instructions in client/docs/CinnamonInstallationAdministration.en.pdf.</p>
+<h1 id="license-information"><a href="#TOC">License Information</a></h1>
+<p>This portable install uses:</p>
+<ul>
+<li><a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">Java 6 Runtime from Oracle</a></li>
+<li><a href="http://www.eclipse.org/jetty/about.php">Jetty 8</a></li>
+<li><a href="http://www.postgresql.org/">Postgres 9</a></li>
+<li><a href="http://cinnamon-cms.de">Cinnamon 2.2.2</a></li>
+<li><a href="http://dita-ot.sourceforge.net/">DITA 1.5.4</a></li>
+</ul>
+<p>All of which are software projects available for free under their respective licenses.</p>
+<h2 id="support"><a href="#TOC">Support</a></h2>
+<p>If you need further support, for example</p>
+<ul>
+<li>migration of legacy data</li>
+<li>configuration of search indexes</li>
+<li>advise on how to integrate other technical documentation formats like SGML, Framemaker and S1000D</li>
+<li>audit trails in Cinnamon and permission management</li>
+<li>hosting and virtualization of Cinnamon server instances</li>
+<li>configuration of DITA output</li>
+</ul>
+<p>please contact the company which provides Cinnamon: <a href="http://horner-project.de">Horner GmbH</a>.</p>
+<p>For installation support, comments and feedback please mail: ingo.wiarda@horner-project.eu (Cinnamon server maintainer)</p>
+</body>
+</html>
