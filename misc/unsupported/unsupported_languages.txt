@@ -1,0 +1,4 @@
+This directory contains currently unsupported message properties files.
+When you translate a message bundle, please move it from here to grails-app/i18n
+
+(The files were moved here because they cluttered the editing display in IntelliJ.)
