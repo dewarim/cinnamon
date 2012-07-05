@@ -101,7 +101,9 @@ But still, they will always be remembered gratefully in the lists of contributor
 ### Modern Dwarves
 
 * Boris Horner - project management, client development (original author of Cinnamon)
-* Mediartists - web design and translation
+* Webdesign
+    * Mediartists - [cinnamon-cms.de](http://cinnamon-cms.de)
+    * Web client - Michèle Horner
 * Ingo Wiarda - project management, administration, server development, documentation
 
 ## A Dwarf's toolkit
