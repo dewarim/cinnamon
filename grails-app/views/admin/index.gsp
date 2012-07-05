@@ -62,7 +62,7 @@
         <h3><g:message code="server.rights"/></h3>
         <ul>
             <li class="controller"><g:link controller="acl"><g:message code="index.manage.acl"/></g:link></li>
-            <li class="controller"><g:link controller="user" action="list"><g:message
+            <li class="controller"><g:link controller="userAccount" action="list"><g:message
                     code="index.manage.user"/></g:link></li>
             <li class="controller"><g:link controller="aclEntry"><g:message
                     code="index.manage.aclEntry"/></g:link></li>

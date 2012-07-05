@@ -113,6 +113,7 @@ log4j = {
     warn    'grails.app.filters.TriggerFilters'
     debug   'cinnamon',
             'humulus',
+            'cinnamon.UserAccountController',
             'cinnamon.TriggerFilters',
             'cinnamon.index.indexer.ParentFolderPathIndexer',
             'org.springframework.security.authentication',

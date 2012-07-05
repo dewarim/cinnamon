@@ -10,14 +10,15 @@ import cinnamon.global.PermissionName
  */
 abstract class BaseController {
 
-    def osdService
+    def aclEntryService
     def folderService
-    def userService
-    def luceneService
-    def springSecurityService
+    def groupService
     def inputValidationService
     def itemService
-    def aclEntryService
+    def luceneService
+    def osdService
+    def springSecurityService
+    def userService
 
     protected Set<String> loadUserPermissions(Acl acl) {
         Set<String> permissions
