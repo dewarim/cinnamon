@@ -9,6 +9,6 @@
         <pre>${osdContent?.encodeAsHTML()}</pre>
     </g:elseif>
     <g:else>
-        <g:message code="osd.no.format.renderer" args="[ctype]"/>
+        <g:message code="osd.no.renderer" args="[ctype]"/>
     </g:else>
 </div>
