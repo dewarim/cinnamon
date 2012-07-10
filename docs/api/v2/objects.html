@@ -1,0 +1,199 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+</head>
+<body>
+<div id="TOC">
+<ul>
+<li><a href="#objects">Objects</a><ul>
+<li><a href="#version-labels">version labels</a></li>
+<li><a href="#api-methods">api methods</a><ul>
+<li><a href="#create">create</a></li>
+<li><a href="#copy">copy</a></li>
+<li><a href="#delete">delete</a></li>
+<li><a href="#deleteallversions">deleteAllVersions</a></li>
+<li><a href="#getcontent">getContent</a></li>
+<li><a href="#setcontent">setContent</a></li>
+<li><a href="#getobject">getObject</a></li>
+<li><a href="#getobjects">getObjects</a></li>
+<li><a href="#getobjectsbyid">getOBjectsById</a></li>
+<li><a href="#getobjectswithcustommetadata">getObjectsWithCustomMetadata</a></li>
+<li><a href="#lock">lock</a></li>
+<li><a href="#unlock">unlock</a></li>
+<li><a href="#searchobjects">searchObjects</a></li>
+<li><a href="#setmeta">setMeta</a></li>
+<li><a href="#getmeta">getMeta</a></li>
+<li><a href="#setsysmeta">setSysMeta</a></li>
+<li><a href="#version">version</a></li>
+</ul></li>
+<li><a href="#relations">relations</a><ul>
+<li><a href="#getrelationtypes">getRelationTypes</a></li>
+<li><a href="#createrelation">createRelation</a></li>
+<li><a href="#deleterelation">deleteRelation</a></li>
+</ul></li>
+<li><a href="#metasets">metasets</a><ul>
+<li><a href="#listmetasettypes">listMetasetTypes</a></li>
+<li><a href="#linkmetaset">linkMetaset</a></li>
+<li><a href="#unlinkmetaset">unlinkMetaset</a></li>
+<li><a href="#setmetaset">setMetaset</a></li>
+<li><a href="#getmetaset">getMetaset</a></li>
+<li><a href="#deletemetaset">deleteMetaset</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+<h1 id="objects"><a href="#TOC">Objects</a></h1>
+<p>Object in Cinnamon are instances of the class ObjectSystemData (short: OSD) and they always have</p>
+<ul>
+<li>an id (which is a long integer value, unique for this repository)</li>
+<li>a name</li>
+<li>an creator, owner and last modifier (along with timestamp)</li>
+<li>an object type</li>
+<li>an ACL</li>
+<li>a parent folder which contains this object</li>
+<li>a version label</li>
+<li>a processing state (a new object has &quot;_created&quot; as its state)</li>
+</ul>
+<p>and they may have</p>
+<ul>
+<li>content (which is stored in the file system)</li>
+<li>a format (if content exists, a mime type based format has to be assigned)</li>
+<li>a lifecycle state</li>
+<li>relations to other objects</li>
+<li>metasets (that is custom metadata of different types in XML format)</li>
+<li>an appname field which defines the application responsible for this object</li>
+<li>a lock entry - if the object is locked by a user, this field contains the reference to the lock owner.</li>
+</ul>
+<h2 id="version-labels"><a href="#TOC">version labels</a></h2>
+<p>Versions start with 1 and continue up in whole numbers for the main trunk of the version tree. If a side branch is added, it will be as n-x.v, where n is the trunk version and x is the branch number and v is the branch version. So, if you got a version tree of</p>
+<pre><code>firstVersion  1
+secondVersion 2
+</code></pre>
+<p>And go on to create a new version of firstVersion, the tree will look like this:</p>
+<pre><code>firstVersion     1
+    newBranch    1.1-1
+secondVersion    2
+</code></pre>
+<p>Creating a new version of the branch will result in</p>
+<pre><code>firstVersion     1
+    newBranch    1.1-1
+    newBranch2   1.1-2
+secondVersion    2
+</code></pre>
+<h2 id="api-methods"><a href="#TOC">api methods</a></h2>
+<h3 id="create"><a href="#TOC">create</a></h3>
+<p>Create a new object.</p>
+<h3 id="copy"><a href="#TOC">copy</a></h3>
+<p>Create a copy of a Cinnamon object (OSD) in the target folder. The name of the object will be &quot;Copy_&quot; + the actual name. The copy will be version number 1 and have the same content and relations as the original. The Lifecycle state of the object is set to whatever the default lifecycle state for a copy of the source object's lifecycle is. You can specify a list of metasets to selectively copy parts (or all) of the source's metasets.</p>
+<h3 id="delete"><a href="#TOC">delete</a></h3>
+<p>Delete an object. Note that this method will fail if the object has protected relations to other objects. For example, this prevents a user from removing an image that is part of a document. You can only delete an object without descendants (newer versions).</p>
+<h3 id="deleteallversions"><a href="#TOC">deleteAllVersions</a></h3>
+<p>Recursively deletes all versions of an object, starting with the newest one. Known problem: If you get a Cinnamon exception from this method, please re-index the objects of this version tree by setting index_ok of the OSDs to null (needs enabled IndexServer).</p>
+<h3 id="getcontent"><a href="#TOC">getContent</a></h3>
+<p>Returns the content of the OSD as a byte-stream.</p>
+<h3 id="setcontent"><a href="#TOC">setContent</a></h3>
+<p>Set the content of an object. Requires the object to be locked by the current user.</p>
+<h3 id="getobject"><a href="#TOC">getObject</a></h3>
+<p>Returns the XML representation of the object.</p>
+<h3 id="getobjects"><a href="#TOC">getObjects</a></h3>
+<p>The getobjects command retrieves some or all objects in the folder with the given id. The optional versions parameter allows requesting all versions (all), only the newest version in the trunk of the version tree (head) or the newest version including branches (branch).</p>
+<h3 id="getobjectsbyid"><a href="#TOC">getOBjectsById</a></h3>
+<p>The getObjectsById command retrieves one or more objects by the given id.</p>
+<h3 id="getobjectswithcustommetadata"><a href="#TOC">getObjectsWithCustomMetadata</a></h3>
+<p>The getobjectswithmetadata command retrieves some or all objects in the folder with the given id and returns their metadata and system metadata. The optional versions parameter allows requesting all versions (all), only the newest version in the trunk of the version tree (head) or the newest version including branches (branch).</p>
+<h3 id="lock"><a href="#TOC">lock</a></h3>
+<p>Locks an object, so its content cannot be overwritten by another user while the current user is working on it.</p>
+<h3 id="unlock"><a href="#TOC">unlock</a></h3>
+<p>Release the lock on an object.</p>
+<h3 id="searchobjects"><a href="#TOC">searchObjects</a></h3>
+<p>Search for objects with the integrated Lucene library. Send an XML query to the server and you will recceive a list of objects found. You may request pages of results to prevent the server from returning very large sets of objects.</p>
+<p>An example of a Lucene XML query which returns objects containing the word 'apples' or 'oranges':</p>
+<pre><code>&lt;BooleanQuery fieldname=&quot;content&quot;&gt;
+&lt;Clause occurs=&quot;should&quot;&gt;
+    &lt;TermQuery&gt;apples&lt;/TermQuery&gt;
+&lt;/Clause&gt;
+    &lt;Clause occurs=&quot;should&quot;&gt;
+    &lt;TermQuery&gt;oranges&lt;/TermQuery&gt;
+&lt;/Clause&gt;
+&lt;/BooleanQuery&gt;
+</code></pre>
+<h3 id="setmeta"><a href="#TOC">setMeta</a></h3>
+<p>Set the custom metadata of an object. This consists of a list of metasets, which will be extracted and stored separately. If you set the custom metadata this way, any metasets no longer specified in this document will be unlinked from the object.</p>
+<p>Example of a copyright and link metaset:</p>
+<pre><code>&lt;meta&gt;
+    &lt;metaset type=&quot;copyright&quot;&gt;
+    &lt;license&gt;Apache License 2.0&lt;/license&gt;
+&lt;/metaset&gt;
+&lt;metaset type=&quot;links&quot;&gt;
+    &lt;source&gt;
+        &lt;url&gt;http://wikipedia.org&lt;/url&gt;
+        &lt;/source&gt;
+   &lt;/metaset&gt;
+&lt;/meta&gt;
+</code></pre>
+<h3 id="getmeta"><a href="#TOC">getMeta</a></h3>
+<p>Returns all metasets of the current object, collated into one XML document.</p>
+<h3 id="setsysmeta"><a href="#TOC">setSysMeta</a></h3>
+<p>Set the system properties of an object. You can change the following properties via this method:</p>
+<ul>
+<li>parentid: move the object to another folder</li>
+<li>name: rename the object</li>
+<li>owner: change the owner</li>
+<li>procstate: change the processing state. Currently used by workflow tasks to denote ready/finished state.</li>
+<li>acl_id: change the ACL</li>
+<li>objtype: change the object type</li>
+<li>appname: the appname field may contain the name of a programm associated with this object. This is only useful if your Cinnamon client is setup for the use of applications.</li>
+<li>language_id: set the language of an object. The default is &quot;undetermined&quot;, but you can also declare an object as having no or multiple languages - or a specific one.</li>
+</ul>
+<h3 id="version"><a href="#TOC">version</a></h3>
+<p>Create a new version of an object. See above for more details about version labels..</p>
+<h2 id="relations"><a href="#TOC">relations</a></h2>
+<p>An object may have relations to other objects. The effects of a relations are:</p>
+<ul>
+<li>an object may be protected (depending on the relation type), so that a CSS file belonging to an HTML document cannot be deleted for as long as the relation exists.</li>
+<li>upon checkout of an object, the server can bundle up all the related objects for the client. And, again depending on the relation type, the server will determine if the client needs the most recent or a specific version of a resource. This enables you to have a marketing document always refer to the newest version of the company logo - or a legal document always refer to the copyright notice exactly as it were at the time the relation was first created.</li>
+<li>the client can display relations between objects, so you know all the places where a specific version of an object is used.</li>
+</ul>
+<p>The two objects in a relation are defined as &quot;left&quot; and &quot;right&quot;, so you will see some fields labeld as &quot;left...&quot; and &quot;right...&quot; which pertain to the corresponding object.</p>
+<h3 id="getrelationtypes"><a href="#TOC">getRelationTypes</a></h3>
+<p>Retrieve a list of all available relation types. Relations have the following fields:</p>
+<ul>
+<li>name</li>
+<li>description</li>
+<li>left object protected: the left object of a relation of this type may not be deleted as long as the relation exists.</li>
+<li>right object protected: the right object of a relation of this type may not be deleted as long as the relation exists.</li>
+<li>clone on right copy: If the right object of a relation of this type is copied, the relation will also be copied if this field is true.</li>
+<li>clone on left copy: If the left object of a relation of this type is copied, the relation will also be copied if this field is true.</li>
+<li>left resolver: Determines the resolver class to use for the left object if one of the two objects is updated. After a part of a relation has been updated, all other relations which target this object's version tree have to be updated also because the change to one object may require other relations to change.</li>
+</ul>
+<p>Example: An image, which is referenced by several relations from documents which use it, is updated and increases its version number. Now all relations which use the LatestHeadResolver need to update their link to this new version.<br />* right resolver: determines the resolver class to use for the right object if the relation has to be updated after an object has changed.</p>
+<h3 id="createrelation"><a href="#TOC">createRelation</a></h3>
+<p>Create a new relation between two objects. Relations may have XML metadata associated with them, for example if you have checked out a DITA document which includes an image with a reference, the client may store the actual filename in the metadata to ensure the correct mapping between both files.</p>
+<h3 id="deleterelation"><a href="#TOC">deleteRelation</a></h3>
+<p>Remove a relation.</p>
+<h2 id="metasets"><a href="#TOC">metasets</a></h2>
+<p>You may handle metadata either by using the setMeta/getMeta methods, or you can use the new methods for handling individual metasets.</p>
+<p>When new metaset data is set on an object (folder or OSD), you may specify the write policy. Allowed values are write|ignore|branch, default is branch.</p>
+<ul>
+<li>write: the content is written regardless of other items linking to this metaset. In our example of a copyright text for all images of an author, this is probably okay. In case of a list of applicable machine parts for a handbook, you may want to be more careful before having one author change the applicability of all objects linked to this metaset.</li>
+<li>ignore: the content is ignored if there are other references to the metaset.</li>
+<li>branch: if other references exist, a separate metaset for this item is created. This is the default setting and while it leads to duplication of data, it prevents authors from accidentally overwriting other author's metaset data.</li>
+</ul>
+<p>The decision on which write policy to use should be made by the client program, depending on the object type and the business rules.</p>
+<h3 id="listmetasettypes"><a href="#TOC">listMetasetTypes</a></h3>
+<p>Retrieve a list of all available metaset types. The server only allows clients to create metasets with an existing type.</p>
+<h3 id="linkmetaset"><a href="#TOC">linkMetaset</a></h3>
+<p>Creates a link to an existing metaset. This way you can link multiple objects to one metaset, for example link all images by one author to the author's copyright notice.</p>
+<h3 id="unlinkmetaset"><a href="#TOC">unlinkMetaset</a></h3>
+<p>Remove the link between an object and a metaset. If the metaset is no longer linked to any objects, it will be deleted.</p>
+<h3 id="setmetaset"><a href="#TOC">setMetaset</a></h3>
+<p>Set the XML content of an object's metaset entry. The type of the metaset must exist in the metaset type table.</p>
+<h3 id="getmetaset"><a href="#TOC">getMetaset</a></h3>
+<p>Retrieve the XML content of a metaset entry. Currently, you cannot set / get metaset directly, you have to specify an object which is linked to this metaset and request it by name. So if you have a repair handbook document, which is linked to a metaset containing more information about the machine it describes, you can request the metaset via the document, but you cannot access the metaset without. This restriction is in place because read/write access to metasets is determined by the ACLs of the objects linking there. (If you are afraid of users modifiying metasets of forbidden objects because they have write access to other objects, you should use a write policy of 'branch' instead of 'write' (see above).</p>
+<h3 id="deletemetaset"><a href="#TOC">deleteMetaset</a></h3>
+<p>Delete an object's metaset. You can set an optional delete_policy with a value of either 'complete' or 'allowed'. This method will first try to delete all references to the metaset. Each connected item's ACL is checked, if the reference may be safely deleted. If delete policy is set to 'complete', an exception is thrown if the process encounters a non-accessible object. With delete policy 'allowed', the process continues, trying to delete the other references. If the metaset is no longer used, it will be deleted completely.</p>
+</body>
+</html>
