@@ -59,7 +59,10 @@
 				<td valign="top" class="name"><g:message code="user.email"/></td>
 				<td valign="top" class="value">${fieldValue(bean: user, field: 'email')}</td>
 			</tr>
-
+            <tr class="prop">
+                <td valign="top" class="name"><g:message code="user.activated"/></td>
+                <td valign="top" class="value"><g:checkBox name="activated" disabled="true" value="${user.activated}"/></td>
+            </tr>
 			<tr class="prop">
 				<td valign="top" class="name"><g:message code="user.sudoer"/></td>
 				<td valign="top" class="value"><g:checkBox name="sudoer" disabled="true" value="${user.sudoer}"/></td>
@@ -67,10 +70,6 @@
 			<tr class="prop">
 				<td valign="top" class="name"><g:message code="user.sudoable"/></td>
 				<td valign="top" class="value"><g:checkBox name="sudoable" disabled="true" value="${user.sudoable}"/></td>
-			</tr>
-			<tr class="prop">
-				<td valign="top" class="name"><g:message code="user.activated"/></td>
-				<td valign="top" class="value"><g:checkBox name="activated" disabled="true" value="${user.activated}"/></td>
 			</tr>
 
 			<!-- link to the list of group -->
