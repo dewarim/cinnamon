@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+</head>
+<body>
+<div id="TOC">
+<ul>
+<li><a href="#acl-api">ACL API</a><ul>
+<li><a href="#listaclentries">listAclEntries</a></li>
+<li><a href="#listaclmembers">listAclMembers</a></li>
+<li><a href="#createacl">createAcl</a></li>
+<li><a href="#deleteacl">deleteAcl</a></li>
+<li><a href="#editacl">editAcl</a></li>
+<li><a href="#addgrouptoacl">addGroupToAcl</a></li>
+<li><a href="#removegroupfromacl">removeGroupFromAcl</a></li>
+<li><a href="#addpermissiontoaclentry">addPermissionToAclEntry</a></li>
+<li><a href="#removepermissionfromaclentry">removePermissionFromAclEntry</a></li>
+</ul></li>
+</ul>
+</div>
+<h1 id="acl-api"><a href="#TOC">ACL API</a></h1>
+<h2 id="listaclentries"><a href="#TOC">listAclEntries</a></h2>
+<p>Retrieve a list of all AclEntries for a group <em>or</em> ACL. An AclEntry consists of a group and an ACL object. It may be connected to any number of permissions. By using this API call you will get a list of all ACLs for a group or all groups for an ACL, along with the permissions for each combination.</p>
+<p>A client programm may use this method to determine if it should offer a user certain menu options like &quot;delete object&quot;:</p>
+<ul>
+<li>retrieve information about an OSD's or folder's ACL</li>
+<li>get all groups for a user (getGroupsOfUser)</li>
+<li>call listAclEntries for the ACL</li>
+<li>check if there is any match between the user's groups, the ACL and the required DELETE_OBJECT permission.</li>
+</ul>
+<h2 id="listaclmembers"><a href="#TOC">listAclMembers</a></h2>
+<p>Retrieve a list of all ACLs a user is a member of.</p>
+<h2 id="createacl"><a href="#TOC">createAcl</a></h2>
+<p>Create a new ACL.</p>
+<h2 id="deleteacl"><a href="#TOC">deleteAcl</a></h2>
+<p>Delete an ACL. You can only delete ACLs that are not in use by folders or objects.</p>
+<h2 id="editacl"><a href="#TOC">editAcl</a></h2>
+<p>Update an ACL's name or description. The name must be unique.</p>
+<h2 id="addgrouptoacl"><a href="#TOC">addGroupToAcl</a></h2>
+<p>Create an AclEntry of a group and an ACL, so you can assign permissions to it later on. For example, if you got an ACL 'public_documents' and a group 'authors', you can add the group to the ACL and then assign permissions to allow members of the authors group to view and edit all objects which use the public_documents ACL.</p>
+<h2 id="removegroupfromacl"><a href="#TOC">removeGroupFromAcl</a></h2>
+<p>Unlink a group to ACL connection by removing their AclEntry. Note: groups can inherit permissions from their parent group(s).</p>
+<h2 id="addpermissiontoaclentry"><a href="#TOC">addPermissionToAclEntry</a></h2>
+<p>Add a permission to an AclEntry. After creating a link between an ACL and a group (via addGroupToAcl), you need to assign permissions to the new AclEntry, as an entry without permissions does not allow any interaction between a group member and the objects to which the ACL is assigned.</p>
+<p>Note that the permission model uses a whitelist approach: In Cinnamon, you assign positive permissions like a &quot;CREATE_OBJECT&quot;-permission to users of a certain group and the associated ACL(s). A user may be a member of any number of groups and can gain a permission from any one of them.</p>
+<h2 id="removepermissionfromaclentry"><a href="#TOC">removePermissionFromAclEntry</a></h2>
+<p>Remove a permission from an AclEntry.</p>
+</body>
+</html>
