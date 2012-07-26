@@ -153,3 +153,4 @@ grails.logging.jul.usebridge = false
 */
 grails.plugins.springsecurity.successHandler.alwaysUseDefault=false
 grails.plugins.springsecurity.http.useExpressions=false
+
