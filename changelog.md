@@ -1,6 +1,9 @@
 # Changelog for Cinnamon 3
 
+## 0.1.36
 
+* lock/unlock of OSD now works again in WebClient.
+* added searchSimple action to FolderController (from Illicium)
 
 ## 0.1.35 LifecycleStateAuditLog
 

@@ -12,6 +12,8 @@ import cinnamon.utils.ZippedFolder
 import cinnamon.relation.RelationType
 import org.dom4j.DocumentHelper
 import org.dom4j.Element
+import cinnamon.index.LuceneResult
+import cinnamon.index.SearchableDomain
 
 @Secured(["isAuthenticated()"])
 class FolderController extends BaseController {
@@ -529,4 +531,20 @@ class FolderController extends BaseController {
         }
     }
 
+    def searchSimple () {
+        def query = params.query
+        try {
+            LuceneResult result = luceneService.search(query, session.repositoryName, null)
+            def itemMap = result.filterResultToMap(null, itemService)
+            log.debug("itemMap: $itemMap")
+            def folders = itemMap.get(SearchableDomain.FOLDER.name)
+            def objects = itemMap.get(SearchableDomain.OSD.name)
+            
+            render(template: 'searchResult', model: [searchResult: result, folders: folders, objects: objects])
+        }
+        catch (Exception e) {
+            render(status: 503, text: message(code: e.message))
+        }
+    }
+    
 }
