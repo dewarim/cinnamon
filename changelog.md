@@ -1,5 +1,18 @@
 # Changelog for Cinnamon 3
 
+## 0.1.41
+
+* made fetchLogoConfig depend on session instead of grailsApplication.config 
+    (which would not work in multi-repository environments)
+* added PageFilters to insert logo and headline info into request model, where necessary.
+
+## 0.1.37
+
+* added fetchLogoConfig to return the GPathResult of either parsing grailsApplication.config.logoConfig or 
+    ConfigEntry.findByName('login.screen.config'). This method stores the parsed XML in a static field, so the
+    controllers do not parse the xml config upon each request.
+* changed fetchLogo so it uses fetchLogoConfig
+
 ## 0.1.36
 
 * lock/unlock of OSD now works again in WebClient.

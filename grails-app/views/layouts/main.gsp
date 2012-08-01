@@ -262,7 +262,7 @@ var s4 = '#' + id + ': ' + name + '</a></div>';
             <r:img uri="/images/illicium_100.jpg" alt="${message(code: 'app.illicium')}" border="0"/>
         </a>
 
-        <h1 id="TITLE"><g:message code="${grailsApplication.config.appName}"/></h1>
+        <h1 id="TITLE"><g:message code="${ headline ?: grailsApplication.config.appName}"/></h1>
 
         <div class="searchForm">
             <g:form onsubmit="\$('#searchFormSubmit').click();return false;" name="simpleSearchForm"

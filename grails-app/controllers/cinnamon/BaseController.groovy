@@ -2,6 +2,7 @@ package cinnamon
 
 import cinnamon.exceptions.IgnorableException
 import cinnamon.global.PermissionName
+import groovy.util.slurpersupport.GPathResult
 
 /**
  * BaseController collects methods common to more than one controller which do not fit completely into a
@@ -102,17 +103,6 @@ abstract class BaseController {
         params.sort = params.sort ? inputValidationService.checkAndEncodeText(params, "sort", "sort") : 'id'
         params.max = params.max ? inputValidationService.checkAndEncodeInteger(params, 'max', 'paginate.max') : 10
         params.firstResult = params.firstResult ? inputValidationService.checkAndEncodeInteger(params, 'firstResult', 'paginate.firstResult') : 0
-    }
-
-    protected ObjectSystemData fetchLogo() {
-        def logo = null
-        def logoConfig = ConfigEntry.findByName('login.screen.config')
-        if (logoConfig) {
-            def xml = new XmlSlurper().parseText(logoConfig.config)
-            logo = ObjectSystemData.get(xml.logoId?.text())
-            log.debug("logo: $logo")
-        }
-        return logo
     }
 
     /**

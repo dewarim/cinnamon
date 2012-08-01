@@ -279,7 +279,7 @@ class OsdController extends BaseController {
         def folder = null
         try {
             folder = fetchAndFilterFolder(params.folder, [PermissionName.CREATE_OBJECT])
-            return [folder: folder, logo:fetchLogo()]
+            return [folder: folder]
         }
         catch (Exception e) {
             flash.message = message(code: e.message)
