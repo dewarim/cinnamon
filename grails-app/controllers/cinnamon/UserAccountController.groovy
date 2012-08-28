@@ -113,7 +113,7 @@ class UserAccountController extends BaseController {
         }
 
         if (user.name.equals('admin')) {
-            if (!params.activated?.equals(true)) {
+            if (!params.activated?.equals('true')) {
                 log.debug("params.activated: ${params.activated}")
                 log.debug('Preventing user from deactivating admin account.')
                 flash.message = message(code: 'user.update.fail.deactivate')
