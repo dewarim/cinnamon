@@ -18,6 +18,8 @@ import cinnamon.global.Constants
 @Secured(["isAuthenticated()"])
 class OsdController extends BaseController {
 
+    def metasetService
+    
     def editMetadata() {
         try {
             ObjectSystemData osd = fetchAndFilterOsd(params.osd)
@@ -360,7 +362,10 @@ class OsdController extends BaseController {
             if (file.isEmpty()) {
                 throw new RuntimeException('error.missing.content')
             }
-            else {                
+            else {
+                // remove any image thumbnails on the content     
+                metasetService.unlinkMetaset(osd, osd.fetchMetaset(Constants.METASET_THUMBNAIL))
+                
                 osdService.acquireLock(osd, user)
                 File tempFile = File.createTempFile('illicium_upload_', null)
                 file.transferTo(tempFile)
@@ -384,6 +389,7 @@ class OsdController extends BaseController {
         }
     }
 
+    // unfinished?    
     def setContent() {
         try {
             ObjectSystemData osd = fetchAndFilterOsd(params.osd, [PermissionName.WRITE_OBJECT_CONTENT])            

@@ -1,5 +1,10 @@
 # Changelog for Cinnamon 3
 
+## 0.1.49
+
+* fixed: you can now save changes to the admin's account.
+* new: ImageService which creates Thumbnails and saves them to a metaset.
+
 ## 0.1.41
 
 * made fetchLogoConfig depend on session instead of grailsApplication.config 

@@ -3,7 +3,7 @@ class CinnamonGrailsPlugin {
 //    def packaging = "binary"
     def groupId = 'cinnamon'
     // the plugin version
-    def version = "0.1.41"
+    def version = "0.1.49"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "2.0 > *"
     // the other plugins this plugin depends on
@@ -13,7 +13,6 @@ class CinnamonGrailsPlugin {
             "grails-app/views/error.gsp"
     ]
 
-    // TODO Fill in these fields
     def title = "Cinnamon 3 CMS Plugin" // Headline display name of the plugin
     def author = "Ingo Wiarda"
     def authorEmail = "ingo.wiarda@horner-project.eu"
