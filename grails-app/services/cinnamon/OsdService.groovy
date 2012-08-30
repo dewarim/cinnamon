@@ -10,6 +10,8 @@ import cinnamon.relation.Relation
 import cinnamon.relation.RelationType
 import humulus.EnvironmentHolder
 import cinnamon.global.PermissionName
+import cinnamon.global.Constants
+import org.springframework.web.multipart.MultipartFile
 
 class OsdService {
 
@@ -305,4 +307,49 @@ class OsdService {
 
     }
     
+    ObjectSystemData createOsd(request, params, String repositoryName, MultipartFile file, UserAccount user, Folder folder){
+        ObjectType objectType = (ObjectType) inputValidationService.checkObject(ObjectType.class, params.objectType, true)
+        if (!objectType) {
+            objectType = ObjectType.findByName(Constants.OBJTYPE_DEFAULT)
+//                throw new RuntimeException('error.missing.objectType')
+        }
+        ObjectSystemData osd
+        String name = params.name
+        file = file ?: request.getFile('file')
+
+        if (file.isEmpty()) {
+            if (!name) {
+                throw new RuntimeException('error.missing.name')
+            }
+            osd = new ObjectSystemData(name, user, folder)
+        }
+        else {
+            if (!name) {
+                name = file.originalFilename
+            }
+            osd = new ObjectSystemData(name, user, folder)
+            File tempFile = File.createTempFile('cinnamon_upload_', null)
+            file.transferTo(tempFile)
+
+            Format format = (Format) inputValidationService.checkObject(Format.class, params.format, true)
+            if (!format) {
+                throw new RuntimeException('error.missing.format')
+            }
+            
+            def uploadedFile = new UploadedFile(tempFile.absolutePath, UUID.randomUUID().toString(), name, file.contentType, tempFile.length())
+            def contentPath = ContentStore.upload(uploadedFile, repositoryName);
+            log.debug("contentPath: $contentPath")
+            osd.setContentPathAndFormat(contentPath, format, repositoryName);
+            if (osd.getContentPath() != null &&
+                    osd.getContentPath().length() == 0) {
+                throw new CinnamonException("error.storing.upload");
+            }
+        }
+        osd.type = objectType
+        osd.setCmnVersion('1')
+        osd.save(flush: true)
+        log.debug("created object with id: ${osd.id}")
+        log.debug("repo: ${repositoryName}")
+        luceneService.addToIndex(osd, repositoryName)
+    }
 }

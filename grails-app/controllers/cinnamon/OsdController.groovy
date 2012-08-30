@@ -294,50 +294,7 @@ class OsdController extends BaseController {
         try {
             UserAccount user = userService.user
             folder = fetchAndFilterFolder(params.folder, [PermissionName.CREATE_OBJECT])
-            ObjectType objectType = (ObjectType) inputValidationService.checkObject(ObjectType.class, params.objectType, true)
-            if (!objectType) {
-                objectType = ObjectType.findByName(Constants.OBJTYPE_DEFAULT)
-//                throw new RuntimeException('error.missing.objectType')
-            }
-            ObjectSystemData osd
-            String name = params.name
-            MultipartFile file = request.getFile('file')
-            
-            if (file.isEmpty()) {
-                if (!name) {
-                    throw new RuntimeException('error.missing.name')
-                }
-                osd = new ObjectSystemData(name, user, folder)                
-            }
-            else {
-                if (!name) {
-                    name = file.originalFilename
-                }
-                osd = new ObjectSystemData(name, user, folder)
-                File tempFile = File.createTempFile('cinnamon_upload_', null)
-                file.transferTo(tempFile)
-
-                Format format = (Format) inputValidationService.checkObject(Format.class, params.format, true)
-                if (!format) {
-                    throw new RuntimeException('error.missing.format')
-                }
-                def repositoryName = session.repositoryName
-                def uploadedFile = new UploadedFile(tempFile.absolutePath, UUID.randomUUID().toString(), name, file.contentType, tempFile.length())
-                def contentPath = ContentStore.upload(uploadedFile, repositoryName);
-                log.debug("contentPath: $contentPath")
-                osd.setContentPathAndFormat(contentPath, format, repositoryName);
-                if (osd.getContentPath() != null &&
-                        osd.getContentPath().length() == 0) {
-                    throw new CinnamonException("error.storing.upload");
-                }
-            }
-            osd.type = objectType
-            osd.setCmnVersion('1')
-            osd.save(flush: true)
-            log.debug("created object with id: ${osd.id}")
-            log.debug("repo: ${session.repositoryName}")
-            luceneService.addToIndex(osd, session.repositoryName)
-
+            osdService.createOsd(request, params, null, session.repositoryName, user, folder)
             return defaultRedirect([folder: folder.id, osd: osd.id])
         }
         catch (Exception e) {
