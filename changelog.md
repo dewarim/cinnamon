@@ -1,5 +1,16 @@
 # Changelog for Cinnamon 3
 
+## 0.1.56
+
+* Moved code to create new OSD from controller to osdService for better reusability.
+* Added description for some error message-ids.
+* Target of "Home"-button is now configurable via config: defaultController / defaultAction parameters.
+* Admin-Controller now loads custom admin links (if they are configured via config: adminController / adminAction)
+    Example: 
+        customAdminController = 'repository'
+        customAdminAction = 'fetchAdminLinks'
+    may load further administration links for a repository manager.
+
 ## 0.1.49
 
 * fixed: you can now save changes to the admin's account.

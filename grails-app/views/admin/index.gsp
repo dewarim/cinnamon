@@ -118,6 +118,23 @@
         </ul>
     </div>
 
+    <div class="custom_admin_controllers main_index">       
+        <h3><g:message code="server.custom.admin"/></h3>        
+        <g:if test="${grailsApplication.config.customAdminController}">
+        <%-- Custom the customAdminController should generate HTML 
+             code which lists application specific administration features. --%>
+                    <div id="customAdminControllers"> </div>
+            <script type="text/javascript">
+                $('#customAdminControllers').load("${
+                createLink(action: grailsApplication.config.customAdminController, 
+                controller: grailsApplication.config.customAdminAction)}")
+            </script>
+        </g:if>
+        <g:else>
+            <g:message code="server.no.custom.admin.controller"/>
+        </g:else>
+    </div>
+    
 </div>
 
 </body>
