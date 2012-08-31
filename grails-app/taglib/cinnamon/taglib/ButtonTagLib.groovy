@@ -1,6 +1,7 @@
 package cinnamon.taglib
 class ButtonTagLib {
+    
 	def homeButton = { attrs, body ->
-		out << """<span class="menuButton"><a class="home" href="${resource(dir:'folder', file:'index')}">""" << body() << "</a></span>"
+		out << """<span class="menuButton"><a class="home" href="${createLink(action:grailsApplication.config.defaultAction ?: 'index', controller: grailsApplication.config.defaultController ?: 'folder')}">""" << body() << "</a></span>"
 	}
 }
