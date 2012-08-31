@@ -10,11 +10,15 @@
 <body class="body">
 
 <div class="nav">
-    <span class="menuButton"><a class="home" href="${resource(dir: 'folder', file: 'index')}"><g:message
-            code="home"/></a></span>
+    <g:homeButton>
+        <g:message code="home"/>
+    </g:homeButton>
     <sec:ifAllGranted roles="_superusers">
-    <span class="menuButton"><a class="admin" href="${createLink(controller: 'admin', action: 'index')}"><g:message
-    code="link.to.administration"/></a></span>
+        <span class="menuButton">
+            <a class="admin" href="${createLink(controller: 'admin', action: 'index')}">
+                <g:message code="link.to.administration"/>
+            </a>
+        </span>
     </sec:ifAllGranted>
 </div>
 
@@ -41,10 +45,10 @@
     <div id="folderTree" class="folder_tree">
         <g:render template="/folder/subFolders"
                   model="[children: children, grandChildren: grandChildren,
-                          contentSet: contentSet, triggerSet: triggerSet, folderConfigs:folderConfigs]"/>
+                          contentSet: contentSet, triggerSet: triggerSet, folderConfigs: folderConfigs]"/>
     </div>
-       
-   
+
+
     <div id="searchResults" class="search_results"></div>
 
     <div id="folderContent" class="folder_content"></div>
