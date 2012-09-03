@@ -13,7 +13,7 @@
             code="objectType.create"/></g:link></span>
 </div>
 
-<div class="body">
+<div class="content">
     <h1><g:message code="objectType.edit.title"/></h1>
     <g:if test="${flash.message}">
         <div class="message">${flash.message}</div>

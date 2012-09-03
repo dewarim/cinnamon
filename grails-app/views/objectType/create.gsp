@@ -11,7 +11,7 @@
     <span class="menuButton"><g:link class="list" action="list"><g:message code="objectType.list"/></g:link></span>
 </div>
 
-<div class="body">
+<div class="content">
     <h1><g:message code="objectType.create.title"/></h1>
     <g:if test="${flash.message}">
         <div class="message">${flash.message}</div>
