@@ -55,8 +55,9 @@ class IndexTypeController extends BaseController{
 
     	String name = params.name
     	try {
-	    	Class<Indexer> indexer = Class.forName(params.indexerClass - 'class ')
-	    	Class<ValueAssistanceProvider> vaProviderClass = Class.forName(params.vaProviderClass - 'class ')
+	    	Class<Indexer> indexer = (Class<Indexer>) Class.forName(params.indexerClass - 'class ', true, Thread.currentThread().contextClassLoader)
+	    	Class<ValueAssistanceProvider> vaProviderClass = 
+                (Class<ValueAssistanceProvider>) Class.forName(params.vaProviderClass - 'class ', true, Thread.currentThread().contextClassLoader )
 	    	IndexType.DataType dataType = Enum.valueOf(IndexType.DataType, params.dataType)
 	    	IndexType indexTypeInstance = new IndexType(name, indexer, vaProviderClass, dataType)
 	
