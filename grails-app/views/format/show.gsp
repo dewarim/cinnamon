@@ -69,9 +69,9 @@
     </div>
 
     <div class="buttons">
-        <g:form>
+        <g:form controller="format" action="edit">
             <input type="hidden" name="id" value="${format?.id}"/>
-            <span class="button"><g:actionSubmit class="edit" action="edit" value="${message(code: 'edit')}"/></span>
+            <span class="button"><g:submitButton name="edit" class="edit"  value="${message(code: 'edit')}"/></span>
             <span class="button"><g:actionSubmit class="delete" action="delete"
                                                  onclick="return confirm('Are you sure?');"
                                                  value="${message(code: 'delete')}"/></span>

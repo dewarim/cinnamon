@@ -22,7 +22,7 @@
             <g:renderErrors bean="${format}" as="list"/>
         </div>
     </g:hasErrors>
-    <g:form method="post">
+    <g:form method="post" controller="format" action="update">
         <input type="hidden" name="id" value="${format?.id}"/>
 
         <div class="dialog">
@@ -74,7 +74,7 @@
         </div>
 
         <div class="buttons">
-            <span class="button"><g:actionSubmit class="save" value="${message(code: 'update')}"/></span>
+            <span class="button"><g:submitButton name="save" class="save" value="${message(code: 'update')}"/></span>
         </div>
     </g:form>
 </div>
