@@ -9,7 +9,7 @@
 
 <body>
 <div class="nav">
-    <span class="menuButton"><a class="home" href="${createLink(uri: '/')}"><g:message code="home"/></a></span>
+    <g:homeButton><g:message code="home"/></g:homeButton>
     <span class="menuButton"><g:link class="create" action="create"><g:message
             code="indexGroup.create.link"/></g:link></span>
 </div>
