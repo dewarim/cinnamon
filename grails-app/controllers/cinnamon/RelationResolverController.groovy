@@ -75,8 +75,10 @@ class RelationResolverController extends BaseController {
         try {
             // class is instantiated not for use but to check if it is can be instantiated at all.
             //noinspection GroovyUnusedAssignment
-            IRelationResolver testResolver = (IRelationResolver) Class.forName(params.resolverClass).newInstance()
-            relationResolver.resolverClass = (Class<? extends IRelationResolver>) Class.forName(params.resolverClass)
+            IRelationResolver testResolver = 
+                (IRelationResolver) Class.forName(params.resolverClass, true, Thread.currentThread().contextClassLoader ).newInstance()
+            relationResolver.resolverClass = 
+                (Class<? extends IRelationResolver>) Class.forName(params.resolverClass, true, Thread.currentThread().contextClassLoader )
         }
         catch (ClassCastException e) {
             throw new RuntimeException("error.not.iRelationResolver.class")
