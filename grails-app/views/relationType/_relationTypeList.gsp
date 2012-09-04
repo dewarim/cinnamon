@@ -1,4 +1,4 @@
-<%@ page import="server.RelationType" %>
+<%@ page import="cinnamon.RelationType" %>
 <table>
     <thead>
     <tr>

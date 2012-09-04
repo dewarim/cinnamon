@@ -1,4 +1,4 @@
-<%@ page import="server.MetasetType" %>
+<%@ page import="cinnamon.MetasetType" %>
 <!doctype html>
 <html>
 	<head>

@@ -1,4 +1,4 @@
-<%@ page import="server.RelationResolver" %>
+<%@ page import="cinnamon.RelationResolver" %>
 <!DOCTYPE HTML>
 <html>
 <head>
