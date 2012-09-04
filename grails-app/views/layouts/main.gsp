@@ -22,6 +22,12 @@
         }
     }
 
+    function rePaginate(id) {
+        $.post('${createLink(controller: controllerName, action:'rePaginate')}', function(data) {
+            $('#' + id).html(data);
+        });
+    }
+
 </script>
 
 <link rel="stylesheet" href="${resource(dir:'css', file:'main.css')}">
