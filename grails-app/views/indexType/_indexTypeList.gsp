@@ -1,4 +1,4 @@
-<%@ page import="server.index.IndexType" %>
+<%@ page import="cinnamon.index.IndexType" %>
 <table>
     <thead>
     <tr>
