@@ -1,3 +1,4 @@
+<%@ page import="cinnamon.global.Constants" %>
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -22,13 +23,13 @@
             <thead>
             <tr>
 
-                <g:sortableColumn property="id" title="${message(code: 'group.list.id')}"/>
+                <g:sortableColumn property="id" title="${message(code: 'group.id')}"/>
 
-                <g:sortableColumn property="description" title="${message(code: 'group.list.description')}"/>
+                <g:sortableColumn property="description" title="${message(code: 'group.description')}"/>
 
-                <g:sortableColumn property="name" title="${message(code: 'group.list.name')}"/>
+                <g:sortableColumn property="name" title="${message(code: 'group.name')}"/>
 
-                <th>${message(code: 'group.list.parent')}</th>
+                <th>${message(code: 'group.parent')}</th>
 
             </tr>
             </thead>
@@ -45,7 +46,7 @@
                     <td>${group?.parent?.name ?: "-"}</td>
 
                     <td>
-                        <g:if test="${group.name.startsWith('_') && group.name != cinnamon.global.Constants.GROUP_SUPERUSERS}">
+                        <g:if test="${group.name.startsWith('_') && group.name != Constants.GROUP_SUPERUSERS}">
                             ---
                         </g:if>
                         <g:else>
