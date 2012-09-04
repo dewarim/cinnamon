@@ -20,7 +20,7 @@
 			<g:renderErrors bean="${group}" as="list"/>
 		</div>
 	</g:hasErrors>
-	<g:form method="post">
+	<g:form method="post" controller="group" action="update">
 		<input type="hidden" name="id" value="${group?.id}"/>
 		<div class="dialog">
 			<table>
@@ -82,7 +82,7 @@
 				<!-- display a link to the list of users -->
 				<tr class="prop">
 					<td colspan="2" align="left" class="name">
-						<g:link controller='user' action='showUsersByGroup'
+						<g:link controller='userAccount' action='showUsersByGroup'
 								id='${group.id}'><g:message code="group.show_users"/></g:link>
 					</td>
 
@@ -92,7 +92,7 @@
 			</table>
 		</div>
 		<div class="buttons">
-			<span class="button"><g:actionSubmit class="save" value="${message(code:'update')}"/></span>
+			<span class="button"><g:submitButton name="save" class="save" value="${message(code:'update')}"/></span>
 		</div>
 	</g:form>
 </div>

@@ -57,7 +57,7 @@
     </div>
 
     <div class="link">
-        <g:link action="showUsersByGroup" controller="user" params="[id: ancestorGroup.id]">
+        <g:link action="showUsersByGroup" controller="userAccount" params="[id: ancestorGroup.id]">
             <g:message code="link.to.showUsersByGroup" args="[ancestorGroup.name]"/>
         </g:link>
     </div>

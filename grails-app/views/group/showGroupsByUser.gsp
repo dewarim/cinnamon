@@ -50,7 +50,7 @@
                             ---
                         </g:if>
                         <g:else>
-                            <g:link controller="user" action="removeGroup" id="${group.id}"
+                            <g:link controller="userAccount" action="removeGroup" id="${group.id}"
                                     params="[userId: user.id]"><g:message code="group.remove_from_user"/></g:link>
                         </g:else>
                     </td>
@@ -68,7 +68,7 @@
 <!-- Combobox with all groups and an add button -->
     <g:if test="${addList?.size() > 0}">
         <div class="buttons">
-            <g:form name="add.group.form" action="addGroup" controller="user">
+            <g:form name="add.group.form" action="addGroup" controller="userAccount">
                 <input type="hidden" name="userId" value="${user.id}"/>
                 <g:select from="${addList}" name="group_list" optionValue="name" optionKey="id"></g:select>
 

@@ -16,7 +16,7 @@ class UserAccountController extends BaseController {
 
         // only show those users who are not already part of the list:
         def addList = UserAccount.list().findAll { user ->
-            !groupUsers.find { groupUser -> groupUser.userAccountId == user.id }
+            !groupUsers.find { groupUser -> groupUser.userAccount == user }
         }
 
         def hasSubGroups = false
@@ -27,7 +27,7 @@ class UserAccountController extends BaseController {
             log.debug("group has no subgroups")
         }
 
-        [userList: groupUsers.collect { it.user },
+        [userList: groupUsers.collect { it.userAccount },
                 addList: addList,
                 hasSubGroups: hasSubGroups,
                 group: group]
@@ -69,9 +69,9 @@ class UserAccountController extends BaseController {
         }
         catch (RuntimeException e) {
             flash.message = message(code: 'user.replaceUser.failed', args: [message(code: e.getMessage())])
-            return redirect(controller: 'user', action: 'replaceUser')
+            return redirect(controller: 'userAccount', action: 'replaceUser')
         }
-        return redirect(controller: 'user', action: 'replaceUser')
+        return redirect(controller: 'userAccount', action: 'replaceUser')
     }
 
     def create() {
@@ -96,7 +96,7 @@ class UserAccountController extends BaseController {
         UserAccount user = UserAccount.get(params.id)
         if (!user) {
             flash.message = message(code: 'user.not.found')
-            redirect(controller: 'user', action: 'list')
+            redirect(controller: 'userAccount', action: 'list')
             return
         }
 
@@ -176,15 +176,15 @@ class UserAccountController extends BaseController {
                 throw new RuntimeException(message(code: 'user.has.dependencies'))
             }
             // check that the source user is not an admin
-            userService.delete user
+            userService.deleteUserAllowed(session.repositoryName)
             flash.message = message(code: 'user.delete.success', args: [user.name.encodeAsHTML()])
         }
         catch (RuntimeException e) {
 //            log.debug("failed to delete user: ",e)
             flash.message = message(code: 'user.delete.failed', args: [message(code: e.getMessage())])
-            return redirect(controller: 'user', action: 'deleteAsk', params: [showTransferLink: true])
+            return redirect(controller: 'userAccount', action: 'deleteAsk', params: [showTransferLink: true])
         }
-        return redirect(controller: 'user', action: 'deleteAsk')
+        return redirect(controller: 'userAccount', action: 'deleteAsk')
     }
 
     /**

@@ -9,14 +9,23 @@
 <div class="nav">
     <g:homeButton><g:message code="home"/></g:homeButton>
     <!--<span class="menuButton"><g:link class="create" action="create">New Acl</g:link></span>-->
-    <span class="menuButton"><g:link class="list" controller="group" action="list">Group List</g:link></span>
+    <span class="menuButton">
+        <g:link class="list" controller="group" action="list">
+            <g:message code="group.list"/>
+        </g:link>
+    </span>
 </div>
 
 <div class="content">
-    <h1><g:message code="acl.usersByGroup.list.label" args="${[group.name]}"/></h1>
+    <h1><g:message code="acl.usersByGroup.list.label" args="[group.name]"/></h1>
     <g:if test="${flash.message}">
         <div class="message">${flash.message}</div>
     </g:if>
+
+        <g:link controller="group" action="show" id="${group?.id}">
+            <g:message code="link.to.show.group" args="[group.name]"/>
+        </g:link>
+
     <table>
         <thead>
         <tr>

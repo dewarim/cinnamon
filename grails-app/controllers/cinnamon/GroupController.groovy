@@ -17,7 +17,7 @@ class GroupController extends BaseController {
         def group = CmnGroup.get(params.id)
         new CmnGroupUser(group, user).save()
 
-        redirect(controller: 'user', action: 'showUsersByGroup', params: [id: group.id])
+        redirect(controller: 'userAccount', action: 'showUsersByGroup', params: [id: group.id])
     }
 
     /**
@@ -32,7 +32,7 @@ class GroupController extends BaseController {
         def gu = CmnGroupUser.findByUserAccountAndCmnGroup(user, group)
         gu.delete()
 
-        redirect(controller: 'user', action: 'showUsersByGroup', params: [id: group.id])
+        redirect(controller: 'userAccount', action: 'showUsersByGroup', params: [id: group.id])
     }
 
     def edit() {
@@ -131,7 +131,7 @@ class GroupController extends BaseController {
                 'name': ' g.name ',
                 'description': ' g.description ',
         ]
-        def searchString = "from Group as g where g.is_user=false"
+        def searchString = "from CmnGroup as g where g.groupOfOne=false"
         if (params.sort && sortBy.get(params.sort)) {
             searchString = searchString + " order by " + sortBy.get(params.sort) + (params.order?.equals('asc') ? ' asc ' : ' desc ')
         }

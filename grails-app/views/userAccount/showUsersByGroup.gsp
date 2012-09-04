@@ -13,10 +13,15 @@
 </div>
 
 <div class="content">
-    <h1><g:message code="usersByGroup.list.label" args="${[group.name]}"/></h1>
+    <h1><g:message code="usersByGroup.list.label" args="[group.name]"/></h1>
     <g:if test="${flash.message}">
         <div class="message">${flash.message}</div>
     </g:if>
+
+    <g:link controller="group" action="show" id="${group?.id}">
+        <g:message code="link.to.show.group" args="[group.name]"/>
+    </g:link>
+
     <div class="list">
         <table>
             <thead>
@@ -69,7 +74,7 @@
             <g:form name="add.user.form" action="addUser" controller="group">
                 <input type="hidden" name="id" value="${group.id}"/>
                 <g:select from="${addList}" name="user_list" optionValue="name" optionKey="id"/>
-                <span class="button"><g:actionSubmit value="${message(code: 'user.add_to_group')}"
+                <span class="button"><g:submitButton name="submitAddUser" value="${message(code: 'user.add_to_group')}"
                                                      action="addUser"/></span>
             </g:form>
 

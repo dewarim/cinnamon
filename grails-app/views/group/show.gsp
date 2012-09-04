@@ -75,7 +75,7 @@
             <!-- display a link to the list of users -->
             <tr class="prop">
                 <td colspan="2" align="left" class="name">
-                    <g:link controller='user' action='showUsersByGroup'
+                    <g:link controller='userAccount' action='showUsersByGroup'
                             id='${group.id}'><g:message code="group.show_users"/></g:link>
                 </td>
 
@@ -98,11 +98,11 @@
     </div>
 
     <div class="buttons">
-        <g:form>
+        <g:form controller="group" action="edit">
             <input type="hidden" name="id" value="${group?.id}"/>
-            <span class="button"><g:actionSubmit class="edit" value="${message(code: 'edit')}"/></span>
+            <span class="button"><g:submitButton name="edit" class="edit" value="${message(code: 'edit')}"/></span>
             <g:if test="${!group.groupOfOne}">
-                <span class="button"><g:actionSubmit class="delete" onclick="return confirm('Are you sure?');"
+                <span class="button"><g:actionSubmit class="delete" action="delete" onclick="return confirm('Are you sure?');"
                                                      value="${message(code: 'delete')}"/></span>
             </g:if>
         </g:form>
