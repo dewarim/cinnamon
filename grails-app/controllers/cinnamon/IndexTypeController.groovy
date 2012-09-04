@@ -22,34 +22,33 @@ class IndexTypeController extends BaseController{
     }
 
     def create () {
-//        def indexTypeInstance = new IndexType()
-//        indexTypeInstance.properties = params
         return [
-//                indexTypeInstance: indexTypeInstance,
                 indexers : ConfigurationHolder.config.indexers,
                 valueAssistanceProviders : ConfigurationHolder.config.vaProviders,
         ]
     }
 
     def save () {
+        def saveModel = [  indexers : ConfigurationHolder.config.indexers,
+                valueAssistanceProviders : ConfigurationHolder.config.vaProviders]
     	if (params.name.length() == 0) {
     		flash.error = message(code: 'error.create.indexType.empty.name')
-    		render(view: "create", model: [:])
+    		render(view: "create", model: saveModel)
     		return
     	}
     	if (params.indexerClass.length() == 0) {
     		flash.error = message(code: 'error.create.indexType.empty.indexerClass')
-    		render(view: "create", model: [:])
+    		render(view: "create", model: saveModel)
     		return
     	}
     	if (params.vaProviderClass.length() == 0) {
     		flash.error = message(code: 'error.create.indexType.empty.vaProviderClass')
-    		render(view: "create", model: [:])
+    		render(view: "create", model: saveModel)
     		return
     	}
     	if (IndexType.findByName(params.name)) {
     		flash.error = message(code: 'error.create.duplicate.name', args: [message(code:'indexType.label'), message(code:'indexType.name.label'), params.name?.encodeAsHTML()])
-    		render(view: "create", model: [:])
+    		render(view: "create", model: saveModel)
     		return
     	}
 
@@ -66,12 +65,14 @@ class IndexTypeController extends BaseController{
 	            redirect(action: "show", id: indexTypeInstance.id)
 	        }
 	        else {
-	            render(view: "create", model: [indexTypeInstance: indexTypeInstance])
+	            render(view: "create", model: [indexTypeInstance: indexTypeInstance, 
+                        indexers : ConfigurationHolder.config.indexers,
+                        valueAssistanceProviders : ConfigurationHolder.config.vaProviders, ])
 	        }
     	} catch (ClassNotFoundException ex) {
             log.debug("ClassNotFound: ", ex);
     		flash.error = message(code:'class.not.found', args: [ex?.cause?.message])
-    		render(view: "create", model: [:])
+    		render(view: "create", model: saveModel)
     	}
     }
 
