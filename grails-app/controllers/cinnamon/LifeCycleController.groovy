@@ -92,31 +92,32 @@ class LifeCycleController extends BaseController {
         render(template: 'list_table', model: [lifeCycleList: LifeCycle.list(params)])
     }
 
-    protected void updateFields(lifeCycle) {
+    protected void updateFields(LifeCycle lifeCycle) {
         lifeCycle.name = inputValidationService.checkAndEncodeName(params.name, lifeCycle)
         if(params.defaultState){
             lifeCycle.defaultState = inputValidationService.checkObject(LifeCycleState.class, params.defaultState)
         }
         else if(lifeCycle.defaultState){
             log.debug("remove defaultState from lifeCycle")
-            lifeCycle.removeFromStates(lifeCycle.defaultState)
             lifeCycle.defaultState = null
         }
         def states = params.list('states').collect {inputValidationService.checkObject(LifeCycleState.class, it)}
         if(! states.contains(lifeCycle.defaultState) ){
             states.add(lifeCycle.defaultState)
         }
+        
+        lifeCycle.save()
+        
         /*
          * Try to remove LifeCycleStates which are no longer valid.
          */
-        def currentStates = lifeCycle.states.collect{it}
+        def currentStates = lifeCycle.fetchStates()
         currentStates.each {LifeCycleState state ->
             if (!states.contains(state)) {
                 if (ObjectSystemData.findByState(state)) {
                     throw new RuntimeException("error.object.in.use")
                 }
                 log.debug("remove no longer valid LCS from lifeCycle.states")
-                lifeCycle.removeFromStates(state)
                 state.lifeCycle = null
             }
         }
@@ -124,8 +125,7 @@ class LifeCycleController extends BaseController {
          * Add all the new LifeCycleStates:
          */
         states.each {LifeCycleState state ->
-            if (state && ! lifeCycle.states.contains(state)) {
-                lifeCycle.states.add(state)
+            if (state && ! lifeCycle.fetchStates().contains(state)) {
                 state.lifeCycle = lifeCycle
             }
         }
