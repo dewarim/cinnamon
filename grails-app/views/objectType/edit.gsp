@@ -56,7 +56,7 @@
         </div>
 
         <div class="buttons">
-            <span class="button"><g:actionSubmit class="save" value="${message(code: 'update')}"/></span>
+            <span class="button"><g:actionSubmit class="save" action="update" value="${message(code: 'update')}"/></span>
         </div>
     </g:form>
 </div>
