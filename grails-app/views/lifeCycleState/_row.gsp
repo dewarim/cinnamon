@@ -18,7 +18,8 @@
 	<g:remoteLink action="delete"
 			params="[id:lcs.id]"
 			method="post"
-			before="if(! confirm('${message(code:'lcs.confirm.delete')?.encodeAsHTML()}')){return false};rePaginate('paginateButtons');"
+			before="if(! confirm('${message(code:'lcs.confirm.delete')?.encodeAsHTML()}')){return false};"
+        onSuccess="rePaginate('paginateButtons');"
 			update="[success:'lcsTable', failure:'infoMessage']">
 		<g:message code="lcs.delete"/>
 	</g:remoteLink>
