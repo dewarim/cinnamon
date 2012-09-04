@@ -4,7 +4,7 @@
 	</td>
 	<td class="value xml_editor">
 		<textarea id="config_${configEntry?.id}" style="width:100ex;border:1px black solid; " name="config" cols="120"
-				  rows="10">${configEntry?.config ? configEntry.config.encodeAsHTML() : '<config />'.encodeAsHTML()}</textarea>
+				  rows="10">${configEntry?.config ? configEntry.config : '<config />'}</textarea>
 		<script type="text/javascript">
 			createEditor($('#config_${configEntry?.id}').get(0))
 		</script>
