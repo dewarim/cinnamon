@@ -1,3 +1,4 @@
+<%@ page import="cinnamon.CmnGroup" %>
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -57,7 +58,7 @@
                     </td>
                     <td valign="top" class="value ${hasErrors(bean: group, field: 'parent', 'errors')}">
                         <g:select id="parent" optionKey="id"
-                                  from="${cinnamon.CmnGroup.list()}"
+                                  from="${CmnGroup.list()}"
                                   name="parent.id"
                                   optionValue="name"
                                   noSelection="${['null': message(code:'group.parent.none_selected') ]}"

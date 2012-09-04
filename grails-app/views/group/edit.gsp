@@ -45,17 +45,6 @@
 					</td>
 				</tr>
 
-				<!--
-				<tr class="prop">
-					<td valign="top" class="name">
-						<label for="is_user"><g:message code="group.is_user"/></label>
-					</td>
-					<td valign="top" class="value ${hasErrors(bean: group, field: 'is_user', 'errors')}">
-						<g:checkBox name="is_user" disabled="true" value="${group?.groupOfOne}"></g:checkBox>
-					</td>
-				</tr>
-				-->
-
 				<tr class="prop">
 					<td valign="top" class="name">
 						<label for="name"><g:message code="group.name"/></label>
