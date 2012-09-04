@@ -494,3 +494,46 @@ div.object_selection{
     float:left;
     display:none;
 }
+
+.skip{
+    display: none;
+}
+
+
+
+/* CREATE/EDIT FORMS AND SHOW PAGES */
+
+fieldset,
+.property-list {
+    margin: 0.6em 1.25em 0 1.25em;
+    padding: 0.3em 1.8em 1.25em;
+    position: relative;
+    zoom: 1;
+    border: none;
+}
+
+.property-list .fieldcontain {
+    list-style: none;
+    overflow: hidden;
+    zoom: 1;
+}
+
+.fieldcontain {
+    margin-top: 1em;
+}
+
+.fieldcontain label,
+.fieldcontain .property-label {
+    color: #666666;
+    text-align: left;
+    width: 28%;
+}
+
+.fieldcontain .property-label {
+    float: left;
+}
+
+.fieldcontain .property-value {
+    display: block;
+    margin-left: 27%;
+}

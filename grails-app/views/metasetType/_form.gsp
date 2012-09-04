@@ -20,7 +20,7 @@
 </label>
         <div class="value xml_editor">
             <textarea id="config_${metasetTypeInstance?.id}" style="width:100ex;border:1px black solid; " name="config" cols="120"
-                      rows="10">${metasetTypeInstance.config ? metasetTypeInstance.config.encodeAsHTML() : '<metaset />'.encodeAsHTML()}</textarea>
+                      rows="10">${metasetTypeInstance.config ? metasetTypeInstance.config : '<metaset />'}</textarea>
             <script type="text/javascript">
                 createEditor($('#config_${metasetTypeInstance?.id}').get(0))
             </script>
