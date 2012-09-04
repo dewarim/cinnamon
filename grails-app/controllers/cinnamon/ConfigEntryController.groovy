@@ -54,7 +54,7 @@ class ConfigEntryController extends BaseController{
             return
         }
         setListParams()
-        render(template: 'list_table', model: [ConfigEntryList: configEntry.list(params)])
+        render(template: 'list_table', model: [configEntryList: ConfigEntry.list(params), resetMessage:true])
     }
 
     protected void updateFields(configEntry) {
