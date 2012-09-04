@@ -18,7 +18,7 @@
 					before="codeMirrorEditor.toTextArea(\$('#config_${lcs.id}').get(0));"
 					after="createEditor(\$('#config_${lcs?.id}').get(0));"
 						update="[success:'lcs_'+lcs.id, failure:'lcs_'+lcs.id]"
-						value="${g.message(code:'save')}"/>
+						value="${message(code:'save')}"/>
 			</td>
 		</table>
 	</g:form>
@@ -28,7 +28,7 @@
 		<input type="hidden" name="id" value="${lcs.id}">
 		<g:submitToRemote url="[action:'cancelEdit', controller:'lifeCycleState']"
 				update="[success:'lcs_'+lcs.id, failure:'message']"
-				value="${g.message(code:'cancel')}"/>
+				value="${message(code:'cancel')}"/>
 	</g:form>
 
 </td>
