@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
-<hea
-    <meta name="layout" content="main"/>d>
+<head>
+    <meta name="layout" content="main"/>
 	<title><g:message code="folderType.edit.title"/></title>
     </head>
 <body>
@@ -53,7 +53,7 @@
         </div>
 
         <div class="buttons">
-            <span class="button"><g:actionSubmit class="save" value="${message(code: 'update')}"/></span>
+            <span class="button"><g:actionSubmit action="save" class="save" value="${message(code: 'update')}"/></span>
         </div>
     </g:form>
 </div>
