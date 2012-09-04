@@ -27,6 +27,6 @@
 </table>
 
 <div class="paginateButtons">
-    <util:remotePaginate controller="user" action="updateList" total="${UserAccount.count()}"
+    <util:remotePaginate controller="userAccount" action="updateList" total="${UserAccount.count()}"
                          update="userList" max="10" pageSizes="[10, 20, 50, 100, 250, 500, 1000]"/>
 </div>

@@ -17,7 +17,7 @@
 	<div class="dialog" style="width:60ex;">
 		<g:render template="/shared/message"/>
 		<g:if test="${showTransferLink}">
-			<g:link controller="user" action="replaceUser">
+			<g:link controller="userAccount" action="replaceUser">
 				<g:message code="user.delete.to.replace.link"/>
 			</g:link>
 		</g:if>
