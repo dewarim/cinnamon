@@ -1,4 +1,4 @@
-<%@ page import="server.lifecycle.LifeCycle" %>
+<%@ page import="cinnamon.lifecycle.LifeCycle" %>
 <table>
 	<thead>
 	<tr>
