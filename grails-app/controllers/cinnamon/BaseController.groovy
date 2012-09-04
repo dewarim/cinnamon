@@ -134,4 +134,8 @@ abstract class BaseController {
     protected String mapTemplate(String template) {
         return grailsApplication.config.templateMapping?."$template" ?: template
     }
+
+    def rePaginate () {
+        render(template: 'rePaginate')
+    }
 }
