@@ -99,8 +99,8 @@ class LifeCycleStateController extends BaseController{
         try {
             // class is instantiated not for use but to check if it is can be instantiated at all.
             //noinspection GroovyUnusedAssignment
-            IState stateClass = (IState) Class.forName(params.stateClass).newInstance()
-            lcs.stateClass = (Class<? extends IState>) Class.forName(params.stateClass)
+            IState stateClass = (IState) Class.forName(params.stateClass, true, Thread.currentThread().contextClassLoader ).newInstance()
+            lcs.stateClass = (Class<? extends IState>) Class.forName(params.stateClass, true, Thread.currentThread().contextClassLoader )
         }
         catch (ClassCastException e) {
             throw new RuntimeException("error.not.iState.class")
@@ -134,5 +134,5 @@ class LifeCycleStateController extends BaseController{
         setListParams()
         render(template: 'list_table', model:[lcsList:LifeCycleState.list(params)])
     }
-
+    
 }
