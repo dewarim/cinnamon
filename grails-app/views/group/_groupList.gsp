@@ -1,4 +1,4 @@
-<%@ page import="cinnamon.CmnGroup; server.Group" %>
+<%@ page import="cinnamon.CmnGroup;" %>
 <table>
     <thead>
     <tr>
