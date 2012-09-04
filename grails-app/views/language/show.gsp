@@ -51,8 +51,8 @@
 	<div class="buttons">
 		<g:form>
 			<input type="hidden" name="id" value="${language?.id}"/>
-			<span class="button"><g:actionSubmit class="edit" value="${message(code:'edit')}"/></span>
-			<span class="button"><g:actionSubmit class="delete" onclick="return confirm('Are you sure?');"
+			<span class="button"><g:actionSubmit action="edit" class="edit" value="${message(code:'edit')}"/></span>
+			<span class="button"><g:actionSubmit action="delete" class="delete" onclick="return confirm('Are you sure?');"
 												 value="${message(code:'delete')}"/></span>
 		</g:form>
 	</div>
