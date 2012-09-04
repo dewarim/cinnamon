@@ -43,15 +43,8 @@
 
                 <tr class="prop">
                     <td valign="top" class="name">
-                        <label for="items"><g:message code="indexGroup.items.label" default="Items"/></label>
+                        <g:message code="indexGroup.items.label" default="Items"/>
                     </td>
-                    <!--
-                                <td valign="top" class="value ${hasErrors(bean: indexGroupInstance, field: 'items', 'errors')}">
-                                    <g:select name="items" from="${cinnamon.index.IndexItem.list()}" multiple="yes"
-                                              optionKey="id" size="5" value="${indexGroupInstance?.items}"
-                                              optionValue="name"/>
-                                </td>
--->
                     <td valign="top" style="text-align: left;" class="value">
                         <ul>
                             <g:each in="${indexGroupInstance.items}" var="i">
