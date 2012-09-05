@@ -29,7 +29,7 @@
                         <label for="isoCode"><g:message code="uiLanguage.isoCode"/></label>
                     </td>
                     <td valign="top" class="value ${hasErrors(bean: language, field: 'isoCode', 'errors')}">
-                        <input type="text" name="iso_code" id="isoCode"
+                        <input type="text" name="isoCode" id="isoCode"
                                value="${fieldValue(bean: language, field: 'isoCode')}">
                         <script type="text/javascript">
                             $('#isoCode').focus();
