@@ -82,13 +82,11 @@ public class RelationChangeTrigger implements ITrigger {
     }
 
     static void commandMapBuilder() {
-        // TODO: adopt to new Grails controller/layout
         commandIdMap = new HashMap<String, String>();
         commandIdMap.put("setmeta", "id");
         commandIdMap.put("setcontent", "id");
         commandIdMap.put("version", "preid");
-        commandIdMap.put("setsysmeta", "id");
-        
+        commandIdMap.put("setsysmeta", "id");        
         commandIdMap.put("newVersion", "osd");
     }
 }
