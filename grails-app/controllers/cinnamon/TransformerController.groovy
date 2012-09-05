@@ -83,8 +83,10 @@ class TransformerController extends BaseController{
         try {
             // class is instantiated not for use but to check if it is can be instantiated at all.
             //noinspection GroovyUnusedAssignment
-            ITransformer transformerClass = (ITransformer) Class.forName(params.transformerClass).newInstance()
-            transformer.transformerClass = (Class<? extends ITransformer>) Class.forName(params.transformerClass)
+            ITransformer transformerClass = 
+                (ITransformer) Class.forName(params.transformerClass, true, Thread.currentThread().contextClassLoader).newInstance()
+            transformer.transformerClass = 
+                (Class<? extends ITransformer>) Class.forName(params.transformerClass, true, Thread.currentThread().contextClassLoader)
         }
         catch (ClassCastException e) {
             throw new RuntimeException("error.not.iTransformer.class")
