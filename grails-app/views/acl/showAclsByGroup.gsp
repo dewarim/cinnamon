@@ -7,7 +7,7 @@
 
 <body>
 <div class="nav">
-    <g:homeButton><g:message code="home"/></g:homeButton>
+    <g:homeButton><g:message code="home"/></g:homeButton><g:adminButton/>
     <!--<span class="menuButton"><g:link class="create" action="create">New Acl</g:link></span>-->
     <span class="menuButton">
         <g:link class="list" controller="group" action="list">

@@ -8,7 +8,7 @@
 
 <body>
 <div class="nav">
-    <g:homeButton><g:message code="home"/></g:homeButton>
+    <g:homeButton><g:message code="home"/></g:homeButton><g:adminButton/>
     <span class="menuButton"><g:link class="list" action="index" controller="health"><g:message
             code="health.to.index"/></g:link></span>
 </div>

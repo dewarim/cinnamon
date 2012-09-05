@@ -10,7 +10,7 @@
 
 
 <div class="nav">
-	<g:homeButton><g:message code="home"/></g:homeButton>
+	<g:homeButton><g:message code="home"/></g:homeButton><g:adminButton/>
 	<span class="menuButton"><g:link class="create" action="create"><g:message code="message.create"/></g:link></span>
 	<span class="menuButton"><g:remoteLink controller="message" action="selectExportLanguage"
 										   update="[success:'import_export', failure:'import_export']">

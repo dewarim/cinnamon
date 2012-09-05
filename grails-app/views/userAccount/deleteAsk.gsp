@@ -6,7 +6,7 @@
 </head>
 <body>
 <div class="nav">
-	<g:homeButton><g:message code="home"/></g:homeButton>
+	<g:homeButton><g:message code="home"/></g:homeButton><g:adminButton/>
 	<span class="menuButton"><g:link class="list" action="list"><g:message code="user.list"/></g:link></span>
 	<span class="menuButton"><g:link class="create" action="create"><g:message code="user.create"/></g:link></span>
 	<span class="menuButton"><g:link class="replaceUser" action="replaceUser"><g:message code="user.replaceUser.link"/></g:link></span>

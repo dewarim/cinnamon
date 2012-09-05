@@ -12,13 +12,9 @@
 <div class="nav">
     <g:homeButton>
         <g:message code="home"/>
-    </g:homeButton>
+    </g:homeButton><g:adminButton/>
     <sec:ifAllGranted roles="_superusers">
-        <span class="menuButton">
-            <a class="admin" href="${createLink(controller: 'admin', action: 'index')}">
-                <g:message code="link.to.administration"/>
-            </a>
-        </span>
+        <g:adminButton/>
     </sec:ifAllGranted>
 </div>
 

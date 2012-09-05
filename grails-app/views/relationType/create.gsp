@@ -10,7 +10,7 @@
 <body>
 
 <div class="nav">
-    <g:homeButton><g:message code="home"/></g:homeButton>
+    <g:homeButton><g:message code="home"/></g:homeButton><g:adminButton/>
     <span class="menuButton"><g:link class="list" action="list"><g:message code="relationType.list"/></g:link></span>
 </div>
 

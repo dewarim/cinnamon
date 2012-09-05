@@ -7,7 +7,7 @@
 </head>
 <body>
   <div class="nav">
-	<g:homeButton><g:message code="home"/></g:homeButton>
+	<g:homeButton><g:message code="home"/></g:homeButton><g:adminButton/>
 	<span class="menuButton">
 		<g:remoteLink class="create" action="create" controller="transformer"
 				update="[success:'createTransformer', failure:'message']">

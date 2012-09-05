@@ -7,7 +7,7 @@
 
 <body>
 <div class="nav">
-    <g:homeButton><g:message code="home"/></g:homeButton>
+    <g:homeButton><g:message code="home"/></g:homeButton><g:adminButton/>
     <span class="menuButton"><g:link class="create" action="create"><g:message code="format.create"/></g:link></span>
 </div>
 

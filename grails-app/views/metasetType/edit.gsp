@@ -8,7 +8,7 @@
 	<body>
 		<a href="#edit-metasetType" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
     <div class="nav" role="navigation">
-        <g:homeButton><g:message code="home"/></g:homeButton>
+        <g:homeButton><g:message code="home"/></g:homeButton><g:adminButton/>
         <span class="menuButton"><g:link class="create" action="create"><g:message
                 code="metasetType.create"/></g:link></span>
         <span class="menuButton"><g:link class="list" action="list"><g:message

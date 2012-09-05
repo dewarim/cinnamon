@@ -9,7 +9,7 @@
    
   
         <div class="nav">
-			<g:homeButton><g:message code="home"/></g:homeButton>
+			<g:homeButton><g:message code="home"/></g:homeButton><g:adminButton/>
             <span class="menuButton"><g:link class="list" action="list"><g:message code="message.list"/></g:link></span>
             <span class="menuButton"><g:link class="create" action="create"><g:message code="message.create"/></g:link></span>
         </div>
@@ -40,7 +40,7 @@
             </div>
             <div class="buttons">
                 <g:form>
-                    <input type="hidden" name="id" value="${msg.id}"
+                    <input type="hidden" name="id" value="${msg.id}">
                     <span class="button"><g:actionSubmit action="edit" class="edit" value="${message(code:'edit')}" /></span>
                     <span class="button"><g:actionSubmit action="delete" class="delete" onclick="return confirm('Are you sure?');" value="${message(code:'delete')}" /></span>
                 </g:form>

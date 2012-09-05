@@ -11,7 +11,7 @@
 
 
     <div class="nav" role="navigation">
-        <g:homeButton><g:message code="home"/></g:homeButton>
+        <g:homeButton><g:message code="home"/></g:homeButton><g:adminButton/>
         <span class="menuButton"><g:link class="list" action="list"><g:message
                 code="metasetType.list"/></g:link></span>
     </div>
