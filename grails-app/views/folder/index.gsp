@@ -12,7 +12,7 @@
 <div class="nav">
     <g:homeButton>
         <g:message code="home"/>
-    </g:homeButton><g:adminButton/>
+    </g:homeButton>
     <sec:ifAllGranted roles="_superusers">
         <g:adminButton/>
     </sec:ifAllGranted>
