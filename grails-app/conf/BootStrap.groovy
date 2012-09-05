@@ -2,21 +2,30 @@ import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import org.codehaus.groovy.grails.plugins.springsecurity.SecurityFilterPosition
 import cinnamon.ObjectSystemData
 import cinnamon.Folder
+import cinnamon.LifecycleLog
 
 class BootStrap {
 
     def grailsApplication
     def luceneService
-
+        
     def init = { servletContext ->
 
         if (!grailsApplication.config.configLoaded) {
-            log.warn("merge config file by hand")
             def configFile = new File("${System.env.CINNAMON_HOME_DIR}/cinnamon-config.groovy")
+            log.warn("merge config file by hand from ${configFile.absolutePath}")
             def configScript = new ConfigSlurper().parse(configFile.text)
             grailsApplication.config.merge(configScript)
         }
 
+        try{
+            def c = LifecycleLog.count()
+            log.debug("*** lifecycle log count: $c")
+        }
+        catch (Exception e){
+            log.warn("*** dataSource for lifecycleLogging is probably not configured correctly.", e)
+        }
+        
         SpringSecurityUtils.clientRegisterFilter('requestTicketAuthenticationFilter',
                 SecurityFilterPosition.PRE_AUTH_FILTER.getOrder() + 15) 
         SpringSecurityUtils.clientRegisterFilter('repositoryLoginFilter',

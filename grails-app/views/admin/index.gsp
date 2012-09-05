@@ -27,8 +27,6 @@
 
     <h2><g:message code="admin.server.objects"/></h2>
 
-    <!-- // TODO: implement all admin controllers -->
-
     <div class="object_controllers main_index">
         <h3><g:message code="server.objects"/></h3>
         <ul>

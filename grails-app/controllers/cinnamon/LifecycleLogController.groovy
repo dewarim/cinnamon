@@ -14,7 +14,7 @@ class LifecycleLogController extends BaseController{
             return [
                     pagination: pagination,
                     selectedEventType: null,
-                    logEntries: LifecycleLog.findAll("from LifecycleLog l where l.repository=:repository", [repository: session.repositoryName], params)                    
+                    logEntries: LifecycleLog.findAllByRepository(session.repositoryName, params)                    
             ]
         }
         catch (Exception e) {
@@ -70,7 +70,8 @@ class LifecycleLogController extends BaseController{
 
     protected Pagination fetchEntryListPagination() {
         def pag = new Pagination(params)
-        pag.itemCount = (int) LifecycleLog.executeQuery("select count(l) from LifecycleLog l", [])[0]
+//        pag.itemCount = (int) LifecycleLog.executeQuery("select count(l) from LifecycleLog l", [:])[0]
+        pag.itemCount = LifecycleLog.count()
         log.debug("itemCount: ${pag.itemCount}")
         pag.updateId = 'logTable'
         pag.remoteAction = 'updateEntryList'
