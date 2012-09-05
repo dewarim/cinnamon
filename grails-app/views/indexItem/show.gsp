@@ -28,93 +28,93 @@
                     <tbody>
                     
                         <tr class="prop">
-                            <td valign="top" class="name"><g:message code="indexItem.id.label" default="Id" /></td>
+                            <td class="name"><g:message code="indexItem.id.label" default="Id" /></td>
                             
-                            <td valign="top" class="value">${fieldValue(bean: indexItemInstance, field: "id")}</td>
-                            
-                        </tr>
-                    
-                        <tr class="prop">
-                            <td valign="top" class="name"><g:message code="indexItem.name.label" default="Name" /></td>
-                            
-                            <td valign="top" class="value">${fieldValue(bean: indexItemInstance, field: "name")}</td>
+                            <td class="value">${fieldValue(bean: indexItemInstance, field: "id")}</td>
                             
                         </tr>
                     
                         <tr class="prop">
-                            <td valign="top" class="name"><g:message code="indexItem.fieldname.label" default="Fieldname" /></td>
+                            <td class="name"><g:message code="indexItem.name.label" default="Name" /></td>
                             
-                            <td valign="top" class="value">${fieldValue(bean: indexItemInstance, field: "fieldname")}</td>
-                            
-                        </tr>
-                    
-                        <tr class="prop">
-                            <td valign="top" class="name"><abbr title="${message(code: 'indexItem.forContent.description')}"><g:message code="indexItem.forContent.label" default="For Content" /></abbr></td>
-                            
-                            <td valign="top" class="value"><g:checkBox name="forContent" disabled="true" value="${indexItemInstance?.forContent}" /></td>
+                            <td class="value">${fieldValue(bean: indexItemInstance, field: "name")}</td>
                             
                         </tr>
                     
                         <tr class="prop">
-                            <td valign="top" class="name"><abbr title="${message(code: 'indexItem.forMetadata.description')}"><g:message code="indexItem.forMetadata.label" default="For Metadata" /></abbr></td>
+                            <td class="name"><g:message code="indexItem.fieldname.label" default="Fieldname" /></td>
                             
-                            <td valign="top" class="value"><g:checkBox name="forContent" disabled="true" value="${indexItemInstance?.forMetadata}" /></td>
-                            
-                        </tr>
-                    
-                        <tr class="prop">
-                            <td valign="top" class="name"><abbr title="${message(code: 'indexItem.forSysMeta.description')}"><g:message code="indexItem.forSysMeta.label" default="For Sys Meta" /></abbr></td>
-                            
-                            <td valign="top" class="value"><g:checkBox name="forContent" disabled="true" value="${indexItemInstance?.forSysMeta}" /></td>
+                            <td class="value">${fieldValue(bean: indexItemInstance, field: "fieldname")}</td>
                             
                         </tr>
                     
                         <tr class="prop">
-                            <td valign="top" class="name"><g:message code="indexItem.indexGroup.label" default="Index Group" /></td>
+                            <td class="name"><abbr title="${message(code: 'indexItem.forContent.description')}"><g:message code="indexItem.forContent.label" default="For Content" /></abbr></td>
                             
-                            <td valign="top" class="value"><g:link controller="indexGroup" action="show" id="${indexItemInstance?.indexGroup?.id}">${indexItemInstance?.indexGroup?.name}</g:link></td>
-                            
-                        </tr>
-                    
-                        <tr class="prop">
-                            <td valign="top" class="name"><g:message code="indexItem.indexType.label" default="Index Type" /></td>
-                            
-                            <td valign="top" class="value"><g:link controller="indexType" action="show" id="${indexItemInstance?.indexType?.id}">${indexItemInstance?.indexType?.name}</g:link></td>
+                            <td class="value"><g:checkBox name="forContent" disabled="true" value="${indexItemInstance?.forContent}" /></td>
                             
                         </tr>
                     
                         <tr class="prop">
-                            <td valign="top" class="name"><abbr title="${message(code: 'indexItem.multipleResults.description')}"><g:message code="indexItem.multipleResults.label" default="Multiple Results" /></abbr></td>
+                            <td class="name"><abbr title="${message(code: 'indexItem.forMetadata.description')}"><g:message code="indexItem.forMetadata.label" default="For Metadata" /></abbr></td>
                             
-                            <td valign="top" class="value"><g:checkBox name="multipleResults" disabled="true" value="${indexItemInstance?.multipleResults}" /></td>
-                            
-                        </tr>
-                    
-                        <tr class="prop">
-                            <td valign="top" class="name"><g:message code="indexItem.searchCondition.label" default="Search Condition" /></td>
-                            
-                            <td valign="top" class="value">${fieldValue(bean: indexItemInstance, field: "searchCondition")}</td>
+                            <td class="value"><g:checkBox name="forContent" disabled="true" value="${indexItemInstance?.forMetadata}" /></td>
                             
                         </tr>
                     
                         <tr class="prop">
-                            <td valign="top" class="name"><g:message code="indexItem.searchString.label" default="Search String" /></td>
+                            <td class="name"><abbr title="${message(code: 'indexItem.forSysMeta.description')}"><g:message code="indexItem.forSysMeta.label" default="For Sys Meta" /></abbr></td>
                             
-                            <td valign="top" class="value">${fieldValue(bean: indexItemInstance, field: "searchString")}</td>
-                            
-                        </tr>
-                    
-                        <tr class="prop">
-                            <td valign="top" class="name"><abbr title="${message(code: 'indexItem.systemic.description')}"><g:message code="indexItem.systemic.label" default="Systemic" /></abbr></td>
-                            
-                            <td valign="top" class="value"><g:checkBox name="systemic" disabled="true" value="${indexItemInstance?.systemic}" /></td>
+                            <td class="value"><g:checkBox name="forContent" disabled="true" value="${indexItemInstance?.forSysMeta}" /></td>
                             
                         </tr>
                     
                         <tr class="prop">
-                            <td valign="top" class="name"><g:message code="indexItem.vaProviderParams.label" default="Va Provider Params" /></td>
+                            <td class="name"><g:message code="indexItem.indexGroup.label" default="Index Group" /></td>
                             
-                            <td valign="top" class="value">${fieldValue(bean: indexItemInstance, field: "vaProviderParams")}</td>
+                            <td class="value"><g:link controller="indexGroup" action="show" id="${indexItemInstance?.indexGroup?.id}">${indexItemInstance?.indexGroup?.name}</g:link></td>
+                            
+                        </tr>
+                    
+                        <tr class="prop">
+                            <td class="name"><g:message code="indexItem.indexType.label" default="Index Type" /></td>
+                            
+                            <td class="value"><g:link controller="indexType" action="show" id="${indexItemInstance?.indexType?.id}">${indexItemInstance?.indexType?.name}</g:link></td>
+                            
+                        </tr>
+                    
+                        <tr class="prop">
+                            <td class="name"><abbr title="${message(code: 'indexItem.multipleResults.description')}"><g:message code="indexItem.multipleResults.label" default="Multiple Results" /></abbr></td>
+                            
+                            <td class="value"><g:checkBox name="multipleResults" disabled="true" value="${indexItemInstance?.multipleResults}" /></td>
+                            
+                        </tr>
+                    
+                        <tr class="prop">
+                            <td class="name"><g:message code="indexItem.searchCondition.label" default="Search Condition" /></td>
+                            
+                            <td class="value">${fieldValue(bean: indexItemInstance, field: "searchCondition")}</td>
+                            
+                        </tr>
+                    
+                        <tr class="prop">
+                            <td class="name"><g:message code="indexItem.searchString.label" default="Search String" /></td>
+                            
+                            <td class="value">${fieldValue(bean: indexItemInstance, field: "searchString")}</td>
+                            
+                        </tr>
+                    
+                        <tr class="prop">
+                            <td class="name"><abbr title="${message(code: 'indexItem.systemic.description')}"><g:message code="indexItem.systemic.label" default="Systemic" /></abbr></td>
+                            
+                            <td class="value"><g:checkBox name="systemic" disabled="true" value="${indexItemInstance?.systemic}" /></td>
+                            
+                        </tr>
+                    
+                        <tr class="prop">
+                            <td class="name"><g:message code="indexItem.vaProviderParams.label" default="Va Provider Params" /></td>
+                            
+                            <td class="value">${fieldValue(bean: indexItemInstance, field: "vaProviderParams")}</td>
                             
                         </tr>
                     

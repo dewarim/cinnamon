@@ -1,6 +1,6 @@
 <%@ page import="cinnamon.lifecycle.LifeCycle" %>
 <g:set var="cid" value="${lcs?.id}"/>
-<td valign="top" class="value">
+<td class="value">
 	<div class="lcs_name ${hasErrors(bean: lcs, field: 'name', 'errors')}">
 		<label for="name_${cid}"><g:message code="lcs.name"/></label> <br>
 		<input type="text" name="name" id="name_${cid}" value="${lcs?.name}"/>
@@ -11,7 +11,7 @@
         <g:select id="stateClass_${cid}" name="stateClass" from="${stateClasses}" value="${lcs?.stateClass?.name}" />
 	</div>
 </td>
-<td valign="top" class="value ">
+<td class="value ">
 	<div class="lcs_lifeCycle ${hasErrors(bean: lcs, field: 'lifeCycle', 'errors')}">
 		<label for="lifeCycle_${cid}"><g:message code="lcs.lifeCycle"/></label> <br>
 		<g:if test="${LifeCycle.count() > 0}">

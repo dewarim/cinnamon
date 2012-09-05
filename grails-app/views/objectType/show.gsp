@@ -32,23 +32,23 @@
             <tbody>
 
             <tr class="prop">
-                <td valign="top" class="name"><g:message code="objectType.id"/></td>
+                <td class="name"><g:message code="objectType.id"/></td>
 
-                <td valign="top" class="value">${fieldValue(bean: objectType, field: 'id')}</td>
-
-            </tr>
-
-            <tr class="prop">
-                <td valign="top" class="name"><g:message code="objectType.name"/></td>
-
-                <td valign="top" class="value">${fieldValue(bean: objectType, field: 'name')}</td>
+                <td class="value">${fieldValue(bean: objectType, field: 'id')}</td>
 
             </tr>
 
             <tr class="prop">
-                <td valign="top" class="name"><g:message code="objectType.description"/></td>
+                <td class="name"><g:message code="objectType.name"/></td>
 
-                <td valign="top" class="value">${fieldValue(bean: objectType, field: 'description')}</td>
+                <td class="value">${fieldValue(bean: objectType, field: 'name')}</td>
+
+            </tr>
+
+            <tr class="prop">
+                <td class="name"><g:message code="objectType.description"/></td>
+
+                <td class="value">${fieldValue(bean: objectType, field: 'description')}</td>
 
             </tr>
 

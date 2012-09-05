@@ -33,10 +33,10 @@
                 <tbody>
 
                 <tr class="prop">
-                    <td valign="top" class="name">
+                    <td class="name">
                         <label for="name"><g:message code="user.name"/></label>
                     </td>
-                    <td valign="top" class="value ${hasErrors(bean: user, field: 'name', 'errors')}">
+                    <td class="value ${hasErrors(bean: user, field: 'name', 'errors')}">
                         <input type="text" name="name" id="name" value="${fieldValue(bean: user, field: 'name')}"/>
                         <script type="text/javascript">
                             $('#name').focus();
@@ -44,10 +44,10 @@
                     </td>
                 </tr>
                 <tr class="prop">
-                    <td valign="top" class="name">
+                    <td class="name">
                         <label for="fullname"><g:message code="user.fullname"/></label>
                     </td>
-                    <td valign="top" class="value ${hasErrors(bean: user, field: 'fullname', 'errors')}">
+                    <td class="value ${hasErrors(bean: user, field: 'fullname', 'errors')}">
                         <input type="text" name="fullname" id="fullname"
                                value="${fieldValue(bean: user, field: 'fullname')}"/>
 
@@ -55,10 +55,10 @@
                 </tr>
 
                 <tr class="prop">
-                    <td valign="top" class="name">
+                    <td class="name">
                         <label for="description"><g:message code="user.description"/></label>
                     </td>
-                    <td valign="top" class="value ${hasErrors(bean: user, field: 'description', 'errors')}">
+                    <td class="value ${hasErrors(bean: user, field: 'description', 'errors')}">
                         <!-- <input type="text" name="description" id="description" value="${fieldValue(bean: user, field: 'description')}" /> -->
                         <g:descriptionTextArea name="description" value="${fieldValue(bean:user,field:'description')}"/>
                     </td>
@@ -68,29 +68,29 @@
 
 
                 <tr class="prop">
-                    <td valign="top" class="name">
-                        <label for="name"><g:message code="user.email"/></label>
+                    <td class="name">
+                        <label for="email"><g:message code="user.email"/></label>
                     </td>
-                    <td valign="top" class="value ${hasErrors(bean: user, field: 'email', 'errors')}">
+                    <td class="value ${hasErrors(bean: user, field: 'email', 'errors')}">
                         <input type="text" name="email" id="email" value="${fieldValue(bean: user, field: 'email')}"/>
                     </td>
                 </tr>
 
                 <tr class="prop">
-                    <td valign="top" class="name">
+                    <td class="name">
                         <label for="name"><g:message code="user.language"/></label>
                     </td>
-                    <td valign="top" class="value ${hasErrors(bean: user, field: 'language', 'errors')}">
+                    <td class="value ${hasErrors(bean: user, field: 'language', 'errors')}">
                         <g:select name="language.id" from="${UiLanguage.list()}" optionKey="id"
                                   value="${user?.language?.id}" optionValue="isoCode"/>
                     </td>
                 </tr>
 
                 <tr class="prop">
-                    <td valign="top" class="name">
+                    <td class="name">
                         <label for="pwd"><g:message code="user.password"/></label>
                     </td>
-                    <td valign="top" class="value ${hasErrors(bean: user, field: 'pwd', 'errors')}">
+                    <td class="value ${hasErrors(bean: user, field: 'pwd', 'errors')}">
                         <input type="text" name="pwd" id="pwd" value="${fieldValue(bean: user, field: 'pwd')}"/>
                     </td>
                 </tr>

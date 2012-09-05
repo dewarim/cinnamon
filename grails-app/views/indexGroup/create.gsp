@@ -36,10 +36,10 @@
                 <tbody>
 
                 <tr class="prop">
-                    <td valign="top" class="name">
+                    <td class="name">
                         <label for="name"><g:message code="label.name"/></label>
                     </td>
-                    <td valign="top" class="value ${hasErrors(bean: indexGroupInstance, field: 'name', 'errors')}">
+                    <td class="value ${hasErrors(bean: indexGroupInstance, field: 'name', 'errors')}">
                         <g:textField name="name" value="${indexGroupInstance?.name}"/>
                         <script type="text/javascript">
                             $('#name').focus();

@@ -30,20 +30,20 @@
                 <tbody>
 
                 <tr class="prop">
-                    <td valign="top" class="name">
+                    <td class="name">
                         <label for="name"><g:message code="folderType.name"/></label>
                     </td>
-                    <td valign="top" class="value ${hasErrors(bean: folderType, field: 'name', 'errors')}">
+                    <td class="value ${hasErrors(bean: folderType, field: 'name', 'errors')}">
                         <input type="text" name="name" id="name"
                                value="${fieldValue(bean: folderType, field: 'name')}"/>
                     </td>
                 </tr>
 
                 <tr class="prop">
-                    <td valign="top" class="name">
+                    <td class="name">
                         <label for="description"><g:message code="folderType.description"/></label>
                     </td>
-                    <td valign="top" class="value ${hasErrors(bean: folderType, field: 'description', 'errors')}">
+                    <td class="value ${hasErrors(bean: folderType, field: 'description', 'errors')}">
                         <g:descriptionTextArea name="description"
                                                value="${fieldValue(bean: folderType, field: 'description')}"/>
                     </td>

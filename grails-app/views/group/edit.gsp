@@ -27,51 +27,51 @@
 				<tbody>
 
 				<tr class="prop">
-					<td valign="top" class="name">
-						<label for="description"><g:message code="group.id"/></label>
+					<td class="name">
+						<label for="groupId"><g:message code="group.id"/></label>
 					</td>
-					<td valign="top" class="value ${hasErrors(bean: group, field: 'id', 'errors')}">
-						<input type="text" disabled="disabled" name="id" id="id" value="${fieldValue(bean: group, field: 'id')}"/>
+					<td class="value ${hasErrors(bean: group, field: 'id', 'errors')}">
+						<input type="text" disabled="disabled" name="id" id="groupId" value="${fieldValue(bean: group, field: 'id')}"/>
 					</td>
 				</tr>
 
 				<tr class="prop">
-					<td valign="top" class="name">
+					<td class="name">
 						<label for="description"><g:message code="group.description"/></label>
 					</td>
-					<td valign="top" class="value ${hasErrors(bean: group, field: 'description', 'errors')}">
+					<td class="value ${hasErrors(bean: group, field: 'description', 'errors')}">
 						<!-- <input type="text" name="description" id="description" value="${fieldValue(bean: group, field: 'description')}" /> -->
 						<g:descriptionTextArea name="description" value="${fieldValue(bean:group,field:'description')}"/>
 					</td>
 				</tr>
 
 				<tr class="prop">
-					<td valign="top" class="name">
+					<td class="name">
 						<label for="name"><g:message code="group.name"/></label>
 					</td>
-					<td valign="top" class="value ${hasErrors(bean: group, field: 'name', 'errors')}">
+					<td class="value ${hasErrors(bean: group, field: 'name', 'errors')}">
 						<input type="text" name="name" id="name" value="${fieldValue(bean: group, field: 'name')}"/>
 					</td>
 				</tr>
 
 				<tr class="prop">
-					<td valign="top" class="name">
+					<td class="name">
 						<label for="parent"><g:message code="group.parent"/></label>
 					</td>
-					<td valign="top" class="value ${hasErrors(bean: group, field: 'parent', 'errors')}">
+					<td class="value ${hasErrors(bean: group, field: 'parent', 'errors')}">
 						<g:select id="parent" optionKey="id"
 								from="${parentList}"
 								name="parent.id"
 								optionValue="name"
 								noSelection="${['null':'No parent']}"
-								value="${group?.parent?.id}"></g:select>
+								value="${group?.parent?.id}"/>
 					</td>
 				</tr>
 
 				<g:if test="${!group.groupOfOne}">
 					<!-- display a link to the list of acls -->
 					<tr class="prop">
-						<td colspan="2" align="left" class="name">
+						<td colspan="2" class="name left">
 							<g:link controller='acl' action='showAclsByGroup'
 									id='${group.id}'><g:message code="group.show_acls"/></g:link>
 						</td>
@@ -81,7 +81,7 @@
 
 				<!-- display a link to the list of users -->
 				<tr class="prop">
-					<td colspan="2" align="left" class="name">
+					<td colspan="2" class="name left">
 						<g:link controller='userAccount' action='showUsersByGroup'
 								id='${group.id}'><g:message code="group.show_users"/></g:link>
 					</td>

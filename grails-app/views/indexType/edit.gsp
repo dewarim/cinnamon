@@ -28,37 +28,37 @@
                         <tbody>
                         
                             <tr class="prop">
-                                <td valign="top" class="name">
+                                <td class="name">
                                   <label for="name"><g:message code="indexType.name.label" /></label>
                                 </td>
-                                <td valign="top" class="value ${hasErrors(bean: indexTypeInstance, field: 'name', 'errors')}">
+                                <td class="value ${hasErrors(bean: indexTypeInstance, field: 'name', 'errors')}">
                                     <g:textField name="name" value="${indexTypeInstance?.name}" />
                                 </td>
                             </tr>
                         
                             <tr class="prop">
-                                <td valign="top" class="name">
+                                <td class="name">
                                   <label for="dataType"><g:message code="indexType.dataType.label" /></label>
                                 </td>
-                                <td valign="top" class="value ${hasErrors(bean: indexTypeInstance, field: 'dataType', 'errors')}">
+                                <td class="value ${hasErrors(bean: indexTypeInstance, field: 'dataType', 'errors')}">
                                     <g:select name="dataType" from="${cinnamon.index.IndexType$DataType?.values()}" value="${indexTypeInstance?.dataType}"  />
                                 </td>
                             </tr>
                         
                             <tr class="prop">
-                                <td valign="top" class="name">
+                                <td class="name">
                                   <label for="indexerClass"><g:message code="indexType.indexerClass.label" /></label>
                                 </td>
-                                <td valign="top" class="value ${hasErrors(bean: indexTypeInstance, field: 'indexerClass', 'errors')}">
+                                <td class="value ${hasErrors(bean: indexTypeInstance, field: 'indexerClass', 'errors')}">
                                     <g:select name="indexerClass" from="${indexers}" value="${indexTypeInstance?.indexerClass?.name}" />
                                 </td>
                             </tr>
                         
                             <tr class="prop">
-                                <td valign="top" class="name">
+                                <td class="name">
                                   <label for="vaProviderClass"><g:message code="indexType.vaProviderClass.label" /></label>
                                 </td>
-                                <td valign="top" class="value ${hasErrors(bean: indexTypeInstance, field: 'vaProviderClass', 'errors')}">
+                                <td class="value ${hasErrors(bean: indexTypeInstance, field: 'vaProviderClass', 'errors')}">
 									<g:select id="vaProviderClass" name="valueAssistanceProvider" from="${valueAssistanceProviders}" value="${indexTypeInstance?.vaProviderClass?.name}" />
                                 </td>
                             </tr>

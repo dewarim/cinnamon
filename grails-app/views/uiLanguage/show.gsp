@@ -23,16 +23,16 @@
 
                     
                         <tr class="prop">
-                            <td valign="top" class="name"><g:message code="uiLanguage.id"/></td>
+                            <td class="name"><g:message code="uiLanguage.id"/></td>
                             
-                            <td valign="top" class="value">${fieldValue(bean:language, field:'id')}</td>
+                            <td class="value">${fieldValue(bean:language, field:'id')}</td>
                             
                         </tr>
                     
                         <tr class="prop">
-                            <td valign="top" class="name"><g:message code="uiLanguage.isoCode"/></td>
+                            <td class="name"><g:message code="uiLanguage.isoCode"/></td>
                             
-                            <td valign="top" class="value">${fieldValue(bean:language, field:'isoCode')}</td>
+                            <td class="value">${fieldValue(bean:language, field:'isoCode')}</td>
                             
                         </tr>
            

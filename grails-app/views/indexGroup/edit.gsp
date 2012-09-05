@@ -33,19 +33,19 @@
                 <tbody>
 
                 <tr class="prop">
-                    <td valign="top" class="name">
+                    <td class="name">
                         <label for="name"><g:message code="label.name"/></label>
                     </td>
-                    <td valign="top" class="value ${hasErrors(bean: indexGroupInstance, field: 'name', 'errors')}">
+                    <td class="value ${hasErrors(bean: indexGroupInstance, field: 'name', 'errors')}">
                         <g:textField name="name" value="${indexGroupInstance?.name}"/>
                     </td>
                 </tr>
 
                 <tr class="prop">
-                    <td valign="top" class="name">
+                    <td class="name">
                         <g:message code="indexGroup.items.label" default="Items"/>
                     </td>
-                    <td valign="top" style="text-align: left;" class="value">
+                    <td style="text-align: left;" class="value">
                         <ul>
                             <g:each in="${indexGroupInstance.items}" var="i">
                                 <li><g:link controller="indexItem" action="show" id="${i.id}">${i.name}</g:link></li>

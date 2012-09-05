@@ -29,13 +29,13 @@
     <table>
         <tbody>
         <tr class="prop">
-            <td valign="top" class="name"><g:message code="acl.id"/></td>
-            <td valign="top" class="value">${fieldValue(bean: aclEntry, field: 'id')}</td>
+            <td class="name"><g:message code="acl.id"/></td>
+            <td class="value">${fieldValue(bean: aclEntry, field: 'id')}</td>
         </tr>
 
         <tr class="prop">
-            <td valign="top" class="name"><g:message code="aclEntry.acl"/></td>
-            <td valign="top" class="value">
+            <td class="name"><g:message code="aclEntry.acl"/></td>
+            <td class="value">
                 <g:link action="show" controller="acl" params="[id: aclEntry.acl.id]">
                     ${fieldValue(bean: aclEntry, field: 'acl.name')}
                 </g:link>
@@ -43,8 +43,8 @@
         </tr>
 
         <tr class="prop">
-            <td valign="top" class="name"><g:message code="aclEntry.group"/></td>
-            <td valign="top" class="value">
+            <td class="name"><g:message code="aclEntry.group"/></td>
+            <td class="value">
                 <g:link action="show" controller="group" params="[id: aclEntry.group.id]">
                     ${fieldValue(bean: aclEntry, field: 'group.name')}
                 </g:link>

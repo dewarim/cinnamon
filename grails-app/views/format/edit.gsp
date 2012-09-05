@@ -30,29 +30,29 @@
                 <tbody>
 
                 <tr class="prop">
-                    <td valign="top" class="name">
+                    <td class="name">
                         <label for="name"><g:message code="format.name"/></label>
                     </td>
-                    <td valign="top" class="value ${hasErrors(bean: format, field: 'name', 'errors')}">
+                    <td class="value ${hasErrors(bean: format, field: 'name', 'errors')}">
                         <input type="text" name="name" id="name" value="${fieldValue(bean: format, field: 'name')}"/>
                     </td>
                 </tr>
 
                 <tr class="prop">
-                    <td valign="top" class="name">
+                    <td class="name">
                         <label for="contenttype"><g:message code="format.contenttype"/></label>
                     </td>
-                    <td valign="top" class="value ${hasErrors(bean: format, field: 'contenttype', 'errors')}">
+                    <td class="value ${hasErrors(bean: format, field: 'contenttype', 'errors')}">
                         <input type="text" name="contenttype" id="contenttype"
                                value="${fieldValue(bean: format, field: 'contenttype')}"/>
                     </td>
                 </tr>
 
                 <tr class="prop">
-                    <td valign="top" class="name">
+                    <td class="name">
                         <label for="description"><g:message code="format.description"/></label>
                     </td>
-                    <td valign="top" class="value ${hasErrors(bean: format, field: 'description', 'errors')}">
+                    <td class="value ${hasErrors(bean: format, field: 'description', 'errors')}">
                         <!-- <input type="text" name="description" id="description" value="${fieldValue(bean: format, field: 'description')}" /> -->
                         <g:descriptionTextArea name="description"
                                                value="${fieldValue(bean: format, field: 'description')}"/>
@@ -60,10 +60,10 @@
                 </tr>
 
                 <tr class="prop">
-                    <td valign="top" class="name">
+                    <td class="name">
                         <label for="extension"><g:message code="format.extension"/></label>
                     </td>
-                    <td valign="top" class="value ${hasErrors(bean: format, field: 'extension', 'errors')}">
+                    <td class="value ${hasErrors(bean: format, field: 'extension', 'errors')}">
                         <input type="text" name="extension" id="extension"
                                value="${fieldValue(bean: format, field: 'extension')}"/>
                     </td>

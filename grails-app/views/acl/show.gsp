@@ -29,23 +29,23 @@
 			<tbody>
 
 			<tr class="prop">
-				<td valign="top" class="name"><g:message code="acl.id"/></td>
+				<td class="name"><g:message code="acl.id"/></td>
 
-				<td valign="top" class="value">${fieldValue(bean: acl, field: 'id')}</td>
-
-			</tr>
-
-			<tr class="prop">
-				<td valign="top" class="name"><g:message code="acl.name"/></td>
-
-				<td valign="top" class="value">${fieldValue(bean: acl, field: 'name')}</td>
+				<td class="value">${fieldValue(bean: acl, field: 'id')}</td>
 
 			</tr>
 
 			<tr class="prop">
-				<td valign="top" class="name"><g:message code="acl.description"/></td>
+				<td class="name"><g:message code="acl.name"/></td>
 
-				<td valign="top" class="value">${fieldValue(bean: acl, field: 'description')}</td>
+				<td class="value">${fieldValue(bean: acl, field: 'name')}</td>
+
+			</tr>
+
+			<tr class="prop">
+				<td class="name"><g:message code="acl.description"/></td>
+
+				<td class="value">${fieldValue(bean: acl, field: 'description')}</td>
 
 			</tr>
 

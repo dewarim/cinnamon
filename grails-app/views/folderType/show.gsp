@@ -22,13 +22,13 @@
     <div class="dialog">
         <table>
             <tr class="prop">
-                <td valign="top" class="name"><g:message code="folderType.name"/></td>
-                <td valign="top" class="value">${fieldValue(bean: folderType, field: 'name')}</td>
+                <td class="name"><g:message code="folderType.name"/></td>
+                <td class="value">${fieldValue(bean: folderType, field: 'name')}</td>
             </tr>
 
             <tr class="prop">
-                <td valign="top" class="name"><g:message code="folderType.description"/></td>
-                <td valign="top" class="value">${fieldValue(bean: folderType, field: 'description')}</td>
+                <td class="name"><g:message code="folderType.description"/></td>
+                <td class="value">${fieldValue(bean: folderType, field: 'description')}</td>
             </tr>
 
         </table>

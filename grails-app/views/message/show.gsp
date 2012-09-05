@@ -30,8 +30,8 @@
 					                                           
                     <g:each in="${languages}" var="language">                        
 	                       <tr class="prop">
-        					<td valign="top" class="name">${language.isoCode.encodeAsHTML()}</td>                
-                       	 	<td valign="top" class="value">${translations[language.isoCode]?.encodeAsHTML() ?:'---'}</td>
+        					<td class="name">${language.isoCode.encodeAsHTML()}</td>                
+                       	 	<td class="value">${translations[language.isoCode]?.encodeAsHTML() ?:'---'}</td>
     	                   </tr>                        
                     </g:each>
            

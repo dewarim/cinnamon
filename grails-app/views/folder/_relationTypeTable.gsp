@@ -3,30 +3,30 @@
 	<tbody>
 
 	<tr class="prop">
-		<td valign="top" class="name"><g:message code="relationType.id"/></td>
+		<td class="name"><g:message code="relationType.id"/></td>
 
-		<td valign="top" class="value">${fieldValue(bean: relationType, field: 'id')}</td>
-
-	</tr>
-
-	<tr class="prop">
-		<td valign="top" class="name"><g:message code="relationType.name"/></td>
-
-		<td valign="top" class="value">${fieldValue(bean: relationType, field: 'name')}</td>
+		<td class="value">${fieldValue(bean: relationType, field: 'id')}</td>
 
 	</tr>
 
 	<tr class="prop">
-		<td valign="top" class="name"><g:message code="relationType.description"/></td>
+		<td class="name"><g:message code="relationType.name"/></td>
 
-		<td valign="top" class="value">${fieldValue(bean: relationType, field: 'description')}</td>
+		<td class="value">${fieldValue(bean: relationType, field: 'name')}</td>
 
 	</tr>
 
 	<tr class="prop">
-		<td valign="top" class="name"><g:message code="relationType.leftobjectprotected"/></td>
+		<td class="name"><g:message code="relationType.description"/></td>
 
-		<td valign="top" class="value">
+		<td class="value">${fieldValue(bean: relationType, field: 'description')}</td>
+
+	</tr>
+
+	<tr class="prop">
+		<td class="name"><g:message code="relationType.leftobjectprotected"/></td>
+
+		<td class="value">
 			<g:if test="${relationType.leftobjectprotected}">
 				<r:img uri="/images/ok.png" alt="${message(code: "input.disabled")}"/>
 			</g:if>
@@ -38,9 +38,9 @@
 	</tr>
 
 	<tr class="prop">
-		<td valign="top" class="name"><g:message code="relationType.rightobjectprotected"/></td>
+		<td class="name"><g:message code="relationType.rightobjectprotected"/></td>
 
-		<td valign="top" class="value">
+		<td class="value">
 			<g:if test="${relationType.rightobjectprotected}">
                 <r:img uri="/images/ok.png" alt="${message(code: "input.disabled")}"/>
             </g:if>
@@ -53,7 +53,7 @@
 			<td>
 				<g:message code="relationType.leftResolver"/>
 			</td>
-					<td valign="top" class="value">
+					<td class="value">
 						${relationType.leftResolver.name}
 					</td>
 				</tr>
@@ -61,7 +61,7 @@
 					<td>
 						<g:message code="relationType.rightResolver"/>
 					</td>
-					<td valign="top" class="value">
+					<td class="value">
 						${relationType.rightResolver.name}
 					</td>
 				</tr>

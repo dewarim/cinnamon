@@ -31,102 +31,102 @@
                         <tbody>
                        
                             <tr class="prop">
-                                <td valign="top" class="name">
+                                <td class="name">
                                   <label for="name"><g:message code="label.name" /></label>
                                 </td>
-                                <td valign="top" class="value ${hasErrors(bean: indexItemInstance, field: 'name', 'errors')}">
+                                <td class="value ${hasErrors(bean: indexItemInstance, field: 'name', 'errors')}">
                                     <g:textField name="name" value="${indexItemInstance?.name}" />
                                 </td>
                             </tr>
                         
                             <tr class="prop">
-                                <td valign="top" class="name">
+                                <td class="name">
                                   <label for="fieldname"><g:message code="indexItem.fieldname.label" default="Fieldname" /></label>
                                 </td>
-                                <td valign="top" class="value ${hasErrors(bean: indexItemInstance, field: 'fieldname', 'errors')}">
+                                <td class="value ${hasErrors(bean: indexItemInstance, field: 'fieldname', 'errors')}">
                                     <g:textField name="fieldname" value="${indexItemInstance?.fieldname}" />
                                 </td>
                             </tr>
                         
                             <tr class="prop">
-                                <td valign="top" class="name">
+                                <td class="name">
                                   <label for="forContent"><g:message code="indexItem.forContent.label" default="For Content" /></label>
                                 </td>
-                                <td valign="top" class="value ${hasErrors(bean: indexItemInstance, field: 'forContent', 'errors')}">
+                                <td class="value ${hasErrors(bean: indexItemInstance, field: 'forContent', 'errors')}">
                                     <g:checkBox name="forContent" value="${indexItemInstance?.forContent}" />
                                 </td>
                             </tr>
                         
                             <tr class="prop">
-                                <td valign="top" class="name">
+                                <td class="name">
                                   <label for="forMetadata"><g:message code="indexItem.forMetadata.label" default="For Metadata" /></label>
                                 </td>
-                                <td valign="top" class="value ${hasErrors(bean: indexItemInstance, field: 'forMetadata', 'errors')}">
+                                <td class="value ${hasErrors(bean: indexItemInstance, field: 'forMetadata', 'errors')}">
                                     <g:checkBox name="forMetadata" value="${indexItemInstance?.forMetadata}" />
                                 </td>
                             </tr>
                         
                             <tr class="prop">
-                                <td valign="top" class="name">
+                                <td class="name">
                                   <label for="forSysMeta"><g:message code="indexItem.forSysMeta.label" default="For Sys Meta" /></label>
                                 </td>
-                                <td valign="top" class="value ${hasErrors(bean: indexItemInstance, field: 'forSysMeta', 'errors')}">
+                                <td class="value ${hasErrors(bean: indexItemInstance, field: 'forSysMeta', 'errors')}">
                                     <g:checkBox name="forSysMeta" value="${indexItemInstance?.forSysMeta}" />
                                 </td>
                             </tr>
                         
                             <tr class="prop">
-                                <td valign="top" class="name">
+                                <td class="name">
                                   <label for="indexGroup"><g:message code="indexItem.indexGroup.label" default="Index Group" /></label>
                                 </td>
-                                <td valign="top" class="value ${hasErrors(bean: indexItemInstance, field: 'indexGroup', 'errors')}">
+                                <td class="value ${hasErrors(bean: indexItemInstance, field: 'indexGroup', 'errors')}">
                                     <g:select id="indexGroup" name="indexGroup.id" from="${cinnamon.index.IndexGroup.list()}" optionKey="id" value="${indexItemInstance?.indexGroup?.id}" optionValue="name" />
                                 </td>
                             </tr>
                         
                             <tr class="prop">
-                                <td valign="top" class="name">
+                                <td class="name">
                                   <label for="indexType"><g:message code="indexItem.indexType.label" default="Index Type" /></label>
                                 </td>
-                                <td valign="top" class="value ${hasErrors(bean: indexItemInstance, field: 'indexType', 'errors')}">
+                                <td class="value ${hasErrors(bean: indexItemInstance, field: 'indexType', 'errors')}">
                                     <g:select id="indexType" name="indexType.id" from="${cinnamon.index.IndexType.list()}" optionKey="id" value="${indexItemInstance?.indexType?.id}" optionValue="name" />
                                 </td>
                             </tr>
                         
                             <tr class="prop">
-                                <td valign="top" class="name">
+                                <td class="name">
                                   <label for="multipleResults"><g:message code="indexItem.multipleResults.label" default="Multiple Results" /></label>
                                 </td>
-                                <td valign="top" class="value ${hasErrors(bean: indexItemInstance, field: 'multipleResults', 'errors')}">
+                                <td class="value ${hasErrors(bean: indexItemInstance, field: 'multipleResults', 'errors')}">
                                     <g:checkBox name="multipleResults" value="${indexItemInstance?.multipleResults}" />
                                 </td>
                             </tr>
                          
                             <tr class="prop">
-                                <td valign="top" class="name">
+                                <td class="name">
                                   <label for="searchCondition"><g:message code="indexItem.searchCondition.label" default="Search Condition" /></label>
                                 </td>
-                                <td valign="top" class="value ${hasErrors(bean: indexItemInstance, field: 'searchCondition', 'errors')}">
+                                <td class="value ${hasErrors(bean: indexItemInstance, field: 'searchCondition', 'errors')}">
                                     <!-- <g:textField name="searchCondition" value="${indexItemInstance?.searchCondition}" /> -->
                                     <g:xpathTextArea name="searchCondition" value="${fieldValue(bean:indexItemInstance,field:'searchCondition')}" />
                                 </td>
                             </tr>
                         
                             <tr class="prop">
-                                <td valign="top" class="name">
+                                <td class="name">
                                   <label for="searchString"><g:message code="indexItem.searchString.label" default="Search String" /></label>
                                 </td>
-                                <td valign="top" class="value ${hasErrors(bean: indexItemInstance, field: 'searchString', 'errors')}">
+                                <td class="value ${hasErrors(bean: indexItemInstance, field: 'searchString', 'errors')}">
                                     <!-- <g:textField name="searchString" value="${indexItemInstance?.searchString}" /> -->
                                     <g:xpathTextArea name="searchString" value="${fieldValue(bean:indexItemInstance,field:'searchString')}" />
                                 </td>
                             </tr>
 
                             <tr class="prop">
-                                <td valign="top" class="name">
+                                <td class="name">
                                   <label for="systemic"><g:message code="indexItem.systemic.label" default="Systemic" /></label>
                                 </td>
-                                <td valign="top" class="value ${hasErrors(bean: indexItemInstance, field: 'systemic', 'errors')}">
+                                <td class="value ${hasErrors(bean: indexItemInstance, field: 'systemic', 'errors')}">
 									<g:if test="${indexItemInstance?.systemic}">
 										<input type="checkbox" id="systemic" name="systemic" value="${indexItemInstance?.systemic}" checked="checked" disabled="disabled"/>
 									</g:if>
@@ -137,10 +137,10 @@
                             </tr>
 
                             <tr class="prop">
-                                <td valign="top" class="name">
+                                <td class="name">
                                   <label for="vaProviderParams"><g:message code="indexItem.vaProviderParams.label" default="Va Provider Params" /></label>
                                 </td>
-                                <td valign="top" class="value ${hasErrors(bean: indexItemInstance, field: 'vaProviderParams', 'errors')}">
+                                <td class="value ${hasErrors(bean: indexItemInstance, field: 'vaProviderParams', 'errors')}">
                                     <!-- <g:textField name="vaProviderParams" value="${indexItemInstance?.vaProviderParams}" /> -->
                                     <g:xmlParamsTextArea name="vaProviderParams" value="${fieldValue(bean:indexItemInstance,field:'vaProviderParams')}" />
                                 </td>

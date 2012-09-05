@@ -33,30 +33,30 @@
             <tbody>
 
             <tr class="prop">
-                <td valign="top" class="name"><g:message code="group.id"/></td>
+                <td class="name"><g:message code="group.id"/></td>
 
-                <td valign="top" class="value">${fieldValue(bean: group, field: 'id')}</td>
-
-            </tr>
-
-            <tr class="prop">
-                <td valign="top" class="name"><g:message code="group.description"/></td>
-
-                <td valign="top" class="value">${fieldValue(bean: group, field: 'description')}</td>
+                <td class="value">${fieldValue(bean: group, field: 'id')}</td>
 
             </tr>
 
             <tr class="prop">
-                <td valign="top" class="name"><g:message code="group.name"/></td>
+                <td class="name"><g:message code="group.description"/></td>
 
-                <td valign="top" class="value">${fieldValue(bean: group, field: 'name')}</td>
+                <td class="value">${fieldValue(bean: group, field: 'description')}</td>
 
             </tr>
 
             <tr class="prop">
-                <td valign="top" class="name"><g:message code="group.parent"/></td>
+                <td class="name"><g:message code="group.name"/></td>
 
-                <td valign="top" class="value"><g:link controller="group" action="show"
+                <td class="value">${fieldValue(bean: group, field: 'name')}</td>
+
+            </tr>
+
+            <tr class="prop">
+                <td class="name"><g:message code="group.parent"/></td>
+
+                <td class="value"><g:link controller="group" action="show"
                                                        id="${group?.parent?.id}">${group?.parent?.name}</g:link></td>
 
             </tr>
@@ -64,7 +64,7 @@
             <g:if test="${!group.groupOfOne}">
                 <!-- display a link to the list of acls -->
                 <tr class="prop">
-                    <td colspan="2" align="left" class="name">
+                    <td colspan="2" class="name left">
                         <g:link controller='acl' action='showAclsByGroup'
                                 id='${group.id}'><g:message code="group.show_acls"/></g:link>
                     </td>
@@ -74,7 +74,7 @@
 
             <!-- display a link to the list of users -->
             <tr class="prop">
-                <td colspan="2" align="left" class="name">
+                <td colspan="2" class="name left">
                     <g:link controller='userAccount' action='showUsersByGroup'
                             id='${group.id}'><g:message code="group.show_users"/></g:link>
                 </td>
@@ -85,7 +85,7 @@
 
                 <!-- display a link to the list of sub-groups-->
                 <tr class="prop">
-                    <td colspan="2" align="left" class="name">
+                    <td colspan="2" class="name left">
                         <g:link controller='group' action='showSubGroups'
                                 id='${group.id}'><g:message code="link.to.showSubGroups"/></g:link>
                     </td>

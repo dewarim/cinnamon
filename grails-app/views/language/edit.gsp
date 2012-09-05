@@ -28,11 +28,11 @@
 				<tbody>
 
 				<tr class="prop">
-					<td valign="top" class="name">
-						<label for="name"><g:message code="language.isoCode"/></label>
+					<td class="name">
+						<label for="isoCode"><g:message code="language.isoCode"/></label>
 					</td>
-					<td valign="top" class="value ${hasErrors(bean: language, field: 'isoCode', 'errors')}">
-						<input id="name" type="text" name="isoCode" id="isoCode"
+					<td class="value ${hasErrors(bean: language, field: 'isoCode', 'errors')}">
+						<input id="isoCode" type="text"
 							   value="${fieldValue(bean: language, field: 'isoCode')}"/>
 					</td>
 				</tr>

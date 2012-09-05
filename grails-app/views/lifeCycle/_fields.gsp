@@ -1,9 +1,9 @@
 <g:set var="cid" value="${lifeCycle?.id}"/>
-<td valign="top" class="value ${hasErrors(bean: lifeCycle, field: 'name', 'errors')}">
+<td class="value ${hasErrors(bean: lifeCycle, field: 'name', 'errors')}">
 	<label for="name_${cid}"><g:message code="lifeCycle.name"/></label> <br>
 	<input type="text" name="name" id="name_${cid}" value="${lifeCycle?.name}"/>
 </td>
-<td valign="top" class="value ${hasErrors(bean: lifeCycle, field: 'defaultState', 'errors')}">
+<td class="value ${hasErrors(bean: lifeCycle, field: 'defaultState', 'errors')}">
 	<label for="defaultState_${cid}"><g:message code="lifeCycle.defaultState"/></label> <br>
 	<g:if test="${ defaultStates.isEmpty()}">
 		<g:message code="lifeCycle.defaultStates.none"/>
@@ -16,7 +16,7 @@
 		/>
 	</g:else>
 </td>
-<td valign="top" class="value ${hasErrors(bean: lifeCycle, field: 'defaultState', 'errors')}">
+<td class="value ${hasErrors(bean: lifeCycle, field: 'defaultState', 'errors')}">
 	<label for="states_${cid}"><g:message code="lifeCycle.states"/></label> <br>
 	<g:if test="${ states.isEmpty()}">
 		<g:message code="lifeCycle.states.none.open"/>

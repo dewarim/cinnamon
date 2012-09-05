@@ -31,20 +31,20 @@
                 <tbody>
 
                 <tr class="prop">
-                    <td valign="top" class="name">
+                    <td class="name">
                         <label for="name"><g:message code="objectType.name"/></label>
                     </td>
-                    <td valign="top" class="value ${hasErrors(bean: objectType, field: 'name', 'errors')}">
+                    <td class="value ${hasErrors(bean: objectType, field: 'name', 'errors')}">
                         <input type="text" name="name" id="name"
                                value="${fieldValue(bean: objectType, field: 'name')}"/>
                     </td>
                 </tr>
 
                 <tr class="prop">
-                    <td valign="top" class="name">
+                    <td class="name">
                         <label for="description"><g:message code="objectType.description"/>:</label>
                     </td>
-                    <td valign="top" class="value ${hasErrors(bean: objectType, field: 'description', 'errors')}">
+                    <td class="value ${hasErrors(bean: objectType, field: 'description', 'errors')}">
                         <!-- <input type="text" name="description" id="description" value="${fieldValue(bean: objectType, field: 'description')}" /> -->
                         <g:descriptionTextArea name="description"
                                                value="${fieldValue(bean: objectType, field: 'description')}"/>

@@ -1,6 +1,6 @@
 <%@ page import="cinnamon.Format" %>
 <g:set var="tid" value="${transformer?.id}"/>
-<td valign="top" class="value">
+<td class="value">
 	<div class="transformer_name ${hasErrors(bean: transformer, field: 'name', 'errors')}">
 		<label for="name_${tid}"><g:message code="transformer.name"/></label> <br>
 		<input type="text" name="name" id="name_${tid}" value="${transformer?.name}"/>

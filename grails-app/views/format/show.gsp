@@ -30,37 +30,37 @@
             <tbody>
 
             <tr class="prop">
-                <td valign="top" class="name"><g:message code="format.id"/></td>
+                <td class="name"><g:message code="format.id"/></td>
 
-                <td valign="top" class="value">${fieldValue(bean: format, field: 'id')}</td>
-
-            </tr>
-
-            <tr class="prop">
-                <td valign="top" class="name"><g:message code="format.name"/></td>
-
-                <td valign="top" class="value">${fieldValue(bean: format, field: 'name')}</td>
+                <td class="value">${fieldValue(bean: format, field: 'id')}</td>
 
             </tr>
 
             <tr class="prop">
-                <td valign="top" class="name"><g:message code="format.contenttype"/></td>
+                <td class="name"><g:message code="format.name"/></td>
 
-                <td valign="top" class="value">${fieldValue(bean: format, field: 'contenttype')}</td>
-
-            </tr>
-
-            <tr class="prop">
-                <td valign="top" class="name"><g:message code="format.description"/></td>
-
-                <td valign="top" class="value">${fieldValue(bean: format, field: 'description')}</td>
+                <td class="value">${fieldValue(bean: format, field: 'name')}</td>
 
             </tr>
 
             <tr class="prop">
-                <td valign="top" class="name"><g:message code="format.extension"/></td>
+                <td class="name"><g:message code="format.contenttype"/></td>
 
-                <td valign="top" class="value">${fieldValue(bean: format, field: 'extension')}</td>
+                <td class="value">${fieldValue(bean: format, field: 'contenttype')}</td>
+
+            </tr>
+
+            <tr class="prop">
+                <td class="name"><g:message code="format.description"/></td>
+
+                <td class="value">${fieldValue(bean: format, field: 'description')}</td>
+
+            </tr>
+
+            <tr class="prop">
+                <td class="name"><g:message code="format.extension"/></td>
+
+                <td class="value">${fieldValue(bean: format, field: 'extension')}</td>
 
             </tr>
 

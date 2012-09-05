@@ -28,10 +28,10 @@
                 <tbody>
 
                 <tr class="prop">
-                    <td valign="top" class="name">
+                    <td class="name">
                         <label for="groupName"><g:message code="group.name"/></label>
                     </td>
-                    <td valign="top" class="value ${hasErrors(bean: group, field: 'name', 'errors')}">
+                    <td class="value ${hasErrors(bean: group, field: 'name', 'errors')}">
                         <input type="text" name="name" id="groupName" value="${fieldValue(bean: group, field: 'name')}"/>
                         <script type="text/javascript">
                             $('#groupName').focus();
@@ -40,10 +40,10 @@
                 </tr>
 
                 <tr class="prop">
-                    <td valign="top" class="name">
+                    <td class="name">
                         <label for="description"><g:message code="group.description"/></label>
                     </td>
-                    <td valign="top" class="value ${hasErrors(bean: group, field: 'description', 'errors')}">
+                    <td class="value ${hasErrors(bean: group, field: 'description', 'errors')}">
                         <!-- <input type="text" name="description" id="description" value="${fieldValue(bean: group, field: 'description')}" /> -->
                         <g:descriptionTextArea name="description"
                                                value="${fieldValue(bean:group,field:'description')}"/>
@@ -53,16 +53,16 @@
 
 
                 <tr class="prop">
-                    <td valign="top" class="name">
+                    <td class="name">
                         <label for="parent"><g:message code="group.parent"/></label>
                     </td>
-                    <td valign="top" class="value ${hasErrors(bean: group, field: 'parent', 'errors')}">
+                    <td class="value ${hasErrors(bean: group, field: 'parent', 'errors')}">
                         <g:select id="parent" optionKey="id"
                                   from="${CmnGroup.list()}"
                                   name="parent.id"
                                   optionValue="name"
                                   noSelection="${['null': message(code:'group.parent.none_selected') ]}"
-                                  value="${group?.parent?.id}"></g:select>
+                                  value="${group?.parent?.id}"/>
                     </td>
                 </tr>
 

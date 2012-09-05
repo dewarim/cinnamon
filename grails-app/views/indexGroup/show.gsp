@@ -32,23 +32,23 @@
             <tbody>
 
             <tr class="prop">
-                <td valign="top" class="name"><g:message code="label.id"/></td>
+                <td class="name"><g:message code="label.id"/></td>
 
-                <td valign="top" class="value">${fieldValue(bean: indexGroupInstance, field: "id")}</td>
-
-            </tr>
-
-            <tr class="prop">
-                <td valign="top" class="name"><g:message code="label.name"/></td>
-
-                <td valign="top" class="value">${fieldValue(bean: indexGroupInstance, field: "name")}</td>
+                <td class="value">${fieldValue(bean: indexGroupInstance, field: "id")}</td>
 
             </tr>
 
             <tr class="prop">
-                <td valign="top" class="name"><g:message code="indexGroup.items.label" default="Items"/></td>
+                <td class="name"><g:message code="label.name"/></td>
 
-                <td valign="top" style="text-align: left;" class="value">
+                <td class="value">${fieldValue(bean: indexGroupInstance, field: "name")}</td>
+
+            </tr>
+
+            <tr class="prop">
+                <td class="name"><g:message code="indexGroup.items.label" default="Items"/></td>
+
+                <td style="text-align: left;" class="value">
                     <ul>
                         <g:each in="${indexGroupInstance.items}" var="i">
                             <li><g:link controller="indexItem" action="show" id="${i.id}">${i.name}</g:link></li>

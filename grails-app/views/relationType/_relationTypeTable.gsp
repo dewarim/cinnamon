@@ -3,30 +3,30 @@
     <tbody>
 
     <tr class="prop">
-        <td valign="top" class="name"><g:message code="relationType.id"/></td>
+        <td class="name"><g:message code="relationType.id"/></td>
 
-        <td valign="top" class="value">${fieldValue(bean: relationType, field: 'id')}</td>
-
-    </tr>
-
-    <tr class="prop">
-        <td valign="top" class="name"><g:message code="relationType.name"/></td>
-
-        <td valign="top" class="value">${fieldValue(bean: relationType, field: 'name')}</td>
+        <td class="value">${fieldValue(bean: relationType, field: 'id')}</td>
 
     </tr>
 
     <tr class="prop">
-        <td valign="top" class="name"><g:message code="relationType.description"/></td>
+        <td class="name"><g:message code="relationType.name"/></td>
 
-        <td valign="top" class="value">${fieldValue(bean: relationType, field: 'description')}</td>
+        <td class="value">${fieldValue(bean: relationType, field: 'name')}</td>
 
     </tr>
 
     <tr class="prop">
-        <td valign="top" class="name"><g:message code="relationType.leftobjectprotected"/></td>
+        <td class="name"><g:message code="relationType.description"/></td>
 
-        <td valign="top" class="value">
+        <td class="value">${fieldValue(bean: relationType, field: 'description')}</td>
+
+    </tr>
+
+    <tr class="prop">
+        <td class="name"><g:message code="relationType.leftobjectprotected"/></td>
+
+        <td class="value">
             <g:if test="${relationType.leftobjectprotected}">
                 <img src="<g:resource dir='/images' file='ok.png'/>"
                      alt="<g:message code="input.disabled"/>">
@@ -40,9 +40,9 @@
     </tr>
 
     <tr class="prop">
-        <td valign="top" class="name"><g:message code="relationType.rightobjectprotected"/></td>
+        <td class="name"><g:message code="relationType.rightobjectprotected"/></td>
 
-        <td valign="top" class="value">
+        <td class="value">
             <g:if test="${relationType.rightobjectprotected}">
                 <img src="<g:resource dir='/images' file='ok.png'/>"
                      alt="<g:message code="input.disabled"/>">
@@ -55,9 +55,9 @@
     </tr>
 
     <tr class="prop">
-        <td valign="top" class="name"><g:message code="relationType.cloneOnLeftCopy"/></td>
+        <td class="name"><g:message code="relationType.cloneOnLeftCopy"/></td>
 
-        <td valign="top" class="value">
+        <td class="value">
             <g:if test="${relationType.cloneOnLeftCopy}">
                 <img src="<g:resource dir='/images' file='ok.png'/>"
                      alt="<g:message code="input.disabled"/>">
@@ -70,9 +70,9 @@
     </tr>
 
     <tr class="prop">
-        <td valign="top" class="name"><g:message code="relationType.cloneOnRightCopy"/></td>
+        <td class="name"><g:message code="relationType.cloneOnRightCopy"/></td>
 
-        <td valign="top" class="value">
+        <td class="value">
             <g:if test="${relationType.cloneOnRightCopy}">
                 <img src="<g:resource dir='/images' file='ok.png'/>"
                      alt="<g:message code="input.disabled"/>">
@@ -88,7 +88,7 @@
         <td>
             <g:message code="relationType.leftResolver"/>
         </td>
-        <td valign="top" class="value">
+        <td class="value">
             ${relationType.leftResolver.name}
         </td>
     </tr>
@@ -96,7 +96,7 @@
         <td>
             <g:message code="relationType.rightResolver"/>
         </td>
-        <td valign="top" class="value">
+        <td class="value">
             ${relationType.rightResolver.name}
         </td>
     </tr>

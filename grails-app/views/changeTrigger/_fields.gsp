@@ -1,11 +1,11 @@
 <%@ page import="cinnamon.trigger.ChangeTriggerType" %>
 <g:set var="cid" value="${changeTrigger?.id}"/>
 <tr>
-    <td valign="top" class="value ${hasErrors(bean: changeTrigger, field: 'controller', 'errors')}">
+    <td class="value ${hasErrors(bean: changeTrigger, field: 'controller', 'errors')}">
         <label for="controller_${cid}"><g:message code="changeTrigger.controller"/></label> <br>
         <input type="text" name="controller" id="controller_${cid}" value="${changeTrigger?.controller}"/>
     </td>
-    <td valign="top" class="value ${hasErrors(bean: changeTrigger, field: 'action', 'errors')}">
+    <td class="value ${hasErrors(bean: changeTrigger, field: 'action', 'errors')}">
         <label for="action_${cid}"><g:message code="changeTrigger.action"/></label> <br>
         <input type="text" name="action" id="action_${cid}" value="${changeTrigger?.action}"/>
     </td>

@@ -25,19 +25,19 @@
                         <tbody>
                         
                             <tr class="prop">
-                                <td valign="top" class="name">
+                                <td class="name">
                                     <label for="aclName"><g:message code="acl.name"/></label>
                                 </td>
-                                <td valign="top" class="value ${hasErrors(bean:acl,field:'name','errors')}">
+                                <td class="value ${hasErrors(bean:acl,field:'name','errors')}">
                                     <input type="text" name="name" id="aclName" value="${fieldValue(bean:acl,field:'name')}" />
                                 </td>
                             </tr> 
                         
                             <tr class="prop">
-                                <td valign="top" class="name">
+                                <td class="name">
                                     <label for="description"><g:message code="acl.description"/></label>
                                 </td>
-                                <td valign="top" class="value ${hasErrors(bean:acl,field:'description','errors')}">
+                                <td class="value ${hasErrors(bean:acl,field:'description','errors')}">
                                     <!-- <input type="text" name="description" id="description" value="${fieldValue(bean:acl,field:'description')}" /> -->
                                     <g:descriptionTextArea name="description" value="${fieldValue(bean:acl,field:'description')}" />
                                 </td>

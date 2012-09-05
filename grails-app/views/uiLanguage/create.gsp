@@ -25,10 +25,10 @@
                 <tbody>
 
                 <tr class="prop">
-                    <td valign="top" class="name">
+                    <td class="name">
                         <label for="isoCode"><g:message code="uiLanguage.isoCode"/></label>
                     </td>
-                    <td valign="top" class="value ${hasErrors(bean: language, field: 'isoCode', 'errors')}">
+                    <td class="value ${hasErrors(bean: language, field: 'isoCode', 'errors')}">
                         <input type="text" name="isoCode" id="isoCode"
                                value="${fieldValue(bean: language, field: 'isoCode')}">
                         <script type="text/javascript">

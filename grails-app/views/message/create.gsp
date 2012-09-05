@@ -26,10 +26,10 @@
                 <tbody>
 
                 <tr class="prop">
-                    <td valign="top" class="name">
+                    <td class="name">
                         <label for="language"><g:message code="message.language"/></label>
                     </td>
-                    <td valign="top" class="value ${hasErrors(bean: message, field: 'language', 'errors')}">
+                    <td class="value ${hasErrors(bean: message, field: 'language', 'errors')}">
                         <input id="language" type="hidden" name="languageId" value="${defaultLanguage.id}"/>
                         <g:message code="lang.${defaultLanguage.isoCode}" default="${defaultLanguage.isoCode}"/>
                         <script type="text/javascript">
@@ -39,19 +39,19 @@
                 </tr>
 
                 <tr class="prop">
-                    <td valign="top" class="name">
+                    <td class="name">
                         <label for="message"><g:message code="message.message"/></label>
                     </td>
-                    <td valign="top" class="value">
+                    <td class="value">
                         <input type="text" name="messageId" id="message" value="${messageId}"/>
                     </td>
                 </tr>
 
                 <tr class="prop">
-                    <td valign="top" class="name">
+                    <td class="name">
                         <label for="translation"><g:message code="message.translation"/></label>
                     </td>
-                    <td valign="top" class="value">
+                    <td class="value">
                         <input type="text" name="translation" id="translation" value="${translation?.encodeAsHTML()}"/>
                     </td>
                 </tr>

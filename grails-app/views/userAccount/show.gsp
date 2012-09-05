@@ -22,59 +22,59 @@
 			<tbody>
 
 			<tr class="prop">
-				<td valign="top" class="name"><g:message code="user.id"/></td>
+				<td class="name"><g:message code="user.id"/></td>
 
-				<td valign="top" class="value">${fieldValue(bean: user, field: 'id')}</td>
-
-			</tr>
-
-			<tr class="prop">
-				<td valign="top" class="name"><g:message code="user.name"/></td>
-
-				<td valign="top" class="value">${fieldValue(bean: user, field: 'name')}</td>
+				<td class="value">${fieldValue(bean: user, field: 'id')}</td>
 
 			</tr>
 
 			<tr class="prop">
-				<td valign="top" class="name"><g:message code="user.fullname"/></td>
+				<td class="name"><g:message code="user.name"/></td>
 
-				<td valign="top" class="value">${fieldValue(bean: user, field: 'fullname')}</td>
-
-			</tr>
-
-			<tr class="prop">
-				<td valign="top" class="name"><g:message code="user.description"/></td>
-
-				<td valign="top" class="value">${fieldValue(bean: user, field: 'description')}</td>
+				<td class="value">${fieldValue(bean: user, field: 'name')}</td>
 
 			</tr>
 
 			<tr class="prop">
-				<td valign="top" class="name"><g:message code="user.language"/></td>
+				<td class="name"><g:message code="user.fullname"/></td>
 
-				<td valign="top" class="value">${fieldValue(bean: user, field: 'language.isoCode')}</td>
+				<td class="value">${fieldValue(bean: user, field: 'fullname')}</td>
+
 			</tr>
 
 			<tr class="prop">
-				<td valign="top" class="name"><g:message code="user.email"/></td>
-				<td valign="top" class="value">${fieldValue(bean: user, field: 'email')}</td>
+				<td class="name"><g:message code="user.description"/></td>
+
+				<td class="value">${fieldValue(bean: user, field: 'description')}</td>
+
+			</tr>
+
+			<tr class="prop">
+				<td class="name"><g:message code="user.language"/></td>
+
+				<td class="value">${fieldValue(bean: user, field: 'language.isoCode')}</td>
+			</tr>
+
+			<tr class="prop">
+				<td class="name"><g:message code="user.email"/></td>
+				<td class="value">${fieldValue(bean: user, field: 'email')}</td>
 			</tr>
             <tr class="prop">
-                <td valign="top" class="name"><g:message code="user.activated"/></td>
-                <td valign="top" class="value"><g:checkBox name="activated" disabled="true" value="${user.activated}"/></td>
+                <td class="name"><g:message code="user.activated"/></td>
+                <td class="value"><g:checkBox name="activated" disabled="true" value="${user.activated}"/></td>
             </tr>
 			<tr class="prop">
-				<td valign="top" class="name"><g:message code="user.sudoer"/></td>
-				<td valign="top" class="value"><g:checkBox name="sudoer" disabled="true" value="${user.sudoer}"/></td>
+				<td class="name"><g:message code="user.sudoer"/></td>
+				<td class="value"><g:checkBox name="sudoer" disabled="true" value="${user.sudoer}"/></td>
 			</tr>
 			<tr class="prop">
-				<td valign="top" class="name"><g:message code="user.sudoable"/></td>
-				<td valign="top" class="value"><g:checkBox name="sudoable" disabled="true" value="${user.sudoable}"/></td>
+				<td class="name"><g:message code="user.sudoable"/></td>
+				<td class="value"><g:checkBox name="sudoable" disabled="true" value="${user.sudoable}"/></td>
 			</tr>
 
 			<!-- link to the list of group -->
 			<tr class="prop">
-				<td colspan="2" align="left" class="name">
+				<td colspan="2" class="name left">
 					<g:link controller='group' action='showGroupsByUser'
 							id='${user.id}'><g:message code="user.show_groups"/></g:link>
 				</td>

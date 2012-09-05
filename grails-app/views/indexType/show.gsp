@@ -31,37 +31,37 @@
                     <tbody>
                     
                         <tr class="prop">
-                            <td valign="top" class="name"><g:message code="indexType.id.label" /></td>
+                            <td class="name"><g:message code="indexType.id.label" /></td>
                             
-                            <td valign="top" class="value">${fieldValue(bean: indexTypeInstance, field: "id")}</td>
-                            
-                        </tr>
-                    
-                        <tr class="prop">
-                            <td valign="top" class="name"><g:message code="indexType.name.label" /></td>
-                            
-                            <td valign="top" class="value">${fieldValue(bean: indexTypeInstance, field: "name")}</td>
+                            <td class="value">${fieldValue(bean: indexTypeInstance, field: "id")}</td>
                             
                         </tr>
                     
                         <tr class="prop">
-                            <td valign="top" class="name"><g:message code="indexType.dataType.label" /></td>
+                            <td class="name"><g:message code="indexType.name.label" /></td>
                             
-                            <td valign="top" class="value">${indexTypeInstance?.dataType?.encodeAsHTML()}</td>
-                            
-                        </tr>
-                    
-                        <tr class="prop">
-                            <td valign="top" class="name"><g:message code="indexType.indexerClass.label" /></td>
-                            
-                            <td valign="top" class="value">${fieldValue(bean: indexTypeInstance, field: "indexerClass")}</td>
+                            <td class="value">${fieldValue(bean: indexTypeInstance, field: "name")}</td>
                             
                         </tr>
                     
                         <tr class="prop">
-                            <td valign="top" class="name"><g:message code="indexType.vaProviderClass.label" /></td>
+                            <td class="name"><g:message code="indexType.dataType.label" /></td>
                             
-                            <td valign="top" class="value">${fieldValue(bean: indexTypeInstance, field: "vaProviderClass")}</td>
+                            <td class="value">${indexTypeInstance?.dataType?.encodeAsHTML()}</td>
+                            
+                        </tr>
+                    
+                        <tr class="prop">
+                            <td class="name"><g:message code="indexType.indexerClass.label" /></td>
+                            
+                            <td class="value">${fieldValue(bean: indexTypeInstance, field: "indexerClass")}</td>
+                            
+                        </tr>
+                    
+                        <tr class="prop">
+                            <td class="name"><g:message code="indexType.vaProviderClass.label" /></td>
+                            
+                            <td class="value">${fieldValue(bean: indexTypeInstance, field: "vaProviderClass")}</td>
                             
                         </tr>
                     
