@@ -1,4 +1,4 @@
-<%@ page import="cinnamon.RelationResolver" %>
+<%@ page import="cinnamon.relation.RelationResolver" %>
 <table>
     <tbody>
 
@@ -28,11 +28,11 @@
 
         <td valign="top" class="value">
             <g:if test="${relationType.leftobjectprotected}">
-                <img src="<g:resource dir='/images' file='ok.png' plugin='humulus'/>"
+                <img src="<g:resource dir='/images' file='ok.png'/>"
                      alt="<g:message code="input.disabled"/>">
             </g:if>
             <g:else>
-                <img src="<g:resource dir='/images' file='no.png' plugin='humulus'/>"
+                <img src="<g:resource dir='/images' file='no.png'/>"
                      alt="<g:message code="input.enabled"/>">
             </g:else>
         </td>
@@ -44,11 +44,11 @@
 
         <td valign="top" class="value">
             <g:if test="${relationType.rightobjectprotected}">
-                <img src="<g:resource dir='/images' file='ok.png' plugin='humulus'/>"
+                <img src="<g:resource dir='/images' file='ok.png'/>"
                      alt="<g:message code="input.disabled"/>">
             </g:if>
             <g:else>
-                <img src="<g:resource dir='/images' file='no.png' plugin='humulus'/>"
+                <img src="<g:resource dir='/images' file='no.png'/>"
                      alt="<g:message code="input.enabled"/>">
             </g:else>
         </td>
@@ -59,11 +59,11 @@
 
         <td valign="top" class="value">
             <g:if test="${relationType.cloneOnLeftCopy}">
-                <img src="<g:resource dir='/images' file='ok.png' plugin='humulus'/>"
+                <img src="<g:resource dir='/images' file='ok.png'/>"
                      alt="<g:message code="input.disabled"/>">
             </g:if>
             <g:else>
-                <img src="<g:resource dir='/images' file='no.png' plugin='humulus'/>"
+                <img src="<g:resource dir='/images' file='no.png'/>"
                      alt="<g:message code="input.enabled"/>">
             </g:else>
         </td>
@@ -74,11 +74,11 @@
 
         <td valign="top" class="value">
             <g:if test="${relationType.cloneOnRightCopy}">
-                <img src="<g:resource dir='/images' file='ok.png' plugin='humulus'/>"
+                <img src="<g:resource dir='/images' file='ok.png'/>"
                      alt="<g:message code="input.disabled"/>">
             </g:if>
             <g:else>
-                <img src="<g:resource dir='/images' file='no.png' plugin='humulus'/>"
+                <img src="<g:resource dir='/images' file='no.png'/>"
                      alt="<g:message code="input.enabled"/>">
             </g:else>
         </td>

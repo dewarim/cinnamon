@@ -34,7 +34,8 @@ class RelationTypeController extends BaseController{
     	catch(Exception e){
             log.debug("failed to save relationType: ",e)
     		flash.message = e.getLocalizedMessage().encodeAsHTML()
-    		return redirect(action:'create', controller:'relationType', model:[relationType:relationType]) //, params:[relationType:relationType])
+    		return redirect(action:'create', controller:'relationType', 
+                    model:[relationType:relationType]) //, params:[relationType:relationType])
     	}
 
     	return redirect(action : 'show', params : [id : relationType?.id])
@@ -77,7 +78,6 @@ class RelationTypeController extends BaseController{
     def update() {
         RelationType rt = RelationType.get(params.id)
         try{
-            // TODO: check for rt == null
             rt.properties = params
             rt.leftResolver = RelationResolver.get(params.left_resolver_id);
             rt.rightResolver = RelationResolver.get(params.right_resolver_id);
