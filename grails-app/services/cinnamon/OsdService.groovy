@@ -183,11 +183,15 @@ class OsdService {
            * An object is latestHead, if it is not of part of a branch and has no
            * descendants. As we already said, this predecessor cannot have any
            * descendants and so we can set latestHead to true if it is part of
-           * the main branch (no . in version).
+           * the main branch (no . in version) *and* there is no other object of the
+    	   * main branch which is already latestHead 
+    	   *      (that is: if branch object 1.1 of a tree with versions [1,1.1,2] is deleted,
+    	   *      do not make v1 to latestHead, since v2 is already latestHead).
            */
         if(predecessor != null){
             predecessor.setLatestBranch(true);
-            if(! predecessor.getCmnVersion().contains(".")){
+            def latestHeadCount = ObjectSystemData.countByRootAndLatestHead(predecessor.root, true)
+            if(! predecessor.getCmnVersion().contains(".") && latestHeadCount == 0){
                 predecessor.setLatestHead(true);
             }
         }

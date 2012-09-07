@@ -1,5 +1,13 @@
 # Changelog for Cinnamon 3
 
+## 0.2.1
+
+* Fixed: delete OSD no longer sets additional object to latestHead in cases where the deleted
+         object was the last part of a branch. (This happened if deleted object was for example v1-1 in
+         a version tree with v1, v2)
+* Added missing administration features from Cinnamon2/Dandelion. 
+  Cinnamon 3 now has all the administration features of Dandelion.
+
 ## 0.1.57
 
 * Added Lifecycle-Log as special domain class. You will need to create a new table for it.
