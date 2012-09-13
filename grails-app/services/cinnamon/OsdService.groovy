@@ -355,5 +355,6 @@ class OsdService {
         log.debug("created object with id: ${osd.id}")
         log.debug("repo: ${repositoryName}")
         luceneService.addToIndex(osd, repositoryName)
+        return osd
     }
 }

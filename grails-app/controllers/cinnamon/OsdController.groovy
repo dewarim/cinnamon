@@ -294,7 +294,7 @@ class OsdController extends BaseController {
         try {
             UserAccount user = userService.user
             folder = fetchAndFilterFolder(params.folder, [PermissionName.CREATE_OBJECT])
-            osdService.createOsd(request, params, null, session.repositoryName, user, folder)
+            def osd = osdService.createOsd(request, params, session.repositoryName, null, user, folder)
             return defaultRedirect([folder: folder.id, osd: osd.id])
         }
         catch (Exception e) {

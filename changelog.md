@@ -2,6 +2,7 @@
 
 ## 0.2.2
 
+* Fixed: create OSD object now works again.
 * OsdController.newVersion will use the configured defaultTemplate for displaying the current folder's content.
 * New: config property "defaultTemplate" which is used along with defaultController and defaultAction when
     rendering the content of a folder.
