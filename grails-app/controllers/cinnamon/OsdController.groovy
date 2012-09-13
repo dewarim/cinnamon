@@ -374,8 +374,8 @@ class OsdController extends BaseController {
             log.debug("version of new osd: ${osd.cmnVersion}")
             luceneService.addToIndex(osd, repositoryName)
             def osdList = folderService.getObjects(user, osd.parent, repositoryName, params.versions)
-
-            return render(template: '/folder/folderContent', model: [folder: osd.parent,
+            def folderContentTemplate = folderService.fetchFolderTemplate(osd.parent.type.config)
+            return render(template: folderContentTemplate, model: [folder: osd.parent,
                     osdList: osdList,
                     folders: fetchChildFolders(osd.parent),
                     permissions: loadUserPermissions(osd.parent.acl),

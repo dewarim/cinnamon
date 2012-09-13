@@ -160,11 +160,7 @@ class FolderController extends BaseController {
                 throw new RuntimeException('error.access.failed')
             }
             
-            def folderConfig = new XmlSlurper().parseText(folder.type.config)
-            def folderTemplate = '/folder/folderContent'
-            if (folderConfig.template){
-                folderTemplate = folderConfig.template.text()
-            }
+            def folderTemplate = folderService.fetchFolderTemplate(folder.type.config)            
             
             return render(template: folderTemplate, model: [folder: folder,
                     osdList: osdList,

@@ -1,5 +1,25 @@
 # Changelog for Cinnamon 3
 
+## 0.2.2
+
+* OsdController.newVersion will use the configured defaultTemplate for displaying the current folder's content.
+* New: config property "defaultTemplate" which is used along with defaultController and defaultAction when
+    rendering the content of a folder.
+    Default values:
+    
+    * defaultController = 'folder'
+    * defaultAction = 'fetchFolderContent'
+    * defaultTemplate = '/folder/folderContent'
+    
+    By changing those values, or by configuring the elements "controller", "action" and "template" in a folder
+    type's xml config field, you can choose which controller / action / template is used to render the content
+    of a specific folder type. For example, you can have folder.type=image render an image gallery, while 
+    folder.type=project list a projects folder in a separate way.
+    
+    If the template is not found at runtime, the default values are used. This way you can use the Cinnamon plugin
+    to browse a customized repository, where the controllers / actions / templates all are located in a custom
+    build war file. Previously, you could only browse such a repository by using the original (customized) application.
+
 ## 0.2.1
 
 * Fixed: delete OSD no longer sets additional object to latestHead in cases where the deleted

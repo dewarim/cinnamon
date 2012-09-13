@@ -10,11 +10,15 @@ import cinnamon.global.ConfThreadLocal
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
 import org.apache.commons.compress.utils.IOUtils
 import cinnamon.global.PermissionName
+import org.codehaus.groovy.grails.web.pages.discovery.GrailsConventionGroovyPageLocator
 
 class FolderService {
 
     def osdService
     def luceneService
+    GrailsConventionGroovyPageLocator groovyPageLocator
+    static final def folderConfigProperties = ['controller', 'action', 'template']
+    def grailsApplication
 
     /**
      * Check if a folder has content objects (meaning OSD, not sub-folders)
@@ -405,13 +409,15 @@ class FolderService {
         }
         return Folder.get(id)        
     }
-
-
-    static final def folderConfigProperties = ['controller', 'action', 'template']
-
+    
     /**
      * Add a folder type's config to the map folderConfig if necessary.
-     * This method changes the folderConfig map.
+     * <em>This method changes the folderConfig map</em>.
+     * If xml configuration field does not supply a valid "template" element,
+     * the defaultController/defaultAction/defaultTemplate values from the app config
+     * are used (and if those are not found, 
+     * the base default of "folder", "fetchFolderContent", "/folder/folderContent" is used.
+     * 
      * @param type the FolderType
      * @folderConfig the folderConfig map, is a [folderType:FolderConfig] map.
      * @return
@@ -421,15 +427,37 @@ class FolderService {
         if(! folderConfigs.containsKey(type)){
             def xml = new XmlSlurper().parseText(type.config)
             FolderConfig fc = new FolderConfig()
-            folderConfigProperties.each{field ->
-                if(xml."$field".text()){
-                    fc."$field" = xml."$field".text()
+            def template = xml.template.text()            
+            if(template && groovyPageLocator.findTemplate(template)){
+                folderConfigProperties.each{field ->
+                    if(xml."$field".text()){
+                        fc."$field" = xml."$field".text()
+                    }
                 }
+                log.debug("adding folderConfig. $fc")
+                folderConfigs.put(type, fc)
             }
-            log.debug("adding folderConfig. $fc")
-            folderConfigs.put(type, fc)
+            else{
+                fc.controller = grailsApplication.config.defaultController ?: 'folder'
+                fc.action = grailsApplication.config.defaultAction ?: 'fetchFolderContent'
+                fc.template = grailsApplication.config.defaultTemplate ?: '/folder/folderContent'
+                folderConfigs.put(type, fc)
+            }
         }
         return folderConfigs    
+    }
+    
+    String fetchFolderTemplate(String config){
+        def folderConfig = new XmlSlurper().parseText(config)
+//        log.debug("grailsApplication: ${grailsApplication}")
+//        log.debug("grailsApplication.config: ${grailsApplication.config}")
+//        log.debug("config param: ${config}")
+        def folderTemplate = grailsApplication.config.defaultTemplate ?: '/folder/folderContent'
+//        log.debug("folderConfigTemplate:${folderConfig.template}")
+        if (folderConfig.template && groovyPageLocator.findTemplate(folderConfig.template.text())){
+            folderTemplate = folderConfig.template.text()
+        }
+        return folderTemplate
     }
 }
 
