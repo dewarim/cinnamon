@@ -4,7 +4,7 @@ grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
 grails.project.target.level = 1.6
 grails.project.source.level = 1.6
-//grails.project.war.file = "target/${appName}-${appVersion}.war"
+grails.project.war.file = "target/${appName}.war"
 grails.project.repos.default = "myRepo"
 
 grails.project.dependency.resolution = {
@@ -52,6 +52,9 @@ grails.project.dependency.resolution = {
 
     plugins {
         runtime ":hibernate:$grailsVersion"
+        compile ":release:2.0.4"
+        build ":tomcat:$grailsVersion"
+        
         runtime ":jquery:1.8.0"
         runtime ":resources:1.1.6"
         compile(':spring-security-core:1.2.7.3')
@@ -61,7 +64,6 @@ grails.project.dependency.resolution = {
         //runtime ":cached-resources:1.0"
         //runtime ":yui-minify-resources:0.1.4"
 
-        build ":tomcat:$grailsVersion"
         runtime 'cinnamon:cinnamon-db:0.2.31'
         compile ":remote-pagination:0.3"
         test ':spock:0.6'
