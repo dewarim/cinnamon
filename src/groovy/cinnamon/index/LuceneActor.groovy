@@ -91,7 +91,7 @@ class LuceneActor extends
         Query query
 
         if (command.xmlQuery){
-            Analyzer standardAnalyzer = new StandardAnalyzer(Version.LUCENE_34);
+            Analyzer standardAnalyzer = new StandardAnalyzer(Version.LUCENE_CURRENT);
             def analyzer = new LimitTokenCountAnalyzer(standardAnalyzer, Integer.MAX_VALUE);
             InputStream bais = new ByteArrayInputStream(command.query.getBytes("UTF-8"));
             CoreParser coreParser = new CoreParser("content", analyzer);
@@ -100,7 +100,7 @@ class LuceneActor extends
             query = coreParser.parse(bais);
         }
         else{
-            QueryParser queryParser = new QueryParser(Version.LUCENE_34, "content", new StandardAnalyzer(Version.LUCENE_34))
+            QueryParser queryParser = new QueryParser(Version.LUCENE_CURRENT, "content", new StandardAnalyzer(Version.LUCENE_CURRENT))
             query = queryParser.parse(command.query);
         }
         
