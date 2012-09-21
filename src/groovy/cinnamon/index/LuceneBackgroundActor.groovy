@@ -97,9 +97,12 @@ class LuceneBackgroundActor extends
             }
             osdCounter += osds.size()
             osds.each {osd ->
-                log.debug("going to update osd #${osd.id}")
-                def cmd = new IndexCommand(indexable: osd, repository: repository, type: CommandType.UPDATE_INDEX)
-                luceneActor.sendAndWait(cmd)
+                ObjectSystemData.withTransaction {
+                    osd = ObjectSystemData.get(osd.id)
+                    log.debug("going to update osd #${osd.id}")
+                    def cmd = new IndexCommand(indexable: osd, repository: repository, type: CommandType.UPDATE_INDEX)
+                    luceneActor.sendAndWait(cmd)
+                }
             }
             def folders = []
             Folder.withTransaction {
