@@ -40,14 +40,14 @@ grails.project.dependency.resolution = {
 
         // runtime 'mysql:mysql-connector-java:5.1.16'
 
-        runtime('org.apache.lucene:lucene-core:3.5.0')
-        runtime('org.apache.lucene:lucene-xml-query-parser:3.5.0')
-        runtime('org.apache.lucene:lucene-queries:3.5.0')
+        runtime('org.apache.lucene:lucene-core:3.6.1')
+        runtime('org.apache.lucene:lucene-xml-query-parser:3.6.1')
+        runtime('org.apache.lucene:lucene-queries:3.6.1')
         runtime 'postgresql:postgresql:9.1-901.jdbc4'
         runtime 'dom4j:dom4j:1.6.1'
         runtime 'jaxen:jaxen:1.1-beta-6'
-        compile 'org.codehaus.gpars:gpars:1.0-beta-1'
-        runtime 'cinnamon:humulus:0.0.5'
+        compile 'org.codehaus.gpars:gpars:1.0-beta-3'
+        runtime 'cinnamon:humulus:0.1.0'
     }
 
     plugins {
@@ -55,7 +55,7 @@ grails.project.dependency.resolution = {
         compile ":release:2.0.4"
         build ":tomcat:$grailsVersion"
         
-        runtime ":jquery:1.8.0"
+        runtime ":jquery:1.8.2"
         runtime ":resources:1.1.6"
         compile(':spring-security-core:1.2.7.3')
 
@@ -64,7 +64,7 @@ grails.project.dependency.resolution = {
         //runtime ":cached-resources:1.0"
         //runtime ":yui-minify-resources:0.1.4"
 
-        runtime 'cinnamon:cinnamon-db:0.2.31'
+        runtime 'cinnamon:cinnamon-db:0.2.32'
         compile ":remote-pagination:0.3"
         test ':spock:0.6'
     }
