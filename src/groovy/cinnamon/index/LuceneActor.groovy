@@ -67,13 +67,11 @@ class LuceneActor extends
                     def env = Environment.list().find {it.dbName == command.repository}
 //                    log.debug("found env: $env")
                     EnvironmentHolder.setEnvironment(env)
-                    ObjectSystemData.withTransaction {
-                        switch (command.type) {
-                            case CommandType.ADD_TO_INDEX: addToIndex(command); break
-                            case CommandType.REMOVE_FROM_INDEX: removeFromIndex(command); break
-                            case CommandType.UPDATE_INDEX: removeFromIndex(command); addToIndex(command); break
-                            case CommandType.SEARCH: result = search(command); break;
-                        }
+                    switch (command.type) {
+                        case CommandType.ADD_TO_INDEX: addToIndex(command); break
+                        case CommandType.REMOVE_FROM_INDEX: removeFromIndex(command); break
+                        case CommandType.UPDATE_INDEX: removeFromIndex(command); addToIndex(command); break
+                        case CommandType.SEARCH: result = search(command); break;
                     }
                     log.debug("reply & finish")
                     reply result
@@ -90,7 +88,7 @@ class LuceneActor extends
         def repository = repositories.get(command.repository)
         Query query
 
-        if (command.xmlQuery){
+        if (command.xmlQuery) {
             Analyzer standardAnalyzer = new StandardAnalyzer(Version.LUCENE_CURRENT);
             def analyzer = new LimitTokenCountAnalyzer(standardAnalyzer, Integer.MAX_VALUE);
             InputStream bais = new ByteArrayInputStream(command.query.getBytes("UTF-8"));
@@ -99,11 +97,11 @@ class LuceneActor extends
             coreParser.addQueryBuilder("RegexQuery", new RegexQueryBuilder());
             query = coreParser.parse(bais);
         }
-        else{
+        else {
             QueryParser queryParser = new QueryParser(Version.LUCENE_CURRENT, "content", new StandardAnalyzer(Version.LUCENE_CURRENT))
             query = queryParser.parse(command.query);
         }
-        
+
         IndexSearcher searcher = repository.indexSearcher
         ResultCollector collector = new ResultCollector(reader: repository.indexReader,
                 searcher: repository.indexSearcher, domain: command.domain)
@@ -128,7 +126,7 @@ class LuceneActor extends
                 log.debug("indexable is NULL");
                 return;
             }
-            def uniqueId = "${indexable.class.name}@${indexable.id}"
+            def uniqueId = "${indexable.class.name}@${indexable.myId()}"
             log.debug("remove from Index: $uniqueId")
             deleteDocument(repository, new Term("uniqueId", uniqueId), 2);
         } catch (FileNotFoundException f) {
@@ -156,7 +154,7 @@ class LuceneActor extends
             log.debug("delete document failed:", e);
             if (retries != null && retries > 0) {
                 log.debug("retry-delete document");
-                deleteDocument(term, --retries);
+                deleteDocument(repository, term, --retries);
             }
         } catch (OutOfMemoryError e) {
             log.warn("OOM-error during indexing:", e);
@@ -198,34 +196,39 @@ class LuceneActor extends
             }
 //                String content = indexable.getContent(repository);
             log.debug("finished: getContent");
-            ContentContainer metadata = new ContentContainer(indexable, indexable.getMetadata().getBytes());            
-//                String metadata = indexable.getMetadata();
-            log.debug("store systemMetadata");
-//                String systemMetadata = indexable.getSystemMetadata();
-            ContentContainer systemMetadata = new ContentContainer(indexable, indexable.getSystemMetadata().getBytes());
-            log.debug("got sysMetadata, start indexObject loop");
+            ContentContainer metadata = null
+            ContentContainer systemMetadata = null
+            indexable.class.withTransaction {
+                // reloading the Indexable from the database inside the transaction
+                // helps against lazyInitializationException
+                indexable = indexable.class.get(indexable.myId())
+                metadata = new ContentContainer(indexable, indexable.getMetadata().getBytes());
+                log.debug("store systemMetadata");
+                String sysMeta = indexable.getSystemMetadata()
+                systemMetadata = new ContentContainer(indexable, sysMeta.getBytes());
+                log.debug("got sysMetadata, start indexObject loop");
 
-            for (IndexItem item : IndexItem.list()) {
-                log.debug("indexItem: $item.name")
-                /*
-                * At the moment, the OSDs and Folders do not cache
-                * their responses to getSystemMetadata or getContent.
-                * In a repository with many IndexItems, this would cause
-                * quite some strain on the server's resources.
-                */
-                try {
+                for (IndexItem item : IndexItem.list()) {
+                    log.debug("indexItem: $item.name")
+                    /*
+                    * At the moment, the OSDs and Folders do not cache
+                    * their responses to getSystemMetadata or getContent.
+                    * In a repository with many IndexItems, this would cause
+                    * quite some strain on the server's resources.
+                    */
+                    try {
 //							log.debug("indexObject for field '"+item.fieldname+"' with content: "+content);
-                    log.debug("item.indexType: ${item.indexType}")
-                    item.indexObject(content, metadata, systemMetadata, doc);
-                } catch (Exception e) {
-                    log.debug("*** failed *** to execute IndexItem " + item.name, e);
+                        log.debug("item.indexType: ${item.indexType}")
+                        item.indexObject(content, metadata, systemMetadata, doc);
+                    } catch (Exception e) {
+                        log.debug("*** failed *** to execute IndexItem " + item.name, e);
+                    }
                 }
-            }
 
-            repository.indexWriter.addDocument(doc)
-            indexable.indexOk = true
-            indexable.indexed = new Date()
-            //            indexWriter.commit()
+                repository.indexWriter.addDocument(doc)
+                indexable.indexOk = true
+                indexable.indexed = new Date()
+            }
         } catch (OutOfMemoryError e) {
             log.error("indexing failed: ", e)
             indexable.indexOk = false
