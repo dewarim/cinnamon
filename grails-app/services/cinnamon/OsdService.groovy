@@ -5,7 +5,6 @@ import org.dom4j.DocumentHelper
 import org.dom4j.Element
 import cinnamon.exceptions.CinnamonException
 import cinnamon.utils.ParamParser
-import javax.persistence.EntityManager
 import cinnamon.relation.Relation
 import cinnamon.relation.RelationType
 import humulus.EnvironmentHolder
@@ -17,7 +16,7 @@ class OsdService {
 
     def inputValidationService
     def luceneService
-    
+
     /**
      * Turn a collection of data objects into an XML document. Any exceptions encountered during
      * serialization are turned into error-Elements which contain the exception's message.
@@ -33,12 +32,12 @@ class OsdService {
      * Turn a collection of data objects into an XML document. Any exceptions encountered during
      * serialization are turned into error-Elements which contain the exception's message.
      *
-     * @param results      the source collection of results to be used to generate the XML document.
+     * @param results the source collection of results to be used to generate the XML document.
      * @param withMetadata if true, include object custom metadata in the output (which can get quite large).
      * @return Document
      */
     Document generateQueryObjectResultDocument(Collection<ObjectSystemData> results,
-                                                             Boolean withMetadata) {
+                                               Boolean withMetadata) {
         Document doc = DocumentHelper.createDocument();
         Element root = doc.addElement("objects");
 
@@ -68,8 +67,8 @@ class OsdService {
         return doc;
     }
 
-    void copyContent(ObjectSystemData source, ObjectSystemData copy){
-        copyContent(EnvironmentHolder.getEnvironment().dbName, source,copy)
+    void copyContent(ObjectSystemData source, ObjectSystemData copy) {
+        copyContent(EnvironmentHolder.getEnvironment().dbName, source, copy)
     }
 
     void copyContent(String repositoryName, ObjectSystemData source, ObjectSystemData copy) {
@@ -94,11 +93,11 @@ class OsdService {
 
 
     public List<ObjectSystemData> findAllVersions(ObjectSystemData osd) {
-        if(! osd.getCmnVersion().equals("1")){
+        if (!osd.getCmnVersion().equals("1")) {
             osd = osd.root
         }
         return ObjectSystemData.findAll("from ObjectSystemData o where o.root=:root order by o.id desc",
-                [root:osd])
+                [root: osd])
     }
 
     /**
@@ -109,7 +108,7 @@ class OsdService {
     public void copyRelations(ObjectSystemData source, ObjectSystemData target) {
         List<Relation> relations =
             Relation.findAll("from Relation r where r.leftOSD=:left or r.rightOSD=:right",
-                    [left:source, right:source]);
+                    [left: source, right: source]);
         for (Relation rel : relations) {
             /*
              * The relation will only be copied if the cloneOn{left,right}Copy flag is set on the
@@ -120,49 +119,48 @@ class OsdService {
              * should have a relation to the image.
              */
             RelationType relationType = rel.getType();
-            if(relationType.getCloneOnLeftCopy() && rel.getLeftOSD().equals(source)){
-                Relation relCopy = Relation.findOrSaveWhere(type: rel.getType(),  leftOSD: target, rightOSD: rel.getRightOSD(), rel.getMetadata());
-                log.debug("created new Relation: "+relCopy);
+            if (relationType.getCloneOnLeftCopy() && rel.getLeftOSD().equals(source)) {
+                Relation relCopy = Relation.findOrSaveWhere(type: rel.getType(), leftOSD: target, rightOSD: rel.getRightOSD(), metadata: rel.getMetadata());
+                log.debug("created new Relation: " + relCopy);
             }
-            if(relationType.getCloneOnRightCopy() && rel.getRightOSD().equals(source)){
-                Relation relCopy =  Relation.findOrSaveWhere(type:  rel.getType(), leftOSD: rel.getLeftOSD(), rightOSD:target, rel.getMetadata());
-                log.debug("created new Relation: "+relCopy);
+            if (relationType.getCloneOnRightCopy() && rel.getRightOSD().equals(source)) {
+                Relation relCopy = Relation.findOrSaveWhere(type: rel.getType(), leftOSD: rel.getLeftOSD(), rightOSD: target, metadata: rel.getMetadata());
+                log.debug("created new Relation: " + relCopy);
             }
         }
     }
 
-    void delete(ObjectSystemData osd, String repository){
+    void delete(ObjectSystemData osd, String repository) {
         delete(osd, false, false, repository);
     }
 
-    void delete(ObjectSystemData osd, Boolean killDescendants, Boolean removeLeftRelations, String repository){
+    void delete(ObjectSystemData osd, Boolean killDescendants, Boolean removeLeftRelations, String repository) {
         log.debug("Found osd");
         ObjectSystemData predecessor = osd.getPredecessor();
 
         log.debug("checking for descendants ");
         boolean hasDescendants = ObjectSystemData.countByPredecessor(osd) > 0;
         if (killDescendants && hasDescendants) {
-            def preds = ObjectSystemData.findAll("from ObjectSystemData o where o.predecessor=:pred order by id desc",[pred:osd])
-            preds.each{pre ->
+            def preds = ObjectSystemData.findAll("from ObjectSystemData o where o.predecessor=:pred order by id desc", [pred: osd])
+            preds.each {pre ->
                 delete(pre, killDescendants, removeLeftRelations, repository);
             }
         }
-        else if (hasDescendants){
+        else if (hasDescendants) {
             throw new CinnamonException("error.delete.has_descendants");
         }
 
-
         // check for protected relations
-        List<Relation> relations = Relation.findAllByLeftOSDOrRightOSD(osd,osd);
-        for(Relation rel : relations){
+        List<Relation> relations = Relation.findAllByLeftOSDOrRightOSD(osd, osd);
+        for (Relation rel : relations) {
             RelationType rt = rel.getType();
             /*
              * if an object is protected by the relation type, it
              * must not be deleted.
              */
-            if( ( rt.rightobjectprotected && rel.getRightOSD().equals(osd)) ||
-                    ( rt.leftobjectprotected && rel.getLeftOSD().equals(osd) && ! removeLeftRelations)
-            ){
+            if ((rt.rightobjectprotected && rel.getRightOSD().equals(osd)) ||
+                    (rt.leftobjectprotected && rel.getLeftOSD().equals(osd) && !removeLeftRelations)
+            ) {
                 throw new CinnamonException("error.protected_relations");
             }
         }
@@ -188,16 +186,16 @@ class OsdService {
     	   *      (that is: if branch object 1.1 of a tree with versions [1,1.1,2] is deleted,
     	   *      do not make v1 to latestHead, since v2 is already latestHead).
            */
-        if(predecessor != null){
+        if (predecessor != null) {
             predecessor.setLatestBranch(true);
             def latestHeadCount = ObjectSystemData.countByRootAndLatestHead(predecessor.root, true)
-            if(! predecessor.getCmnVersion().contains(".") && latestHeadCount == 0){
+            if (!predecessor.getCmnVersion().contains(".") && latestHeadCount == 0) {
                 predecessor.setLatestHead(true);
             }
         }
 
         ContentStore.deleteObjectFile(osd);
-        
+
         // delete metadata and metasets:
         osd.setMetadata("<meta />")
         osd.delete(flush: true)
@@ -207,60 +205,60 @@ class OsdService {
     public void delete(Long id, String repository) {
         log.debug("before loading osd");
         ObjectSystemData osd = ObjectSystemData.get(id);
-        if(osd == null) {
+        if (osd == null) {
             throw new CinnamonException("error.object.not.found");
-        }        
-        delete(osd, repository);        
+        }
+        delete(osd, repository);
     }
 
-    Boolean mayBrowseObject(ObjectSystemData osd, user){
+    Boolean mayBrowseObject(ObjectSystemData osd, user) {
         def validator = new Validator(user)
-        try{
+        try {
             log.debug("validate browse permission on: ${osd.name} (acl: ${osd.acl.name})")
             validator.validatePermission(osd.acl, PermissionName.BROWSE_OBJECT)
         }
-        catch (Exception e){
-            log.debug("user does not have browse permission.",e)
+        catch (Exception e) {
+            log.debug("user does not have browse permission.", e)
             return false
         }
         return true
     }
-    
-    void acquireLock(osd, user){        
-        if (osd.locker){
-            if(osd.locker == user){
+
+    void acquireLock(osd, user) {
+        if (osd.locker) {
+            if (osd.locker == user) {
                 return
             }
             throw new RuntimeException('error.locked.already')
         }
         osd.locker = user
     }
-    
-    void unlock(osd, user){
+
+    void unlock(osd, user) {
         // should we raise an exception if this osd is not locked at all? 
-        osd.locker = null 
+        osd.locker = null
     }
-    
-    Boolean checkPermissions(ObjectSystemData osd, UserAccount user, List permissions){
+
+    Boolean checkPermissions(ObjectSystemData osd, UserAccount user, List permissions) {
         Validator val = new Validator(user)
-        try{
+        try {
             val.validatePermissions(osd, permissions)
         }
-        catch (Exception e){
-            log.debug("${user?.name} failed permission check:",e)
+        catch (Exception e) {
+            log.debug("${user?.name} failed permission check:", e)
             return false
         }
         return true
     }
-    
-    void storeContent(ObjectSystemData osd, String contentType, String formatId, File file, String repositoryName){
+
+    void storeContent(ObjectSystemData osd, String contentType, String formatId, File file, String repositoryName) {
         Format format = (Format) inputValidationService.checkObject(Format.class, formatId, true)
         if (!format) {
             throw new RuntimeException('error.missing.format')
         }
-        
+
         def uploadedFile = new UploadedFile(file.absolutePath, UUID.randomUUID().toString(), osd.name, contentType, file.length())
-        def contentPath = ContentStore.upload(uploadedFile, repositoryName);        
+        def contentPath = ContentStore.upload(uploadedFile, repositoryName);
         osd.setContentPathAndFormat(contentPath, format, repositoryName);
         if (osd.getContentPath() != null &&
                 osd.getContentPath().length() == 0) {
@@ -268,50 +266,85 @@ class OsdService {
         }
     }
 
-    Map<String,List> deleteList(idList, repository){
+    Map<String, List> deleteList(idList, String repository, VersionType versionType) {
         def msgMap = [:]
-        idList.each{ id ->
-            try{
-                log.debug("delete: $id")
+        
+        if(versionType == VersionType.ALL){
+            return deleteAllVersions(idList, repository)
+        }
+        
+        idList.each { id ->
+            try {
+                log.debug("delete: $id with version policy: ${versionType}")
+                
+                switch (versionType){
+                    case VersionType.BRANCHES: return deleteBranches(idList, repository);break;
+                    case VersionType.HEAD: id = ObjectSystemData.findByIdAndLatestHead(id,true).id.toString();break;
+                    case VersionType.SELECTED: break;
+                }                
                 delete(Long.parseLong(id), repository);
                 msgMap.put(id, ['osd.delete.ok'])
             }
-            catch (Exception e){
-                log.debug("delete failed.",e)
+            catch (Exception e) {
+                log.debug("delete failed.", e)
                 msgMap.put(id, ['osd.delete.fail', e.message])
             }
         }
         return msgMap
-
     }
 
-    Map<String,List> deleteAllVersions(idList, repository){
+    Map<String, List> deleteBranches(idList, repository) {
         def msgMap = [:]
-        idList.each{ id ->
-            try{
+        idList.each { id ->
+            try {
+                def deleteMap = [:]
                 def osd = ObjectSystemData.get(id)
-                if(osd){
+                if (osd) {
+                    def osds = ObjectSystemData.findAll("from ObjectSystemData o where o.latestBranch=true and o.root=:root order by id desc",
+                    [root: osd.root ?: osd]
+                    )
+                    deleteMap = deleteList(osds.collect{it.id.toString()}, repository, VersionType.SELECTED)
+                }
+                else {
+                    log.debug("osd $id was not found - probably already deleted.")
+                }
+                msgMap.putAll(deleteMap)               
+            }
+            catch (Exception e) {
+                log.debug("deleteBranches: fail:", e)
+                msgMap.put(id, ['osd.delete.branches.fail', e.message])
+            }
+        }
+        return msgMap
+    }       
+    
+     Map<String, List> deleteAllVersions(idList, repository) {
+        def msgMap = [:]
+        idList.each { id ->
+            try {
+                def osd = ObjectSystemData.get(id)
+                if (osd) {
 //                    def osds = ObjectSystemData.findAll("from ObjectSystemData o where o.root=:root order by id desc",
 //                    [root: osd.root ?: osd]
 //                    )
 //                    deleteList(osds.collect{it.id.toString()})
                     delete(osd, true, false, repository)
                 }
-                else{
+                else {
                     log.debug("osd $id was not found - probably already deleted.")
                 }
                 msgMap.put(id, ['osd.delete.all.ok'])
             }
-            catch (Exception e){
-                log.debug("deleteAllVersions fail:",e)
+            catch (Exception e) {
+                log.debug("deleteAllVersions fail:", e)
                 msgMap.put(id, ['osd.delete.all.fail', e.message])
             }
         }
         return msgMap
 
     }
-    
-    ObjectSystemData createOsd(request, params, String repositoryName, MultipartFile file, UserAccount user, Folder folder){
+
+    ObjectSystemData createOsd(request, params, String repositoryName, MultipartFile file, UserAccount user, Folder folder) {
         ObjectType objectType = (ObjectType) inputValidationService.checkObject(ObjectType.class, params.objectType, true)
         if (!objectType) {
             objectType = ObjectType.findByName(Constants.OBJTYPE_DEFAULT)
@@ -339,7 +372,7 @@ class OsdService {
             if (!format) {
                 throw new RuntimeException('error.missing.format')
             }
-            
+
             def uploadedFile = new UploadedFile(tempFile.absolutePath, UUID.randomUUID().toString(), name, file.contentType, tempFile.length())
             def contentPath = ContentStore.upload(uploadedFile, repositoryName);
             log.debug("contentPath: $contentPath")
@@ -356,5 +389,40 @@ class OsdService {
         log.debug("repo: ${repositoryName}")
         luceneService.addToIndex(osd, repositoryName)
         return osd
+    }
+
+    Map<String, List> moveToFolder(idList, folderId, repository, VersionType versionType, UserAccount user) {
+        def msgMap = [:]
+        def folder
+        try {
+            folder = Folder.get(folderId)
+            if (!folder) {
+                throw new RuntimeException('error.folder.not.found')
+            }
+        }
+        catch (Exception e) {
+            return ['copyFail':[e.message]]
+        }
+
+        idList.each { id ->
+            try {
+                log.debug("copy: $id")
+                ObjectSystemData osd = ObjectSystemData.get(id)
+                if(osd.parent != folder){
+                    Folder oldFolder = osd.parent
+                    osd.parent = folder
+                    log.debug("moved #${osd.id} from folder #${oldFolder.id}: ${oldFolder.name} to #${folder.id}: ${folder.name}")
+                    msgMap.put(id, ['osd.move.ok'])
+                }
+                else{
+                    msgMap.put(id, ['osd.move.unnecessary'])
+                }
+            }
+            catch (Exception e) {
+                log.debug("move failed.", e)
+                msgMap.put(id, ['osd.move.fail', e.message])
+            }
+        }
+        return msgMap
     }
 }
