@@ -18,10 +18,10 @@ abstract class BaseController {
     def itemService
     def luceneService
     def osdService
-    def springSecurityService
     def userService
     def lifeCycleStateService
     def outputService
+    def copyService
 
     protected Set<String> loadUserPermissions(Acl acl) {
         Set<String> permissions

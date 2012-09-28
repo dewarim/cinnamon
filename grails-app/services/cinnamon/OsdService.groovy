@@ -16,6 +16,7 @@ class OsdService {
 
     def inputValidationService
     def luceneService
+    def userService
 
     /**
      * Turn a collection of data objects into an XML document. Any exceptions encountered during
@@ -91,6 +92,11 @@ class OsdService {
         }
     }
 
+    void copyMetadata(ObjectSystemData source, ObjectSystemData copy) {
+        def meta = source.getMetadata()
+        copy.setMetadata(meta)
+        copy.save()
+    }
 
     public List<ObjectSystemData> findAllVersions(ObjectSystemData osd) {
         if (!osd.getCmnVersion().equals("1")) {
@@ -136,6 +142,10 @@ class OsdService {
 
     void delete(ObjectSystemData osd, Boolean killDescendants, Boolean removeLeftRelations, String repository) {
         log.debug("Found osd");
+        if (!checkPermissions(osd, userService.user, [PermissionName.DELETE_OBJECT])) {
+            throw new RuntimeException('error.delete.denied')
+        }
+
         ObjectSystemData predecessor = osd.getPredecessor();
 
         log.debug("checking for descendants ");
@@ -203,7 +213,6 @@ class OsdService {
     }
 
     public void delete(Long id, String repository) {
-        log.debug("before loading osd");
         ObjectSystemData osd = ObjectSystemData.get(id);
         if (osd == null) {
             throw new CinnamonException("error.object.not.found");
@@ -268,20 +277,20 @@ class OsdService {
 
     Map<String, List> deleteList(idList, String repository, VersionType versionType) {
         def msgMap = [:]
-        
-        if(versionType == VersionType.ALL){
+
+        if (versionType == VersionType.ALL) {
             return deleteAllVersions(idList, repository)
         }
-        
+
         idList.each { id ->
             try {
                 log.debug("delete: $id with version policy: ${versionType}")
-                
-                switch (versionType){
-                    case VersionType.BRANCHES: return deleteBranches(idList, repository);break;
-                    case VersionType.HEAD: id = ObjectSystemData.findByIdAndLatestHead(id,true).id.toString();break;
+
+                switch (versionType) {
+                    case VersionType.BRANCHES: return deleteBranches(idList, repository); break;
+                    case VersionType.HEAD: id = ObjectSystemData.findByIdAndLatestHead(id, true).id.toString(); break;
                     case VersionType.SELECTED: break;
-                }                
+                }
                 delete(Long.parseLong(id), repository);
                 msgMap.put(id, ['osd.delete.ok'])
             }
@@ -301,14 +310,14 @@ class OsdService {
                 def osd = ObjectSystemData.get(id)
                 if (osd) {
                     def osds = ObjectSystemData.findAll("from ObjectSystemData o where o.latestBranch=true and o.root=:root order by id desc",
-                    [root: osd.root ?: osd]
+                            [root: osd.root ?: osd]
                     )
-                    deleteMap = deleteList(osds.collect{it.id.toString()}, repository, VersionType.SELECTED)
+                    deleteMap = deleteList(osds.collect {it.id.toString()}, repository, VersionType.SELECTED)
                 }
                 else {
                     log.debug("osd $id was not found - probably already deleted.")
                 }
-                msgMap.putAll(deleteMap)               
+                msgMap.putAll(deleteMap)
             }
             catch (Exception e) {
                 log.debug("deleteBranches: fail:", e)
@@ -316,18 +325,14 @@ class OsdService {
             }
         }
         return msgMap
-    }       
-    
-     Map<String, List> deleteAllVersions(idList, repository) {
+    }
+
+    Map<String, List> deleteAllVersions(idList, repository) {
         def msgMap = [:]
         idList.each { id ->
             try {
                 def osd = ObjectSystemData.get(id)
                 if (osd) {
-//                    def osds = ObjectSystemData.findAll("from ObjectSystemData o where o.root=:root order by id desc",
-//                    [root: osd.root ?: osd]
-//                    )
-//                    deleteList(osds.collect{it.id.toString()})
                     delete(osd, true, false, repository)
                 }
                 else {
@@ -401,20 +406,25 @@ class OsdService {
             }
         }
         catch (Exception e) {
-            return ['copyFail':[e.message]]
+            return ['moveFail': [e.message]]
         }
 
         idList.each { id ->
             try {
-                log.debug("copy: $id")
+                log.debug("move: $id")
                 ObjectSystemData osd = ObjectSystemData.get(id)
-                if(osd.parent != folder){
-                    Folder oldFolder = osd.parent
-                    osd.parent = folder
-                    log.debug("moved #${osd.id} from folder #${oldFolder.id}: ${oldFolder.name} to #${folder.id}: ${folder.name}")
-                    msgMap.put(id, ['osd.move.ok'])
+                if (osd.parent != folder) {
+                    if (checkPermissions(osd, user, [PermissionName.MOVE])) {
+                        Folder oldFolder = osd.parent
+                        osd.parent = folder
+                        log.debug("moved #${osd.id} from folder #${oldFolder.id}: ${oldFolder.name} to #${folder.id}: ${folder.name}")
+                        msgMap.put(id, ['osd.move.ok'])
+                    }
+                    else {
+                        msgMap.put(id, ['osd.move.forbidden'])
+                    }
                 }
-                else{
+                else {
                     msgMap.put(id, ['osd.move.unnecessary'])
                 }
             }

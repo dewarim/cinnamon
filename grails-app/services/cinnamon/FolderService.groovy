@@ -19,6 +19,7 @@ class FolderService {
     GrailsConventionGroovyPageLocator groovyPageLocator
     static final def folderConfigProperties = ['controller', 'action', 'template']
     def grailsApplication
+    def userService
 
     /**
      * Check if a folder has content objects (meaning OSD, not sub-folders)
@@ -136,7 +137,7 @@ class FolderService {
         return folderExists(folder.id)
     }
 
-    public void deleteFolder(Long id, String repository ) {
+    public void deleteFolder(Long id, String repository, Boolean descend) {
         log.debug("before loading folder");
         Folder folder;
         if (id == 0L) {
@@ -148,17 +149,37 @@ class FolderService {
         if (folder == null) {
             throw new CinnamonException("error.folder.not_found");
         }
+        if(! checkPermissions(folder, userService.user, [PermissionName.DELETE_FOLDER])){
+            throw new CinnamonException("error.delete.denied")
+        }
 
         // check for subfolders:
         def subFolderCount = Folder.countByParent(folder);
         if ( subFolderCount > 0) {
-            throw new CinnamonException("error.subfolders.exist");
+            if(descend){
+                folder.fetchSubfolders(false).each{subFolder ->
+                    deleteFolder(subFolder.id, repository, descend)
+                }
+            }
+            else{
+                throw new CinnamonException("error.subfolders.exist");
+            }
         }
 
         // check for objects inside folder
         def contents = ObjectSystemData.countByParent(folder);
         if ( contents > 0) {
-            throw new CinnamonException("error.folder.has_content");
+            if(descend){
+                // this will try to delete all versions from a folder, 
+                // but will fail if there are descendants in other folders (which is intended)               
+                ObjectSystemData.findAll("from ObjectSystemData o where parent=:folder order by id desc",
+                        [folder:folder]).each{osd ->
+                    osdService.delete(osd, false, true, repository)
+                }
+            }
+            else{
+                throw new CinnamonException("error.folder.has_content");
+            }
         }
         folder.setMetadata("<meta />")
         folder.delete();
@@ -262,7 +283,7 @@ class FolderService {
         final File sysTempDir = new File(System.getProperty("java.io.tmpdir"));
         File tempFolder = new File(sysTempDir, UUID.randomUUID().toString());
         if (!tempFolder.mkdirs()) {
-            throw new CinnamonException(("error.create.tempFolder.fail"));
+            throw new CinnamonException("error.create.tempFolder.fail");
         }
 
         List<Folder> folders = new ArrayList<Folder>();
@@ -376,15 +397,16 @@ class FolderService {
         return validator.filterUnbrowsableFolders(folders) 
     }
 
-    Map<String,List> deleteList(idList, repository){
+    Map<String,List> deleteList(idList, repository, descend){
         def msgMap = [:]
         idList.each{ id ->
             try{
                 log.debug("delete folder: $id")
-                deleteFolder(Long.parseLong(id), repository);
+                deleteFolder(Long.parseLong(id), repository, descend);
                 msgMap.put(id, ['folder.delete.ok'])
             }
             catch (Exception e){
+                log.debug("delete folder failed: ",e)
                 msgMap.put(id, ['folder.delete.fail', e.message])
             }
         }
@@ -458,6 +480,61 @@ class FolderService {
             folderTemplate = folderConfig.template.text()
         }
         return folderTemplate
+    }
+
+    /**
+     * Move a list of folders into another folder.
+     * @param idList List of Strings with the folder-ids
+     * @param folderId the id of the targetFolder
+     * @user user the account of the user who tries to move the folders (for permission checking)
+     * @return a map of folder.id.toString::list of message ids and message arguments, 
+     *  for example: 1:[error.access.denied, $name]
+     * 
+     */
+    Map<String, List> moveToFolder(idList, folderId, user) {
+        def msgMap = [:]
+        Folder target
+        try {
+            target = Folder.get(folderId)
+            if (!target) {
+                throw new RuntimeException('error.folder.not.found')
+            }
+        }
+        catch (Exception e) {
+            return ['moveFail':[e.message]]
+        }
+        
+        idList.each { id ->
+            try {                
+                log.debug("move: $id")
+                Folder source = Folder.get(id)
+                if(source.parent == target || source == target){
+                    msgMap.put(id, ['folder.move.unnecessary'])                    
+                }
+                else{
+                    
+                    if(!checkPermissions(source, user, [PermissionName.EDIT_FOLDER])){
+                        msgMap.put(id, ['error.access.denied'])
+                        return
+                    }
+                    
+                    def parents = target.getParentFolders(target)
+                    if(parents.find {it == source}){
+                        msgMap.put(id, ['error.no.move.into.self'])
+                        return
+                    }                    
+                    Folder oldFolder = source.parent
+                    source.parent = target
+                    log.debug("moved folder #${source.id} from folder #${oldFolder.id}: ${oldFolder.name} to #${target.id}: ${target.name}")
+                    msgMap.put(id, ['folder.move.ok'])
+                }
+            }
+            catch (Exception e) {
+                log.debug("move failed.", e)
+                msgMap.put(id, ['folder.move.fail', e.message])
+            }
+        }
+        return msgMap
     }
 }
 

@@ -32,7 +32,9 @@
                         <li>${msg}</li>
                     </g:each>
                 </ul>
-
+                <script type="text/javascript">
+                    showClearButton();
+                </script>
             </div>
         </g:if>
 

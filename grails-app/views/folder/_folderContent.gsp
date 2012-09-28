@@ -58,8 +58,17 @@
     </p>
 </g:else>
 
+<div class="copy_paste_links">
+    <div id="currentSelectedFolder" style="display:none">${folder.id}</div>
+</div>
+
 <script type="text/javascript">
 	$('#objectDetails').html(' ');
     $('#searchResults').html(' ');
-    $('#msgList').html(' ');
+//    $('#msgList').html(' ');
+    $('#selectedFolder').val(${folder.id});
+    $('#moveHere').val("${message(code: 'osd.move.into', args: [folder.name])}");
+    $('#moveHere').removeAttr('disabled');
+    $('#copyHere').val("${message(code: 'osd.copy.into', args: [folder.name])}");
+    $('#copyHere').removeAttr('disabled');
 </script>

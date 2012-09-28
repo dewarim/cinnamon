@@ -395,27 +395,50 @@ class OsdController extends BaseController {
         def msgMap
         def msgList = []
 
+        def selectedFolder = params.selectedFolder
         try {
+            log.debug("selected folder: ${selectedFolder}")
+            Folder targetFolder = Folder.get(selectedFolder)
+            def user = userService.user
+            if(!targetFolder){
+                throw new RuntimeException('error.folder.not.found')
+            }
+            if(! folderService.checkPermissions(targetFolder, user, [PermissionName.CREATE_OBJECT])){
+                throw new RuntimeException('error.access.denied')
+            }
+            
+            log.debug("*** start iterate")
             def idList = params.list("osd")
             def folderList = params.list("folder")
             if (idList.isEmpty() && folderList.isEmpty()) {
+                log.debug("id list is empty - redirect")
                 // nothing to do
-                defaultRedirect(params)
+                defaultRedirect([folder: selectedFolder])
             }
             def repository = session.repositoryName
+            def versionType = VersionType.values().find{it.name() == (params.versions ?: VersionType.ALL.name())}
+        
             if (params.delete) {
-                msgMap = osdService.deleteList(idList, repository)
+                msgMap = osdService.deleteList(idList, repository, versionType)
                 msgList.addAll(convertMsgMap(msgMap))
-                msgMap = folderService.deleteList(folderList, repository)
-                msgList.addAll(convertMsgMap(msgMap))
-            }
-            else if (params.deleteAll) {
-                msgMap = osdService.deleteAllVersions(idList, repository)
-                log.debug("msgMap in deleteAll: $msgMap")
-                msgList.addAll(convertMsgMap(msgMap))
-                msgMap = folderService.deleteList(folderList, repository)
+                msgMap = folderService.deleteList(folderList, repository, true)
                 msgList.addAll(convertMsgMap(msgMap))
             }
+            else if (params.move){
+                log.debug("*** will move objects into folder: ${selectedFolder}")
+                msgMap = osdService.moveToFolder(idList, selectedFolder, repository, versionType, user)
+                msgList.addAll(convertMsgMap(msgMap))                
+                msgMap = folderService.moveToFolder(folderList, selectedFolder, user)
+                msgList.addAll(convertMsgMap(msgMap))
+            }
+            else if (params.copy){
+                log.debug("*** will copy objects into folder: ${selectedFolder}")
+                msgMap = copyService.copyObjectsToFolder(idList, selectedFolder, repository, versionType, user)
+                msgList.addAll(convertMsgMap(msgMap))
+                msgMap = copyService.copyFoldersToFolder(folderList, selectedFolder, repository, versionType, user)
+                msgList.addAll(convertMsgMap(msgMap))
+            }
+            log.debug("*** done iterate")
         }
         catch (Exception e) {
             log.debug("Failed to iterate over ${params.osd}.", e)
@@ -423,7 +446,7 @@ class OsdController extends BaseController {
         }
 
         flash.msgList = msgList        
-        defaultRedirect([])
+        defaultRedirect([folder: selectedFolder])
     }
 
     protected List convertMsgMap(msgMap) {
