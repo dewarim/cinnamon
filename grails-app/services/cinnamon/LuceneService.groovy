@@ -69,7 +69,6 @@ class LuceneService {
         def cmd = new IndexCommand(indexable: indexable, repository: database, type: CommandType.ADD_TO_INDEX)
         // we have to sendAndWait, because otherwise the thread would finish and
         // confuse the actor before its work is done.
-//        lucene.sendAndWait(cmd, 4, TimeUnit.SECONDS)
         lucene.sendAndWait(cmd)
     }
 

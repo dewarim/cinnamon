@@ -417,6 +417,8 @@ class OsdService {
                     if (checkPermissions(osd, user, [PermissionName.MOVE])) {
                         Folder oldFolder = osd.parent
                         osd.parent = folder
+                        osd.save(flush: true)
+                        luceneService.updateIndex(osd, repository)
                         log.debug("moved #${osd.id} from folder #${oldFolder.id}: ${oldFolder.name} to #${folder.id}: ${folder.name}")
                         msgMap.put(id, ['osd.move.ok'])
                     }

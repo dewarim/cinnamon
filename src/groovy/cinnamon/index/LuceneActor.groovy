@@ -39,7 +39,7 @@ import cinnamon.index.queryBuilder.RegexQueryBuilder
 import cinnamon.exceptions.CinnamonException
 import humulus.Environment
 import humulus.EnvironmentHolder
-import cinnamon.ObjectSystemData
+
 import org.apache.lucene.analysis.Analyzer
 import org.apache.lucene.analysis.LimitTokenCountAnalyzer
 
@@ -61,11 +61,11 @@ class LuceneActor extends
     protected void act() {
         loop {
             react { command ->
+                LuceneResult result = new LuceneResult()
                 try {
-                    LuceneResult result = new LuceneResult()
 //                    log.debug("LuceneActor received: $command")
                     def env = Environment.list().find {it.dbName == command.repository}
-//                    log.debug("found env: $env")
+                    log.debug("found env: $env")
                     EnvironmentHolder.setEnvironment(env)
                     switch (command.type) {
                         case CommandType.ADD_TO_INDEX: addToIndex(command); break
@@ -77,7 +77,11 @@ class LuceneActor extends
                     reply result
                 }
                 catch (Exception e) {
-                    log.debug("Failed to act on command:", e)
+                    log.debug("repositories: ${repositories}")
+                    log.debug("Failed to act on command: ${command?.dump()}", e)
+                    result.failed = true
+                    result.errorMessage = e.message
+                    reply result
                 }
             }
         }
@@ -169,6 +173,7 @@ class LuceneActor extends
     void addToIndex(IndexCommand command) {
         log.debug("store standard fields")
         def indexable = command.indexable
+        log.debug("repository:${command.repository}")
         def repository = repositories.get(command.repository)
         IndexSearcher indexSearcher = repository.indexSearcher
         try {
@@ -194,41 +199,13 @@ class LuceneActor extends
             else {
                 content = new ContentContainer(indexable, "<empty />".getBytes())
             }
-//                String content = indexable.getContent(repository);
-            log.debug("finished: getContent");
-            ContentContainer metadata = null
-            ContentContainer systemMetadata = null
-            indexable.class.withTransaction {
-                // reloading the Indexable from the database inside the transaction
-                // helps against lazyInitializationException
-                indexable = indexable.class.get(indexable.myId())
-                metadata = new ContentContainer(indexable, indexable.getMetadata().getBytes());
-                log.debug("store systemMetadata");
-                String sysMeta = indexable.getSystemMetadata()
-                systemMetadata = new ContentContainer(indexable, sysMeta.getBytes());
-                log.debug("got sysMetadata, start indexObject loop");
-
-                for (IndexItem item : IndexItem.list()) {
-                    log.debug("indexItem: $item.name")
-                    /*
-                    * At the moment, the OSDs and Folders do not cache
-                    * their responses to getSystemMetadata or getContent.
-                    * In a repository with many IndexItems, this would cause
-                    * quite some strain on the server's resources.
-                    */
-                    try {
-//							log.debug("indexObject for field '"+item.fieldname+"' with content: "+content);
-                        log.debug("item.indexType: ${item.indexType}")
-                        item.indexObject(content, metadata, systemMetadata, doc);
-                    } catch (Exception e) {
-                        log.debug("*** failed *** to execute IndexItem " + item.name, e);
-                    }
-                }
-
-                repository.indexWriter.addDocument(doc)
-                indexable.indexOk = true
-                indexable.indexed = new Date()
+            if (command.reloadIndexable) {
+                indexWithReloading(indexable, content, repository, doc)
             }
+            else {
+                indexWithoutReloading(indexable, content, repository, doc)
+            }
+
         } catch (OutOfMemoryError e) {
             log.error("indexing failed: ", e)
             indexable.indexOk = false
@@ -237,6 +214,54 @@ class LuceneActor extends
             repository.indexWriter.close(true)
             repository.createWriter()
         }
+    }
+
+    void indexWithReloading(Indexable indexable, content, repository, doc) {
+        indexable.class.withTransaction {
+            // reloading the Indexable from the database inside the transaction
+            // helps against lazyInitializationException
+//                log.debug("id: ${indexable.myId()}")
+            indexable = indexable.class.get(indexable.myId())
+            log.debug("indexable: ${indexable}")
+            if (!indexable) {
+                throw new RuntimeException("cannot find indexable.")
+            }
+            doIndex(indexable, content, repository, doc)
+        }
+    }
+
+    void indexWithoutReloading(Indexable indexable, content, repository, doc) {
+        indexable.class.withTransaction {
+            doIndex(indexable, content, repository, doc)
+        }
+    }
+
+    void doIndex(Indexable indexable, content, repository, doc) {
+        ContentContainer metadata = new ContentContainer(indexable, indexable.getMetadata().getBytes());
+        log.debug("store systemMetadata");
+        String sysMeta = indexable.getSystemMetadata()
+        ContentContainer systemMetadata = new ContentContainer(indexable, sysMeta.getBytes());
+        log.debug("got sysMetadata, start indexObject loop");
+
+        for (IndexItem item : IndexItem.list()) {
+            log.debug("indexItem: $item.name")
+            /*
+            * At the moment, the OSDs and Folders do not cache
+            * their responses to getSystemMetadata or getContent.
+            * In a repository with many IndexItems, this would cause
+            * quite some strain on the server's resources.
+            */
+            try {
+//							log.debug("indexObject for field '"+item.fieldname+"' with content: "+content);
+                log.debug("item.indexType: ${item.indexType}")
+                item.indexObject(content, metadata, systemMetadata, doc);
+            } catch (Exception e) {
+                log.debug("*** failed *** to execute IndexItem " + item.name, e);
+            }
+        }
+        repository.indexWriter.addDocument(doc)
+        indexable.indexOk = true
+        indexable.indexed = new Date()
     }
 
     Document storeStandardFields(Indexable indexable, Document doc) {

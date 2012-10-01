@@ -29,6 +29,8 @@ class LuceneResult {
     transient Logger log = LoggerFactory.getLogger(this.class)
     
     List<String> resultMessages = []
+    Boolean failed = false
+    String errorMessage
     
     Map<String, Set<Long>> itemIdMap = new HashMap<String, Set<Long>>()
 

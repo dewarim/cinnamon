@@ -14,6 +14,7 @@ class CopyService {
     
     def osdService
     def folderService
+    def luceneService
 
     /**
      * Copy a root object and all of its descendants.
@@ -72,7 +73,7 @@ class CopyService {
      * used for permission checks.
      * @return a CopyResult object containing information about new folders and objects as well as error messages.
      */
-    public CopyResult copyFolder(Folder source, Folder target,
+    public CopyResult copyFolder(Folder source, Folder target, String repositoryName,
                                  Boolean croakOnError, VersionType versions,
                                  UserAccount user) {
         /*
@@ -125,14 +126,15 @@ class CopyService {
         if(fixName){
             // copy only has an id after save.
             copy.name = "${source.name}_${copy.id}"
-            copy.save()
+            copy.save(flush: true)
         }
+        luceneService.addToIndex(copy, repositoryName)
         copyResult.addFolder(copy);
 
         // copy child folders
         List<Folder> children = folderService.getSubfolders(source);
         for (Folder child : children) {
-            CopyResult cr = copyFolder(child, copy, croakOnError, versions, user);
+            CopyResult cr = copyFolder(child, copy, repositoryName, croakOnError, versions, user);
             copyResult.addCopyResult(cr);
             if (copyResult.foundFailure() && croakOnError) {
                 return copyResult;
@@ -146,7 +148,7 @@ class CopyService {
         if (versions == VersionType.ALL) {
             CopyService.log.debug("copy all versions");
             // copy all versions
-            ObjectTreeCopier otc = new ObjectTreeCopier(user, copy, validator, true);
+            ObjectTreeCopier otc = new ObjectTreeCopier(user, copy, validator, true, repositoryName);
             copyResult.addCopyResult(copyAllVersions(folderContent, otc, croakOnError));
         }
         else if (versions == VersionType.BRANCHES) {
@@ -155,7 +157,7 @@ class CopyService {
             for (ObjectSystemData osd : folderContent) {
                 branches.add(osd.findLatestBranch());
             }
-            copyResult.addCopyResult(createNewVersionCopies(branches, copy, validator, user, croakOnError));
+            copyResult.addCopyResult(createNewVersionCopies(branches, copy, repositoryName, validator, user, croakOnError));
         }
         else {
             CopyService.log.debug("copy head of object tree");
@@ -166,7 +168,7 @@ class CopyService {
                 CopyService.log.debug("latestHead found for " + head.getId());
                 headSet.add(latestHead);
             }
-            copyResult.addCopyResult(createNewVersionCopies(headSet, copy, validator, user, croakOnError));
+            copyResult.addCopyResult(createNewVersionCopies(headSet, copy, repositoryName, validator, user, croakOnError));
         }
         CopyService.log.debug("new folders: " + copyResult.newFolderCount());
         CopyService.log.debug("new objects: " + copyResult.newObjectCount());
@@ -223,7 +225,7 @@ class CopyService {
         return copyResult;
     }
 
-    CopyResult createNewVersionCopies(Collection<ObjectSystemData> sources, Folder target, Validator validator,
+    CopyResult createNewVersionCopies(Collection<ObjectSystemData> sources, Folder target, String repositoryName, Validator validator,
                                       UserAccount user, Boolean croakOnError) {
         CopyResult copyResult = new CopyResult();
 
@@ -239,13 +241,13 @@ class CopyService {
                     return copyResult;
                 }
             }
-            ObjectSystemData newCopy = copyObject(osd, target, user)
+            ObjectSystemData newCopy = copyObject(osd, target, repositoryName, user)
             copyResult.addObject(newCopy);
         }
         return copyResult;
     }
 
-    ObjectSystemData copyObject(osd, targetFolder, user) {
+    ObjectSystemData copyObject(osd, targetFolder, repository, user) {
         new Validator(user).validateCopy(osd, targetFolder)
         ObjectSystemData newCopy = new ObjectSystemData(osd, user);
         newCopy.setCmnVersion("1");
@@ -256,6 +258,7 @@ class CopyService {
         osdService.copyMetadata(osd, newCopy)        
         osdService.copyContent(osd, newCopy)
         osdService.copyRelations(osd, newCopy)
+        luceneService.addToIndex(newCopy, repository)
         return newCopy
     }
     
@@ -277,12 +280,12 @@ class CopyService {
                 log.debug("copy OSD: $id")
                 ObjectSystemData osd = ObjectSystemData.get(id)
                 switch (versionType) {
-                    case VersionType.ALL: msgMap.putAll(copyAllOsdVersionsToFolder(osd, folder, user));break
-                    case VersionType.BRANCHES: msgMap.putAll(copyAllBranchesToFolder(osd, folder, user)) ;break
-                    case VersionType.HEAD: copyObject(osd.findLatestHead(), folder, user)
+                    case VersionType.ALL: msgMap.putAll(copyAllOsdVersionsToFolder(osd, folder, repository, user));break
+                    case VersionType.BRANCHES: msgMap.putAll(copyAllBranchesToFolder(osd, folder, repository, user)) ;break
+                    case VersionType.HEAD: copyObject(osd.findLatestHead(), folder, repository, user)
                         msgMap.put(id,['osd.copy.ok'] )
                         break
-                    case VersionType.SELECTED: copyObject(osd, folder, user)
+                    case VersionType.SELECTED: copyObject(osd, folder, repository, user)
                         msgMap.put(id, ['osd.copy.ok'])
                         break
                 }
@@ -295,12 +298,12 @@ class CopyService {
         return msgMap
     }
 
-    Map copyAllBranchesToFolder(ObjectSystemData osd, Folder folder, UserAccount user) {
+    Map copyAllBranchesToFolder(ObjectSystemData osd, Folder folder, String repository, UserAccount user) {
         def msgMap = [:]
         def branches = osd.findLatestBranches()
         branches.each{branchOsd ->
             try{
-                copyObject(branchOsd, folder, user)
+                copyObject(branchOsd, folder, repository, user)
                 msgMap.put(branchOsd.id.toString(), ['osd.copy.ok'])
             }
             catch(Exception e){
@@ -310,10 +313,10 @@ class CopyService {
         return msgMap
     }
     
-    Map copyAllOsdVersionsToFolder(ObjectSystemData osd, Folder folder, UserAccount user) {
+    Map copyAllOsdVersionsToFolder(ObjectSystemData osd, Folder folder, String repositoryName, UserAccount user) {
         def msgMap = [:]
         def id = osd.id.toString()
-        def copyResult = copyAllVersions([osd], new ObjectTreeCopier(user, folder, new Validator(user), true), false)
+        def copyResult = copyAllVersions([osd], new ObjectTreeCopier(user, folder, new Validator(user), true, repositoryName), false,)
         if (copyResult.objectFailures.size() > 0) {
             copyResult.getObjectFailures().each {Long k, String v ->
                 msgMap.put(k.toString(), [v])
@@ -349,7 +352,7 @@ class CopyService {
             try {
                 log.debug("copy folder: $id")
                 Folder source = Folder.get(id)
-                def copyResult = copyFolder(source, targetFolder, false, versionType, user)
+                def copyResult = copyFolder(source, targetFolder, repository, false, versionType, user)
                 if(copyResult.foundFailure()){
                     copyResult.folderFailures.each{k,v ->
                         msgMap.put(k.toString(), [v])

@@ -19,7 +19,9 @@ public class ObjectTreeCopier {
     protected CopyResult copyResult;
     protected Acl aclForCopies;
 
-    OsdService osdService;
+    OsdService osdService
+    LuceneService luceneService
+    String repositoryName
 
     public ObjectTreeCopier() {
 
@@ -32,15 +34,15 @@ public class ObjectTreeCopier {
      * @param createFullCopies if true, create full copies with complete metadata and content, if false,
      * create empty copies.
      */
-    public ObjectTreeCopier(UserAccount activeUser, Folder targetFolder, Validator validator, Boolean createFullCopies){
-        this(activeUser, targetFolder);
-        this.validator = validator;
-        this.createFullCopies = createFullCopies;
-    }
-
+    public ObjectTreeCopier(UserAccount activeUser, Folder targetFolder, Validator validator, Boolean createFullCopies, String repositoryName){
+        this(activeUser, targetFolder)
+        this.validator = validator
+        this.createFullCopies = createFullCopies
+        this.repositoryName = repositoryName
+    }  
+    
     public ObjectTreeCopier(UserAccount activeUser, Folder targetFolder) {
         copyResult = new CopyResult();
-
         this.activeUser = activeUser;
         this.targetFolder = targetFolder;
     }
@@ -113,6 +115,7 @@ public class ObjectTreeCopier {
         copy.setType(osd.getType());
         copy.setCmnVersion(osd.getCmnVersion());
         copy.save();
+        luceneService.addToIndex(copy, repositoryName)
         copyCache.put(osd, copy);
         return copy;
     }
@@ -203,10 +206,11 @@ public class ObjectTreeCopier {
             copy.setRoot(checkCopyCache(osd.getRoot()));
         }
 
-        copy.save();
+        copy.save(flush: true);
         osdService.copyContent(osd, copy);
         osdService.copyMetadata(osd, copy)
         osdService.copyRelations(osd, copy)
+        luceneService.addToIndex(copy, repositoryName )
         copyResult.addObject(copy);
         copyCache.put(osd, copy);
         return copy;

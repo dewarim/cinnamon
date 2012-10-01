@@ -18,27 +18,11 @@
 package cinnamon.index
 
 import cinnamon.ObjectSystemData
-import cinnamon.exceptions.CinnamonException
-import cinnamon.index.queryBuilder.RegexQueryBuilder
-import cinnamon.index.queryBuilder.WildcardQueryBuilder
+
 import groovyx.gpars.actor.DefaultActor
 import humulus.Environment
 import humulus.EnvironmentHolder
-import org.apache.lucene.analysis.Analyzer
-import org.apache.lucene.analysis.LimitTokenCountAnalyzer
-import org.apache.lucene.analysis.standard.StandardAnalyzer
-import org.apache.lucene.document.Document
-import org.apache.lucene.document.Field
-import org.apache.lucene.index.IndexReader
-import org.apache.lucene.index.Term
-import org.apache.lucene.queryParser.QueryParser
-import org.apache.lucene.search.IndexSearcher
-import org.apache.lucene.search.Query
-import org.apache.lucene.search.TermQuery
-import org.apache.lucene.search.TopDocs
-import org.apache.lucene.util.Version
-import org.apache.lucene.xmlparser.CoreParser
-import org.apache.lucene.xmlparser.ParserException
+
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import cinnamon.Folder
@@ -100,7 +84,7 @@ class LuceneBackgroundActor extends
                 ObjectSystemData.withTransaction {
                     osd = ObjectSystemData.get(osd.id)
                     log.debug("going to update osd #${osd.id}")
-                    def cmd = new IndexCommand(indexable: osd, repository: repository, type: CommandType.UPDATE_INDEX)
+                    def cmd = new IndexCommand(indexable: osd, repository: repository, type: CommandType.UPDATE_INDEX, reloadIndexable: true)
                     luceneActor.sendAndWait(cmd)
                 }
             }
@@ -111,7 +95,7 @@ class LuceneBackgroundActor extends
             folderCounter += folders.size()
             folders.each {folder ->
                 log.debug("going to update folder #${folder.id}")
-                def cmd = new IndexCommand(indexable: folder, repository: repository, type: CommandType.UPDATE_INDEX)
+                def cmd = new IndexCommand(indexable: folder, repository: repository, type: CommandType.UPDATE_INDEX, reloadIndexable: true)
                 luceneActor.sendAndWait(cmd)
             }
         }
