@@ -65,7 +65,6 @@
 <script type="text/javascript">
 	$('#objectDetails').html(' ');
     $('#searchResults').html(' ');
-//    $('#msgList').html(' ');
     $('#selectedFolder').val(${folder.id});
     $('#moveHere').val("${message(code: 'osd.move.into', args: [folder.name])}");
     $('#moveHere').removeAttr('disabled');
