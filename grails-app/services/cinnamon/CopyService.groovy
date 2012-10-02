@@ -123,6 +123,7 @@ class CopyService {
         copy.owner = user;
         copy.parent = target;
         copy.save(flush: true)
+        copy.metadata = source.metadata
         if(fixName){
             // copy only has an id after save.
             copy.name = "${source.name}_${copy.id}"
