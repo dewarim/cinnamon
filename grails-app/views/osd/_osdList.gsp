@@ -1,6 +1,7 @@
 <table>
     <tr>
         <th><g:message code="osd.id"/></th>
+        <th><g:message code="osd.preview.th"/></th>
         <th><g:message code="osd.name"/></th>
         <th><g:message code="osd.version"/></th>
         <th><g:message code="osd.format"/></th>
@@ -9,13 +10,14 @@
         <th><g:message code="osd.owner"/></th>
         <th><g:message code="osd.lockedBy"/></th>
         <g:if test="${selectedVersion}">
-            <th>---</th>
+            <th class="center">---</th>
         </g:if>
+        <th>&nbsp;</th>
     </tr>
     <g:each in="${osdList}" var="osd" status="i">
         <tr id="osd_row_${osd.id}" class="osd_row ${(i % 2) == 0 ? 'even' : 'odd'}">
        <g:render template="/osd/osdListEntry" model="[osd:osd, triggerOsd:triggerOsd,
-               selectedVersion:selectedVersion, superuserStatus:superuserStatus, user:user]"/>
+               selectedVersion:selectedVersion, superuserStatus:superuserStatus, user:user, previews:previews]"/>
         </tr>
     </g:each>
     <tr>

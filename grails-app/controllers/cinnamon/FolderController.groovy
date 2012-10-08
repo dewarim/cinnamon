@@ -138,6 +138,8 @@ class FolderController extends BaseController {
             }
             log.debug("fetch OSDs")
             def osdList = folderService.getObjects(user, folder, repositoryName, params.versions)
+            def previews = osdService.fetchPreviews(osdList, grailsApplication.config.previewSize ?: 64)
+            
             /*
             * if this folder contains the triggerOsd, we add it to the osdList even if it
             * is not of the default version (all/head/branch).
@@ -151,7 +153,7 @@ class FolderController extends BaseController {
                     session.triggerFolder = null
                 }
             }
-
+            
             Set<String> permissions
             try {
                 permissions = loadUserPermissions(folder.acl)
@@ -164,6 +166,7 @@ class FolderController extends BaseController {
             
             return render(template: folderTemplate, model: [folder: folder,
                     osdList: osdList,
+                    previews:previews,
                     permissions: permissions,
                     folders: folderService.getFoldersInside(user, folder),
                     superuserStatus: userService.isSuperuser(user),

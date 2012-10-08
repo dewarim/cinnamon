@@ -17,6 +17,7 @@ class OsdService {
     def inputValidationService
     def luceneService
     def userService
+    def imageService
 
     /**
      * Turn a collection of data objects into an XML document. Any exceptions encountered during
@@ -436,5 +437,16 @@ class OsdService {
             }
         }
         return msgMap
+    }
+    
+    Map fetchPreviews(List<ObjectSystemData> osds, Integer previewSize){
+        def previews = [:]
+        osds.each {osd ->
+            if(osd.format.contenttype.startsWith('image')){
+                def thumbnail = imageService.fetchThumbnail(osd, EnvironmentHolder.environment.dbName, previewSize, true)
+                previews.put(osd, thumbnail)
+            }
+        }
+        return previews
     }
 }

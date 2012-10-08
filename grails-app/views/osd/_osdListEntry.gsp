@@ -20,6 +20,11 @@
         </script>
     </g:if>
 </td>
+<td>
+    <g:if test="${previews?.get(osd)}">
+        <img src="data:image/jpeg;base64,${previews.get(osd)}" alt="${message(code:'osd.preview', args:[osd.name])}"/>
+    </g:if>
+</td>
 <td>${osd.name}</td>
 <td class="center">${osd.cmnVersion}</td>
 <td>${osd.format?.name ?: ''}</td>
@@ -30,10 +35,11 @@
     <g:render template="/folder/lockStatus" model="[osd: osd, superuserStatus: superuserStatus, user:user]"/>
 </td>
 <g:if test="${selectedVersion}">
-    <td>
+    <td class="center">
         <g:remoteLink controller="osd" action="newVersion"
                       update="[success: 'folderContent', failure: 'message']"
-                      params="[osd: osd.id, versions: selectedVersion]"><g:message code="osd.create.version"/>
+                      params="[osd: osd.id, versions: selectedVersion]" title="${message(code: 'osd.create.version')}">
+            <i class="icon-plus"></i>&nbsp;<i class="icon-plus"></i>
         </g:remoteLink>
     </td>
 </g:if>
