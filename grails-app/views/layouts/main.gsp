@@ -7,6 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <r:require modules="jquery"/>
+<r:require modules="bootstrap"/>
 <script type="text/javascript">
     function limitText(limitField, limitNum) {
         if (limitField.value.length > limitNum) {
