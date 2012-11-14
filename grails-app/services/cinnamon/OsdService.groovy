@@ -442,7 +442,7 @@ class OsdService {
     Map fetchPreviews(List<ObjectSystemData> osds, Integer previewSize){
         def previews = [:]
         osds.each {osd ->
-            if(osd.format.contenttype.startsWith('image')){
+            if(osd.format?.contenttype?.startsWith('image')){
                 def thumbnail = imageService.fetchThumbnail(osd, EnvironmentHolder.environment.dbName, previewSize, true)
                 previews.put(osd, thumbnail)
             }
