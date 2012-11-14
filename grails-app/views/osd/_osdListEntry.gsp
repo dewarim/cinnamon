@@ -27,8 +27,8 @@
 </td>
 <td>${osd.name}</td>
 <td class="center">${osd.cmnVersion}</td>
-<td>${osd.format?.name ?: ''}</td>
-<td>${osd.type.name}</td>
+<td><g:message code="${osd.format?.name ?: ''}"/></td>
+<td><g:message code="${osd.type.name}"/></td>
 <td>${osd.contentSize ?: ''}</td>
 <td>${osd.owner?.name ?: ''}</td>
 <td id="osd_row_lock_${osd.id}">
@@ -44,7 +44,7 @@
     </td>
 </g:if>
 <td id="addToSelection_${osd.id}">
-    <a href="#" class="addToSelectionLink" onclick="addToSelection(${osd.id}, '${osd.name.encodeAsHTML()}');
+    <a href="#" class="addToSelectionLink" onclick="addToSelection(${osd.id}, '${osd.name}');
     $('#addToSelection_${osd.id}').hide();
     return false;">
         <g:message code="osd.select"/></a>
