@@ -19,7 +19,7 @@
             <td>
                 <span class="addToFolderSelection_${folder.id}">
                     <a class="addToFolderSelectionLink" href="#"
-                       onclick="addToFolderSelection(${folder.id}, '${folder.name.encodeAsHTML()}');
+                       onclick="addToFolderSelection(${folder.id}, '${folder.name}');
                        $('.addToFolderSelection_${folder.id}').hide();
                        return false;">
                         <g:message code="folder.select"/>

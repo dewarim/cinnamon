@@ -69,7 +69,7 @@
                 </g:remoteLink>
             </span>
             <span class="addToFolderSelection_${folder.id}">
-                <a href="#" onclick="addToFolderSelection(${folder.id}, '${folder.name.encodeAsHTML()}');
+                <a href="#" onclick="addToFolderSelection(${folder.id}, '${folder.name}');
                 $('.addToFolderSelection_${folder.id}').hide();
                 return false;">
                     <g:message code="folder.select"/>
