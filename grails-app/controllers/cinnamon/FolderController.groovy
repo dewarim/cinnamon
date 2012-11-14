@@ -2,10 +2,8 @@ package cinnamon
 
 import humulus.EnvironmentHolder
 
-import cinnamon.exceptions.IgnorableException
 import grails.plugins.springsecurity.Secured
 import cinnamon.global.PermissionName
-import cinnamon.i18n.Language
 import cinnamon.exceptions.CinnamonException
 import cinnamon.global.Constants
 import cinnamon.utils.ZippedFolder
@@ -14,10 +12,13 @@ import org.dom4j.DocumentHelper
 import org.dom4j.Element
 import cinnamon.index.LuceneResult
 import cinnamon.index.SearchableDomain
+import grails.gsp.PageRenderer
 
 @Secured(["isAuthenticated()"])
 class FolderController extends BaseController {
-
+    
+    PageRenderer groovyPageRenderer;
+    
     def index() {
         try {
             Folder rootFolder = Folder.findRootFolder()
@@ -533,7 +534,8 @@ class FolderController extends BaseController {
     def searchSimple () {
         def query = params.query
         try {
-            LuceneResult result = luceneService.search(query, session.repositoryName, null)
+            def xmlQuery = groovyPageRenderer.render(template:'/search/simpleSearchQuery', model:[query:query])
+            LuceneResult result = luceneService.searchXml(xmlQuery, session.repositoryName, null)
             def itemMap = result.filterResultToMap(null, itemService)
             log.debug("itemMap: $itemMap")
             def folders = itemMap.get(SearchableDomain.FOLDER.name)
