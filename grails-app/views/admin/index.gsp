@@ -25,8 +25,6 @@
         </div>
     </g:if>
 
-    <h2><g:message code="admin.server.objects"/></h2>
-
     <div class="object_controllers main_index">
         <h3><g:message code="server.objects"/></h3>
         <ul>
