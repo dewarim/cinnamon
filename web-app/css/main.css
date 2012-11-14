@@ -132,7 +132,7 @@ input:focus, select:focus, textarea:focus {
 }
 
 #TITLE{
-	position: absolute;  top:7px; left:50%;
+	position: absolute;  top:18px; left:30%;
 	color:white;
 	font-size:7ex;
 }
