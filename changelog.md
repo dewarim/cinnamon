@@ -1,5 +1,20 @@
 # Changelog for Cinnamon 3
 
+## 0.2.13
+
+* Fixed link to codeMirror-UI
+* Removed double-encoding of content in several places.
+* Try to translate format / type name in object lists.
+* Fixed: Simple search field now searches on name and content field in Lucene index.
+* Updated jaxen library.
+
+## 0.2.3
+
+* Changed/Fixed: setMetadata now deletes MetaSets that are no longer included in the metadata.
+                 Previous behaviour was to silently keep those metasets. Now, setMetadata expects
+                 you to supply the whole metadata (or use addMetaset-method for specific metasets).
+* Improved: parameter handling in RelationTypeController.
+ 
 ## 0.2.2
 
 * Fixed: create OSD object now works again.
