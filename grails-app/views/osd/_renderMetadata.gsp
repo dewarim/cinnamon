@@ -1,8 +1,8 @@
 <div class="rendered_metadata">
 	<g:form name="nullForm_${osd.id}">
-		<g:textArea id="renderText_${osd.id}" name="render_metadata" rows="6" cols="20">${osd.metadata}</g:textArea>
+		<textArea id="renderText_${osd.id}" name="render_metadata" rows="6" cols="20">${osd.metadata}</textArea>
 		<script type="text/javascript">
-            var uiOptions = { path : '<g:resource dir="js/CodeMirrorUI/" file="js" />/', searchMode: 'popup' };
+            var uiOptions = { path : '<g:resource dir="js/codemirror-ui/" file="js" />/', searchMode: 'popup' };
             var cmOptions = {
 						mode:'application/xml',
 						readOnly:true
