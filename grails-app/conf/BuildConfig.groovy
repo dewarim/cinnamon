@@ -47,7 +47,7 @@ grails.project.dependency.resolution = {
         runtime('org.apache.lucene:lucene-queries:3.6.1')
         runtime 'postgresql:postgresql:9.1-901.jdbc4'
         runtime 'dom4j:dom4j:1.6.1'
-        runtime 'jaxen:jaxen:1.1-beta-6'
+        runtime 'jaxen:jaxen:1.1.4'
         compile 'org.codehaus.gpars:gpars:1.0-beta-3'
         runtime 'cinnamon:humulus:0.1.1'
         compile("org.codehaus.groovy.modules.http-builder:http-builder:0.5.2"){
