@@ -3,7 +3,7 @@
     <thead>
     <tr>
 
-        <g:sortableColumn property="id" title="${message(code:'language.id')}"/>
+        <g:sortableColumn property="id" title="${message(code:'id')}"/>
 
         <g:sortableColumn property="isoCode" title="${message(code:'language.isoCode').encodeAsHTML()}"/>
         <td><g:message code="language.metadata"/></td>

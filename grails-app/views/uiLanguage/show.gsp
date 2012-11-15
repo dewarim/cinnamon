@@ -23,7 +23,7 @@
 
                     
                         <tr class="prop">
-                            <td class="name"><g:message code="uiLanguage.id"/></td>
+                            <td class="name"><g:message code="id"/></td>
                             
                             <td class="value">${fieldValue(bean:language, field:'id')}</td>
                             

@@ -28,7 +28,7 @@
 
 				<tr class="prop">
 					<td class="name">
-						<label for="groupId"><g:message code="group.id"/></label>
+						<label for="groupId"><g:message code="id"/></label>
 					</td>
 					<td class="value ${hasErrors(bean: group, field: 'id', 'errors')}">
 						<input type="text" disabled="disabled" name="id" id="groupId" value="${fieldValue(bean: group, field: 'id')}"/>

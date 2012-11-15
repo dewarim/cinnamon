@@ -1,6 +1,6 @@
 <table>
     <tr>
-        <th><g:message code="osd.id"/></th>
+        <th><g:message code="id"/></th>
         <th><g:message code="osd.preview.th"/></th>
         <th><g:message code="osd.name"/></th>
         <th><g:message code="osd.version"/></th>

@@ -31,7 +31,7 @@
                     <tbody>
                     
                         <tr class="prop">
-                            <td class="name"><g:message code="indexType.id.label" /></td>
+                            <td class="name"><g:message code="id" /></td>
                             
                             <td class="value">${fieldValue(bean: indexTypeInstance, field: "id")}</td>
                             

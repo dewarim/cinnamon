@@ -132,7 +132,7 @@ class FolderService {
     // TODO: looks weird. Where is this used?
     Boolean folderExists(Folder folder){
         if(folder == null){
-            throw new CinnamonException("error.folder.not_found");
+            throw new CinnamonException("error.folder.not.found");
         }
         return folderExists(folder.id)
     }
@@ -147,7 +147,7 @@ class FolderService {
         }
 
         if (folder == null) {
-            throw new CinnamonException("error.folder.not_found");
+            throw new CinnamonException("error.folder.not.found");
         }
         if(! checkPermissions(folder, userService.user, [PermissionName.DELETE_FOLDER])){
             throw new CinnamonException("error.delete.denied")

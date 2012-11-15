@@ -30,7 +30,7 @@
         <thead>
         <tr>
 
-            <g:sortableColumn property="id" title="${message(code: 'acl.id')}"/>
+            <g:sortableColumn property="id" title="${message(code: 'id')}"/>
 
             <g:sortableColumn property="description" title="${message(code: 'acl.description')}"/>
 
@@ -67,7 +67,7 @@
         <div class="buttons">
             <g:form name="add.acl.form" action="addAcl" controller="group">
                 <input type="hidden" name="id" value="${group.id}"/>
-                <g:select from="${addList}" name="acl_list" optionValue="name" optionKey="id"></g:select>
+                <g:select from="${addList}" name="acl_list" optionValue="name" optionKey="id"/>
 
                 <span class="button"><g:actionSubmit value="${message(code: 'acl.add_to_group')}"
                                                      action="addAcl"/></span>

@@ -3,7 +3,7 @@
     <tbody>
 
     <tr class="prop">
-        <td class="name"><g:message code="relationType.id"/></td>
+        <td class="name"><g:message code="id"/></td>
 
         <td class="value">${fieldValue(bean: relationType, field: 'id')}</td>
 

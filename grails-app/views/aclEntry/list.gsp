@@ -24,7 +24,7 @@
         <thead>
         <tr>
 
-            <g:sortableColumn property="id" title="${message(code: 'aclEntry.id')}"/>
+            <g:sortableColumn property="id" title="${message(code: 'id')}"/>
             <g:sortableColumn property="acl.name" title="${message(code: 'aclEntry.acl')}"/>
             <g:sortableColumn property="group.name" title="${message(code: 'aclEntry.group')}"/>
 

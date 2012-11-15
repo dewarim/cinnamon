@@ -2,7 +2,7 @@
 <table>
     <thead>
     <tr>
-        <g:sortableColumn property="id" title="${message(code: 'indexGroup.id.label', default: 'Id')}"/>
+        <g:sortableColumn property="id" title="${message(code: 'id', default: 'Id')}"/>
         <g:sortableColumn property="name" title="${message(code: 'indexGroup.name.label', default: 'Name')}"/>
     </tr>
     </thead>

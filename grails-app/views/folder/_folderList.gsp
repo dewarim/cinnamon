@@ -1,7 +1,7 @@
 <table>
     <thead>
     <tr>
-        <th><g:message code="folder.id"/></th>
+        <th><g:message code="id"/></th>
         <th><g:message code="folder.name"/></th>
         <th><g:message code="folder.type"/></th>
         <th><g:message code="folder.owner"/></th>

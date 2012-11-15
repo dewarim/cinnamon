@@ -1,7 +1,7 @@
 <table>
     <thead>
     <tr>
-        <g:sortableColumn property="id" title="${message(code:'relationResolver.id')}"/>
+        <g:sortableColumn property="id" title="${message(code:'id')}"/>
         <g:sortableColumn property="name" title="${message(code:'relationResolver.name')}"/>
         <g:sortableColumn property="config" title="${message(code:'relationResolver.config')}"/>
         <g:sortableColumn property="resolverClass" title="${message(code:'relationResolver.resolverClass')}"/>

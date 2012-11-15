@@ -30,7 +30,7 @@
             <tbody>
 
             <tr class="prop">
-                <td class="name"><g:message code="format.id"/></td>
+                <td class="name"><g:message code="id"/></td>
 
                 <td class="value">${fieldValue(bean: format, field: 'id')}</td>
 

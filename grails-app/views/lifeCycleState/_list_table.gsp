@@ -1,7 +1,7 @@
 <table>
     <thead>
     <tr>
-        <g:sortableColumn property="id" title="${message(code:'lcs.id')}"/>
+        <g:sortableColumn property="id" title="${message(code:'id')}"/>
         <g:sortableColumn property="name" title="${message(code:'lcs.name')}"/>
         <g:sortableColumn property="stateClass" title="${message(code:'lcs.stateClass')}"/>
         <g:sortableColumn property="lifeCycle" title="${message(code:'lcs.lifeCycle')}"/>

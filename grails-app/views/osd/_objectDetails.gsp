@@ -8,7 +8,7 @@ return false;" title="${message(code: 'table.hide')}">
 </a>
 <table>
     <tr class="odd">
-        <td><g:message code="osd.id"/></td>
+        <td><g:message code="id"/></td>
         <td>${osd.id}</td>
         <td>&nbsp;</td>
     </tr>

@@ -3,7 +3,7 @@
     <thead>
     <tr>
 
-        <g:sortableColumn property="id" title="${message(code:'uiLanguage.id')}"/>
+        <g:sortableColumn property="id" title="${message(code:'id')}"/>
 
         <g:sortableColumn property="isoCode" title="${message(code:'uiLanguage.isoCode').encodeAsHTML()}"/>
 

@@ -33,7 +33,7 @@
             <tbody>
 
             <tr class="prop">
-                <td class="name"><g:message code="group.id"/></td>
+                <td class="name"><g:message code="id"/></td>
 
                 <td class="value">${fieldValue(bean: group, field: 'id')}</td>
 

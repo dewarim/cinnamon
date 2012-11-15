@@ -32,7 +32,7 @@
             <tbody>
 
             <tr class="prop">
-                <td class="name"><g:message code="objectType.id"/></td>
+                <td class="name"><g:message code="id"/></td>
 
                 <td class="value">${fieldValue(bean: objectType, field: 'id')}</td>
 

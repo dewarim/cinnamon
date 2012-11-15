@@ -1,7 +1,7 @@
 <table>
     <thead>
     <tr>
-        <g:sortableColumn action="index" property="id" title="${message(code:'changeTrigger.id')}"/>
+        <g:sortableColumn action="index" property="id" title="${message(code:'id')}"/>
         <g:sortableColumn action="index" property="controller" title="${message(code:'changeTrigger.controller')}"/>
         <g:sortableColumn action="index" property="action" title="${message(code:'changeTrigger.action')}"/>
         <g:sortableColumn action="index" property="triggerType" title="${message(code:'changeTrigger.triggerType')}"/>

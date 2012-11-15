@@ -3,7 +3,7 @@
     <thead>
     <tr>
 
-        <g:sortableColumn property="id" title="${message(code:'folderType.id')}"/>
+        <g:sortableColumn property="id" title="${message(code:'id')}"/>
 
         <g:sortableColumn property="name" title="${message(code:'folderType.name')}"/>
 

@@ -7,7 +7,8 @@ class PermissionService {
     Permission fetch(String name) {
         Permission p = Permission.findByName(name)
         if(! p){
-            throw new CinnamonException("error.permission.not_found", name);
+            throw new CinnamonException("error.permission.not.found", name);
         }
+        return p
     }
 }

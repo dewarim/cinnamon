@@ -28,7 +28,7 @@
                     <tbody>
                     
                         <tr class="prop">
-                            <td class="name"><g:message code="indexItem.id.label" default="Id" /></td>
+                            <td class="name"><g:message code="id" default="Id" /></td>
                             
                             <td class="value">${fieldValue(bean: indexItemInstance, field: "id")}</td>
                             

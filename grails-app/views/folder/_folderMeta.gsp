@@ -31,7 +31,7 @@
 		</td>
 	</tr>
 	<tr>
-		<td><g:message code="folder.id"/></td>
+		<td><g:message code="id"/></td>
 		<td colspan="2">${folder.id}</td>
 	</tr>
 	<tr>

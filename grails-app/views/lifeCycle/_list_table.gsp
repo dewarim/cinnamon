@@ -2,7 +2,7 @@
 <table>
 	<thead>
 	<tr>
-		<g:sortableColumn property="id" title="${message(code:'lifeCycle.id')}"/>
+		<g:sortableColumn property="id" title="${message(code:'id')}"/>
 		<g:sortableColumn property="name" title="${message(code:'lifeCycle.name')}"/>
 		<g:sortableColumn property="defaultState" title="${message(code:'lifeCycle.defaultState')}"/>
 		<g:sortableColumn property="states" title="${message(code:'lifeCycle.states')}"/>
