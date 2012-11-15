@@ -19,7 +19,7 @@ class EncodedFieldIndexer extends DescendingStringIndexer {
             return ''
         }
         textContent = textContent.trim().decodeHTML()
-        if (! textContent.matches('^<?.*|^<!.*')) {
+        if (! textContent.matches('^<(?:?|!DOCTYPE|ENTITY).*')) {
             log.debug("encountered xml fragment")
             // if the textContent is only an XML / XHTML fragment without header, add a simple xml tag
             // before parsing. Otherwise, we may get in trouble with 
