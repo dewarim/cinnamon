@@ -1,5 +1,9 @@
 # Changelog for Cinnamon 3
 
+## 0.2.15
+
+* Added EncodedFieldIndexer to index XML-encoded XML/XHTML fragments with Lucene.
+
 ## 0.2.14
 
 * Increased visibility of methods in DefaultIndexer (and child classes).  
