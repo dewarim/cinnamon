@@ -436,7 +436,7 @@ class FolderService {
      * Add a folder type's config to the map folderConfig if necessary.
      * <em>This method changes the folderConfig map</em>.
      * If xml configuration field does not supply a valid "template" element,
-     * the defaultController/defaultAction/defaultTemplate values from the app config
+     * the defaultController/defaultFolderContentAction/defaultTemplate values from the app config
      * are used (and if those are not found, 
      * the base default of "folder", "fetchFolderContent", "/folder/folderContent" is used.
      * 
@@ -461,7 +461,7 @@ class FolderService {
             }
             else{
                 fc.controller = grailsApplication.config.defaultController ?: 'folder'
-                fc.action = grailsApplication.config.defaultAction ?: 'fetchFolderContent'
+                fc.action = grailsApplication.config.defaultFolderContentAction ?: 'fetchFolderContent'
                 fc.template = grailsApplication.config.defaultTemplate ?: '/folder/folderContent'
                 folderConfigs.put(type, fc)
             }
