@@ -1,5 +1,10 @@
 # Changelog for Cinnamon 3
 
+## 0.2.14
+
+* Increased visibility of methods in DefaultIndexer (and child classes).  
+  This enables other packages to inherit from the default indexer classes of Cinnamon.
+
 ## 0.2.13
 
 * Fixed link to codeMirror-UI
