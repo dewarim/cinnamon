@@ -21,7 +21,7 @@ public class DescendingCompleteStringIndexer extends CompleteStringIndexer{
 		store = Store.NO;
 	}
 	
-	protected String convertNodeToString(Node node){
+	public String convertNodeToString(Node node){
 		StringBuilder builder = descendIntoNodes(node);
 		return builder.toString().trim().toLowerCase();
 	}

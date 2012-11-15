@@ -17,7 +17,7 @@ import org.dom4j.Node;
  */
 public class ReverseStringIndexer extends DefaultIndexer{
 	
-	String convertNodeToString(Node node){
+	public String convertNodeToString(Node node){
 		String value = node.getText();
 		StringBuilder builder = new StringBuilder(value);
 		return builder.reverse().toString();		

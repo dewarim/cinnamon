@@ -19,7 +19,7 @@ public class CompleteStringIndexer extends DefaultIndexer {
 		store = Store.NO;
 	}
 	
-	protected String convertNodeToString(Node node){
+	public String convertNodeToString(Node node){
 		String stringValue = node.getText();
 		if(stringValue == null){
 			return null;

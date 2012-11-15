@@ -44,7 +44,7 @@ public class DecimalXPathIndexer extends DefaultIndexer{
 	  return formatter.format(n);
 	}
 	
-	String convertNodeToString(Node node){
+	public String convertNodeToString(Node node){
 		String number = node.getStringValue();
 		log.debug("input to decimal conversion: "+number);
 		try{			

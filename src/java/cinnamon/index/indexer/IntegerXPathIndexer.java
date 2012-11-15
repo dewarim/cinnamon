@@ -29,7 +29,7 @@ public class IntegerXPathIndexer extends DefaultIndexer{
 	  return formatter.format(n);
 	}
 	
-	protected String convertNodeToString(Node node){
+	public String convertNodeToString(Node node){
 		String myLong = node.getStringValue();
 		try{
 			// NP-check on myLong not needed because dom4j returns at least "".

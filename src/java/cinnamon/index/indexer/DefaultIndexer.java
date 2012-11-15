@@ -59,12 +59,12 @@ public class DefaultIndexer implements Indexer {
 		}
 	}
 
-	String convertNodeToString(Node node){
+	public String convertNodeToString(Node node){
 		return node.getText();
 	}
 	
 	@SuppressWarnings("unchecked")
-	StringBuilder descendIntoNodes(Node node){
+	public StringBuilder descendIntoNodes(Node node){
 		List<Node> children = node.selectNodes("descendant::*");
 		StringBuilder result = new StringBuilder();
 		appendNonEmptyText(node, result);
@@ -76,10 +76,10 @@ public class DefaultIndexer implements Indexer {
 	
 	/**
 	 * If a node contains non-whitespace text, add it to the builder, followed by one whitespace.
-	 * @param node
-	 * @param builder
+	 * @param node the node from which the text content is read
+	 * @param builder the StringBuilder to which the text is appended (that is, this parameter object will be modified)
 	 */
-	void appendNonEmptyText(Node node, StringBuilder builder){
+	public void appendNonEmptyText(Node node, StringBuilder builder){
 		String text = node.getText();
 		if(text != null && text.trim().length() > 0){
 			builder.append(node.getText());

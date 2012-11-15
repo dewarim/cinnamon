@@ -11,7 +11,7 @@ import org.dom4j.Node;
  */
 public class DescendingReverseStringIndexer extends ReverseStringIndexer{
 	
-	String convertNodeToString(Node node){
+	public String convertNodeToString(Node node){
 		StringBuilder builder = descendIntoNodes(node);		
 		return builder.reverse().toString().trim();		
 	}

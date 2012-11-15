@@ -22,7 +22,7 @@ public class TimeXPathIndexer extends DefaultIndexer{
 	 * "2009-10-01T16:10:30" into an indexable string,
 	 * omitting the date.
 	 */
-	String convertNodeToString(Node node){
+    public String convertNodeToString(Node node){
 		String val = node.getStringValue();		
 		log.debug("Trying to index: "+val);
 		

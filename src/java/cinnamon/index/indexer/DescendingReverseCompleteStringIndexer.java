@@ -13,7 +13,7 @@ import org.dom4j.Node;
  */
 public class DescendingReverseCompleteStringIndexer extends ReverseCompleteStringIndexer{
 	
-	protected String convertNodeToString(Node node){
+	public String convertNodeToString(Node node){
 		StringBuilder builder = descendIntoNodes(node);		
 		return builder.reverse().toString().trim();		
 	}
