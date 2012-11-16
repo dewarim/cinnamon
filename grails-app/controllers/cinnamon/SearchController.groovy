@@ -13,28 +13,28 @@ import grails.plugins.springsecurity.Secured
 @Secured(["isAuthenticated()"])
 class SearchController extends BaseController {
 
-    def searchObjects(){
-        try{
-        Set<XmlConvertable> resultStore;        
-        resultStore = fetchSearchResults(ObjectSystemData.class);
-        def doc = DocumentHelper.createDocument()
-        Element root = doc.addElement("objects");
-        root.addAttribute("total-results", String.valueOf(resultStore.size()));
+    def searchObjects() {
+        try {
+            Set<XmlConvertable> resultStore;
+            resultStore = fetchSearchResults(ObjectSystemData.class);
+            def doc = DocumentHelper.createDocument()
+            Element root = doc.addElement("objects");
+            root.addAttribute("total-results", String.valueOf(resultStore.size()));
 
-        if (params.containsKey("page_size")) {
-            addPagedResultsToElement(root, resultStore);
-        } else {
-            for (XmlConvertable conv : resultStore) {
-                conv.toXmlElement(root);
+            if (params.containsKey("page_size")) {
+                addPagedResultsToElement(root, resultStore);
+            } else {
+                for (XmlConvertable conv : resultStore) {
+                    conv.toXmlElement(root);
+                }
             }
-        }
 
             addPathFolders(doc);
             log.debug("searchObjects result: \n${doc.asXML()}")
             return render(contentType: 'application/xml', text: doc.asXML())
         }
-        catch (Exception e){
-            log.debug("failed searchObjects: ",e)
+        catch (Exception e) {
+            log.debug("failed searchObjects: ", e)
             renderExceptionXml(e)
         }
     }
@@ -52,7 +52,7 @@ class SearchController extends BaseController {
 
         int pageSize = ParamParser.parseLong(params.page_size, "error.param.max_results").intValue();
         int page = 1;
-        if (params.page ){
+        if (params.page) {
             page = ParamParser.parseLong(params.page, "error.param.page").intValue();
         }
 
@@ -117,16 +117,16 @@ class SearchController extends BaseController {
     protected Set<XmlConvertable> fetchSearchResults(Class<? extends Indexable> indexable) {
         log.debug("start search");
         def result
-        if (params.xmlQuery){
+        if (params.xmlQuery) {
             result = luceneService.searchXml(params.query, session.repositoryName, null)
         }
-        else{
+        else {
             result = luceneService.search(params.query, session.repositoryName, null)
         }
         def itemMap = result.filterResultToMap(null, itemService)
         log.debug("Received search results, now filtering");
         Validator val = new Validator(userService.user);
-        
+
         log.debug("before filterResults");
         HashSet<XmlConvertable> resultSet = new HashSet<XmlConvertable>()
         log.debug("keys in itemMap: ${itemMap.keySet()}")
