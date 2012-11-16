@@ -1,8 +1,17 @@
 # Changelog for Cinnamon 3
 
+## 0.2.16
+
+* German translation of message ids.
+* Improved text of some message ids.
+* Fixed broken regex in EncodedFieldIndexer.
+
 ## 0.2.15
 
 * Added EncodedFieldIndexer to index XML-encoded XML/XHTML fragments with Lucene.
+* Separated configurable defaultAction and defaultFolderContentAction.  
+    * The defaultAction should be used for redirect links.
+    * The defaultFolderContentAction should be used in AJAX-related code to help reload the folder content view in a page.     
 
 ## 0.2.14
 
