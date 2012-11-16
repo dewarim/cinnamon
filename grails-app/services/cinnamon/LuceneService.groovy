@@ -95,6 +95,9 @@ class LuceneService {
                 query: query, domain: domain)
         LuceneResult result = lucene.sendAndWait(cmd)
         log.debug("LuceneService received: ${result}")
+        if(result.failed){
+            log.debug("search error: ${result.errorMessage}")
+        }
         return result
     }
     
