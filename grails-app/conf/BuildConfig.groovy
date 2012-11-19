@@ -70,7 +70,7 @@ grails.project.dependency.resolution = {
         //runtime ":cached-resources:1.0"
         //runtime ":yui-minify-resources:0.1.4"
 
-        runtime 'cinnamon:cinnamon-db:0.2.36'
+        runtime 'cinnamon:cinnamon-db:0.2.37'
         compile ":remote-pagination:0.3"
         test (':spock:0.6'){
             excludes: 'groovy'
