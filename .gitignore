@@ -1,0 +1,13 @@
+*.idea/**
+*.svn*
+*.settings*
+*.class
+target/**
+*~
+.svn*
+.svn
+.classpath
+*.iml
+plugin.xml
+cinnamon-config.groovy
+grails-cinnamon*.zip
