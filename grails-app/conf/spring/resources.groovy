@@ -87,7 +87,8 @@ beans = {
 //    }
 
     repositoryLoginFilter(RepositoryLoginFilter){
-        authenticationManager = ref('authenticationManager')       
+        authenticationManager = ref('authenticationManager')
+        grailsApplication = ref('grailsApplication')
     }
 
     cinnamonAuthenticationDetailsSource(CinnamonAuthenticationDetailsSource){
