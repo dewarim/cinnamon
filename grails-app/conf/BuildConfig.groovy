@@ -49,7 +49,7 @@ grails.project.dependency.resolution = {
         runtime 'dom4j:dom4j:1.6.1'
         runtime 'jaxen:jaxen:1.1.4'
         compile 'org.codehaus.gpars:gpars:1.0-beta-3'
-        runtime 'cinnamon:humulus:0.1.1'
+        runtime 'cinnamon:humulus:0.1.2'
         compile("org.codehaus.groovy.modules.http-builder:http-builder:0.5.2"){
             excludes "groovy"
         }
