@@ -53,6 +53,7 @@ grails.project.dependency.resolution = {
         compile("org.codehaus.groovy.modules.http-builder:http-builder:0.5.2"){
             excludes "groovy"
         }
+        test "org.spockframework:spock-grails-support:0.7-groovy-2.0"
     }
 
     plugins {
@@ -70,10 +71,11 @@ grails.project.dependency.resolution = {
         //runtime ":cached-resources:1.0"
         //runtime ":yui-minify-resources:0.1.4"
 
-        runtime 'cinnamon:cinnamon-db:0.2.37'
+        runtime 'cinnamon:cinnamon-db:0.3.0'
         compile ":remote-pagination:0.3"
-        test (':spock:0.6'){
-            excludes: 'groovy'
+        test (':spock:0.7'){
+            exclude "spock-grails-support"
+//            excludes: 'groovy'
         }
     }
 }
