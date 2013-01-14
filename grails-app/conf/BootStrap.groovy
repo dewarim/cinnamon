@@ -35,6 +35,11 @@ class BootStrap {
 
         // migrate legacy data:
         log.debug("migrating metadata to metasets")
+        if(! grailsApplication.config.doMigrate){
+            log.debug("Do not migrate Cinnamon 2 legacy data.")
+            return
+        }
+        log.debug("migrating metadata to metasets")        
         def osds = ObjectSystemData.executeQuery("select o.id, o.metadata from ObjectSystemData o where length(o.metadata) > 9")
         log.debug("found: ${osds.size()} OSDs")
         osds.each {row ->
