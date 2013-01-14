@@ -105,7 +105,8 @@ log4j = {
             'org.grails.plugin.resource',
             'grails.app.taglib.org.grails.plugin.resource',
             'org.codehaus.groovy.grails.context',
-            'org.apache.catalina'
+            'org.apache.catalina',
+            'org.codehaus.groovy.grails.io'
     warn 'cinnamon.RequestTicketAuthenticationFilter'
     warn 'cinnamon.debug.ProviderManager'
     warn 'humulus.RepositoryLoginFilter'
