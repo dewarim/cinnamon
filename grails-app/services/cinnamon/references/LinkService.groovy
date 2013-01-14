@@ -22,7 +22,8 @@ public class LinkService {
     public Link createLink(ObjectSystemData osd, Folder parent, Acl acl, UserAccount owner, LinkResolver resolver) {
         def link = Link.findByOsdAndParent(osd, parent)
         if (link == null) {
-            return new Link(LinkType.OBJECT, resolver, owner, parent, null, osd, acl);
+            link = new Link(LinkType.OBJECT, resolver, owner, parent, null, osd, acl);
+            link.save()
         }
         return link
     }
@@ -30,30 +31,31 @@ public class LinkService {
     public Link createLink(Folder folder, Folder parent, Acl acl, UserAccount owner, LinkResolver resolver) {
         def link = Link.findByFolderAndParent(folder, parent)
         if (link == null) {
-            return new Link(LinkType.FOLDER, resolver, owner, parent, folder, null, acl);
+            link = new Link(LinkType.FOLDER, resolver, owner, parent, folder, null, acl);
+            link.save()
         }
         return link
     }
 
-    public Link updateLink(Link link, Map<String, String> cmd) {
-        if (cmd.containsKey("acl_id")) {
-            Acl acl = Acl.get(ParamParser.parseLong(cmd.get("acl_id"), "error.param.acl_id"));
+    public Link updateLink(Link link, params) {
+        if (params.containsKey("acl_id")) {
+            Acl acl = Acl.get(ParamParser.parseLong(params.get("acl_id"), "error.param.acl_id"));
             link.setAcl(acl);
         }
-        if (cmd.containsKey("parent_id")) {
-            Folder parent = Folder.get(ParamParser.parseLong(cmd.get("parent_id"), "error.param.parent_id"));
+        if (params.containsKey("parent_id")) {
+            Folder parent = Folder.get(ParamParser.parseLong(params.get("parent_id"), "error.param.parent_id"));
             link.setParent(parent);
         }
-        if (cmd.containsKey("owner_id")) {
-            UserAccount owner = UserAccount.get(ParamParser.parseLong(cmd.get("owner_id"), "error.param.owner_id"));
+        if (params.containsKey("owner_id")) {
+            UserAccount owner = UserAccount.get(ParamParser.parseLong(params.get("owner_id"), "error.param.owner_id"));
             link.setOwner(owner);
         }
-        if (cmd.containsKey("resolver")) {
-            LinkResolver resolver = LinkResolver.valueOf(cmd.get("resolver"));
+        if (params.containsKey("resolver")) {
+            LinkResolver resolver = LinkResolver.valueOf(params.get("resolver"));
             link.setResolver(resolver);
         }
-        if (cmd.containsKey("object_id") && link.getType() == LinkType.OBJECT){
-            ObjectSystemData newOsd = ObjectSystemData.get(cmd.get("object_id"));
+        if (params.containsKey("object_id") && link.getType() == LinkType.OBJECT){
+            ObjectSystemData newOsd = ObjectSystemData.get(params.get("object_id"));
             if(newOsd == null || newOsd.getRoot() != link.getOsd().getRoot()){
                 throw new CinnamonException("error.param.object_id");
             }
@@ -67,7 +69,13 @@ public class LinkService {
         return link;
     }
 
-    public void renderLinkWithinTarget(Link link, Document doc) {
+    /**
+     * Add a "link" element to the given doc which contains a serialized link.
+     * @param link the 
+     * @param doc
+     * @return
+     */
+    public Document renderLinkWithinTarget(Link link, Document doc) {
         Element root = doc.addElement("link");
         Element linkParent;
 
@@ -80,6 +88,7 @@ public class LinkService {
             linkParent = (Element) root.selectSingleNode("object");
         }
         addLinkToElement(link, linkParent);
+        return doc
     }
 
     public Collection<Link> findLinksTo(Folder folder) {

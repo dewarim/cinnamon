@@ -1,5 +1,7 @@
 package cinnamon
 
+import cinnamon.references.Link
+import cinnamon.references.LinkType
 import humulus.EnvironmentHolder
 
 import grails.plugins.springsecurity.Secured
@@ -469,6 +471,23 @@ class FolderController extends BaseController {
             folders.each {f ->
                 f.toXmlElement(root)
             }
+
+            log.debug("Looking for links.");
+            Collection<Link> links = linkService.findLinksIn(Folder.get(params.parentid), LinkType.FOLDER);
+            log.debug("Found "+links.size()+" links.");
+            for(Link link : links){
+                try{
+                    val.validatePermission(link.getAcl(), PermissionName.BROWSE_FOLDER);
+                    val.validatePermission(link.getFolder().getAcl(), PermissionName.BROWSE_FOLDER);
+                }
+                catch (Exception e){
+                    log.debug("",e);
+                    continue;
+                }
+                Element folderNode = link.getFolder().toXmlElement(root);
+                linkService.addLinkToElement(link, folderNode);
+            }
+            
             return render(contentType: 'application/xml', text: doc.asXML())
         }
         catch (Exception e) {

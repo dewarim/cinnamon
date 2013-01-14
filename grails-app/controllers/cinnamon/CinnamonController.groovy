@@ -184,6 +184,10 @@ class CinnamonController extends BaseController {
             case 'getfolderbypath' : forward(controller:'folder', action: 'fetchFolderByPath');break
             case 'getobjects' : forward(controller:'osd', action: 'fetchObjects');break
             case 'getfolder': forward(controller: 'folder', action: 'fetchFolderXml');break
+            case 'createlink': forward(controller: 'link', action: 'createLink');break
+            case 'updatelink': forward(controller: 'link', action: 'updateLink');break
+            case 'getlink': forward(controller: 'link', action: 'getLink');break
+            case 'deletelink': forward(controller: 'link', action: 'deleteLink');break
             
             default: log.debug("*********************************************************************************\n"+
                     "$myAction has no legacy action => forward to index"); forward(action: 'index')

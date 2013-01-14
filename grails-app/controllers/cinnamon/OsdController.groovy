@@ -1,5 +1,9 @@
 package cinnamon
 
+import cinnamon.references.Link
+import cinnamon.references.LinkType
+import cinnamon.utils.ParamParser
+import org.dom4j.Element
 import org.springframework.web.multipart.MultipartFile
 import grails.plugins.springsecurity.Secured
 import cinnamon.global.Conf
@@ -477,12 +481,35 @@ class OsdController extends BaseController {
             Validator val = new Validator(user);
             results = val.filterUnbrowsableObjects(results);
             Document doc = osdService.generateQueryObjectResultDocument(results);
+            addLinksToObjectQuery(params.parentid, doc, val, false)
+            
             log.debug("objects for folder ${folder.id} / ${folder.name}:\n ${doc.asXML()}")
             return render(contentType: 'application/xml', text: doc.asXML())
         }
         catch (Exception e) {
             log.debug("failed to fetch objects: ", e)
             renderExceptionXml(e)
+        }
+    }
+
+    protected void addLinksToObjectQuery(String parentId, Document doc, Validator val, Boolean withMetadata){
+        Folder parent = Folder.get(parentId);
+        Element root = doc.getRootElement();
+        Collection<Link> links = linkService.findLinksIn(parent, LinkType.OBJECT);
+        log.debug("Found " + links.size() + " links.");
+        for (Link link : links) {
+            try {
+                val.validatePermission(link.getAcl(), PermissionName.BROWSE_OBJECT);
+                val.validatePermission(link.getOsd().getAcl(), PermissionName.BROWSE_OBJECT);
+            } catch (Exception e) {
+                log.debug("", e);
+                continue;
+            }
+            Element osdNode = link.getOsd().toXmlElement(root);
+            if(withMetadata){
+                osdNode.add(ParamParser.parseXml(link.getOsd().getMetadata(), null));
+            }
+            linkService.addLinkToElement(link, osdNode);
         }
     }
 

@@ -1,5 +1,6 @@
 package cinnamon
 
+import cinnamon.references.Link
 import org.dom4j.Document
 import org.dom4j.DocumentHelper
 import org.dom4j.Element
@@ -180,7 +181,12 @@ class OsdService {
         for (Relation rel : relations) {
             rel.delete()
         }
-
+        
+        // delete links (references)
+        def links = Link.findAllByOsd(osd)
+        links.each{
+            it.delete()
+        }
         log.debug("object deleted.");
 
         /*

@@ -16,6 +16,7 @@ abstract class BaseController {
     def groupService
     def inputValidationService
     def itemService
+    def linkService
     def luceneService
     def osdService
     def userService

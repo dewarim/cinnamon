@@ -1,5 +1,6 @@
 package cinnamon
 
+import cinnamon.references.Link
 import org.dom4j.Document
 import org.dom4j.DocumentHelper
 import org.dom4j.Element
@@ -181,7 +182,15 @@ class FolderService {
                 throw new CinnamonException("error.folder.has_content");
             }
         }
+        // delete metasets
         folder.setMetadata("<meta />")
+        
+        // delete links/references
+        def links = Link.findAllByFolder(folder)
+        links.each{
+            it.delete()
+        }
+        
         folder.delete();
         luceneService.removeFromIndex(folder, repository)
     }
