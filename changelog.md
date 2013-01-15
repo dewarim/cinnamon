@@ -1,5 +1,22 @@
 # Changelog for Cinnamon 3
 
+## 0.3.0
+
+* Upgrade to Java 7
+* Upgrade to Grails 2.2.0
+* Upgrade to Lucene 3.6.2
+* Added ImportService and Actors
+* Improved Lucene integration.
+* Updated plugins (release, humulus).
+* Added Link domain class (references to OSDs and Folders; currently only available via API,
+  GUI will display Links transparently as the referenced objects)
+* made urlFilterRegex configurable:
+    you can add the following to the cinnamon-config.groovy:
+    humulus{
+        urlFilterRegex = '(?:plugins/[-_.a-zA-Z0-9]+/)?(?:images|css|js)/.*(?:css|js|png|jpe?g|gif|jar)$'
+    }
+    This determines which assets will be available without being logged in.
+
 ## 0.2.16
 
 * German translation of message ids.
