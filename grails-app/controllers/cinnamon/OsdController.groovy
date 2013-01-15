@@ -23,6 +23,7 @@ import cinnamon.global.Constants
 class OsdController extends BaseController {
 
     def metasetService
+    def imageService
     
     def editMetadata() {
         try {
@@ -156,7 +157,14 @@ class OsdController extends BaseController {
                 log.debug("could not find: $filename")
                 return render(status: 503, text: message(code: 'error.image.not.found'))
             }
-            response.outputStream << image.readBytes()
+            if(params.longestSide){
+                def imageData = imageService.fetchThumbnail(osd, session.repositoryName, params.longestSide )
+                response.outputStream << imageData
+            }
+            else{
+                response.outputStream << image.readBytes()
+            }
+
             response.outputStream.close()
             return null
         }

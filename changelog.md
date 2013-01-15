@@ -1,5 +1,10 @@
 # Changelog for Cinnamon 3
 
+## 0.3.1
+
+* OsdController.imageLoader has new optional integer parameter: longestSide (to downscale images if necessary) 
+* Improved ImageService: new methods allow more ways to fetch images.
+
 ## 0.3.0
 
 * Upgrade to Java 7

@@ -2,6 +2,8 @@ package cinnamon
 
 import cinnamon.global.Constants
 import cinnamon.global.ConfThreadLocal
+import cinnamon.image.ImageMeta
+
 import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
 import cinnamon.utils.ParamParser
@@ -73,6 +75,12 @@ class ImageService {
         ImageIO.write(image, 'jpg', bos)
         return bos.toByteArray().encodeBase64()
     }
+    
+    byte[] imageToBytes(BufferedImage image){        
+        ByteArrayOutputStream bos = new ByteArrayOutputStream()
+        ImageIO.write(image, 'jpg', bos)
+        return bos.toByteArray()
+    }
 
     BufferedImage loadImage(String repositoryName, String contentPath) {
         def file = new File(ConfThreadLocal.conf.getDataRoot() + File.separator + repositoryName, contentPath)
@@ -101,5 +109,42 @@ class ImageService {
             osd.addMetaset(metaset)
             osd.save()
         }      
+    }
+
+    /**
+     * Load image from OSD and scale it to the longest side parameter. If the image is smaller
+     * or longestSide is 0, just return the image.
+     * @param osd OSD which contains the image
+     * @param repositoryName repository where the OSD is stored
+     * @param longestSide maximum value of the image's longest side. If 0, the image will not be scaled.
+     * @return image data as byte array
+     */
+    byte[] fetchScaledImage(ObjectSystemData osd, String repositoryName, Integer longestSide){
+        def image = loadImage(repositoryName, osd.contentPath)
+        return scaleImage(image, longestSide)
+    }
+    
+    byte[] scaleImage(BufferedImage image, Integer longestSide){
+        if (longestSide == 0 || (image.height <= longestSide && image.width <= longestSide)) {
+            // image is already small enough: return image
+            return imageToBytes(image)
+        }
+        else {
+            return imageToBytes(GraphicsUtilities.createThumbnail(image, longestSide))
+        }
+    }
+
+    /**
+     * Fetch an image with 
+     * @param osd
+     * @param repositoryName
+     * @param longestSide maximum value of the image's longest side. 
+     *  If 0 or larger than the longest side of the image, the image will not be scaled.
+     * @return container object which holds the image data as byte[] and dimensions. 
+     */
+    ImageMeta fetchImageWithMeta(ObjectSystemData osd, String repositoryName, Integer longestSide){
+        def image = loadImage(repositoryName, osd.contentPath)
+        def asBytes = scaleImage(image, longestSide)
+        return new ImageMeta(imageData: asBytes, x: image.width, y: image.height)
     }
 }
