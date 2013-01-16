@@ -403,6 +403,63 @@ class OsdService {
         return osd
     }
 
+    /**
+     * Create a new Object from an optional locally available file.
+     * @param params a map which should contain the following key-value pairs:
+     *        objectType: the name of the Cinnamon object type, if not specified, uses the default objectType.
+     *        name: name of the new object, if not given, will try to use filename if file is valid.
+     *              Cinnamon will not create an object without a name, so params.name and/or the file parameter must be set.
+     *        format: name of a Cinnamon format, must be set if file parameter is set.
+     *        
+     * @param repositoryName the name of the repository where the object will be created.
+     * @param file [optional] a data file which will be uploaded to the repository datastore
+     * @param folder a Cinnamon folder object which will be the parent of the new object.
+     * @return the new OSD object
+     */
+    ObjectSystemData createOsd(params, String repositoryName, File file, Folder folder) {
+        UserAccount user = userService.user
+        ObjectType objectType = (ObjectType) inputValidationService.checkObject(ObjectType.class, params.objectType, true)
+        if (!objectType) {
+            objectType = ObjectType.findByName(Constants.OBJTYPE_DEFAULT)
+        }
+        ObjectSystemData osd
+        String name = params.name
+
+        if (file == null || ! file.isFile()) {
+            if (!name) {
+                throw new RuntimeException('error.missing.name')
+            }
+            osd = new ObjectSystemData(name, user, folder)
+        }
+        else {
+            if (!name) {
+                name = file.name
+            }
+            osd = new ObjectSystemData(name, user, folder)
+
+            Format format = (Format) inputValidationService.checkObject(Format.class, params.format, true)
+            if (!format) {
+                throw new RuntimeException('error.missing.format')
+            }
+
+            def uploadedFile = new UploadedFile(file.absolutePath, UUID.randomUUID().toString(), name, format.contenttype, file.length())
+            def contentPath = ContentStore.upload(uploadedFile, repositoryName);
+            log.debug("contentPath: $contentPath")
+            osd.setContentPathAndFormat(contentPath, format, repositoryName);
+            if (osd.getContentPath() != null &&
+                    osd.getContentPath().length() == 0) {
+                throw new CinnamonException("error.storing.upload");
+            }
+        }
+        osd.type = objectType
+        osd.setCmnVersion('1')
+        osd.save(flush: true)
+        log.debug("created object with id: ${osd.id}")
+        log.debug("repo: ${repositoryName}")
+        luceneService.addToIndex(osd, repositoryName)
+        return osd
+    }
+
     Map<String, List> moveToFolder(idList, folderId, repository, VersionType versionType, UserAccount user) {
         def msgMap = [:]
         def folder

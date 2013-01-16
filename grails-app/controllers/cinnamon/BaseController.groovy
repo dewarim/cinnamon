@@ -78,7 +78,7 @@ abstract class BaseController {
         def folder
         if (id == '0') {
             log.debug("find root folder")
-            folder = Folder.findRootFolder()
+            folder = folderService.findRootFolder()
         }
         else {
             log.debug("looking for folder #$id")

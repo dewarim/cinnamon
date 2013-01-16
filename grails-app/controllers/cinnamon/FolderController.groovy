@@ -23,7 +23,7 @@ class FolderController extends BaseController {
     
     def index() {
         try {
-            Folder rootFolder = Folder.findRootFolder()
+            Folder rootFolder = folderService.findRootFolder()
             if (!rootFolder) {
                 def logoutMessage = message(code: "error.no.rootFolder")
                 return redirect(controller: 'logout', action: 'info', params: [logoutMessage: logoutMessage])

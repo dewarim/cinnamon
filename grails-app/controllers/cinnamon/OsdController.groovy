@@ -158,7 +158,9 @@ class OsdController extends BaseController {
                 return render(status: 503, text: message(code: 'error.image.not.found'))
             }
             if(params.longestSide){
-                def imageData = imageService.fetchThumbnail(osd, session.repositoryName, params.longestSide )
+                // do not store thumbnail, as this could lead to malicious people creating 1000 thumbnails and
+                // causing a denial of service event.
+                def imageData = imageService.fetchScaledImage(osd, session.repositoryName, Integer.parseInt(params.longestSide))
                 response.outputStream << imageData
             }
             else{

@@ -1,5 +1,7 @@
 package cinnamon
 
+import cinnamon.exceptions.CinnamonConfigurationException
+import cinnamon.global.Constants
 import cinnamon.references.Link
 import org.dom4j.Document
 import org.dom4j.DocumentHelper
@@ -12,6 +14,8 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
 import org.apache.commons.compress.utils.IOUtils
 import cinnamon.global.PermissionName
 import org.codehaus.groovy.grails.web.pages.discovery.GrailsConventionGroovyPageLocator
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 class FolderService {
 
@@ -34,7 +38,7 @@ class FolderService {
 
     public List<Folder> getSubfolders(Folder parent) {
         if (parent == null) {
-            return [Folder.findRootFolder()];
+            return [findRootFolder()];
         } else {
             return Folder.findAll("from Folder f where f.parent=:parent and f.parent != f order by f.name",[parent:parent])
         }
@@ -142,7 +146,7 @@ class FolderService {
         log.debug("before loading folder");
         Folder folder;
         if (id == 0L) {
-            folder = Folder.findRootFolder();
+            folder = findRootFolder();
         } else {
             folder = Folder.get(id);
         }
@@ -202,7 +206,7 @@ class FolderService {
     public List<Folder> findAllByPath(String path, Boolean autoCreate, Validator validator){
         def segs = path.split("/");
 
-        Folder parent = Folder.findRootFolder();
+        Folder parent = findRootFolder();
 
         List<Folder> ret = new ArrayList<Folder>();
         ret.add(parent);
@@ -436,7 +440,7 @@ class FolderService {
     
     Folder fetchFolder(id){
         if(id == '0' || id == 0){
-            return Folder.findRootFolder()
+            return findRootFolder()
         }
         return Folder.get(id)        
     }
@@ -545,5 +549,26 @@ class FolderService {
         }
         return msgMap
     }
+
+    /**
+     * Installation-Hint<br>
+     * Create a Folder whose parent equals it's own id and whose name is equals the ROOT_FOLDER_NAME.
+     * This is the default folder in which objects and folders are created if no parent_id is given.
+     *
+     * @return Folder rootFolder
+     */
+    Folder findRootFolder(){
+        def rootFolder = Folder.find("from Folder f where f.name=:name and f.parent=f",
+                [name: Constants.ROOT_FOLDER_NAME]
+        )
+        if (!rootFolder) {
+            Logger log = LoggerFactory.getLogger(Folder.class);
+            log.error("RootFolder is missing!");
+            throw new CinnamonConfigurationException("Could not find the root folder. Please create a folder called " + Constants.ROOT_FOLDER_NAME
+                    + " with parent_id == its own id.");
+        }
+
+        return rootFolder;
+    }   
 }
 

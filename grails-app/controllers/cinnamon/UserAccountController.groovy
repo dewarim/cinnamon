@@ -268,7 +268,7 @@ class UserAccountController extends BaseController {
      * Groovy version of FolderDAOHibernate.findAllByPath()
      */
     protected List<Folder> findAllByPath(String path, Boolean createMissingFolders) {
-        def parent = Folder.findRootFolder()
+        def parent = folderService.findRootFolder()
 
         List<Folder> ret = new ArrayList<Folder>()
         path.split("/").each() { seg ->
