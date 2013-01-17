@@ -54,7 +54,7 @@
                         <label for="dataType"><g:message code="indexType.dataType.label"/></label>
                     </td>
                     <td class="value ${hasErrors(bean: indexTypeInstance, field: 'dataType', 'errors')}">
-                        <g:select name="dataType" from="${cinnamon.index.IndexType$DataType?.values()}"
+                        <g:select name="dataType" from="${cinnamon.index.DataType?.values()}"
                                   value="${indexTypeInstance?.dataType}"/>
                     </td>
                 </tr>

@@ -1,5 +1,6 @@
 package cinnamon
 
+import cinnamon.index.DataType
 import grails.plugins.springsecurity.Secured
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import cinnamon.index.IndexType
@@ -57,7 +58,7 @@ class IndexTypeController extends BaseController{
 	    	Class<Indexer> indexer = (Class<Indexer>) Class.forName(params.indexerClass - 'class ', true, Thread.currentThread().contextClassLoader)
 	    	Class<ValueAssistanceProvider> vaProviderClass = 
                 (Class<ValueAssistanceProvider>) Class.forName(params.vaProviderClass - 'class ', true, Thread.currentThread().contextClassLoader )
-	    	IndexType.DataType dataType = Enum.valueOf(IndexType.DataType, params.dataType)
+	    	DataType dataType = Enum.valueOf(DataType, params.dataType)
 	    	IndexType indexTypeInstance = new IndexType(name, indexer, vaProviderClass, dataType)
 	
 	        if (indexTypeInstance.save(flush: true)) {
