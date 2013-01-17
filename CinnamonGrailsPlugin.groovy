@@ -1,9 +1,11 @@
+import cinnamon.ImageService
+
 class CinnamonGrailsPlugin {
 
 //    def packaging = "binary"
     def groupId = 'cinnamon'
     // the plugin version
-    def version = "0.3.1"
+    def version = "0.3.2.14"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "2.1 > *"
     // the other plugins this plugin depends on
@@ -44,9 +46,9 @@ allowing you to create custom apps based upon Cinnamon.
     def doWithWebDescriptor = { xml ->
         // TODO Implement additions to web.xml (optional), this event occurs before
     }
-
+    
     def doWithSpring = {
-        // TODO Implement runtime spring config (optional)
+     
     }
 
     def doWithDynamicMethods = { ctx ->
@@ -54,7 +56,7 @@ allowing you to create custom apps based upon Cinnamon.
     }
 
     def doWithApplicationContext = { applicationContext ->
-        // TODO Implement post initialization spring config (optional)
+        applicationContext.imageService.osdServiceBean = applicationContext.osdService
     }
 
     def onChange = { event ->

@@ -15,6 +15,8 @@ import org.dom4j.Element
 
 class ImageService {
 
+    OsdService osdServiceBean
+
     /**
      * Create or retrieve a base64 encoded thumbnail version of an image,
      * which can be embedded in a HTML page. 
@@ -105,10 +107,10 @@ class ImageService {
         thumbnail.addText(imageData)
         metaset.setContent(metasetRoot.asXML())
         metaset.save()
-        if(addMetasetToOsd){
+        if (addMetasetToOsd) {
             osd.addMetaset(metaset)
             osd.save()
-        }      
+        }
     }
 
     /**
@@ -119,18 +121,18 @@ class ImageService {
      * @param longestSide maximum value of the image's longest side. If 0, the image will not be scaled.
      * @return image data as byte array
      */
-    byte[] fetchScaledImage(ObjectSystemData osd, String repositoryName, Integer longestSide){
+    byte[] fetchScaledImage(ObjectSystemData osd, String repositoryName, Integer longestSide) {
         def image = loadImage(repositoryName, osd.contentPath)
-        return scaleImage(image, longestSide)
+        return imageToBytes(scaleImage(image, longestSide))
     }
-    
-    byte[] scaleImage(BufferedImage image, Integer longestSide){
+
+    BufferedImage scaleImage(BufferedImage image, Integer longestSide) {
         if (longestSide == 0 || (image.height <= longestSide && image.width <= longestSide)) {
             // image is already small enough: return image
-            return imageToBytes(image)
+            return image
         }
         else {
-            return imageToBytes(GraphicsUtilities.createThumbnail(image, longestSide))
+            return GraphicsUtilities.createThumbnail(image, longestSide)
         }
     }
 
@@ -140,11 +142,67 @@ class ImageService {
      * @param repositoryName
      * @param longestSide maximum value of the image's longest side. 
      *  If 0 or larger than the longest side of the image, the image will not be scaled.
+     * @param storeAsThumbnail if true, store the base64 encoded image in the OSD's custom metadata field.
      * @return container object which holds the image data as byte[] and dimensions. 
      */
-    ImageMeta fetchImageWithMeta(ObjectSystemData osd, String repositoryName, Integer longestSide){
+    ImageMeta fetchImageWithMeta(ObjectSystemData osd, String repositoryName, Integer longestSide, Boolean storeAsThumbnail) {
         def image = loadImage(repositoryName, osd.contentPath)
-        def asBytes = scaleImage(image, longestSide)
-        return new ImageMeta(imageData: asBytes, x: image.width, y: image.height)
+        def scaledImage = scaleImage(image, longestSide)
+        def asBytes = imageToBytes(scaledImage)
+        ImageMeta imageMeta = new ImageMeta(imageData: asBytes, width: image.width, height: image.height,
+                scaledWidth: scaledImage.width, scaledHeight: scaledImage.height)
+        if (storeAsThumbnail) {
+            addToMetaset(osd, imageMeta.imageAsBase64(), longestSide)
+        }
+        return imageMeta
+    }
+
+    ObjectSystemData rescaleImage(String idName, String repositoryName, params) {
+        ObjectSystemData osd = ObjectSystemData.get(params."$idName")
+        BufferedImage buffy = ImageIO.read(new File(osd.getFullContentPath(repositoryName)))
+        Integer x = params.x?.toBigDecimal()?.intValue()
+        Integer y = params.y?.toBigDecimal()?.intValue()
+        Integer width = params.width?.toBigDecimal()?.intValue()
+        Integer height = params.height?.toBigDecimal()?.intValue()
+
+        // check parameters:
+        def bounds = [x, y, width, height]
+        bounds.each {
+            if (it == null) {
+                throw new RuntimeException('error.missing.params')
+            }
+            if (it < 0) {
+                throw new RuntimeException('error.image.negative.boundary')
+            }
+        }
+        if (x + width > buffy.width) {
+            log.debug("reducing width $width to maximum width")
+            width = buffy.width - x
+        }
+        if (y + height > buffy.height) {
+            log.debug("reducing height to maximum height")
+            height = buffy.height - y
+        }
+
+        // add dimensions to name
+        String name
+        if (osd.name.matches(/^.+ \d+x\d+$/)) {
+            name = osd.name.replaceAll('^(.+) \\d+x\\d+', '$1')
+        }
+        else {
+            name = osd.name
+        }
+        params.name = "$name ${width}x${height}"
+
+        BufferedImage subImage = buffy.getSubimage(x, y, width, height)
+        byte[] imageData = imageToBytes(subImage)
+        File tempImage = File.createTempFile('imageService', 'jpg')
+        tempImage.withOutputStream { it.write(imageData) }
+        params.objectType = osd.type.id.toString()
+        params.format = osd.format.id.toString()
+        ObjectSystemData newImage = osdServiceBean.createOsd(params, repositoryName, tempImage, osd.parent)
+        newImage.save()
+        params."$idName" = newImage.id
+        return newImage
     }
 }

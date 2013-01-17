@@ -8,9 +8,26 @@ class ImageMeta {
     
     byte[] imageData
 
-    Integer x
-    Integer y
+    /**
+     * Original width before scaling
+     */
+    Integer width
 
+    /**
+     * Original height before scaling
+     */
+    Integer height
+    
+    /**
+     * Width after scaling
+     */
+    Integer scaledWidth
+
+    /**
+     * Height after scaling
+     */
+    Integer scaledHeight
+    
     /**
      * Encode image to base64 (for use in image data URLs).
      * @return image data encoded as a base64 string
