@@ -139,4 +139,8 @@ abstract class BaseController {
     def rePaginate () {
         render(template: 'rePaginate')
     }
+    
+    protected String getRepositoryName(){
+        return session.repositoryName
+    }
 }
