@@ -211,7 +211,7 @@ class OsdService {
             }
         }
 
-        ContentStore.deleteObjectFile(osd);
+        ContentStore.deleteObjectFile(osd, repository);
 
         // delete metadata and metasets:
         osd.setMetadata("<meta />")
