@@ -121,7 +121,7 @@ InitializingBean, ApplicationEventPublisherAware {
      * Do the actual authentication for a pre-authenticated user.
      */
     private void doAuthenticate(HttpServletRequest request, HttpServletResponse response) {
-        Authentication authResult = null;
+        Authentication authResult
 
         Object principal = getPreAuthenticatedPrincipal(request);
         Object credentials = getPreAuthenticatedCredentials(request);

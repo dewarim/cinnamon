@@ -115,7 +115,6 @@ class Repository {
                 log.debug("create new writer")
                 createWriter();
                 log.debug("beyond new writer")
-                return
             }
         }
     }

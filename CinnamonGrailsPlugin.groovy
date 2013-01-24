@@ -5,7 +5,7 @@ class CinnamonGrailsPlugin {
 //    def packaging = "binary"
     def groupId = 'cinnamon'
     // the plugin version
-    def version = "0.3.2.17"
+    def version = "0.3.2.18"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "2.1 > *"
     // the other plugins this plugin depends on

@@ -38,7 +38,7 @@ public class CountIndexer implements Indexer {
 			String searchString, Boolean multipleResults) {
 
 		org.dom4j.Document indexObject = data.asDocument();
-		List<Node> hits = new ArrayList<Node>();
+		List<Node> hits = new ArrayList<>();
 		
 		if(multipleResults){
 			hits = indexObject.selectNodes(searchString);

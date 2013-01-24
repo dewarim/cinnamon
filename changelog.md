@@ -1,5 +1,12 @@
 # Changelog for Cinnamon 3
 
+## 0.3.2
+
+* Add rescaleImage(...) to ImageService to create new OSDs from existing images objects.
+* Fix ContentStore.deleteObjectFile to actually delete files.
+* Added ContentStore.replaceContent(osd, file, repository) as a safer method to replace an object's content.
+* Cleanup code
+
 ## 0.3.1
 
 * OsdController.imageLoader has new optional integer parameter: longestSide (to downscale images if necessary) 

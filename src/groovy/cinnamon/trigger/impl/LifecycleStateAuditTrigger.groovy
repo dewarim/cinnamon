@@ -80,7 +80,7 @@ public class LifecycleStateAuditTrigger implements ITrigger {
                 }
             }
             catch (Exception e){
-                log.debug("Failed to load osd.");
+                log.debug("Failed to load osd.", e);
             }
         }
         return poBox;

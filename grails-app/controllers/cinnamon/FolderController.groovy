@@ -32,7 +32,7 @@ class FolderController extends BaseController {
             Map grandChildren = [:]
             Map folderConfigs = [:]
             Set<Folder> contentSet = new HashSet<Folder>()
-            childFolders.each { child ->
+            childFolders.each { Folder child ->
                 folderConfigs = folderService.addToFolderConfigs(child, folderConfigs)
                 Collection<Folder> gc = fetchChildFolders(child)
                 grandChildren.put(child, gc)

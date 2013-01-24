@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 /**
  *
  */
+@SuppressWarnings("GroovyAssignabilityCheck")
 public class LinkService {
 
     private transient Logger log = LoggerFactory.getLogger(this.getClass());

@@ -37,7 +37,7 @@ class LuceneService {
     }
 
     void initialize() {
-        Analyzer standardAnalyzer = new StandardAnalyzer(Version.LUCENE_CURRENT)
+        Analyzer standardAnalyzer = new StandardAnalyzer(Version.LUCENE_36)
 
         Environment.list().each {repo ->
             def name = repo.dbName

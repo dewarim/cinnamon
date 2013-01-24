@@ -208,7 +208,6 @@ class GroupController extends BaseController {
         catch (Exception e) {
             flash.message = e.getLocalizedMessage()
             redirect(action: 'create')
-            return
         }
 
     }

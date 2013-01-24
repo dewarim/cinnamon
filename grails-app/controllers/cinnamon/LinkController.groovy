@@ -77,8 +77,8 @@ class LinkController extends BaseController {
             Acl acl = Acl.get(ParamParser.parseLong(params.acl_id, "error.param.acl_id"))
             Folder parent = Folder.get(ParamParser.parseLong(params.parent_id, "error.param.parent_id"))
             UserAccount owner = UserAccount.get(ParamParser.parseLong(params.owner_id, "error.param.owner_id"))
-            ObjectSystemData osd = null
-            Folder folder = null
+            ObjectSystemData osd
+            Folder folder
             String typeName = params.type
             Validator validator = new Validator(userService.user)
             LinkResolver resolver

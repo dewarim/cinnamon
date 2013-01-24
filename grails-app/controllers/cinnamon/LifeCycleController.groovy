@@ -34,7 +34,6 @@ class LifeCycleController extends BaseController {
                             defaultStates:getDefaultStates(null),
                             states:getDefaultStates(null),
                             errorMessage: e.getLocalizedMessage().encodeAsHTML()])
-            return
         }
 
     }
@@ -95,7 +94,7 @@ class LifeCycleController extends BaseController {
     protected void updateFields(LifeCycle lifeCycle) {
         lifeCycle.name = inputValidationService.checkAndEncodeName(params.name, lifeCycle)
         if(params.defaultState){
-            lifeCycle.defaultState = inputValidationService.checkObject(LifeCycleState.class, params.defaultState)
+            lifeCycle.defaultState = (LifeCycleState) inputValidationService.checkObject(LifeCycleState.class, params.defaultState)
         }
         else if(lifeCycle.defaultState){
             log.debug("remove defaultState from lifeCycle")
@@ -146,7 +145,6 @@ class LifeCycleController extends BaseController {
                             defaultStates:getDefaultStates(lifeCycle),
                             states:getDefaultStates(lifeCycle),
                             errorMessage: e.getLocalizedMessage()])
-            return
         }
 
     }

@@ -19,9 +19,8 @@ class FolderTypeController extends BaseController{
     @Secured(["hasRole('_superusers')"])
     def save() {
 
-        FolderType folderType = new FolderType(
-                params.name,
-                params.description,
+        FolderType folderType = new FolderType(name: params.name,
+                description:params.description,
         )
 
         log.debug("folderType: ${folderType}")

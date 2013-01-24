@@ -43,6 +43,7 @@ class LanguageController extends BaseController {
         String isoCode = params.isoCode
         if (isoCode?.length() != 0) {
             if (isoCode.getBytes("UTF-8").length > Constants.MAX_ISO_CODE_LENGTH) {
+                //noinspection GroovyAssignabilityCheck
                 throw new RuntimeException(message(code: "error.param.isoCode.length", args: [Constants.MAX_ISO_CODE_LENGTH]))
             }
             if (!isoCode.equals(language.isoCode)) {
@@ -63,7 +64,7 @@ class LanguageController extends BaseController {
     def delete () {
         String isoCode
         try {
-            Language lang = inputValidationService.checkObject(Language.class, params.id)
+            Language lang = (Language) inputValidationService.checkObject(Language.class, params.id)
             isoCode = lang.isoCode
             lang.delete()
             flash.message = message(code: 'language.delete.success', args: [isoCode?.encodeAsHTML()]) // TODO: add name

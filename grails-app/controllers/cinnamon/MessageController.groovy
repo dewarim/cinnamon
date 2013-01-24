@@ -241,8 +241,8 @@ class MessageController extends BaseController {
             def unchangedMessages = 0
             def updatedMessages = 0
             xml.message?.each {msg ->
-                def id = msg.id.text()
-                def translation = msg.translation.text()
+                String id = msg.id.text()
+                String translation = msg.translation.text()
 
                 if (existingMessageMap.containsKey(id)) {
                     Message m = existingMessageMap.get(id)
@@ -282,7 +282,6 @@ class MessageController extends BaseController {
         catch (Exception e) {
             flash.message = message(code: e.message)
             redirect(action: 'list', controller: 'message')
-            return
         }
     }
 

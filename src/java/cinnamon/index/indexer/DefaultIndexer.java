@@ -38,7 +38,7 @@ public class DefaultIndexer implements Indexer {
 
 //		log.debug("trying to index the following data:\n"+data+"\n//end of data.");
 		org.dom4j.Document indexObject = data.asDocument();
-		List<Node> hits = new ArrayList<Node>();
+		List<Node> hits = new ArrayList<>();
 		
 		if(multipleResults){
 			hits = indexObject.selectNodes(searchString);
