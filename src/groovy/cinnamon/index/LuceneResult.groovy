@@ -42,8 +42,7 @@ class LuceneResult {
      */
     List filterResults(ItemService itemService) {
         def itemList = []
-        itemIdMap.each {domainClass ->
-            def idSet = itemIdMap.get(domainClass)
+        itemIdMap.each {domainClass, idSet ->
             if (idSet?.size() > 0) {
                 idSet.each {id ->
                     def item = itemService.fetchItem(domainClass, id)
