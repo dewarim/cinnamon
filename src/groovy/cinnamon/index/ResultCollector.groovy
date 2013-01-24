@@ -89,18 +89,18 @@ class ResultCollector extends Collector {
     Map getItemIdMap(){
         Map<String, Set<Long>> itemIdMap = new HashMap<String, Set<Long>>()
         documents.each{doc ->
-            String domainClass = doc.getField("javaClass").stringValue()
+            String domainClass = doc.getFieldable("javaClass").stringValue()
             if(domain && domain.name != domainClass){
                 log.debug("filter result from wrong domain $domainClass")
                 return
             }
-            Long id = Long.parseLong(doc.getField("hibernateId").stringValue())
+            Long id = Long.parseLong(doc.getFieldable("hibernateId").stringValue())
             def idSet = itemIdMap.get(domainClass)
             if(idSet){
                 idSet.add(id)
             }
             else{
-                idSet = new HashSet<Integer>()
+                idSet = new HashSet<Long>()
                 idSet.add(id)
                 itemIdMap.put(domainClass, idSet)
             }
