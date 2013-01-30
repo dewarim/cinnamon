@@ -391,6 +391,10 @@ class FolderService {
 
 
     List<ObjectSystemData> getObjects(UserAccount user, Folder parent, String repositoryName, String versions){
+        if (!versions?.trim()?.matches('^all|head|branch$')) {
+            log.debug("versions param does not match all|head|branch");
+            versions = 'head'
+        }
         String versionPred = ObjectSystemData.fetchVersionPredicate(versions);
         def osdList = ObjectSystemData.findAll("from ObjectSystemData as o where o.parent=:parent $versionPred order by id", 
                 [parent: parent])

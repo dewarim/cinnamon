@@ -135,10 +135,6 @@ class FolderController extends BaseController {
             folder = fetchAndFilterFolder(params.folder ?: params.id)
 
             log.debug("found folder. ${params.folder}: $folder")
-            if (!params.versions?.trim()?.matches('^all|head|branch$')) {
-                // log.debug("params.versions: ${params.versions}")
-                params.versions = 'head'
-            }
             log.debug("fetch OSDs")
             def osdList = folderService.getObjects(user, folder, repositoryName, params.versions)
             def previews = osdService.fetchPreviews(osdList, grailsApplication.config.previewSize ?: 64)
