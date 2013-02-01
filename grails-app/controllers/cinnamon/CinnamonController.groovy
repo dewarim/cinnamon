@@ -64,7 +64,7 @@ class CinnamonController extends BaseController {
             response.setContentType(osd.format.contenttype)
             Conf conf = ConfThreadLocal.getConf()
 
-            def repositoryName = session.repositoryName
+            def repositoryName = getRepositoryName()
             if (!repositoryName) {
                 def host = request.getHeader('host')
                 log.debug("host: ${host}")
@@ -152,7 +152,17 @@ class CinnamonController extends BaseController {
         }
     }
 
-
+    def disconnect(){
+        def ticket = params.ticket;
+        if(ticket){
+            Session.findByTicket(ticket)?.delete();
+            render(text: '<success>success.disconnect</success>')
+        }
+        else{
+            render(status:500, "<error>ticket.unknown</error>")
+        }
+    }
+    
     def legacy() {
         def myAction = params.command
         if (!myAction) {
@@ -173,6 +183,7 @@ class CinnamonController extends BaseController {
 
         switch (myAction) {
             case 'connect': forward(action: 'connect'); break
+            case 'disconnect': forward(action: 'disconnect');break
             case 'test': forward(action: 'test'); break
             case 'getusers': forward(controller: 'userAccount', action: 'listXml'); break
             case 'searchobjects': params.xmlQuery = true; forward(controller: 'search', action: 'searchObjects'); break
