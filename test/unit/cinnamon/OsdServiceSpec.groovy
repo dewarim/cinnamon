@@ -17,7 +17,7 @@ class OsdServiceSpec extends UnitSpec {
     }
 
     @Unroll
-    def 'test determine filename'() {
+    def 'test determineFormat'() {
         setup:
         def formats = mockDomain(Format, [
                 [name: 'jpeg/jpg format', description: '', extension: 'jpg', contenttype: 'image/jpeg'],
