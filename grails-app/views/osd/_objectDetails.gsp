@@ -168,7 +168,7 @@ return false;" title="${message(code: 'table.hide')}">
     </g:link>
     <g:if test="${osd.contentSize > 0}">
         &nbsp;|&nbsp;
-        <g:link controller="osd" action="getContent" params="[osd: osd.id, folder: osd.parent.id]"
+        <g:link controller="osd" action="getContent" params="[osd: osd.id]"
                 class="getContentLink">
             <g:message code="osd.getContent.link"/>
         </g:link>

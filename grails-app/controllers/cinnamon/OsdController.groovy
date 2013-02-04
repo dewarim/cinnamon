@@ -180,10 +180,10 @@ class OsdController extends BaseController {
         Folder folder = null
         try {
             ObjectSystemData osd = fetchAndFilterOsd(params.osd)
-            folder = fetchAndFilterFolder(params.folder)
+            folder = osd.parent
 
             Conf conf = ConfThreadLocal.getConf()
-            def filename = conf.getDataRoot() + File.separator + session.repositoryName +
+            def filename = conf.getDataRoot() + File.separator + repositoryName +
                     File.separator + osd.contentPath
             log.debug("getContent called for #${osd.id} @ $filename")
             File data = new File(filename)
@@ -194,9 +194,9 @@ class OsdController extends BaseController {
 
             if (osd.contentSize == null || osd.contentSize == 0) {
                 throw new RuntimeException('error.content.not.found')
-            }
-
-            response.setHeader("Content-disposition", "attachment; filename=${osd.name.encodeAsURL()}.${osd.format.extension}");
+            }                      
+            def attachmentName = "${osd.name.encodeAsURL()}${osd.determineExtension()}"
+            response.setHeader("Content-disposition", "attachment; filename=${attachmentName}");
             response.setContentType(osd.format.contenttype)
             response.outputStream << data.newInputStream()
             response.outputStream.flush()
