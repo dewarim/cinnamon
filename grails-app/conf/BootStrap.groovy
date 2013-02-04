@@ -34,11 +34,11 @@ class BootStrap {
         
         luceneService.initialize()
 
-        // 0.3.2.20:
+        // 0.3.2.23:
         // check for new binary Format object:
-        if (! Format.findByName('format.binary')){
-            new Format(name: 'format.binary', extension: 'data', 
-                    contenttype: 'application/octet-stream', description: 'Binary Data of unknown format').save()
+        if (! Format.findByName('format.unknown')){
+            new Format(name: 'format.unknown', extension: 'unknown', 
+                    contenttype: 'application/octet-stream', description: 'Binary data of unknown format').save()
         }
         
         
