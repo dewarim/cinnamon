@@ -22,7 +22,7 @@ class OsdServiceSpec extends UnitSpec {
         def formats = mockDomain(Format, [
                 [name: 'jpeg/jpg format', description: '', extension: 'jpg', contenttype: 'image/jpeg'],
                 [name: 'xml format', description: '', extension: 'xml', contenttype: 'application/xml'],
-                [name: 'default binary data format', description: '', extension: 'data', contenttype: 'application/octet-stream']
+                [name: 'format.unknown', description: '', extension: 'unknown', contenttype: 'application/octet-stream']
         ])
 
         expect:
@@ -35,8 +35,8 @@ class OsdServiceSpec extends UnitSpec {
         'JPG'  | 'jpg'
         'jpg'  | 'jpg'
         'xml'  | 'xml'
-        'foo'  | 'data'
-        null   | 'data'
+        'foo'  | 'unknown'
+        null   | 'unknown'
     }
 
     File createFile(extension) {

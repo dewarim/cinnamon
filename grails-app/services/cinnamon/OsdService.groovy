@@ -462,8 +462,9 @@ class OsdService {
 
     /**
      * Determine the format of an uploaded file using the extension as a guide line.
-     * Extension 'jpeg' will return Format object for 'jpg' 
-     * @param file
+     * Extension 'jpeg' will return Format object for 'jpg'.
+     * In case of an unknown file type, the format will be 'format.binary' with extension 'unknown'
+     * @param file the uploaded file
      * @return Cinnamon Format object
      */
     Format determineFormat(File file){
@@ -475,11 +476,11 @@ class OsdService {
             }
         }
         else{
-            extension = 'data'
+            extension = 'unknown'
         }
         def format = Format.findByExtension(extension)
         if (! format){
-            format =  Format.findByExtension('data')
+            format =  Format.findByExtension('unknown')
         }
         return format
     }
