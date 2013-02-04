@@ -5,7 +5,7 @@ class CinnamonGrailsPlugin {
 //    def packaging = "binary"
     def groupId = 'cinnamon'
     // the plugin version
-    def version = "0.3.2.18"
+    def version = "0.3.2.20"
     // the version or versions of Grails the plugin is designed for
     def grailsVersion = "2.1 > *"
     // the other plugins this plugin depends on
@@ -38,7 +38,7 @@ allowing you to create custom apps based upon Cinnamon.
 //    def developers = [ [ name: "Joe Bloggs", email: "joe@bloggs.net" ]]
 
     // Location of the plugin's issue tracker.
-//    def issueManagement = [ system: "JIRA", url: "http://jira.grails.org/browse/GPMYPLUGIN" ]
+    def issueManagement = [ system: "github", url: "https://github.com/dewarim/cinnamon/issues" ]
 
     // Online location of the plugin's browseable source code.
     def scm = [ url: "https://github.com/dewarim/cinnamon" ]

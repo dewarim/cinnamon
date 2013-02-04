@@ -1,3 +1,4 @@
+import cinnamon.Format
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import org.codehaus.groovy.grails.plugins.springsecurity.SecurityFilterPosition
 import cinnamon.ObjectSystemData
@@ -33,6 +34,14 @@ class BootStrap {
         
         luceneService.initialize()
 
+        // 0.3.2.20:
+        // check for new binary Format object:
+        if (! Format.findByName('format.binary')){
+            new Format(name: 'format.binary', extension: 'data', 
+                    contenttype: 'application/octet-stream', description: 'Binary Data of unknown format').save()
+        }
+        
+        
         // migrate legacy data:
         log.debug("migrating metadata to metasets")
         if(! grailsApplication.config.doMigrate){
