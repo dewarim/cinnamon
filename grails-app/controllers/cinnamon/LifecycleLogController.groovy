@@ -23,7 +23,7 @@ class LifecycleLogController extends BaseController{
         }
     }
 
-    def updateEntryList = {
+    def updateEntryList () {
         try {
             setEntryListParams()
             Pagination pagination = fetchEntryListPagination()

@@ -292,7 +292,7 @@ class FolderController extends BaseController {
         }
     }
 
-    def editType = {
+    def editType(){
         try {
             def folder = fetchAndFilterFolder(params.folder)
             render(template: 'editType', model: [folder: folder])
