@@ -48,7 +48,7 @@ grails.project.dependency.resolution = {
         runtime 'postgresql:postgresql:9.1-901.jdbc4'
         runtime 'dom4j:dom4j:1.6.1'
         runtime 'jaxen:jaxen:1.1.4'
-        compile 'org.codehaus.gpars:gpars:1.0-beta-3'
+        compile 'org.codehaus.gpars:gpars:1.0.0'
         runtime 'cinnamon:cinnamon-humulus:0.2.0'
         compile("org.codehaus.groovy.modules.http-builder:http-builder:0.5.2"){
             excludes "groovy"
@@ -75,7 +75,6 @@ grails.project.dependency.resolution = {
         compile ":remote-pagination:0.3"
         test (':spock:0.7'){
             exclude "spock-grails-support"
-//            excludes: 'groovy'
         }
     }
 }
