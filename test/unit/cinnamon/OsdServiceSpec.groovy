@@ -31,6 +31,8 @@ class OsdServiceSpec extends UnitSpec {
         where:
         file   | extension
         'jpeg' | 'jpg'
+        'JpEG' | 'jpg'
+        'JPG'  | 'jpg'
         'jpg'  | 'jpg'
         'xml'  | 'xml'
         'foo'  | 'data'

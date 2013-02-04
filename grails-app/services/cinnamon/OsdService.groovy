@@ -469,7 +469,7 @@ class OsdService {
     Format determineFormat(File file){
         def extension
         if (file.name.contains('.')){
-            extension = file.name.split('\\.').last()
+            extension = file.name.toLowerCase().split('\\.').last()
             if (extension == 'jpeg'){
                 extension = 'jpg'
             }
