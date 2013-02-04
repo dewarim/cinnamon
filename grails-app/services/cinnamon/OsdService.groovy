@@ -154,7 +154,7 @@ class OsdService {
         boolean hasDescendants = ObjectSystemData.countByPredecessor(osd) > 0;
         if (killDescendants && hasDescendants) {
             def preds = ObjectSystemData.findAll("from ObjectSystemData o where o.predecessor=:pred order by id desc", [pred: osd])
-            preds.each {pre ->
+            preds.each { pre ->
                 delete(pre, killDescendants, removeLeftRelations, repository);
             }
         }
@@ -181,10 +181,10 @@ class OsdService {
         for (Relation rel : relations) {
             rel.delete()
         }
-        
+
         // delete links (references)
         def links = Link.findAllByOsd(osd)
-        links.each{
+        links.each {
             it.delete()
         }
         log.debug("object deleted.");
@@ -319,7 +319,7 @@ class OsdService {
                     def osds = ObjectSystemData.findAll("from ObjectSystemData o where o.latestBranch=true and o.root=:root order by id desc",
                             [root: osd.root ?: osd]
                     )
-                    deleteMap = deleteList(osds.collect {it.id.toString()}, repository, VersionType.SELECTED)
+                    deleteMap = deleteList(osds.collect { it.id.toString() }, repository, VersionType.SELECTED)
                 }
                 else {
                     log.debug("osd $id was not found - probably already deleted.")
@@ -410,7 +410,7 @@ class OsdService {
      *        name: name of the new object, if not given, will try to use filename if file is valid.
      *              Cinnamon will not create an object without a name, so params.name and/or the file parameter must be set.
      *        format: name of a Cinnamon format, must be set if file parameter is set.
-     *        
+     *
      * @param repositoryName the name of the repository where the object will be created.
      * @param file [optional] a data file which will be uploaded to the repository datastore
      * @param folder a Cinnamon folder object which will be the parent of the new object.
@@ -425,7 +425,7 @@ class OsdService {
         ObjectSystemData osd
         String name = params.name
 
-        if (file == null || ! file.isFile()) {
+        if (file == null || !file.isFile()) {
             if (!name) {
                 throw new RuntimeException('error.missing.name')
             }
@@ -450,6 +450,67 @@ class OsdService {
                     osd.getContentPath().length() == 0) {
                 throw new CinnamonException("error.storing.upload");
             }
+        }
+        osd.type = objectType
+        osd.setCmnVersion('1')
+        osd.save(flush: true)
+        log.debug("created object with id: ${osd.id}")
+        log.debug("repo: ${repositoryName}")
+        luceneService.addToIndex(osd, repositoryName)
+        return osd
+    }
+
+    /**
+     * Determine the format of an uploaded file using the extension as a guide line.
+     * Extension 'jpeg' will return Format object for 'jpg' 
+     * @param file
+     * @return Cinnamon Format object
+     */
+    Format determineFormat(File file){
+        def extension
+        if (file.name.contains('.')){
+            extension = file.name.split('\\.').last()
+            if (extension == 'jpeg'){
+                extension = 'jpg'
+            }
+        }
+        else{
+            extension = 'data'
+        }
+        def format = Format.findByExtension(extension)
+        if (! format){
+            format =  Format.findByExtension('data')
+        }
+        return format
+    }
+    
+    /**
+     * Create a new OSD object with content.
+     * While the other createOsd methods work with request / params maps, this method takes a more
+     * direct approach. You must supply valid objects for all parameters (name being optional).
+     * @param repositoryName the name of the repository where the object will be created.
+     * @param file a data file which will be uploaded to the repository datastore
+     * @param name [optional] the name of the new object. If not given, will try to use filename.
+     * @param folder a Cinnamon folder object which will be the parent of the new object.
+     * @param format the format of the content (for example, JPEG or XML)
+     * @param objectType the object type of the new OSD
+     * @return the new OSD object
+     */
+    ObjectSystemData createOsd(String repositoryName, File file, String name, Folder folder, Format format, ObjectType objectType) {
+        UserAccount user = userService.user
+        ObjectSystemData osd
+        if (!name) {
+            name = file.name
+        }
+        osd = new ObjectSystemData(name, user, folder)
+
+        def uploadedFile = new UploadedFile(file.absolutePath, UUID.randomUUID().toString(), name, format.contenttype, file.length())
+        def contentPath = ContentStore.upload(uploadedFile, repositoryName);
+        log.debug("contentPath: $contentPath")
+        osd.setContentPathAndFormat(contentPath, format, repositoryName);
+        if (osd.getContentPath() != null &&
+                osd.getContentPath().length() == 0) {
+            throw new CinnamonException("error.storing.upload");
         }
         osd.type = objectType
         osd.setCmnVersion('1')
@@ -501,11 +562,11 @@ class OsdService {
         }
         return msgMap
     }
-    
-    Map fetchPreviews(List<ObjectSystemData> osds, Integer previewSize){
+
+    Map fetchPreviews(List<ObjectSystemData> osds, Integer previewSize) {
         def previews = [:]
-        osds.each {osd ->
-            if(osd.format?.contenttype?.startsWith('image')){
+        osds.each { osd ->
+            if (osd.format?.contenttype?.startsWith('image')) {
                 def thumbnail = imageService.fetchThumbnail(osd, EnvironmentHolder.environment.dbName, previewSize, true)
                 previews.put(osd, thumbnail)
             }
