@@ -19,10 +19,11 @@ environments {
     }
     test {
         dataSource {
-            dbCreate = "none"
-            username = 'cinnamon'
-            password = 'cinnamon'
-            url = 'jdbc:postgresql://localhost/demo?user=cinnamon&password=cinnamon'
+            dbCreate = "update"
+//            username = 'cinnamon'
+//            password = 'cinnamon'
+//            url = 'jdbc:postgresql://localhost/demo?user=cinnamon&password=cinnamon'
+            url = "jdbc:h2:mem:testDb"
         }
     }
     production {
