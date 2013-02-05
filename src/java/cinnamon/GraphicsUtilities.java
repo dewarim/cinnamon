@@ -484,7 +484,7 @@ public class GraphicsUtilities {
 
         return thumb;
     }
-
+  
     /**
      * <p>Returns a thumbnail of a source image.</p>
      * <p>This method offers a good trade-off between speed and quality.
@@ -653,4 +653,17 @@ public class GraphicsUtilities {
             img.setRGB(x, y, w, h, pixels, 0, w);
         }
     }
+
+    /**
+     * Check if an image should is large enough to warrant creation of a thumbnail.
+     * @param image the image to check
+     * @param newSize the new size (one side of the image must be larger than this to allow safe thumbnail creation)
+     * @return true if the image should be thumbnailed.
+     */
+    public static Boolean needsThumbnail(BufferedImage image, int newSize){
+        int width = image.getWidth();
+        int height = image.getHeight();
+        return newSize < width && newSize < height;
+    }
+
 }

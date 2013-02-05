@@ -22,6 +22,8 @@ class ImageService {
      * which can be embedded in a HTML page. 
      * If requested, the thumbnail data will be stored in the object's custom metadata
      * in a metaset of type thumbnail.
+     * If the image is already small enough, the image itself will be returned (and stored in the metadata,
+     * if requested).
      * @param osd the OSD which contains the source image.
      * @param repositoryName the repository where the OSD object is stored (used to determine file system path)
      * @param longestSide the image will be scaled to have no side larger than longestSide 
@@ -37,8 +39,8 @@ class ImageService {
             // create thumbnail
             log.debug("Thumbnail for ${osd.id} does not exist yet.")
             def image = loadImage(repositoryName, osd.contentPath)
-
-            if (image.height <= longestSide && image.width <= longestSide) {
+            
+            if (GraphicsUtilities.needsThumbnail(image, longestSide)) {
                 // image is already small enough: return image
                 return imageToBase64(image)
             }
@@ -55,7 +57,13 @@ class ImageService {
             def thumbnailNode = xml.selectSingleNode("thumbnail[@longestSide='${longestSide}']")
             if (thumbnailNode == null) {
                 def image = loadImage(repositoryName, osd.contentPath)
-                def baseImage = imageToBase64(GraphicsUtilities.createThumbnail(image, longestSide))
+                def baseImage
+                if (GraphicsUtilities.needsThumbnail(image, longestSide)){
+                     baseImage = imageToBase64(GraphicsUtilities.createThumbnail(image, longestSide))
+                }
+                else{
+                    baseImage = imageToBase64(image)
+                }                
                 if (storeInMetaset) {
                     addToMetaset(osd, baseImage, longestSide)
                 }
@@ -77,8 +85,8 @@ class ImageService {
         ImageIO.write(image, 'jpg', bos)
         return bos.toByteArray().encodeBase64()
     }
-    
-    byte[] imageToBytes(BufferedImage image){        
+
+    byte[] imageToBytes(BufferedImage image) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream()
         ImageIO.write(image, 'jpg', bos)
         return bos.toByteArray()
@@ -157,14 +165,7 @@ class ImageService {
         return imageMeta
     }
 
-    ObjectSystemData rescaleImage(String idName, String repositoryName, params) {
-        ObjectSystemData osd = ObjectSystemData.get(params."$idName")
-        BufferedImage buffy = ImageIO.read(new File(osd.getFullContentPath(repositoryName)))
-        Integer x = params.x?.toBigDecimal()?.intValue()
-        Integer y = params.y?.toBigDecimal()?.intValue()
-        Integer width = params.width?.toBigDecimal()?.intValue()
-        Integer height = params.height?.toBigDecimal()?.intValue()
-
+    BufferedImage cropImage(BufferedImage buffy, Integer x, Integer y, Integer width, Integer height) {
         // check parameters:
         def bounds = [x, y, width, height]
         bounds.each {
@@ -183,6 +184,17 @@ class ImageService {
             log.debug("reducing height to maximum height")
             height = buffy.height - y
         }
+        buffy.getSubimage(x, y, width, height)
+    }
+
+    ObjectSystemData rescaleImage(String idName, String repositoryName, params) {
+        ObjectSystemData osd = ObjectSystemData.get(params."$idName")
+        BufferedImage buffy = ImageIO.read(new File(osd.getFullContentPath(repositoryName)))
+        Integer x = params.x?.toBigDecimal()?.intValue()
+        Integer y = params.y?.toBigDecimal()?.intValue()
+        Integer width = params.width?.toBigDecimal()?.intValue()
+        Integer height = params.height?.toBigDecimal()?.intValue()
+        BufferedImage subImage = cropImage(buffy, x, y, width, height)
 
         // add dimensions to name
         String name
@@ -194,7 +206,6 @@ class ImageService {
         }
         params.name = "$name ${width}x${height}"
 
-        BufferedImage subImage = buffy.getSubimage(x, y, width, height)
         byte[] imageData = imageToBytes(subImage)
         File tempImage = File.createTempFile('imageService', 'jpg')
         tempImage.withOutputStream { it.write(imageData) }
