@@ -39,17 +39,17 @@ class ImageService {
             // create thumbnail
             log.debug("Thumbnail for ${osd.id} does not exist yet.")
             def image = loadImage(repositoryName, osd.contentPath)
-            
+
             if (GraphicsUtilities.needsThumbnail(image, longestSide)) {
-                // image is already small enough: return image
-                return imageToBase64(image)
-            }
-            else {
                 def baseImage = imageToBase64(GraphicsUtilities.createThumbnail(image, longestSide))
                 if (storeInMetaset) {
                     addToMetaset(osd, baseImage, longestSide)
                 }
                 return baseImage
+            }
+            else {
+                // image is already small enough: return image
+                return imageToBase64(image)
             }
         }
         else {
@@ -215,5 +215,5 @@ class ImageService {
         newImage.save()
         params."$idName" = newImage.id
         return newImage
-    }
+    }        
 }
