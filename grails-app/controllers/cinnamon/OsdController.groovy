@@ -138,43 +138,7 @@ class OsdController extends BaseController {
         catch (Exception e) {
             renderException(e)
         }
-    }
-
-    def imageLoader() {
-        try {
-            ObjectSystemData osd = fetchAndFilterOsd(params.id)
-            if (!osd.format?.contenttype?.startsWith('image/')) {
-                return render(status: 503, text: message(code: 'error.wrong.format'))
-            }
-            response.setContentType(osd.format.contenttype)
-            Conf conf = ConfThreadLocal.getConf()
-            log.debug("repository: ${session.repositoryName}")
-            def filename = conf.getDataRoot() + File.separator + session.repositoryName +
-                    File.separator + osd.contentPath
-            log.debug("filename:$filename")
-            File image = new File(filename)
-            if (!image.exists()) {
-                log.debug("could not find: $filename")
-                return render(status: 503, text: message(code: 'error.image.not.found'))
-            }
-            if(params.longestSide){
-                // do not store thumbnail, as this could lead to malicious people creating 1000 thumbnails and
-                // causing a denial of service event.
-                def imageData = imageService.fetchScaledImage(osd, session.repositoryName, Integer.parseInt(params.longestSide))
-                response.outputStream << imageData
-            }
-            else{
-                response.outputStream << image.readBytes()
-            }
-
-            response.outputStream.close()
-            return null
-        }
-        catch (Exception e) {
-            log.debug("imageLoader fail:",e)
-            renderException(e)
-        }
-    }
+    }           
 
     def getContent() {
         Folder folder = null
