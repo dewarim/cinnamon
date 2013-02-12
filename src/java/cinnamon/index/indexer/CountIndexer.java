@@ -61,4 +61,11 @@ public class CountIndexer implements Indexer {
 	  return formatter.format(n);
 	}
 
+    public Store getStore() {
+        return store;
+    }
+
+    public void setStore(Store store) {
+        this.store = store;
+    }
 }
