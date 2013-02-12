@@ -106,6 +106,36 @@ class ResultCollector extends Collector {
             }
         }
         return itemIdMap
-    }
+    } 
 
+    /**
+     * Given a specific SearchableDomain-class, this method will search all documents found for
+     * their stored field values of the supplied fields list.
+     * 
+     * @param myDomain the SearchableDomain upon which the results are based. If null, use SearchableDomain.OSD
+     * @param fields List of fields for which the content should be stored.
+     * @return a map, build as: Map(id,Map(fieldName,fieldValue)) 
+     */
+    Map getIdFieldMap(SearchableDomain myDomain, List<String> fields){        
+        domain == myDomain ?: SearchableDomain.OSD
+        Map<Long, Map<String, String>> idFieldMap = new HashMap()
+        documents.each{doc ->
+            String domainClass = doc.getFieldable("javaClass").stringValue()
+            if(domain.name != domainClass){
+                return
+            }
+            
+            Long id = Long.parseLong(doc.getFieldable("hibernateId").stringValue())            
+            def fieldMap = [:]
+            fields.each{fieldName ->
+                def field = doc.getFieldable(fieldName)
+                if (field && field.stored){
+                    fieldMap.put(fieldName, field.stringValue())
+                }
+            }
+            idFieldMap.put(id,fieldMap)
+        }
+        return idFieldMap
+    }
+    
 }

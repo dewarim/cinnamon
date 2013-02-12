@@ -37,4 +37,9 @@ class IndexCommand {
      * called luceneActor should not reload the OSD.
      */
     Boolean reloadIndexable = false
+
+    /**
+     * A list of fields for which the field values should be retrieved for each document found.
+     */
+    List<String> fields = []
 }

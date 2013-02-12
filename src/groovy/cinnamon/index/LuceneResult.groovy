@@ -33,7 +33,8 @@ class LuceneResult {
     String errorMessage
     
     Map<String, Set<Long>> itemIdMap = new HashMap<String, Set<Long>>()
-
+    Map<Long, Map<String,String>> idFieldMap = new HashMap<>()
+    
     /**
      * A raw list of search result items from all domain classes found.
      * @param user the current session's user

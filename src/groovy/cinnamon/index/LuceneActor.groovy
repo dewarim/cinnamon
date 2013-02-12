@@ -111,8 +111,12 @@ class LuceneActor extends
                 searcher: repository.indexSearcher, domain: command.domain)
         searcher.search(query, collector)
         log.debug("Found: ${collector.documents.size()} documents.")
-
+                
         def luceneResult = new LuceneResult(itemIdMap: collector.itemIdMap)
+        if (command.fields.size() > 0){
+            luceneResult.idFieldMap = collector.getIdFieldMap(command.domain, command.fields)
+        }
+        
         return luceneResult
     }
 
