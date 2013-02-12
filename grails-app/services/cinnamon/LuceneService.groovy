@@ -18,6 +18,8 @@ import humulus.Environment
 import cinnamon.index.SearchableDomain
 import cinnamon.index.LuceneBackgroundActor
 
+import java.text.DecimalFormat
+
 class LuceneService {
 
     def grailsApplication
@@ -91,6 +93,20 @@ class LuceneService {
      * @return
      */
     LuceneResult search(String query, String database, SearchableDomain domain) {
+        return searchXml(query, database, domain, [])
+    } 
+    
+    /**
+     *
+     * @param query a simple query string
+     * @param database the database which stores the object. Must be specified, as this may change per request,
+     *        depending on customer.
+     * @param domain currently, the domain class name
+     * @param fields List of fields for which content stored in the Lucene index should be returned.
+     *
+     * @return
+     */
+    LuceneResult search(String query, String database, SearchableDomain domain, List fields) {
         def cmd = new IndexCommand(repository: database, type: CommandType.SEARCH,
                 query: query, domain: domain)
         LuceneResult result = lucene.sendAndWait(cmd)
@@ -110,8 +126,21 @@ class LuceneService {
      * @return
      */
     LuceneResult searchXml(String query, String database, SearchableDomain domain) {
+        return searchXml(query, database, domain, [])
+    } 
+    
+    /**
+     *
+     * @param query an XML query string
+     * @param database the database which stores the object. Must be specified, as this may change per request,
+     *        depending on customer.
+     * @param domain currently, the domain class name, may be null
+     * @param fields List of fields for which content stored in the Lucene index should be returned.
+     * @return
+     */
+    LuceneResult searchXml(String query, String database, SearchableDomain domain, List fields) {
         def cmd = new IndexCommand(repository: database, type: CommandType.SEARCH,
-                query: query, domain: domain, xmlQuery:true)
+                query: query, domain: domain, xmlQuery:true, fields: fields)
         LuceneResult result = lucene.sendAndWait(cmd)
         log.debug("LuceneService received: ${result}")
         return result
@@ -124,4 +153,25 @@ class LuceneService {
         }
     }
 
+    private static final DecimalFormat formatter =
+        new DecimalFormat("00000000000000000000");
+    
+    /**
+     * Pad an integer number to the decimal string format internally used by the LuceneIndexer
+     * @param n the number
+     * @return a zero-padded string with a length of 20 characters   
+     */
+    public static String pad(Integer n) {
+        return formatter.format(n);
+    }
+
+    /**
+     * Pad an long number to the decimal string format internally used by the LuceneIndexer
+     * @param n the number
+     * @return a zero-padded string with a length of 20 characters   
+     */
+    public static String pad(Long n){
+        return formatter.format(n);
+    }
+    
 }
