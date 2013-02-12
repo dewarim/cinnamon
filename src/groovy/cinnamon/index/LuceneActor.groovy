@@ -293,7 +293,7 @@ class LuceneActor extends
     public ResultCollector search(String params, repository) {
         log.debug("starting search");
         ResultCollector results = new ResultCollector();
-        def analyzer = new StandardAnalyzer(Version.LUCENE_34)
+        def analyzer = new StandardAnalyzer(Version.LUCENE_36)
         def searcher = repository.indexSearcher
         try {
             InputStream bais = new ByteArrayInputStream(params.getBytes("UTF-8"));
