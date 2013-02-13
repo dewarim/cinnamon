@@ -140,10 +140,10 @@ class OsdController extends BaseController {
         }
     }           
 
-    def getContent() {
+    def getContent(Long id) {
         Folder folder = null
         try {
-            ObjectSystemData osd = fetchAndFilterOsd(params.osd)
+            ObjectSystemData osd = fetchAndFilterOsd(id?.toString() ?: params.osd)
             folder = osd.parent
 
             Conf conf = ConfThreadLocal.getConf()
