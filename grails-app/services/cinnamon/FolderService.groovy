@@ -249,6 +249,19 @@ class FolderService {
     }
 
     /**
+     * Find a folder by its path and optionally create the path and the folder if necessary.
+     * Note: for internal use; for example if you have to create a temporary system folder.
+     * For user accessible folders, use findAllByPath with a Validator param.
+     * @param path the path to create
+     * @param autoCreate if true, create any folders missing on this path
+     * @return the last folder from the path 
+     * @throws CinnamonException if autoCreate is false and the folder was not found.
+     */
+    public Folder findByPath(String path, Boolean autoCreate){
+        return findAllByPath(path, true, null).last()
+    }
+
+    /**
      * Find all Folders where index_ok is NULL. Those are the ones
      * whose index is not current.
      * @param maxResults maximum number of results
