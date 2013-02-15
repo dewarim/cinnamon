@@ -4,6 +4,7 @@ import cinnamon.global.Constants
 import cinnamon.global.ConfThreadLocal
 import cinnamon.image.ImageMeta
 
+import java.awt.Graphics2D
 import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
 import cinnamon.utils.ParamParser
@@ -82,22 +83,38 @@ class ImageService {
      */
     String imageToBase64(BufferedImage image) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream()
-        ImageIO.write(image, 'jpg', bos)
+        ImageIO.write(image, 'jpeg', bos)
         return bos.toByteArray().encodeBase64()
     }
 
     byte[] imageToBytes(BufferedImage image) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream()
-        ImageIO.write(image, 'jpg', bos)
+        ImageIO.write(image, 'jpeg', bos)
         return bos.toByteArray()
     }
 
+    /**
+     * Load and convert an image to a BufferedImage with RGB ColorModel 
+     * (should now work with PNG to JPEG thumbnails). 
+     * @param repositoryName
+     * @param contentPath
+     * @return BufferedImage with ColorModel TYPE_INT_RGB
+     */
     BufferedImage loadImage(String repositoryName, String contentPath) {
         def file = new File(ConfThreadLocal.conf.getDataRoot() + File.separator + repositoryName, contentPath)
         log.debug("looking at image file: ${file.absolutePath}")
-        return ImageIO.read(file)
+        def buffy = ImageIO.read(file)        
+        return convert(buffy, BufferedImage.TYPE_INT_RGB)
     }
 
+    public static BufferedImage convert(BufferedImage src, int bufImgType) {
+        BufferedImage img= new BufferedImage(src.getWidth(), src.getHeight(), bufImgType);
+        Graphics2D g2d= img.createGraphics();
+        g2d.drawImage(src, 0, 0, null);
+        g2d.dispose();
+        return img;
+    }
+    
     def addToMetaset(ObjectSystemData osd, String imageData, Integer longestSide) {
         def metaset = osd.fetchMetaset(Constants.METASET_THUMBNAIL)
         def metasetRoot
