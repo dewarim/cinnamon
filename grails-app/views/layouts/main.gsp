@@ -7,6 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <r:require modules="jquery"/>
+<r:require modules="jqueryUi"/>
 <r:require modules="bootstrap"/>
 <script type="text/javascript">
     function limitText(limitField, limitNum) {
@@ -85,7 +86,15 @@
       type="text/css"
       media="screen"/>
 
+<link rel="stylesheet" href="${resource(dir:'css/ui-lightness',file: 'jquery-ui-1.10.0.custom.css')}"/>
+
+
 <r:script disposition="head">
+
+    var I18n = {
+        dialog_close:'<g:message code="dialog.close"/>'
+    };
+
     $.ajaxSetup({
         type:'POST'
     });
@@ -186,40 +195,35 @@
         msg.html('&nbsp;');
         msg.removeClass("error_message");
     }
-
-<%--
-    function copyFolder(id, targetId) {
-        jQuery.ajax({
-            url:'<g:resource dir="folder" file="copyFolder"/>',
-            success:function (data, textStatus, xmlrequest) {
-                $("#" + targetId).html(data);
-            },
-            error:function (xmlrequest, status, errorThrown) {
-                var sm = $("#message");
-                sm.html(xmlrequest.responseText);
-                showClearButton();
-            },
-            data:{targetFolder:targetId, folder:id},
-            method:'POST',
-            async:true
-        })
-    }
---%>
-    
+   
     function showRelationType(id) {
-        var dialog = $('<div class="hidden"></div>').appendTo('body');
-        var url = '<g:createLink controller="/folder" action="fetchRelationTypeDialog"/>?relationType=' + id;
-        dialog.load(
+    var rtDialog = $('#relationtype-dialog');
+        var url = '<g:createLink controller="folder" action="fetchRelationTypeDialog"/>/' + id;
+        rtDialog.load(
                 url,
                 {},
                 function (responseText, textStatus, XMLHttpRequest) {
-                    dialog.dialog({
+                    $('#relationtype-dialog').dialog({
+                         autoOpen: false,
+                         height: 540,
+                        width: 540,
+                        modal: true,
                         closeOnEscape:true,
+                        buttons: [
+            {
+                text: I18n.dialog_close,
+                click: function () {
+                    $(this).dialog("close");
+                }
+            }
+                        ],
+                           
                         close:function (event, ui) {
-                            dialog.dialog('destroy')
+                            rtDialog.dialog('destroy');
                         }
                     });
-                });
+                    rtDialog.dialog('open');
+                    });
         return false;
     }
 

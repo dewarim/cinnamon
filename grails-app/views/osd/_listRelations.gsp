@@ -68,3 +68,7 @@
         </g:each>
     </table>
 </g:if>
+
+<div id="relationtype-dialog" class="">
+    
+</div>

@@ -437,9 +437,9 @@ class FolderController extends BaseController {
     }
 
     // AJAX
-    def fetchRelationTypeDialog() {
-        RelationType rt = RelationType.get(params.relationType)
-        return render(template: 'fetchRelationTypeDialog', model: [relationType: rt])
+    def fetchRelationTypeDialog(Long id) {
+        RelationType rt = RelationType.get(id)
+        render(template: 'fetchRelationTypeDialog', model: [relationType: rt])
     }
 
     //-----------------------------------------------------------------
