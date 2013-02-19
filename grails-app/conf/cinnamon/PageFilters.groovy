@@ -29,7 +29,7 @@ class PageFilters {
     }
 
     def filters = {
-        all(controller: '*', action: '*', actionExclude: 'save*|update*') {
+        all(controller: '*', action: '*', actionExclude: 'save*|update*|legacy', controllerExclude:'cinnamon') {
             before = {
 
             }
