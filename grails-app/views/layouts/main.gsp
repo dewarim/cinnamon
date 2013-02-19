@@ -91,8 +91,15 @@
 
 <r:script disposition="head">
 
-    var I18n = {
-        dialog_close:'<g:message code="dialog.close"/>'
+    var I18N = {
+        dialog_close:'<g:message code="dialog.close"/>',
+        load_content_fail:'<g:message code="load.preview.fail"/> '
+    };
+
+    var CINNAMON = {
+        links:{
+            loadFolderContent:'<g:createLink controller="folder" action="loadFolderContent"/>',
+        }
     };
 
     $.ajaxSetup({
@@ -211,7 +218,7 @@
                         closeOnEscape:true,
                         buttons: [
             {
-                text: I18n.dialog_close,
+                text: I18N.dialog_close,
                 click: function () {
                     $(this).dialog("close");
                 }
@@ -226,7 +233,33 @@
                     });
         return false;
     }
-
+    
+    /**
+    * Load the content of a folder with a specific usage type and (if applicable) an osdId.
+    * @param folderId
+    * @param folderType the template type, for example 'relation'
+    * @param osdId
+    */
+    function loadPreviews(folderId, folderType, osdId) {
+    $.ajax({
+        url: CINNAMON.links.loadFolderContent,
+        data: {          
+            osd:osdId,
+            folder: folderId,
+            folderType: folderType
+        },
+        dataType: 'html',
+        success: function (data) {
+            $('#' + folderType + 'FolderContent').html(data);
+        },
+        statusCode: {
+            500: function () {
+                alert(I18N.load_preview_fail);
+            }
+        }
+    });
+    }
+    
     function addToSelection(id, name) {
         var wasSelected = $('#selected_div_' + id);
         if (wasSelected.length) {

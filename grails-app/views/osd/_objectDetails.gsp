@@ -194,7 +194,7 @@ return false;" title="${message(code: 'table.hide')}">
         <g:else>
             <g:remoteLink action="editMetadata" controller="osd"
                           params="[osd: osd.id]" update="[success: 'metadataView_' + osd.id, failure: 'message']"
-                          onSuccess="createEditor( \$('#metadata_area_${osd.id}').get(0) ); ">
+                          onSuccess="createEditor(jQuery('#metadata_area_${osd.id}').get(0) ); ">
                 <g:message code="metadata.edit"/>
             </g:remoteLink>
 
@@ -205,6 +205,17 @@ return false;" title="${message(code: 'table.hide')}">
 <div id="relations">
     <h2><g:message code="osd.relations"/></h2>
 
+    <div id="create-relation-fail"></div>
+    <g:remoteLink url="[controller: 'relation', action: 'create']"
+                  update="[success: 'create-relation', failure: 'create-relation-fail']"
+                  id="create-relation-link"
+                  params="[id: osd.id]"
+                  onSuccess="jQuery('#create-relation-link').hide();">
+        <g:message code="relation.link.create"/>
+    </g:remoteLink>
+    <div id="create-relation">
+
+    </div>
     <div id="relationList" class="relation_list">
         <g:if test="${hasRelations}">
             <g:remoteLink action="listRelations" controller="osd" params="[osd: osd.id]"

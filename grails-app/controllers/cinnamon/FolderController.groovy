@@ -442,6 +442,48 @@ class FolderController extends BaseController {
         render(template: 'fetchRelationTypeDialog', model: [relationType: rt])
     }
 
+    def loadSelectionFolders(Long id, Long osd){
+        try {
+            Folder folder = fetchAndFilterFolder(id)
+            def folders = folder.subfolders.findAll { Folder f ->
+                folderService.mayBrowseFolder(f, userService.user)
+            }            
+            render(template: 'contentFolder', model: [currentFolder: folder,
+                    folderType: params.folderType?.encodeAsHTML(),
+                    osd: ObjectSystemData.get(osd),
+                    folders: folders])
+        }
+        catch (Exception e) {
+            log.debug(" failed", e)
+            renderException(e)
+        }
+    }
+    
+    def loadFolderContent(Long osd, Long folder, String folderType){
+        try {
+            Folder currentFolder = fetchAndFilterFolder(folder)
+            List osds = folderService.getFolderContent(currentFolder, false).findAll{
+                folderService.mayBrowseFolder(currentFolder, userService.user) 
+            }
+            switch(folderType){
+                case 'relation':
+                    def relOsd = ObjectSystemData.get(osd)
+                    osds.add(0,relOsd)
+                    render(template: "/folder/folderContent/relationFolderContent",
+                            model: [osds: osds,                                    
+                                    folderType: folderType?.encodeAsHTML(),
+                            ])
+                    break;
+                default: throw new RuntimeException('forbidden folderType.')
+            }
+        }
+        catch (Exception e) {
+            log.debug(" failed", e)
+            renderException(e)
+        }
+    }
+    
+    
     //-----------------------------------------------------------------
     // Methods used by the desktop client (expecting XML responses)
     def fetchSubFolders() {
