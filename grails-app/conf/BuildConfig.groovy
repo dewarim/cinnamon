@@ -1,4 +1,4 @@
-grails.servlet.version = "3.0" // Change depending on target container compliance (2.5 or 3.0)
+grails.servlet.version = "3.0" 
 grails.project.class.dir = "target/classes"
 grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
@@ -40,8 +40,6 @@ grails.project.dependency.resolution = {
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
 
-        // runtime 'mysql:mysql-connector-java:5.1.16'
-
         runtime('org.apache.lucene:lucene-core:3.6.2')
         runtime('org.apache.lucene:lucene-xml-query-parser:3.6.2')
         runtime('org.apache.lucene:lucene-queries:3.6.2')
@@ -66,15 +64,11 @@ grails.project.dependency.resolution = {
         compile(':spring-security-core:1.2.7.3')
         compile (":twitter-bootstrap:2.1.0.1"){excludes 'svn'}
         
-        // Uncomment these (or add new ones) to enable additional resources capabilities
-        //runtime ":zipped-resources:1.0"
-        //runtime ":cached-resources:1.0"
-        //runtime ":yui-minify-resources:0.1.4"
-
         runtime 'cinnamon:cinnamon-db:0.3.1.10'
         compile ":remote-pagination:0.3"
         test (':spock:0.7'){
             exclude "spock-grails-support"
         }
+       
     }
 }
