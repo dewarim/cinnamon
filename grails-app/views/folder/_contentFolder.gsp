@@ -23,7 +23,7 @@
             <li>
                 <g:remoteLink controller="folder" action="loadSelectionFolders"
                               params="[id: folder.id, folderType: folderType]"
-                              onSuccess="loadPreviews('${folder.id}', '${folderType}', '${osd?.id ?: 0}');"
+                              onSuccess="loadFolderContent('${folder.id}', '${folderType}', '${osd?.id ?: 0}');"
                               update="[success: folderType + 'FolderSelect', failure: failId]">
                     ${folder.name}
                 </g:remoteLink>
