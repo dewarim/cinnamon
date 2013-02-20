@@ -38,7 +38,9 @@ class RelationController extends BaseController{
             if (! alreadyExists){
                 Relation relation = new Relation(rt, left, right, '<meta/>')
                 relation.save()
-            }            
+                luceneService.updateIndex(left, repositoryName)
+                luceneService.updateIndex(right, repositoryName)
+            }                  
             forward(controller: 'osd', action: 'listRelations', id: osd)
         }
         catch (Exception e){
@@ -52,7 +54,11 @@ class RelationController extends BaseController{
         try{
             Relation relation = Relation.get(id)
             if (relation){
-                relation.delete()
+                def leftOsd = relation.leftOSD
+                def rightOsd = relation.rightOSD
+                relation.delete(flush: true)
+                luceneService.updateIndex(leftOsd, repositoryName)
+                luceneService.updateIndex(rightOsd, repositoryName)
             }
             render(status: 200, text:'<!-- delete relation: success -->')
         }
