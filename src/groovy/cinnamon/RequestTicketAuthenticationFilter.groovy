@@ -3,12 +3,9 @@ package cinnamon
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.util.Assert
-import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedCredentialsNotFoundException
-import org.codehaus.groovy.grails.commons.GrailsApplication
 import humulus.Environment
 import humulus.EnvironmentHolder
-import cinnamon.global.ConfThreadLocal
 import javax.servlet.http.HttpServletResponse
 import org.springframework.security.core.Authentication
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken
@@ -27,7 +24,6 @@ import org.springframework.security.authentication.AuthenticationManager
 import javax.servlet.http.HttpSession
 import org.springframework.security.authentication.event.InteractiveAuthenticationSuccessEvent
 import org.springframework.security.web.WebAttributes
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider;
 
 /**
  *
@@ -65,8 +61,8 @@ InitializingBean, ApplicationEventPublisherAware {
      *          is set to {@code true}.
      */
     protected Object getPreAuthenticatedPrincipal(HttpServletRequest request) {
-        try {
-            String ticket = request.getParameter('ticket');
+        try {            
+            String ticket = request.getHeader('ticket');            
             if (!ticket) {
                 logger.debug("Request does not contain ticket.")
 //                throw new PreAuthenticatedCredentialsNotFoundException("No ticket in request")
