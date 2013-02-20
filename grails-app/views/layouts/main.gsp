@@ -88,19 +88,12 @@
 
 <link rel="stylesheet" href="${resource(dir:'css/ui-lightness',file: 'jquery-ui-1.10.0.custom.css')}"/>
 
-
+<g:render template="/shared/variables"/>    
+    <script type="text/javascript" src="${resource(dir:'js', file: 'cinnamon.js')}"></script>
+    
 <r:script disposition="head">
 
-    var I18N = {
-        dialog_close:'<g:message code="dialog.close"/>',
-        load_content_fail:'<g:message code="load.preview.fail"/> '
-    };
-
-    var CINNAMON = {
-        links:{
-            loadFolderContent:'<g:createLink controller="folder" action="loadFolderContent"/>',
-        }
-    };
+  
 
     $.ajaxSetup({
         type:'POST'
@@ -116,69 +109,7 @@
         codeMirrorEditor = new CodeMirrorUI(id, uiOptions, cmOptions);
         codeMirrorEditor.mirror.refresh();
     }
-
-    function hideChildren(id) {
-        var children = document.getElementById('children_of_' + id);
-        if (children != null) {
-            children.style.display = 'none';
-        }
-        children = document.getElementById('hideChildren_' + id);
-        if (children != null) {
-            children.style.display = 'none';
-        }
-        var fetchLink = document.getElementById('fetchLink_' + id);
-        if (fetchLink != null) {
-            fetchLink.style.display = 'inline';
-        }
-    }
-
-    function showHideLink(id) {
-        var children = document.getElementById('children_of_' + id);
-        if (children != null) {
-            children.style.display = 'block';
-        }
-        children = document.getElementById('hideChildren_' + id);
-        if (children != null) {
-            children.style.display = 'inline';
-        }
-        var fetchLink = document.getElementById('fetchLink_' + id);
-        if (fetchLink != null) {
-            fetchLink.style.display = 'none';
-        }
-    }
-
-    function setLinkActive(id) {
-        $("span.folder_name_content").each(function (index) {
-            $(this).css('background-color', 'white')
-        });
-        $("span.folder_name_no_content").each(function (index) {
-            $(this).css('background-color', 'white')
-        });
-
-        $("#" + id).css('background-color', "#CCFFCC");
-    }
-
-    function setFolderName(id, name) {
-        $("#folderName_" + id).html(name);
-    }
-
-    function setOsdActive(id, oddEven) {
-        $("tr.osd_row").each(function (index) {
-            $(this).removeClass('row_highlight');
-            if ($(this).hasClass('was_even')) {
-                $(this).removeClass('was_even');
-                $(this).addClass('even');
-            }
-
-        });
-        var osd = $("#" + id);
-        osd.addClass('row_highlight');
-        if (osd.hasClass('even')) {
-            osd.removeClass('even');
-            osd.addClass('was_even');
-        }
-    }
-
+ 
     function showSpinner(id) {
         $("#" + id).prepend('<img src="<g:resource dir="/images" file="spinner.gif"/>" alt="<g:message code="message.loading"/>" id="' + id + '_spinner">');
     }
@@ -203,62 +134,6 @@
         msg.removeClass("error_message");
     }
    
-    function showRelationType(id) {
-    var rtDialog = $('#relationtype-dialog');
-        var url = '<g:createLink controller="folder" action="fetchRelationTypeDialog"/>/' + id;
-        rtDialog.load(
-                url,
-                {},
-                function (responseText, textStatus, XMLHttpRequest) {
-                    $('#relationtype-dialog').dialog({
-                         autoOpen: false,
-                         height: 540,
-                        width: 540,
-                        modal: true,
-                        closeOnEscape:true,
-                        buttons: [
-            {
-                text: I18N.dialog_close,
-                click: function () {
-                    $(this).dialog("close");
-                }
-            }
-                        ],
-                           
-                        close:function (event, ui) {
-                            rtDialog.dialog('destroy');
-                        }
-                    });
-                    rtDialog.dialog('open');
-                    });
-        return false;
-    }
-    
-    /**
-    * Load the content of a folder with a specific usage type and (if applicable) an osdId.
-    * @param folderId
-    * @param folderType the template type, for example 'relation'
-    * @param osdId
-    */
-    function loadPreviews(folderId, folderType, osdId) {
-    $.ajax({
-        url: CINNAMON.links.loadFolderContent,
-        data: {          
-            osd:osdId,
-            folder: folderId,
-            folderType: folderType
-        },
-        dataType: 'html',
-        success: function (data) {
-            $('#' + folderType + 'FolderContent').html(data);
-        },
-        statusCode: {
-            500: function () {
-                alert(I18N.load_preview_fail);
-            }
-        }
-    });
-    }
     
     function addToSelection(id, name) {
         var wasSelected = $('#selected_div_' + id);
