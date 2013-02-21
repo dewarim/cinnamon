@@ -20,6 +20,6 @@
     <g:submitToRemote url="[controller: 'relation', action: 'save']"
                       value="${message(code: 'relation.save')}"
                       update="[success: 'relationList', failure: 'create-relation-fail']"
-                      onSuccess="jQuery('#create-relation-link').show();jQuery('create-relation').hide();"/>
+                      onSuccess="jQuery('#create-relation-link').show();jQuery('#create-relation').hide();"/>
 </g:form>
 
