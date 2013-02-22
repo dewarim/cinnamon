@@ -100,11 +100,13 @@
     });
 
     var codeMirrorEditor;
-    function createEditor(id) {
+    
+    function createEditor(id, readOnly) {
         var uiOptions = { path:'<g:resource dir="js/codemirror-ui/" file="js" />/', searchMode:'popup' };
         var cmOptions = {
             mode:'application/xml',
-            lineNumbers:true
+            lineNumbers:true,
+            readOnly: readOnly === undefined ? false : readOnly 
         };
         codeMirrorEditor = new CodeMirrorUI(id, uiOptions, cmOptions);
         codeMirrorEditor.mirror.refresh();

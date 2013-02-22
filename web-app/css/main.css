@@ -537,3 +537,8 @@ fieldset,
     display: block;
     margin-left: 27%;
 }
+
+.xml-textarea{
+    width:100ex;
+    border:1px black solid;
+}

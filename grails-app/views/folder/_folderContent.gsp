@@ -50,7 +50,7 @@
 </g:if><br>
 
 <g:if test="${osdList?.size() > 0}">
-    <g:render template="/osd/osdList" model="[osdList:osdList, previews:previews, selectedVersion:selectedVersion, superuserStatus:superuserStatus]"/>
+    <g:render template="${osdListTemplate ?: '/osd/osdList'}" model="[osdList:osdList, previews:previews, selectedVersion:selectedVersion, superuserStatus:superuserStatus]"/>
 </g:if>
 <g:else>
     <p>

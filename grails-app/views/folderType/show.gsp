@@ -30,7 +30,16 @@
                 <td class="name"><g:message code="folderType.description"/></td>
                 <td class="value">${fieldValue(bean: folderType, field: 'description')}</td>
             </tr>
-
+            <tr class="prop xml_editor_row">
+                <td class="name">
+                    <g:message code="folderType.config"/>
+                </td>
+                <td class="value xml_edtior">
+                    <g:render template="/shared/renderXML"
+                              model="[renderId:folderType.id, xml:folderType?.config]"/>
+                </td>    
+            </tr>
+            
         </table>
 
     </div>
