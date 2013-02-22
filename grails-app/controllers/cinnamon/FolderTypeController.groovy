@@ -18,15 +18,14 @@ class FolderTypeController extends BaseController{
 
     @Secured(["hasRole('_superusers')"])
     def save() {
-
-        FolderType folderType = new FolderType(name: params.name,
-                description:params.description,
-        )
-
-        log.debug("folderType: ${folderType}")
-
         try {
+            FolderType folderType = new FolderType(name: params.name,
+                    description:params.description,
+            )
+            folderType.config = params.config
             folderType.save(failOnError: true)
+            log.debug("folderType: ${folderType}")
+            return redirect(action: 'show', params: [id: folderType?.id])
         }
         catch (Exception e) {
             log.debug("failed to save FolderType:", e)
@@ -34,7 +33,7 @@ class FolderTypeController extends BaseController{
             return redirect(action: 'create', controller: 'folderType', params: params) //, params:[folderType:folderType])
         }
 
-        return redirect(action: 'show', params: [id: folderType?.id])
+        
     }
 
     def list() {

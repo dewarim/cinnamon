@@ -48,7 +48,18 @@
                                                value="${fieldValue(bean:folderType,field:'description')}"/>
                     </td>
                 </tr>
-
+                <tr class="xml_editor_row">
+                    <td>
+                        <label for="config_${folderType?.id}"><g:message code="folderType.config"/></label>
+                    </td>
+                    <td class="value xml_editor">
+                        <textarea id="config_${folderType?.id}" class="xml-textarea" name="config" cols="120"
+                                  rows="10">${folderType?.config ? folderType.config : '<config />'}</textarea>
+                        <script type="text/javascript">
+                            createEditor($('#config_${folderType?.id}').get(0))
+                        </script>
+                    </td>
+                </tr>
                 </tbody>
             </table>
         </div>
