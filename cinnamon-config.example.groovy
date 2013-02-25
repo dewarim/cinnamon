@@ -123,8 +123,8 @@ indexers = [
         'cinnamon.index.indexer.DescendingReverseCompleteStringIndexer',
         'cinnamon.index.indexer.DescendingStringIndexer',
         'cinnamon.index.indexer.DescendingCompleteStringIndexer',
-	    'cinnamon.index.indexer.CompleteStringExpressionIndexer',
-	    'cinnamon.index.indexer.EncodedFieldIndexer'
+        'cinnamon.index.indexer.CompleteStringExpressionIndexer',
+        'cinnamon.index.indexer.EncodedFieldIndexer'
 ]
 
 /*
@@ -172,7 +172,7 @@ lifeCycleStateClasses = [
  * This regex defines which resources will be delivered unchecked, that is they will be
  * delivered to unauthenticated users. This affects static website resources.
  */
-humulus{
+humulus {
     urlFilterRegex = '(?:(?:plugins|static)/[-_.a-zA-Z0-9]+/)?(?:images|css|js)/.*(?:css|js|png|jpe?g|gif|handlebars|jar)$'
 }
 
@@ -180,8 +180,8 @@ humulus{
  * Which GSP template to use to display the objects inside a folder on the webclient.
  * Do not change.
  */
-templates{
-    osd{
-        osdList:'/osd/osdList'
-    }
-}
+templates = [
+        'osd': [
+                'osdList': '/osd/osdList'
+        ]
+]
