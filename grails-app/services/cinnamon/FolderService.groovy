@@ -501,17 +501,25 @@ class FolderService {
     
     String fetchFolderTemplate(String config){
         def folderConfig = new XmlSlurper().parseText(config)
-//        log.debug("grailsApplication: ${grailsApplication}")
-//        log.debug("grailsApplication.config: ${grailsApplication.config}")
-//        log.debug("config param: ${config}")
         def folderTemplate = grailsApplication.config.defaultTemplate ?: '/folder/folderContent'
-//        log.debug("folderConfigTemplate:${folderConfig.template}")
         if (folderConfig.template && groovyPageLocator.findTemplate(folderConfig.template.text())){
             folderTemplate = folderConfig.template.text()
         }
         return folderTemplate
     }
 
+    String fetchOsdListTemplate(String config){
+        def folderConfig = new XmlSlurper().parseText(config)
+        def defaultTemplate = grailsApplication.config.templates.osd.osdList ?: '/osd/osdList'
+        def template = folderConfig?.osdListTemplate?.text()
+        if (template && groovyPageLocator.findTemplate(template)){
+            log.debug("found osdList-Template: ${template}")
+            return template
+        }
+        log.debug("fetchOsdListTemplate: return defaultTemplate")
+        return defaultTemplate
+    }
+    
     /**
      * Move a list of folders into another folder.
      * @param idList List of Strings with the folder-ids

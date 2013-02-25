@@ -162,6 +162,7 @@ class FolderController extends BaseController {
             }
             
             def folderTemplate = folderService.fetchFolderTemplate(folder.type.config)            
+            def osdListTemplate = folderService.fetchOsdListTemplate(folder.type.config)
             
             return render(template: folderTemplate, model: [folder: folder,
                     osdList: osdList,
@@ -170,6 +171,7 @@ class FolderController extends BaseController {
                     folders: folderService.getFoldersInside(user, folder),
                     superuserStatus: userService.isSuperuser(user),
                     selectedVersion: params.versions,
+                    osdListTemplate:osdListTemplate,
                     versions: [all: 'folder.version.all', head: 'folder.version.head', branch: 'folder.version.branch']
             ])
         }
