@@ -47,7 +47,7 @@ grails.project.dependency.resolution = {
         runtime 'dom4j:dom4j:1.6.1'
         runtime 'jaxen:jaxen:1.1.4'
         compile 'org.codehaus.gpars:gpars:1.0.0'
-        runtime 'cinnamon:cinnamon-humulus:0.2.0'
+        runtime 'cinnamon:cinnamon-humulus:0.2.1'
         compile("org.codehaus.groovy.modules.http-builder:http-builder:0.5.2"){
             excludes "groovy"
         }
@@ -55,16 +55,21 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-        runtime ":hibernate:$grailsVersion"
-        compile ":release:2.2.0"
-        build ":tomcat:$grailsVersion"
+        runtime (":hibernate:$grailsVersion"){
+            export = false
+        }
+        compile (":release:2.2.1"){
+            export = false
+        }
+        build (":tomcat:$grailsVersion"){
+            export = false
+        }
         
         runtime ":jquery:1.8.0"
         runtime ":resources:1.1.6"
         compile(':spring-security-core:1.2.7.3')
         compile (":twitter-bootstrap:2.1.0.1"){excludes 'svn'}
-        
-        runtime 'cinnamon:cinnamon-db:0.3.1.10'
+        runtime 'cinnamon:cinnamon-db:0.3.1.12'
         compile ":remote-pagination:0.3"
         test (':spock:0.7'){
             exclude "spock-grails-support"
