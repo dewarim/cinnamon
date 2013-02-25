@@ -117,4 +117,18 @@ function showRelationType(id) {
             rtDialog.dialog('open');
         });
     return false;
-} 
+}
+
+/**
+ * Check that a text field does not exceed a certain limit.
+ * Usage:
+ *  onKeyDown="limitText(this.form.description, 255);" 
+ *  onKeyUp="limitText(this.form.description, 255);"
+ * @param limitField the field to check
+ * @param limitNum maximum characters in field
+ */
+function limitText(limitField, limitNum) {
+    if (limitField.value.length > limitNum) {
+        limitField.value = limitField.value.substring(0, limitNum);
+    }
+}

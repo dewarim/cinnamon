@@ -10,12 +10,7 @@
 <r:require modules="jqueryUi"/>
 <r:require modules="bootstrap"/>
 <script type="text/javascript">
-    function limitText(limitField, limitNum) {
-        if (limitField.value.length > limitNum) {
-            limitField.value = limitField.value.substring(0, limitNum);
-        }
-    }
-
+ 
     function showInfoMessage(info){
         var infoElement = $('#infoMessage');
         infoElement.text(info);
@@ -57,12 +52,6 @@
     function addClassIfExistsB(a, newClass, b) {
         if ($("#" + b).length > 0) {
             $("#" + a).addClass(newClass);
-        }
-    }
-
-    function limitText(limitField, limitNum) {
-        if (limitField.value.length > limitNum) {
-            limitField.value = limitField.value.substring(0, limitNum);
         }
     }
 
