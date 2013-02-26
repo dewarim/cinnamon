@@ -57,7 +57,7 @@ public class ObjectTreeCopier {
 
     /**
      * Create a copy of an empty OSD object without the content or metadata in target folder.
-     *
+     *   
      * @param osd          the source object
      * @return the empty OSD
      */
@@ -113,7 +113,8 @@ public class ObjectTreeCopier {
             copy.setRoot(checkCopyCache(osd.getRoot()));
         }
         copy.setType(osd.getType());
-        copy.setCmnVersion(osd.getCmnVersion());
+        copy.setCmnVersion(osd.getCmnVersion())
+        osdService.fixLatestHeadAndBranch(copy, []) 
         copy.save();
         luceneService.addToIndex(copy, repositoryName)
         copyCache.put(osd, copy);
