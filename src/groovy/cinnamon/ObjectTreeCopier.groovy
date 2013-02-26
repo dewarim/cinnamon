@@ -114,13 +114,22 @@ public class ObjectTreeCopier {
         }
         copy.setType(osd.getType());
         copy.setCmnVersion(osd.getCmnVersion())
-        osdService.fixLatestHeadAndBranch(copy, []) 
+
+        fixLatestHeadAndBranch(copy);
+        
         copy.save();
         luceneService.addToIndex(copy, repositoryName)
         copyCache.put(osd, copy);
         return copy;
     }
 
+    void fixLatestHeadAndBranch(ObjectSystemData osd){
+        if(osd == null){
+            return
+        }
+        List<ObjectSystemData> children = ObjectSystemData.findAllByPredecessor(osd)
+        osd.fixLatestHeadAndBranch(children)
+    }
 
     /**
      * Check whether an object is alredy present as an emptyCopy.
@@ -190,7 +199,7 @@ public class ObjectTreeCopier {
         copy.setProcstate("_created");
         copy.setParent(targetFolder);
         copy.setCmnVersion(osd.getCmnVersion());
-
+        fixLatestHeadAndBranch(copy)
         /*
          * The root of the object tree points to itself,
          * when queried for the root object. In this case,
