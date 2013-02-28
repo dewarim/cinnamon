@@ -69,7 +69,7 @@ InitializingBean, ApplicationEventPublisherAware {
                 return null
             }
             logger.debug("Request contains ticket: $ticket")
-            def repositoryName = ticket.split('@')[1]
+            def repositoryName = ticket.trim().split('@')[1]
 
             def env = Environment.list().find {it.dbName == repositoryName}
             if (!env) {
@@ -263,6 +263,6 @@ InitializingBean, ApplicationEventPublisherAware {
      * will be read and used as the credentials value. Otherwise a dummy value will be used.
      */
     protected Object getPreAuthenticatedCredentials(HttpServletRequest request) {
-        return request.getParameter('ticket');
+        return request.getHeader('ticket');
     }
 }
