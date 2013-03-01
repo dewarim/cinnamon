@@ -508,6 +508,8 @@ class FolderController extends BaseController {
             def folders = val.filterUnbrowsableFolders(folderService.getSubfolders(folder))
             def doc = DocumentHelper.createDocument()
             def root = doc.addElement('folders')
+            root.addAttribute('folderId', folder.id.toString())
+            root.addAttribute('parentId', folder.parent.id.toString())
             folders.each {f ->
                 f.toXmlElement(root)
             }
