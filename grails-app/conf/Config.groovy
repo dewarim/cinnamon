@@ -122,7 +122,6 @@ log4j = {
             'org.springframework.security.authentication',
             'cinnamon.PreAuthenticatedAuthenticationProvider'
 
-//    trace 'org.hibernate.tool.hbm2ddl.SchemaUpdate'
     root {
         debug 'stdout'
     }
@@ -139,11 +138,7 @@ grails.plugins.springsecurity.userLookup.enabledPropertyName = 'activated'
 grails.plugins.springsecurity.userLookup.authoritiesPropertyName = 'groupUsers'
 grails.plugins.springsecurity.successHandler.defaultTargetUrl = '/folder/index'
 grails.plugins.springsecurity.auth.loginFormUrl = '/login/auth'
-// grails.plugins.springsecurity.failureHandler.defaultFailureUrl='/login/index'
-grails.plugins.springsecurity.providerNames = ['preauthAuthProvider', 'daoAuthenticationProvider', 'anonymousAuthenticationProvider']//, 'anonymousAuthenticationProvider']
-
-//grails.plugins.springsecurity.filterNames = ['repositoryLoginFilter', 'requestTicketAuthenticationFilter','anonymousAuthenticationFilter']
-//grails.plugins.springsecurity.filterChain.filterNames = ['requestTicketAuthenticationFilter', 'repositoryLoginFilter', 'anonymousAuthenticationFilter']
+grails.plugins.springsecurity.providerNames = ['preauthAuthProvider', 'daoAuthenticationProvider', 'anonymousAuthenticationProvider']
 
 
 grails.logging.jul.usebridge = false
