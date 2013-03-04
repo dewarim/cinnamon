@@ -406,7 +406,7 @@ class OsdController extends BaseController {
                 log.debug("*** will move objects into folder: ${selectedFolder}")
                 msgMap = osdService.moveToFolder(idList, selectedFolder, repository, versionType, user)
                 msgList.addAll(convertMsgMap(msgMap))                
-                msgMap = folderService.moveToFolder(folderList, selectedFolder, user)
+                msgMap = folderService.moveToFolder(folderList, selectedFolder, repository, user)
                 msgList.addAll(convertMsgMap(msgMap))
             }
             else if (params.copy){

@@ -529,7 +529,7 @@ class FolderService {
      *  for example: 1:[error.access.denied, $name]
      * 
      */
-    Map<String, List> moveToFolder(idList, folderId, user) {
+    Map<String, List> moveToFolder(idList, folderId, repositoryName, user) {
         def msgMap = [:]
         Folder target
         try {
@@ -542,6 +542,7 @@ class FolderService {
             return ['moveFail':[e.message]]
         }
         
+        def reindexList = []
         idList.each { id ->
             try {                
                 log.debug("move: $id")
@@ -563,6 +564,8 @@ class FolderService {
                     }                    
                     Folder oldFolder = source.parent
                     source.parent = target
+                    source.save()
+                    reindexList.add(source)
                     log.debug("moved folder #${source.id} from folder #${oldFolder.id}: ${oldFolder.name} to #${target.id}: ${target.name}")
                     msgMap.put(id, ['folder.move.ok'])
                 }
@@ -571,6 +574,9 @@ class FolderService {
                 log.debug("move failed.", e)
                 msgMap.put(id, ['folder.move.fail', e.message])
             }
+        }
+        reindexList.each{folder ->
+            luceneService.updateIndex(folder, repositoryName)
         }
         return msgMap
     }
