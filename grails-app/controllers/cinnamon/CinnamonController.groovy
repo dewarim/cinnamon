@@ -183,22 +183,23 @@ class CinnamonController extends BaseController {
 
         switch (myAction) {
             case 'connect': forward(action: 'connect'); break
-            case 'disconnect': forward(action: 'disconnect');break
-            case 'test': forward(action: 'test'); break
-            case 'getusers': forward(controller: 'userAccount', action: 'listXml'); break
-            case 'searchobjects': params.xmlQuery = true; forward(controller: 'search', action: 'searchObjects'); break
-            case 'getformats': forward(controller: 'format', action: 'listXml'); break
-            case 'getacls': forward(controller: 'acl', action: 'list'); break
-            case 'getfoldertypes': forward(controller: 'folderType', action: 'listXml'); break;
-            case 'getsubfolders': forward(controller: 'folder', action: 'fetchSubFolders'); break
-            case 'getobjtypes' : forward(controller:'objectType', action: 'listXml');break
-            case 'getfolderbypath' : forward(controller:'folder', action: 'fetchFolderByPath');break
-            case 'getobjects' : forward(controller:'osd', action: 'fetchObjects');break
-            case 'getfolder': forward(controller: 'folder', action: 'fetchFolderXml');break
             case 'createlink': forward(controller: 'link', action: 'createLink');break
-            case 'updatelink': forward(controller: 'link', action: 'updateLink');break
-            case 'getlink': forward(controller: 'link', action: 'getLink');break
             case 'deletelink': forward(controller: 'link', action: 'deleteLink');break
+            case 'disconnect': forward(action: 'disconnect');break
+            case 'getacls': forward(controller: 'acl', action: 'listXml'); break
+            case 'getfoldertypes': forward(controller: 'folderType', action: 'listXml'); break;
+            case 'getformats': forward(controller: 'format', action: 'listXml'); break
+            case 'getfolderbypath' : forward(controller:'folder', action: 'fetchFolderByPath');break            
+            case 'getfolder': forward(controller: 'folder', action: 'fetchFolderXml');break                        
+            case 'getlink': forward(controller: 'link', action: 'getLink');break
+            case 'getobjects' : forward(controller:'osd', action: 'fetchObjects');break
+            case 'getobjtypes' : forward(controller:'objectType', action: 'listXml');break
+            case 'getsubfolders': forward(controller: 'folder', action: 'fetchSubFolders'); break
+            case 'getusers': forward(controller: 'userAccount', action: 'listXml'); break
+            case 'listuilanguages': forward(controller: 'uiLanguage', action: 'listUiLanguages');break
+            case 'searchobjects': params.xmlQuery = true; forward(controller: 'search', action: 'searchObjects'); break
+            case 'test': forward(action: 'test'); break
+            case 'updatelink': forward(controller: 'link', action: 'updateLink');break
             
             default: log.debug("*********************************************************************************\n"+
                     "$myAction has no legacy action => forward to index"); forward(action: 'index')

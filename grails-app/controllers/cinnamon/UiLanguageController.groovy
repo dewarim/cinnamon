@@ -2,6 +2,9 @@ package cinnamon
 
 import grails.plugins.springsecurity.Secured
 import cinnamon.i18n.UiLanguage
+import org.dom4j.Document
+import org.dom4j.DocumentHelper
+import org.dom4j.Element
 
 @Secured(["hasRole('_superusers')"])
 class UiLanguageController extends BaseController{
@@ -95,4 +98,15 @@ class UiLanguageController extends BaseController{
         render(template: 'uiLanguageList', model:[uiLanguageList:UiLanguage.list(params)])
     }
 
+
+    //---------------------------------------------------
+    // Cinnamon XML Server API
+    def listUiLanguages() {
+        Document doc = DocumentHelper.createDocument()
+        Element root = doc.addElement("languages");
+        UiLanguage.list().each {language->
+            language.toXmlElement(root)
+        }
+        return render(contentType: 'application/xml', text: doc.asXML())
+    }
 }
