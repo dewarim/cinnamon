@@ -3,6 +3,7 @@ package cinnamon
 import cinnamon.references.Link
 import cinnamon.references.LinkType
 import cinnamon.utils.ParamParser
+import org.dom4j.DocumentHelper
 import org.dom4j.Element
 import org.springframework.web.multipart.MultipartFile
 import grails.plugins.springsecurity.Secured
@@ -272,7 +273,7 @@ class OsdController extends BaseController {
         try {
             UserAccount user = userService.user
             folder = fetchAndFilterFolder(params.folder, [PermissionName.CREATE_OBJECT])
-            def osd = osdService.createOsd(request, params, session.repositoryName, null, user, folder)
+            def osd = osdService.createOsd(request, params, repositoryName, null, user, folder)            
             return defaultRedirect([folder: folder.id, osd: osd.id])
         }
         catch (Exception e) {
@@ -286,29 +287,14 @@ class OsdController extends BaseController {
         }
     }
 
-    def saveContent() {
+    def saveContent(Long formatId) {
         ObjectSystemData osd = null
         try {
             UserAccount user = userService.user
             osd = fetchAndFilterOsd(params.osd, [PermissionName.WRITE_OBJECT_CONTENT])
             def folder = fetchAndFilterFolder(osd.parent.id)
-
-            MultipartFile file = request.getFile('file')
-            if (file.isEmpty()) {
-                throw new RuntimeException('error.missing.content')
-            }
-            else {
-                // remove any image thumbnails on the content     
-                metasetService.unlinkMetaset(osd, osd.fetchMetaset(Constants.METASET_THUMBNAIL))
-                
-                osdService.acquireLock(osd, user)
-                File tempFile = File.createTempFile('illicium_upload_', null)
-                file.transferTo(tempFile)
-                osdService.storeContent(osd, file.contentType, params.format, tempFile, session.repositoryName)
-                osdService.unlock(osd, user)
-                osd.save()
-                luceneService.updateIndex(osd, session.repositoryName)
-            }
+            osdService.saveFileUpload(request, osd, user, formatId, repositoryName)
+           
             // on success: redirect fetchFolderContent
             log.debug("set content on object #${osd.id}")
             return redirect(controller: 'folder', action: 'index', params: [folder: params.folder, osd: params.osd])
@@ -487,4 +473,96 @@ class OsdController extends BaseController {
         }
     }
 
+    /**
+     * XML API method.
+     *
+     * <p>
+     * The create command creates an object in the repository with the given name.
+     * The object name need not be unique for the same parent. Objects can not be created in root,
+     * they must be created in a folder. If a file is specified, the format must also be specified.
+     * The value in the name column of the formats table must be used. The id of the newly created
+     * object is returned.</p>
+     * If object creation fails, an error message is returned.
+     * If no file parameter is specified, an object without content is created. The setcontent
+     * command can be used to add content later.<br>
+     * <h2>Needed permissions</h2>
+     * CREATE_OBJECT
+     *
+     * @param cmd HTTP request parameter map
+     *            <ul>
+     *            <li>command=create</li>
+     *            <li>[preid]= optional predecessor id - basically this may be used to create another (empty) version of an object.</li>
+     *            <li>name = name of this object</li>
+     *            <li>[appname] = internally used by desktop client to determine which DTDs etc are needed for this object</li>
+     *            <li>metadata = XML string of metadata with required root element {@code <meta>}</li>
+     *            <li>[objtype_id OR objtype]= Id or Name of object type. If no object type is specified, use Constants.OBJTYPE_DEFAULT.</li>
+     *            <li>parentid = id of parent folder</li>
+     *            <li>[format OR format_id] = Id or name of format (optional)</li>
+     *            <li>[acl_id] = optional Id of ACL - if not specified, will use ACL of parent folder</li>
+     *            <li>[language_id]=optional id of language, will use default language "und" for undetermined if not specified.</li>
+     *            </ul>
+     * @return a Response which contains:
+     *         <pre>
+     * {@code <objectId>$id_of_new_object</objectId>}
+     *                         </pre>
+     */
+    def createOsd() {
+        try {
+            def user = userService.user
+            ObjectSystemData osd = new ObjectSystemData(params, user, false)
+            (new Validator(user)).validateCreate(osd.parent)
+            log.debug("osd created: " + osd)
+
+            if (params.containsKey("file")) {
+                osdService.saveFileUpload(request, osd, user, osd.format?.id, repositoryName)
+                // new TikaParser().parse(osd, repository.getName());
+            }
+
+            osd.save(flush: true)
+            metasetService.initializeMetasets(osd, (String) params.metasets)
+            luceneService.addToIndex(osd, repositoryName)
+
+            render(contentType: 'application/xml') {
+                objectId(osd.id.toString())
+            }
+        }
+        catch (Exception e) {
+            log.debug("failed to create OSD", e)
+            renderExceptionXml(e)
+        }
+    }
+
+    /**
+     * The getobject command retrieves an object by the given id.
+     * <h2>Needed permissions</h2>
+     * BROWSE_OBJECT
+     *
+     * @param cmd HTTP request parameter map:
+     *            <ul>
+     *            <li>command=getobject</li>
+     *            <li>id=object id</li>
+     *            </ul>
+     * @return XML-Response:
+     *         XML serialized object or xml-error-doc
+     */
+    def getObject(Long id) {
+        try {
+            Document doc = DocumentHelper.createDocument()
+            Element root = doc.addElement("objects");
+            ObjectSystemData osd = ObjectSystemData.get(id);
+            if (osd == null) {
+                throw new CinnamonException("error.object.not.found");
+            }
+            else {
+                (new Validator(userService.user)).checkBrowsePermission(osd);
+                root.add(osd.toXML().getRootElement());
+            }
+            render(contentType: 'application/xml', text: doc.asXML())
+        }
+        catch (Exception e) {
+            log.debug("failed to fetch OSD", e)
+            renderExceptionXml(e)
+        }
+    }
+    
 }

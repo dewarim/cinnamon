@@ -183,6 +183,7 @@ class CinnamonController extends BaseController {
 
         switch (myAction) {
             case 'connect': forward(action: 'connect'); break
+            case 'create': forward(controller: 'osd', action: 'createOsd'); break
             case 'createlink': forward(controller: 'link', action: 'createLink');break
             case 'deletelink': forward(controller: 'link', action: 'deleteLink');break
             case 'disconnect': forward(action: 'disconnect');break
@@ -192,6 +193,7 @@ class CinnamonController extends BaseController {
             case 'getfolderbypath' : forward(controller:'folder', action: 'fetchFolderByPath');break            
             case 'getfolder': forward(controller: 'folder', action: 'fetchFolderXml');break                        
             case 'getlink': forward(controller: 'link', action: 'getLink');break
+            case 'getobject' : forward(controller:'osd', action: 'getObject');break
             case 'getobjects' : forward(controller:'osd', action: 'fetchObjects');break
             case 'getobjtypes' : forward(controller:'objectType', action: 'listXml');break
             case 'getsubfolders': forward(controller: 'folder', action: 'fetchSubFolders'); break
@@ -202,7 +204,7 @@ class CinnamonController extends BaseController {
             case 'test': forward(action: 'test'); break
             case 'updatelink': forward(controller: 'link', action: 'updateLink');break
             
-            default: log.debug("*********************************************************************************\n"+
+            default: log.error("*********************************************************************************\n"+
                     "$myAction has no legacy action => forward to index"); forward(action: 'index')
         }
     }

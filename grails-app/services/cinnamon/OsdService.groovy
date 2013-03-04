@@ -19,6 +19,7 @@ class OsdService {
     def luceneService
     def userService
     def imageService
+    def metasetService
 
     /**
      * Turn a collection of data objects into an XML document. Any exceptions encountered during
@@ -267,8 +268,8 @@ class OsdService {
         return true
     }
 
-    void storeContent(ObjectSystemData osd, String contentType, String formatId, File file, String repositoryName) {
-        Format format = (Format) inputValidationService.checkObject(Format.class, formatId, true)
+    void storeContent(ObjectSystemData osd, String contentType, Long formatId, File file, String repositoryName) {
+        Format format = Format.get(formatId)
         if (!format) {
             throw new RuntimeException('error.missing.format')
         }
@@ -401,6 +402,25 @@ class OsdService {
         log.debug("repo: ${repositoryName}")
         luceneService.addToIndex(osd, repositoryName)
         return osd
+    }
+    
+    void saveFileUpload(request, ObjectSystemData osd, UserAccount user, formatId, String repositoryName){
+        MultipartFile file = request.getFile('file')
+        if (file.isEmpty()) {
+            throw new RuntimeException('error.missing.content')
+        }
+        else {
+            // remove any image thumbnails on the content     
+            metasetService.unlinkMetaset(osd, osd.fetchMetaset(Constants.METASET_THUMBNAIL))
+            
+            acquireLock(osd, user)
+            File tempFile = File.createTempFile('cinnamon_upload_', null)
+            file.transferTo(tempFile)
+            storeContent(osd, file.contentType, formatId, tempFile, repositoryName)
+            unlock(osd, user)
+            osd.save()
+            luceneService.updateIndex(osd, repositoryName)
+        }
     }
 
     /**
