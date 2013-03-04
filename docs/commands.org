@@ -87,7 +87,7 @@ Cinnamon 3 still needs a list of XML API commands from Cinnamon 2 to be implemen
 	  READ_OBJECT_CUSTOM_METADATA
 	  READ_OBJECT_SYS_METADATA
 	  CREATE_OBJECT
-   - [ ] create
+   - [X] create
 	 CREATE_OBJECT
    - [ ] createFolder
 	 CREATE_FOLDER
@@ -103,9 +103,7 @@ Cinnamon 3 still needs a list of XML API commands from Cinnamon 2 to be implemen
 	 READ_OBJECT_CUSTOM_METADATA
    - [ ] getMeta
 	 READ_OBJECT_CUSTOM_METADATA
-   - [ ] getObject
-	 BROWSE_OBJECT
-   - [ ] getObjects
+   - [X] getObject
 	 BROWSE_OBJECT
    - [ ] getObjectsById
 	 BROWSE_OBJECT
