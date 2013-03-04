@@ -28,7 +28,6 @@ class CopyService {
         CopyResult cr = new CopyResult();
 
         List<ObjectSystemData> allVersions = osdService.findAllVersions(source);
-//		List<ObjectSystemData> newTree = new ArrayList<ObjectSystemData>();
 
         // create copies of all versions:
         ObjectTreeCopier objectTreeCopier = new ObjectTreeCopier(activeUser, targetFolder);
@@ -193,7 +192,6 @@ class CopyService {
         CopyService.log.debug("starting to copy " + conQueue.size() + " objects");
 
         for (ObjectSystemData source : conQueue) {
-//            otc.resetCopyResult();
             try {
                 // create a full copy of the whole object tree:
                 otc.createFullCopy(source);
@@ -374,7 +372,7 @@ class CopyService {
                 }
             }
             catch (Exception e) {
-                log.debug("delete failed.", e)
+                log.debug("copy folders failed.", e)
                 msgMap.put(id, ['osd.copy.fail', e.message])
             }
         }
