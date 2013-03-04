@@ -449,7 +449,8 @@ class FolderController extends BaseController {
             Folder folder = fetchAndFilterFolder(id)
             def folders = folder.subfolders.findAll { Folder f ->
                 folderService.mayBrowseFolder(f, userService.user)
-            }            
+            }
+            folders.remove(folder) // remove root folder which includes itself.
             render(template: 'contentFolder', model: [currentFolder: folder,
                     folderType: params.folderType?.encodeAsHTML(),
                     osd: ObjectSystemData.get(osd),
