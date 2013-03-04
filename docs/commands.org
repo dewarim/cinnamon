@@ -1,0 +1,162 @@
+* Cinnamon 3: XML-API state
+
+Status: 2013-03-04 #1
+
+Cinnamon 3 still needs a list of XML API commands from Cinnamon 2 to be implemented.
+
+** Already implemented
+   connect
+   disconnect
+   getAcls
+   getFolderTypes
+   getFormats
+   getFolderByPath
+   getFolder
+   listLanguages
+   listUiLanguages      
+   createLink
+   deleteLink
+   updateLink
+   getLink
+   getObjects
+   getObjTypes
+   searchObjects
+   getSubfolders
+
+** Secondary
+   Stuff that is secondary or legacy / not or rarely used:
+   - [ ] clearIndex
+   - [ ] clearMessage
+   - [ ] initializeDatabase (can be called by anybody as long as there are no user accounts in the database)
+   - [ ] reindex
+   - [ ] executeXmlQuery ( to view objects, you need: BROWSE_OBJECT )
+
+*** superuser
+   most of those are availalbe in the GUI
+    AddGroupToAcl
+    AddPermissionToAclEntry
+    AddUserToGroup
+    createAcl
+    createFolderType
+    createFormat
+    createGroup
+    createObjectType
+    createPermission
+    createRelationType
+    createUser
+    deleteAcl
+    deleteFolderType
+    deleteFormat
+    deleteGroup
+    deleteObjectType
+    deletePermission
+    deleteRelationType
+    deleteUser
+    editAcl
+    removeGroupFromAcl
+    removePermissionFromAcl
+    removeUserFromGroup
+
+
+** Primary, no further permissions required
+   - [ ] createRelation   
+   - [ ] deleteRelation   
+   - [ ] getAclEntry   
+   - [ ] getExtension
+   - [ ] getGroupsOfUser
+   - [ ] getIndexGroup
+   - [ ] getPermission
+   - [ ] getRelations
+   - [ ] getRelationTypes
+   - [ ] getUser
+   - [ ] getUserByName
+   - [ ] getUsers
+   - [ ] getUsersAcls
+   - [ ] getUsersPermissions
+   - [ ] listAclEntries
+   - [ ] listAclMembers
+   - [ ] listGroups
+   - [ ] listIndexGroups
+   - [ ] listIndexItems
+   - [ ] listMessages
+   - [ ] listPermissions
+
+** Primary, requires permission checking:
+   - [ ]  copy
+	  READ_OBJECT_CONTENT
+	  READ_OBJECT_CUSTOM_METADATA
+	  READ_OBJECT_SYS_METADATA
+	  CREATE_OBJECT
+   - [ ] create
+	 CREATE_OBJECT
+   - [ ] createFolder
+	 CREATE_FOLDER
+   - [ ] delete
+	 DELETE_OBJECT
+   - [ ] deleteAllVersions
+	 DELETE_OBJECT
+   - [ ] deleteFolder
+	 DELETE_FOLDER
+   - [ ] getContent
+	 READ_OBJECT_CONTENT
+   - [ ] getFolderMeta
+	 READ_OBJECT_CUSTOM_METADATA
+   - [ ] getMeta
+	 READ_OBJECT_CUSTOM_METADATA
+   - [ ] getObject
+	 BROWSE_OBJECT
+   - [ ] getObjects
+	 BROWSE_OBJECT
+   - [ ] getObjectsById
+	 BROWSE_OBJECT
+   - [ ] getObjectsWithCustomMetadata
+	 READ_OBJECT_CUSTOM_METADATA 
+	 BROWSE_OBJECT
+   - [ ] getSysMeta
+	 READ_OBJECT_SYS_META or BROWSE_FOLDER, depending on type
+   - [ ] lock
+	 LOCK
+   - [ ] queryCustomTable
+	 QUERY_CUSTOM_TABLE
+   - [ ] queryFolders
+	 BROWSE_FOLDER
+   - [ ] queryObjects
+	 BROWSE_OBJECT
+   - [ ] search
+	 BROWSE_OBJECT or BROWSE_FOLDER (tested for each item found)
+   - [ ] searchFolders
+	 BROWSE_FOLDER (tested for each folder found)
+   - [ ] setContent
+	 WRITE_OBJECT_CONTENT
+   - [ ] setMeta
+	 WRITE_OBJECT_CUSTOM_METADATA
+   - [ ] setSysMeta
+	 LOCK and one of (WRITE_OBJECT_SYS_METADATA or  EDIT_FOLDER)
+	 with parameter aclId: SET_ACL instead of WRITE_OBJECT_SYS_METADATA
+	 with parameter parent_id: MOVE instead of WRITE_OBJECT_SYS_METADATA
+
+** Translation API:
+   - [ ] createTranslation
+   - [ ] checkTranslation
+
+** Lifecycle API:
+   - [ ] attachLifeCycle
+   - [ ] detachLifeCycle
+   - [ ] changeState
+   - [ ] getNextStates
+   - [ ] listLifeCycles
+   - [ ] getLifeCycle
+   - [ ] getLifeCycleState
+
+** RenderServerConnector:
+   - [ ] startRenderTask
+
+** Workflow API
+   - [ ] createWorkflow
+   - [ ] createTask
+   - [ ] findOpenTasks
+   - [ ] doTransition
+
+** Further Functionality / Classes:
+   - [ ] TikaParser
+   - [ ] TikaConfig
