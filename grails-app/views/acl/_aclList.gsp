@@ -7,8 +7,6 @@
 
         <g:sortableColumn property="name" title="${message(code:'acl.name')}"/>
 
-        <g:sortableColumn property="description" title="${message(code:'acl.description')}"/>
-
     </tr>
     </thead>
     <tbody>
@@ -18,8 +16,6 @@
             <td><g:link action="show" id="${acl.id}">${fieldValue(bean: acl, field: 'id')}</g:link></td>
 
             <td>${fieldValue(bean: acl, field: 'name')}</td>
-
-            <td>${fieldValue(bean: acl, field: 'description')}</td>
 
         </tr>
     </g:each>

@@ -34,16 +34,6 @@
 					</td>
 				</tr>
 
-				<tr class="prop">
-					<td class="name">
-						<label for="description"><g:message code="acl.description"/></label>
-					</td>
-					<td class="value ${hasErrors(bean: acl, field: 'description', 'errors')}">
-						<!-- <input type="text" name="description" id="description" value="${fieldValue(bean: acl, field: 'description')}" /> -->
-						<g:descriptionTextArea name="description" value="${fieldValue(bean:acl,field:'description')}"/>
-					</td>
-				</tr>
-
 				</tbody>
 			</table>
 			<div class="buttons">

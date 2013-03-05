@@ -43,13 +43,6 @@
 			</tr>
 
 			<tr class="prop">
-				<td class="name"><g:message code="acl.description"/></td>
-
-				<td class="value">${fieldValue(bean: acl, field: 'description')}</td>
-
-			</tr>
-
-			<tr class="prop">
 				<td colspan="2">
 					<g:render template="gotoAclEntries" model="[acl:acl]"/>
 				</td>

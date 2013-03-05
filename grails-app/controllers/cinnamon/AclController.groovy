@@ -69,10 +69,9 @@ class AclController extends BaseController {
         }
     }
 
-    def save() {
+    def save(String name) {
         try {
-            // TODO: bind params
-            Acl acl = new Acl(params)
+            Acl acl = new Acl(name:name)
             acl.save(flush: true)
             redirect(action: 'show', params: [id: acl.id.toString()])
         }
@@ -83,16 +82,18 @@ class AclController extends BaseController {
         }
     }
 
-    def update() {
-        Acl acl = Acl.get(params.id)
-        // TODO: check for acl == null
-        acl.properties = params
+    def update(String name, Long id) {        
+        Acl acl = Acl.get(id)
+        if (! acl){
+            flash.message = message(code:'error.object.not.found')
+        }
+        acl.name = name
         if (acl.save(flush: true)) {
             flash.message = message(code: "acl.update.success")
             redirect(action: 'show', params: [id: acl.id])
         }
         else {
-            flash.message = message(code: "group.update.fail", args: [acl.errors])
+            flash.message = message(code: "acl.update.fail", args: [acl.errors])
             redirect(action: 'edit', params: [id: acl.id])
         }
     }
