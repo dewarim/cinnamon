@@ -22,11 +22,11 @@ class MetasetTypeController {
         [metasetTypeInstance: new MetasetType(params)]
     }
 
-    def save() {
-        def metasetTypeInstance = new MetasetType(params)
+    def save(String name, String config) {
+        def metasetTypeInstance = new MetasetType(name:name, config: config)
 
         try{
-            ParamParser.parseXmlToDocument(params.config)
+            ParamParser.parseXmlToDocument(config)
         }
         catch (e){
             flash.message = message(code: 'error.xml.config') //, args:[params.config]
@@ -65,10 +65,10 @@ class MetasetTypeController {
         [metasetTypeInstance: metasetTypeInstance]
     }
 
-    def update() {
-        def metasetTypeInstance = MetasetType.get(params.id)
+    def update(Long id, String config) {
+        def metasetTypeInstance = MetasetType.get(id)
         if (!metasetTypeInstance) {
-            log.debug("Could not find MetasetType#${params.id}")
+            log.debug("Could not find MetasetType#${id}")
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'metasetType.label', default: 'MetasetType'), params.id])
             redirect(action: "list")
             return
@@ -85,10 +85,10 @@ class MetasetTypeController {
             }
         }
 
-        metasetTypeInstance.properties['name','description','config'] = params
+        metasetTypeInstance.properties['name', 'config'] = params
 
         try{
-            ParamParser.parseXmlToDocument(params.config)
+            ParamParser.parseXmlToDocument(config)
         }
         catch (Exception e){
 //            log.debug("failed to parse config:",e)

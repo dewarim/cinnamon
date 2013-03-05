@@ -31,9 +31,6 @@
             <g:sortableColumn property="config"
                               title="${message(code: 'metasetType.config.label', default: 'Config')}"/>
 
-            <g:sortableColumn property="description"
-                              title="${message(code: 'metasetType.description.label', default: 'Description')}"/>
-
             <g:sortableColumn property="name" title="${message(code: 'metasetType.name.label', default: 'Name')}"/>
 
         </tr>

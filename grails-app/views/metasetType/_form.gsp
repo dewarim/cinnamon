@@ -6,14 +6,6 @@
     <g:textField name="name" value="${metasetTypeInstance?.name}" />
 </div>
 
-<div class="fieldcontain ${hasErrors(bean: metasetTypeInstance, field: 'description', 'error')} ">
-    <label for="description">
-        <g:message code="metasetType.description.label" default="Description" />
-
-    </label>
-    <g:textField name="description" value="${metasetTypeInstance?.description}" />
-</div>
-
 <div class="fieldcontain ${hasErrors(bean: metasetTypeInstance, field: 'config', 'error')} ">
 <label for="config_${metasetTypeInstance?.id}">
     <g:message code="metasetType.config.label" default="Config" />

@@ -30,15 +30,6 @@
                     </li>
                 </g:if>
 
-                <g:if test="${metasetTypeInstance?.description}">
-                    <li class="fieldcontain">
-                        <span id="description-label" class="property-label"><g:message code="metasetType.description.label" default="Description" /></span>
-
-                        <span class="property-value" aria-labelledby="description-label"><g:fieldValue bean="${metasetTypeInstance}" field="description"/></span>
-
-                    </li>
-                </g:if>
-
 				<g:if test="${metasetTypeInstance?.config}">
 				<li class="fieldcontain">
 					<span id="config-label" class="property-label"><g:message code="metasetType.config.label" default="Config" /></span>
