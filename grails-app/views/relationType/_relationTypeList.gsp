@@ -5,7 +5,6 @@
 
         <g:sortableColumn property="id" title="${message(code:'id')}"/>
         <g:sortableColumn property="name" title="${message(code:'relationType.name')}"/>
-        <g:sortableColumn property="description" title="${message(code:'relationType.description')}"/>
         <g:sortableColumn property="leftobjectprotected" title="${message(code:'relationType.leftobjectprotected')}"/>
         <g:sortableColumn property="rightobjectprotected" title="${message(code:'relationType.rightobjectprotected')}"/>
         <g:sortableColumn property="cloneOnLeftCopy" title="${message(code:'relationType.cloneOnLeftCopy')}"/>
@@ -23,8 +22,6 @@
                         id="${relationType.id}">${fieldValue(bean: relationType, field: 'id')}</g:link></td>
 
             <td>${fieldValue(bean: relationType, field: 'name')}</td>
-
-            <td>${fieldValue(bean: relationType, field: 'description')}</td>
 
             <td class="center"><g:if test="${relationType.leftobjectprotected}">
                 <img src="<g:resource dir='/images' file='ok.png'/>" alt="<g:message code="input.enabled"/>">

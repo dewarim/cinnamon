@@ -17,13 +17,6 @@
     </tr>
 
     <tr class="prop">
-        <td class="name"><g:message code="relationType.description"/></td>
-
-        <td class="value">${fieldValue(bean: relationType, field: 'description')}</td>
-
-    </tr>
-
-    <tr class="prop">
         <td class="name"><g:message code="relationType.leftobjectprotected"/></td>
 
         <td class="value">

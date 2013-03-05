@@ -43,16 +43,6 @@
 
                 <tr class="prop">
                     <td class="name">
-                        <label for="description"><g:message code="relationType.description"/></label>
-                    </td>
-                    <td class="value ${hasErrors(bean: relationType, field: 'description', 'errors')}">
-                        <g:descriptionTextArea name="description"
-                                               value="${fieldValue(bean:relationType,field:'description')}"/>
-                    </td>
-                </tr>
-
-                <tr class="prop">
-                    <td class="name">
                         <label for="leftobjectprotected"><g:message code="relationType.leftobjectprotected"/></label>
                     </td>
                     <td

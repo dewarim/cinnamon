@@ -13,7 +13,7 @@ class RelationTypeController extends BaseController{
         redirect(action:'list')
     }
     
-    def save() {
+    def save(String name) {
         log.debug("relationType::${params}")
         Boolean leftprotected = params.leftobjectprotected?.matches(/true|on/) ?: false
         Boolean rightprotected = params.rightobjectprotected?.matches(/true|on/) ?: false
@@ -21,9 +21,7 @@ class RelationTypeController extends BaseController{
         Boolean cloneOnRightCopy = params.cloneOnRightCopy?.matches(/true|on/) ?: false      
         RelationResolver leftResolver = RelationResolver.get(params.left_resolver_id)
         RelationResolver rightResolver = RelationResolver.get(params.right_resolver_id)
-        def name = params.name
-        def description = params.description
-        RelationType relationType = new RelationType(name, description,
+        RelationType relationType = new RelationType(name,
                 leftprotected, rightprotected,
                 leftResolver, rightResolver,
                 cloneOnLeftCopy, cloneOnRightCopy
@@ -75,8 +73,8 @@ class RelationTypeController extends BaseController{
 		return redirect(action:'list')
     }
 
-    def update() {
-        RelationType rt = RelationType.get(params.id)
+    def update(Long id, String name) {
+        RelationType rt = RelationType.get(id)
         try{
             if(! rt){
                 throw new RuntimeException('error.object.not.found')
@@ -95,6 +93,7 @@ class RelationTypeController extends BaseController{
             }
             rt.leftResolver = RelationResolver.get(params.left_resolver_id);
             rt.rightResolver = RelationResolver.get(params.right_resolver_id);
+            rt.name = name
             rt.save(flush:true)
         }
         catch (Exception e){
