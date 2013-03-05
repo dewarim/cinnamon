@@ -17,12 +17,10 @@ class FolderTypeController extends BaseController{
     }
 
     @Secured(["hasRole('_superusers')"])
-    def save() {
+    def save(String name, String config) {
         try {
-            FolderType folderType = new FolderType(name: params.name,
-                    description:params.description,
-            )
-            folderType.config = params.config
+            FolderType folderType = new FolderType(name: name)
+            folderType.config = config
             folderType.save(failOnError: true)
             log.debug("folderType: ${folderType}")
             return redirect(action: 'show', params: [id: folderType?.id])
@@ -72,18 +70,19 @@ class FolderTypeController extends BaseController{
     }
 
     @Secured(["hasRole('_superusers')"])
-    def update () {
-        FolderType ft = FolderType.get(params.id)
-        ft.properties = params
+    def update (String name, String config, Long id) {
+        FolderType ft = FolderType.get(id)
         try {
+            ft.name = name
+            ft.config = config
             ft.save(flush: true)
         }
         catch (Exception e) {
             log.debug("failed to update FolderType:",e)
             flash.message = e.getLocalizedMessage()
-            return redirect(action: 'edit', params: [id: params.id])
+            return redirect(action: 'edit', params: [id: id])
         }
-        return redirect(action: 'show', params: [id: params.id])
+        return redirect(action: 'show', params: [id: id])
     }
 
     def updateList () {

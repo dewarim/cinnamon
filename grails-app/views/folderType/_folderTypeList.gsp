@@ -7,8 +7,6 @@
 
         <g:sortableColumn property="name" title="${message(code:'folderType.name')}"/>
 
-        <g:sortableColumn property="description" title="${message(code:'folderType.description')}"/>
-
     </tr>
     </thead>
     <tbody>
@@ -18,8 +16,6 @@
             <td><g:link action="show" id="${folderType.id}">${fieldValue(bean: folderType, field: 'id')}</g:link></td>
 
             <td>${fieldValue(bean: folderType, field: 'name')}</td>
-
-            <td>${fieldValue(bean: folderType, field: 'description')}</td>
 
         </tr>
     </g:each>

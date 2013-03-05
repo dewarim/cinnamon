@@ -25,11 +25,6 @@
                 <td class="name"><g:message code="folderType.name"/></td>
                 <td class="value">${fieldValue(bean: folderType, field: 'name')}</td>
             </tr>
-
-            <tr class="prop">
-                <td class="name"><g:message code="folderType.description"/></td>
-                <td class="value">${fieldValue(bean: folderType, field: 'description')}</td>
-            </tr>
             <tr class="prop xml_editor_row">
                 <td class="name">
                     <g:message code="folderType.config"/>

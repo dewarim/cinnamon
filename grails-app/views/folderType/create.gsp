@@ -39,15 +39,6 @@
                     </td>
                 </tr>
 
-                <tr class="prop">
-                    <td class="name">
-                        <label for="description"><g:message code="folderType.description"/></label>
-                    </td>
-                    <td class="value ${hasErrors(bean: folderType, field: 'description', 'errors')}">
-                        <g:descriptionTextArea name="description"
-                                               value="${fieldValue(bean:folderType,field:'description')}"/>
-                    </td>
-                </tr>
                 <tr class="xml_editor_row">
                     <td>
                         <label for="config_${folderType?.id}"><g:message code="folderType.config"/></label>
