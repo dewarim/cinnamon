@@ -44,8 +44,6 @@
 
                 <td>${fieldValue(bean: metasetTypeInstance, field: "config")}</td>
 
-                <td>${fieldValue(bean: metasetTypeInstance, field: "description")}</td>
-
                 <td>${fieldValue(bean: metasetTypeInstance, field: "name")}</td>
 
             </tr>
