@@ -39,17 +39,26 @@
                                value="${fieldValue(bean: objectType, field: 'name')}"/>
                     </td>
                 </tr>
-
-                <tr class="prop">
-                    <td class="name">
-                        <label for="description"><g:message code="objectType.description"/>:</label>
+                <tr>
+                    <td>
+                        <label for="config">
+                            <g:message code="objectType.config" default="Config" />
+                        </label>
                     </td>
-                    <td class="value ${hasErrors(bean: objectType, field: 'description', 'errors')}">
-                        <!-- <input type="text" name="description" id="description" value="${fieldValue(bean: objectType, field: 'description')}" /> -->
-                        <g:descriptionTextArea name="description"
-                                               value="${fieldValue(bean: objectType, field: 'description')}"/>
+                    <td>
+                        <div class="fieldcontain ${hasErrors(bean: objectType, field: 'config', 'error')} ">
+
+                            <div class="value xml_editor">
+                                <textarea id="config" style="width:100ex;border:1px black solid; " name="config" cols="120"
+                                          rows="10">${objectType?.config ?: '<meta />'}</textarea>
+                                <script type="text/javascript">
+                                    createEditor($('#config').get(0))
+                                </script>
+                            </div>
+                        </div>
                     </td>
                 </tr>
+             
 
                 </tbody>
             </table>

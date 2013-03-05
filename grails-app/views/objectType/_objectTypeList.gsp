@@ -7,7 +7,9 @@
 
         <g:sortableColumn property="name" title="${message(code: 'objectType.name')}"/>
 
-        <g:sortableColumn property="description" title="${message(code: 'objectType.description')}"/>
+        <th>
+        <g:message code="objectType.config"/>
+        </th>
 
     </tr>
     </thead>
@@ -20,7 +22,26 @@
 
             <td>${fieldValue(bean: objectTypeInstance, field: 'name')}</td>
 
-            <td>${fieldValue(bean: objectTypeInstance, field: 'description')}</td>
+            <td>
+                <label for="config_${objectTypeInstance?.id}" style="display:none;">
+                    <g:message code="objectType.config" default="Config"/>
+                </label>
+
+                <div class="value xml_editor">
+                    <g:form>
+
+                        <textarea id="config_${objectTypeInstance?.id}" style="width:100ex;border:1px black solid; "
+                                  name="config" cols="120" disabled="disabled"
+                                  rows="10">${objectTypeInstance.config ?: '<meta />'}</textarea>
+                        <script type="text/javascript">
+                            var renderMirror = CodeMirror.fromTextArea($('#config_${objectTypeInstance?.id}').get(0), {
+                                mode: 'application/xml',
+                                readOnly: true
+                            });
+                        </script>
+                    </g:form>
+                </div>
+            </td>
 
         </tr>
     </g:each>

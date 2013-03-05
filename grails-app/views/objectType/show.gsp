@@ -44,14 +44,25 @@
                 <td class="value">${fieldValue(bean: objectType, field: 'name')}</td>
 
             </tr>
+            <tr>
+                <td>
+                    <label for="config">
+                        <g:message code="objectType.config" default="Config" />
+                    </label>
+                </td>
+                <td>
+                    <div class="fieldcontain ${hasErrors(bean: objectType, field: 'config', 'error')} ">
 
-            <tr class="prop">
-                <td class="name"><g:message code="objectType.description"/></td>
-
-                <td class="value">${fieldValue(bean: objectType, field: 'description')}</td>
-
+                        <div class="value xml_editor">
+                            <textarea id="config" style="width:100ex;border:1px black solid; " name="config" cols="120"
+                                      rows="10">${objectType?.config ?: '<meta />'}</textarea>
+                            <script type="text/javascript">
+                                createEditor($('#config').get(0))
+                            </script>
+                        </div>
+                    </div>
+                </td>
             </tr>
-
             </tbody>
         </table>
     </div>

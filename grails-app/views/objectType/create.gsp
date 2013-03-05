@@ -38,18 +38,29 @@
                         </script>
                     </td>
                 </tr>
-
-                <tr class="prop">
-                    <td class="name">
-                        <label for="description"><g:message code="objectType.description"/></label>
+                <tr>
+                    <td>
+                        <label for="config_${objectTypeInstance?.id}">
+                            <g:message code="objectType.config" default="Config"/>
+                        </label>
                     </td>
-                    <td class="value ${hasErrors(bean: objectType, field: 'description', 'errors')}">
-                        <!-- <input type="text" name="description" id="description" value="${fieldValue(bean: objectType, field: 'description')}" /> -->
-                        <g:descriptionTextArea name="description"
-                                               value="${fieldValue(bean: objectType, field: 'description')}"/>
+                    <td>
+                        <div class="value xml_editor">
+                            <g:form>
+
+                                <textarea id="config_${objectTypeInstance?.id}"
+                                          style="width:100ex;border:1px black solid; "
+                                          name="config" cols="120" disabled="disabled"
+                                          rows="10">${objectTypeInstance?.config ?: '<meta />'}</textarea>
+                                <script type="text/javascript">
+                                    var renderMirror = CodeMirror.fromTextArea($('#config_${objectTypeInstance?.id}').get(0), {
+                                        mode: 'application/xml'
+                                    });
+                                </script>
+                            </g:form>
+                        </div>
                     </td>
                 </tr>
-
                 </tbody>
             </table>
         </div>
