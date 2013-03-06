@@ -69,7 +69,7 @@ grails.project.dependency.resolution = {
         runtime ":resources:1.1.6"
         compile(':spring-security-core:1.2.7.3')
         compile (":twitter-bootstrap:2.1.0.1"){excludes 'svn'}
-        runtime 'cinnamon:cinnamon-db:0.3.1.13'
+        runtime ':cinnamon-db:3.0.0.3'
         compile ":remote-pagination:0.3"
         test (':spock:0.7'){
             exclude "spock-grails-support"
