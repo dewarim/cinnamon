@@ -41,8 +41,8 @@ class BootStrap {
                     contenttype: 'application/octet-stream', description: 'Binary data of unknown format').save()
         }
         
-        
         // migrate legacy data:
+        // TODO: do this for each repository, not just the first in Environment.list()
         log.debug("migrating metadata to metasets")
         if(! grailsApplication.config.doMigrate){
             log.debug("Do not migrate Cinnamon 2 legacy data.")
