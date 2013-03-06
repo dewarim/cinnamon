@@ -3,11 +3,11 @@
 <tr>
     <td class="value ${hasErrors(bean: changeTrigger, field: 'controller', 'errors')}">
         <label for="controller_${cid}"><g:message code="changeTrigger.controller"/></label> <br>
-        <input type="text" name="controller" id="controller_${cid}" value="${changeTrigger?.controller}"/>
+        <input type="text" name="ct_controller" id="controller_${cid}" value="${changeTrigger?.controller}"/>
     </td>
     <td class="value ${hasErrors(bean: changeTrigger, field: 'action', 'errors')}">
         <label for="action_${cid}"><g:message code="changeTrigger.action"/></label> <br>
-        <input type="text" name="action" id="action_${cid}" value="${changeTrigger?.action}"/>
+        <input type="text" name="ct_action" id="action_${cid}" value="${changeTrigger?.action}"/>
     </td>
     <td>
         <label for="triggerType_${cid}">

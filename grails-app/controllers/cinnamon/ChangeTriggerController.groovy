@@ -61,8 +61,8 @@ class ChangeTriggerController extends BaseController {
 
     protected void updateFields(changeTrigger) {
         changeTrigger.triggerType = inputValidationService.checkObject(ChangeTriggerType.class, params.triggerType)
-        changeTrigger.controller = inputValidationService.checkAndEncodeText(params, 'controller', 'changeTrigger.controller')
-        changeTrigger.action = inputValidationService.checkAndEncodeText(params, 'action', 'changeTrigger.action')
+        changeTrigger.controller = inputValidationService.checkAndEncodeText(params, 'ct_controller', 'changeTrigger.controller')
+        changeTrigger.action = inputValidationService.checkAndEncodeText(params, 'ct_action', 'changeTrigger.action')
         changeTrigger.config = params.config
         params.ranking = params.ranking ?: '0'
         changeTrigger.ranking = inputValidationService.checkAndEncodeInteger(params, 'ranking', 'changeTrigger.ranking')
