@@ -1,7 +1,6 @@
 package cinnamon
 
 import grails.plugins.springsecurity.Secured
-import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import cinnamon.transformation.Transformer
 import cinnamon.transformer.ITransformer
 
@@ -11,7 +10,7 @@ class TransformerController extends BaseController{
     def create () {
         Transformer transformer = new Transformer()
         render(template: 'create', model: [transformer: transformer,
-                transformers:ConfigurationHolder.config.transformers
+                transformers:grailsApplication.config.transformers
         ])
     }
 
@@ -30,7 +29,7 @@ class TransformerController extends BaseController{
             log.debug("failed to save transformer: ", e)
             render(status: 503, template: 'create',
                     model: [transformer: transformer,
-                            transformers:ConfigurationHolder.config.transformers,
+                            transformers:grailsApplication.config.transformers,
                             errorMessage: e.getLocalizedMessage().encodeAsHTML()])
             return
         }
@@ -49,7 +48,7 @@ class TransformerController extends BaseController{
                 throw new RuntimeException("error.object.not.found")
             }
             render(template: 'edit', model: [transformer: transformer,
-                transformers:ConfigurationHolder.config.transformers
+                transformers:grailsApplication.config.transformers
             ])
         }
         catch (Exception e) {
