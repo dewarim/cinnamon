@@ -1,7 +1,6 @@
 package cinnamon
 
 import grails.plugins.springsecurity.Secured
-import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import cinnamon.relation.RelationResolver
 import cinnamon.interfaces.IRelationResolver
 import cinnamon.relation.RelationType
@@ -11,7 +10,7 @@ class RelationResolverController extends BaseController {
 
     def create() {
         render(template: 'create', model: [relationResolver: new RelationResolver(),
-                resolvers: ConfigurationHolder.config.relationResolvers
+                resolvers: grailsApplication.config.relationResolvers
         ])
     }
 
@@ -30,7 +29,7 @@ class RelationResolverController extends BaseController {
             log.debug("failed to save relationResolver: ", e)
             render(status: 503, template: 'create',
                     model: [relationResolver: relationResolver,
-                            resolvers: ConfigurationHolder.config.relationResolvers,
+                            resolvers: grailsApplication.config.relationResolvers,
                             errorMessage: e.getLocalizedMessage().encodeAsHTML()])
             return
         }
@@ -45,7 +44,7 @@ class RelationResolverController extends BaseController {
     def edit() {
         def resolver = inputValidationService.checkObject(RelationResolver.class, params.id)
         render(template: 'edit', model: [relationResolver: resolver,
-                resolvers: ConfigurationHolder.config.relationResolvers
+                resolvers: grailsApplication.config.relationResolvers
         ])
     }
 
@@ -69,7 +68,7 @@ class RelationResolverController extends BaseController {
         render(template: 'list_table', model: [relationResolverList: RelationResolver.list(params)])
     }
 
-    protected void updateFields(relationResolver) {
+    protected void updateFields(RelationResolver relationResolver) {
         relationResolver.name = inputValidationService.checkAndEncodeName(params.name, relationResolver)
         relationResolver.config = params.config
         try {
