@@ -72,6 +72,7 @@ class FormatController extends BaseController {
         }
         else{
             Format format = new Format()
+            // TODO: use bind params
             format.properties = params
             if(! format.save()){
                 return redirect(action:'create', controller:'format',  params:params)
@@ -90,6 +91,7 @@ class FormatController extends BaseController {
             flash.message = message(code: 'format.empty.name')
             return redirect(action:'edit', controller:'format', id:format.id)
         }
+        // TODO: use bind params
         format.properties = params
 
         if(! format.save()){
