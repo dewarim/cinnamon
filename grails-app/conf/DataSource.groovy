@@ -20,8 +20,8 @@ environments {
     test {
         dataSource {
             dbCreate = "update"
-//            username = 'cinnamon'
-//            password = 'cinnamon'
+            username = 'sa'
+            password = ''
 //            url = 'jdbc:postgresql://localhost/demo?user=cinnamon&password=cinnamon'
             url = "jdbc:h2:mem:testDb"
         }
