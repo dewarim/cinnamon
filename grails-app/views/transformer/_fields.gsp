@@ -5,10 +5,6 @@
 		<label for="name_${tid}"><g:message code="transformer.name"/></label> <br>
 		<input type="text" name="name" id="name_${tid}" value="${transformer?.name}"/>
 	</div>
-	<div class="transformer_description ${hasErrors(bean: transformer, field: 'description', 'errors')}">
-		<label for="description_${tid}"><g:message code="transformer.description"/></label> <br>
-		<input type="text" name="description" id="description_${tid}" value="${transformer?.description}"/>
-	</div>
 	<br>
 	<div class="transformer_transformerClass  ${hasErrors(bean: transformer, field: 'transformerClass', 'errors')}">
 		<label for="transformerClass_${tid}"><g:message code="transformer.transformerClass"/></label> <br>

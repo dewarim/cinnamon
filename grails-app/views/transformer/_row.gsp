@@ -1,6 +1,5 @@
 <td>${transformer.id}</td>
 <td>${transformer.name}</td>
-<td>${transformer.description}</td>
 <td>${transformer.transformerClass?.name}</td>
 <td>${transformer.sourceFormat?.name}</td>
 <td>${transformer.targetFormat?.name}</td>

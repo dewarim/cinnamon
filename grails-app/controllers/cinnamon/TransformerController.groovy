@@ -74,9 +74,8 @@ class TransformerController extends BaseController{
         render(template: 'list_table', model: [transformerList: Transformer.list(params)])
     }
 
-    protected void updateFields(transformer) {
+    protected void updateFields(Transformer transformer) {
         transformer.name = inputValidationService.checkAndEncodeName(params.name, transformer)
-        transformer.description = inputValidationService.checkAndEncodeText(params, "description", "transformer.description")
         transformer.sourceFormat = inputValidationService.checkObject(Format.class, params.sourceFormat)
         transformer.targetFormat = inputValidationService.checkObject(Format.class, params.targetFormat)
         try {
