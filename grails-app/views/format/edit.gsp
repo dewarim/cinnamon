@@ -50,17 +50,6 @@
 
                 <tr class="prop">
                     <td class="name">
-                        <label for="description"><g:message code="format.description"/></label>
-                    </td>
-                    <td class="value ${hasErrors(bean: format, field: 'description', 'errors')}">
-                        <!-- <input type="text" name="description" id="description" value="${fieldValue(bean: format, field: 'description')}" /> -->
-                        <g:descriptionTextArea name="description"
-                                               value="${fieldValue(bean: format, field: 'description')}"/>
-                    </td>
-                </tr>
-
-                <tr class="prop">
-                    <td class="name">
                         <label for="extension"><g:message code="format.extension"/></label>
                     </td>
                     <td class="value ${hasErrors(bean: format, field: 'extension', 'errors')}">

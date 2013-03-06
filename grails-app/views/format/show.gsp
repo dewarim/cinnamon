@@ -51,13 +51,6 @@
             </tr>
 
             <tr class="prop">
-                <td class="name"><g:message code="format.description"/></td>
-
-                <td class="value">${fieldValue(bean: format, field: 'description')}</td>
-
-            </tr>
-
-            <tr class="prop">
                 <td class="name"><g:message code="format.extension"/></td>
 
                 <td class="value">${fieldValue(bean: format, field: 'extension')}</td>

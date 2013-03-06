@@ -9,8 +9,6 @@
 
         <g:sortableColumn property="contenttype" title="${message(code:'format.contenttype')}"/>
 
-        <g:sortableColumn property="description" title="${message(code:'format.description')}"/>
-
         <g:sortableColumn property="extension" title="${message(code:'format.extension')}"/>
 
     </tr>
@@ -25,8 +23,6 @@
             <td>${fieldValue(bean: formatInstance, field: 'name')}</td>
 
             <td>${fieldValue(bean: formatInstance, field: 'contenttype')}</td>
-
-            <td>${fieldValue(bean: formatInstance, field: 'description')}</td>
 
             <td>${fieldValue(bean: formatInstance, field: 'extension')}</td>
 
