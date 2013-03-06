@@ -1,11 +1,9 @@
 package cinnamon
 
 import grails.plugins.springsecurity.Secured
-import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import cinnamon.trigger.ChangeTriggerType
 import cinnamon.trigger.ITrigger
 import cinnamon.trigger.ChangeTrigger
-import cinnamon.trigger.impl.RelationChangeTrigger
 
 @Secured(["hasRole('_superusers')"])
 class ChangeTriggerTypeController extends BaseController {
@@ -13,7 +11,7 @@ class ChangeTriggerTypeController extends BaseController {
     def create () {
 //        ChangeTriggerType changeTriggerType = new ChangeTriggerType(params)
         render(template: 'create', model: [changeTriggerType: null,
-                 triggers:ConfigurationHolder.config.triggerClasses,
+                 triggers:grailsApplication.config.triggerClasses,
         ])
     }
 
@@ -22,17 +20,17 @@ class ChangeTriggerTypeController extends BaseController {
         [changeTriggerTypeList: ChangeTriggerType.list(params)]
     }
 
-    def save () {
+    def save (String name, String triggerClass) {
         ChangeTriggerType changeTriggerType = new ChangeTriggerType()
         try {
-            updateFields(changeTriggerType)
+            updateFields(changeTriggerType, name, triggerClass)
             changeTriggerType.save(failOnError: true, flush:true)
         }
         catch (Exception e) {
             log.debug("failed to save changeTriggerType: ", e)
             render(status: 503, template:'create',
                     model:[changeTriggerType:changeTriggerType,
-                           triggers:ConfigurationHolder.config.triggerClasses,
+                           triggers: grailsApplication.config.triggerClasses,
                            errorMessage : e.getLocalizedMessage().encodeAsHTML()])
             return
         }
@@ -46,7 +44,7 @@ class ChangeTriggerTypeController extends BaseController {
 
     def edit () {
         render(template: 'edit', model: [changeTriggerType: ChangeTriggerType.get(Long.parseLong(params.id)),
-            triggers:ConfigurationHolder.config.triggerClasses,
+            triggers:grailsApplication.config.triggerClasses,
         ])
     }
 
@@ -71,38 +69,39 @@ class ChangeTriggerTypeController extends BaseController {
         render(template: 'list_table', model: [changeTriggerTypeList: ChangeTriggerType.list(params)])
     }
 
-    protected void updateFields(changeTriggerType) {
-        changeTriggerType.name = inputValidationService.checkAndEncodeName(params.name, changeTriggerType)
-        changeTriggerType.description = inputValidationService.checkAndEncodeText(params, 'description', 'changeTriggerType.description')
+    protected void updateFields(ChangeTriggerType changeTriggerType, String name, String triggerClass) {
+        changeTriggerType.name = inputValidationService.checkAndEncodeName(name, changeTriggerType)
         try{
-            def x = new RelationChangeTrigger()
             // testing if class can be instantiated:
-            log.debug("looking for class: ${params.triggerClass}")
-            ITrigger iTrigger = (ITrigger) Class.forName(params.triggerClass, true, Thread.currentThread().contextClassLoader ).newInstance()
-            changeTriggerType.triggerClass = Class.forName(params.triggerClass, true, Thread.currentThread().contextClassLoader)
+            log.debug("looking for class: ${triggerClass}")
+            Class iTriggerClass = Class.forName(triggerClass, true, Thread.currentThread().contextClassLoader )
+            ITrigger iTrigger = (ITrigger) iTriggerClass.newInstance()
+            changeTriggerType.triggerClass = (Class<? extends ITrigger>) iTriggerClass            
         }
         catch (ClassCastException e){
             throw new RuntimeException("error.during.iTrigger.cast")
         }
         catch(ClassNotFoundException e){
             throw new RuntimeException("error.class.not.found")
-        }
+        }        
     }
 
-    def update () {
-        ChangeTriggerType changeTriggerType = ChangeTriggerType.get(params.id)
+    def update (Long id, String name, String triggerClass) {
+        ChangeTriggerType changeTriggerType = ChangeTriggerType.get(id)
         try {
-            updateFields(changeTriggerType)
-            changeTriggerType.save(flush: true)
+            updateFields(changeTriggerType, name, triggerClass)
+            log.debug("changeTriggerType: ${changeTriggerType.dump()}")
+            changeTriggerType.validate()
+            log.debug("${changeTriggerType.errors}")
+            changeTriggerType.save()
+            render(template: 'row', model: [changeTriggerType: changeTriggerType])
         }
         catch (Exception e) {
-            log.debug("failed to save changeTriggerType: " + e.getLocalizedMessage())
+            log.debug("failed to save changeTriggerType: ", e )
             render(template: 'edit',
                     model: [changeTriggerType: changeTriggerType,
                     errorMessage: e.getLocalizedMessage()])
-            return
         }
-        render(template: 'row', model: [changeTriggerType: changeTriggerType])
     }
 
     def updateList () {
