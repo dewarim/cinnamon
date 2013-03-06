@@ -2,8 +2,6 @@
 
 <td>${changeTriggerType.name}</td>
 
-<td>${changeTriggerType.description}</td>
-
 <td>${changeTriggerType.triggerClass.name}</td>
 
 <td>

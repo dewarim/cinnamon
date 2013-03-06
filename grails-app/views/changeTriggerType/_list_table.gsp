@@ -3,7 +3,6 @@
     <tr>
         <g:sortableColumn property="id" title="${message(code:'id')}"/>
         <g:sortableColumn property="name" title="${message(code:'changeTriggerType.name')}"/>
-        <g:sortableColumn property="description" title="${message(code:'changeTriggerType.description')}"/>
         <g:sortableColumn property="triggerClass" title="${message(code:'changeTriggerType.triggerClass')}"/>
         <th class="center"><g:message code="changeTriggerType.options"/></th>
     </tr>
