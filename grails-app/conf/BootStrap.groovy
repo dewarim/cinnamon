@@ -1,4 +1,5 @@
 import cinnamon.Format
+import grails.util.Environment
 import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 import org.codehaus.groovy.grails.plugins.springsecurity.SecurityFilterPosition
 import cinnamon.ObjectSystemData
@@ -31,6 +32,12 @@ class BootStrap {
                 SecurityFilterPosition.PRE_AUTH_FILTER.getOrder() + 15) 
         SpringSecurityUtils.clientRegisterFilter('repositoryLoginFilter',
                 SecurityFilterPosition.PRE_AUTH_FILTER.getOrder() + 20)
+
+
+        if (grails.util.Environment.currentEnvironment == Environment.TEST){            
+            log.debug("Do not initialize luceneService in test environment.")
+            return
+        }
         
         luceneService.initialize()
 
@@ -38,7 +45,7 @@ class BootStrap {
         // check for new binary Format object:
         if (! Format.findByName('format.unknown')){
             new Format(name: 'format.unknown', extension: 'unknown', 
-                    contenttype: 'application/octet-stream', description: 'Binary data of unknown format').save()
+                    contenttype: 'application/octet-stream').save()
         }
         
         // migrate legacy data:
