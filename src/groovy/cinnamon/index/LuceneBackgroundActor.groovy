@@ -55,13 +55,11 @@ class LuceneBackgroundActor extends
                 try {
                     log.debug("LuceneBackgroundActor received: $command")
                     def result = new LuceneResult()
-                    def env = Environment.list().find {it.dbName == command.repository}
-//                    log.debug("found env: $env")
-                    EnvironmentHolder.setEnvironment(env)
+                                       
                     switch (command.type) {
                         case CommandType.RE_INDEX: result = reIndex(command); break
                     }
-                    log.debug("reply & finish")
+                    log.debug("Background indexing finished.")
                     reply result
                 }
                 catch (Exception e) {
@@ -74,7 +72,11 @@ class LuceneBackgroundActor extends
     LuceneResult reIndex(IndexCommand command) {
         def osdCounter = 0
         def folderCounter = 0
+        log.debug("reIndex for repositories: ${repositories}")
         repositories.each {repository ->
+            log.debug("reIndex repository: ${repository}")
+            def env = Environment.list().find {it.dbName == repository}
+            EnvironmentHolder.setEnvironment(env)
             def osds = []
             ObjectSystemData.withTransaction {
                 osds = ObjectSystemData.findAll("from ObjectSystemData o where o.indexOk is NULL")
