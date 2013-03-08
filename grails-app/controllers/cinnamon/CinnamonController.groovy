@@ -203,7 +203,7 @@ class CinnamonController extends BaseController {
             case 'searchobjects': params.xmlQuery = true; forward(controller: 'search', action: 'searchObjects'); break
             case 'test': forward(action: 'test'); break
             case 'updatelink': forward(controller: 'link', action: 'updateLink');break
-            
+            case 'getrelations': forward(controller: 'relation', action: 'listXml');break
             default: log.error("*********************************************************************************\n"+
                     "$myAction has no legacy action => forward to index"); forward(action: 'index')
         }

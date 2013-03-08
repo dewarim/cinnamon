@@ -134,7 +134,7 @@
 
             <p>
                 <input type="hidden" name="submitForm" value="1">
-                <input type='submit' value='${message(code: "login")}'/>
+                <input type='submit' id="loginSubmit" value='${message(code: "login")}'/>
             </p>
         </form>
     </div>

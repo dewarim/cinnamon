@@ -3,6 +3,8 @@ package cinnamon
 import cinnamon.relation.Relation
 import cinnamon.relation.RelationType
 import grails.plugins.springsecurity.Secured
+import org.dom4j.DocumentHelper
+import org.dom4j.Element
 
 @Secured(["isAuthenticated()"])
 class RelationController extends BaseController{
@@ -67,5 +69,26 @@ class RelationController extends BaseController{
             renderException(e)
         }
     }
-    
+
+    //---------------------------------------------------
+    // Cinnamon XML Server API
+
+    def listXml(String name, Long leftId, Long rightId, Boolean includeMetadata ){
+        List<Relation> relations
+                 
+        def criteria = Relation.createCriteria()
+        relations = criteria.list{
+            if(name){
+                eq('type.name', name)
+            }
+        }
+        
+        
+        def doc = DocumentHelper.createDocument()
+        Element root = doc.addElement("relations");                
+        relations.each{relation->
+            relation.toXmlElement(root)
+        }
+        return render(contentType: 'application/xml', text: doc.asXML())
+    }
 }
