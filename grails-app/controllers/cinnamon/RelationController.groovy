@@ -75,7 +75,7 @@ class RelationController extends BaseController {
 
     //---------------------------------------------------
     // Cinnamon XML Server API
-
+    @Secured(["isAuthenticated()"])
     def listXml(String name, Long leftId, Long rightId, Boolean includeMetadata) {
         List<Relation> relations
 
@@ -122,6 +122,7 @@ class RelationController extends BaseController {
      *}
      *                         </pre>
      */
+    @Secured(["isAuthenticated()"])
     def createXml(String name, Long leftid, Long rightid, String metadata) {
         try {
             ObjectSystemData left = ObjectSystemData.get(leftid)
@@ -168,6 +169,7 @@ class RelationController extends BaseController {
      *         <success>success.delete.relation</success>
      *         }
      */
+    @Secured(["isAuthenticated()"])
     def deleteXml(Long id) {
         try {
             Relation relation = Relation.get(id)
