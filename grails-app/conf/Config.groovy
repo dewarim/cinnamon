@@ -108,19 +108,24 @@ log4j = {
             'org.apache.catalina',
             'org.codehaus.groovy.grails.io',
             'org.codehaus.groovy.grails.web',
-            'cinnamon.global.ConfThreadLocal'
-//    debug 'cinnamon.RequestTicketAuthenticationFilter'
-//    debug 'cinnamon.debug.ProviderManager'
-//    debug 'humulus.RepositoryLoginFilter'
-//    debug 'cinnamon.CinnamonUserDetailsService'
+            'cinnamon.global.ConfThreadLocal',
+            'org.apache.naming.SelectorContext',
+            'net.sf.ehcache'
+    
+    info    'grails.plugins.twitterbootstrap.BootstrapResources'        
+    info 'cinnamon.RequestTicketAuthenticationFilter'
+    info 'cinnamon.debug.ProviderManager'
+    info 'humulus.RepositoryLoginFilter'
+    info 'cinnamon.CinnamonUserDetailsService'
+    info 'grails.app.filters.cinnamon.PageFilters'
     warn 'grails.app.filters.TriggerFilters'
-    debug 'cinnamon',
-            'humulus',
-            'cinnamon.UserAccountController',
-            'cinnamon.TriggerFilters',
-            'cinnamon.index.indexer.ParentFolderPathIndexer',
-            'org.springframework.security.authentication',
-            'cinnamon.PreAuthenticatedAuthenticationProvider'
+    debug 'cinnamon'
+//            'humulus',
+//            'cinnamon.UserAccountController',
+//            'cinnamon.TriggerFilters',
+//            'cinnamon.index.indexer.ParentFolderPathIndexer',
+//            'org.springframework.security.authentication',
+//            'cinnamon.PreAuthenticatedAuthenticationProvider'
 
     root {
         debug 'stdout'
@@ -139,7 +144,7 @@ grails.plugins.springsecurity.userLookup.authoritiesPropertyName = 'groupUsers'
 grails.plugins.springsecurity.successHandler.defaultTargetUrl = '/folder/index'
 grails.plugins.springsecurity.auth.loginFormUrl = '/login/auth'
 grails.plugins.springsecurity.providerNames = ['preauthAuthProvider', 'daoAuthenticationProvider', 'anonymousAuthenticationProvider']
-
+grails.plugins.springsecurity.logout.afterLogoutUrl='/login/auth'
 
 grails.logging.jul.usebridge = false
 
