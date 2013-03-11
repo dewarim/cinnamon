@@ -1,5 +1,6 @@
 package cinnamon.test
 
+import cinnamon.test.pages.relation.CreatePage
 import geb.spock.GebReportingSpec
 import spock.lang.Stepwise
 
@@ -9,15 +10,10 @@ class RelationControllerSpec extends GebReportingSpec {
     def "login to cinnamon"(){
         when:
         go "login/auth"
-        def form = $('form')
-        form.environment = 'demo'
-        form.j_username = 'admin'
-        form.j_password = 'admin'
-        $('#loginSubmit').click()
         
         then:
         $('a.home').text() == 'Start'
-    }
+    }                
     
     def "listXml test"(){
         when:
@@ -27,4 +23,10 @@ class RelationControllerSpec extends GebReportingSpec {
         driver.pageSource.contains('<relations/>')
     }  
     
+    // TODO: implement relation-CRUD test.
+    def "create a relation"(){
+        to CreatePage
+        // Note: the createPage returns an ajax response and requires a valid Cinnamon object. 
+        
+    }
 }

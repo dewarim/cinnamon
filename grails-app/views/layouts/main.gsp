@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <r:require modules="jquery"/>
-<r:require modules="jqueryUi"/>
+%{--<r:require modules="jqueryUi"/>--}%
 <r:require modules="bootstrap"/>
 <script type="text/javascript">
  
@@ -187,18 +187,19 @@ var s4 = '#' + id + ': ' + name + '</a></div>';
 
 <g:layoutBody/>
 
+<footer>
 <hr class="bottom_line">
-
 <p>
     <sec:ifLoggedIn>
-        <g:link controller="logout" action="index"><g:message code="logout.link"
-                                                              args="[session.repositoryName]"/></g:link>
+        <g:link controller="logout" class="logout-link" action="index">
+            <g:message code="logout.link" args="[session.repositoryName]"/>
+        </g:link>
     </sec:ifLoggedIn>
     <sec:ifNotLoggedIn>
         <g:link controller="login" action="auth"><g:message code="login.link"/></g:link>
     </sec:ifNotLoggedIn>
 </p>
-
+</footer>
 <r:layoutResources/>
 </body>
 </html>
