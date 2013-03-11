@@ -60,15 +60,15 @@ Cinnamon 3 still needs a list of XML API commands from Cinnamon 2 to be implemen
 
 
 ** Primary, no further permissions required
-   - [ ] createRelation   
-   - [ ] deleteRelation   
+   - [X] createRelation   
+   - [X] deleteRelation   
    - [ ] getAclEntry   
-   - [ ] getExtension
+   - [X] getExtension // is obsolete.
    - [ ] getGroupsOfUser
    - [ ] getIndexGroup
    - [ ] getPermission
-   - [ ] getRelations
-   - [ ] getRelationTypes
+   - [X] getRelations
+   - [X] getRelationTypes
    - [ ] getUser
    - [ ] getUserByName
    - [ ] getUsers
