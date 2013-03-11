@@ -200,8 +200,10 @@ class CinnamonController extends BaseController {
             case 'getusers': forward(controller: 'userAccount', action: 'listXml'); break
             case 'listlanguages': forward(controller: 'language', action: 'listLanguages');break
             case 'listuilanguages': forward(controller: 'uiLanguage', action: 'listUiLanguages');break
+            case 'lock': forward(controller: 'osd', action: 'lockXml');break
             case 'searchobjects': params.xmlQuery = true; forward(controller: 'search', action: 'searchObjects'); break
             case 'test': forward(action: 'test'); break
+            case 'unlock': forward(controller: 'osd', action: 'unlockXml');break
             case 'updatelink': forward(controller: 'link', action: 'updateLink');break
             case 'getrelations': forward(controller: 'relation', action: 'listXml');break
             default: log.error("*********************************************************************************\n"+
