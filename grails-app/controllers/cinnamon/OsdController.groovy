@@ -25,7 +25,7 @@ class OsdController extends BaseController {
 
     def metasetService
     def imageService
-    
+
     def editMetadata() {
         try {
             ObjectSystemData osd = fetchAndFilterOsd(params.osd)
@@ -123,7 +123,7 @@ class OsdController extends BaseController {
         try {
             ObjectSystemData osd = fetchAndFilterOsd(params.osd)
             def osdContent = osd.getContent(session.repositoryName)
-            return render(template: mapTemplate('/osd/objectPreview'), 
+            return render(template: mapTemplate('/osd/objectPreview'),
                     model: [osd: osd, ctype: osd.format?.contenttype, osdContent: osdContent])
         }
         catch (Exception e) {
@@ -139,7 +139,7 @@ class OsdController extends BaseController {
         catch (Exception e) {
             renderException(e)
         }
-    }           
+    }
 
     def getContent(Long id) {
         Folder folder = null
@@ -159,7 +159,7 @@ class OsdController extends BaseController {
 
             if (osd.contentSize == null || osd.contentSize == 0) {
                 throw new RuntimeException('error.content.not.found')
-            }                      
+            }
             def attachmentName = "${osd.name.encodeAsURL()}${osd.determineExtension()}"
             response.setHeader("Content-disposition", "attachment; filename=${attachmentName}");
             response.setContentType(osd.format.contenttype)
@@ -273,7 +273,7 @@ class OsdController extends BaseController {
         try {
             UserAccount user = userService.user
             folder = fetchAndFilterFolder(params.folder, [PermissionName.CREATE_OBJECT])
-            def osd = osdService.createOsd(request, params, repositoryName, null, user, folder)            
+            def osd = osdService.createOsd(request, params, repositoryName, null, user, folder)
             return defaultRedirect([folder: folder.id, osd: osd.id])
         }
         catch (Exception e) {
@@ -294,7 +294,7 @@ class OsdController extends BaseController {
             osd = fetchAndFilterOsd(params.osd, [PermissionName.WRITE_OBJECT_CONTENT])
             def folder = fetchAndFilterFolder(osd.parent.id)
             osdService.saveFileUpload(request, osd, user, formatId, repositoryName)
-           
+
             // on success: redirect fetchFolderContent
             log.debug("set content on object #${osd.id}")
             return redirect(controller: 'folder', action: 'index', params: [folder: params.folder, osd: params.osd])
@@ -305,7 +305,7 @@ class OsdController extends BaseController {
             if (!osd) {
                 return redirect(controller: 'folder', action: 'index')
             }
-            
+
             return redirect(controller: 'osd', action: 'setContent', params: [folder: params.folder, osd: params.osd])
         }
     }
@@ -313,7 +313,7 @@ class OsdController extends BaseController {
     // unfinished?    
     def setContent() {
         try {
-            ObjectSystemData osd = fetchAndFilterOsd(params.osd, [PermissionName.WRITE_OBJECT_CONTENT])            
+            ObjectSystemData osd = fetchAndFilterOsd(params.osd, [PermissionName.WRITE_OBJECT_CONTENT])
             return [
                     osd: osd,
                     folder: osd.parent
@@ -364,13 +364,13 @@ class OsdController extends BaseController {
             log.debug("selected folder: ${selectedFolder}")
             Folder targetFolder = Folder.get(selectedFolder)
             def user = userService.user
-            if(!targetFolder){
+            if (!targetFolder) {
                 throw new RuntimeException('error.folder.not.found')
             }
-            if(! folderService.checkPermissions(targetFolder, user, [PermissionName.CREATE_OBJECT])){
+            if (!folderService.checkPermissions(targetFolder, user, [PermissionName.CREATE_OBJECT])) {
                 throw new RuntimeException('error.access.denied')
             }
-            
+
             log.debug("*** start iterate")
             def idList = params.list("osd")
             def folderList = params.list("folder")
@@ -380,22 +380,22 @@ class OsdController extends BaseController {
                 defaultRedirect([folder: selectedFolder])
             }
             def repository = session.repositoryName
-            def versionType = VersionType.values().find{it.name() == (params.versions ?: VersionType.ALL.name())}
-        
+            def versionType = VersionType.values().find { it.name() == (params.versions ?: VersionType.ALL.name()) }
+
             if (params.delete) {
                 msgMap = osdService.deleteList(idList, repository, versionType)
                 msgList.addAll(convertMsgMap(msgMap))
                 msgMap = folderService.deleteList(folderList, repository, true)
                 msgList.addAll(convertMsgMap(msgMap))
             }
-            else if (params.move){
+            else if (params.move) {
                 log.debug("*** will move objects into folder: ${selectedFolder}")
                 msgMap = osdService.moveToFolder(idList, selectedFolder, repository, versionType, user)
-                msgList.addAll(convertMsgMap(msgMap))                
+                msgList.addAll(convertMsgMap(msgMap))
                 msgMap = folderService.moveToFolder(folderList, selectedFolder, repository, user)
                 msgList.addAll(convertMsgMap(msgMap))
             }
-            else if (params.copy){
+            else if (params.copy) {
                 log.debug("*** will copy objects into folder: ${selectedFolder}")
                 msgMap = copyService.copyObjectsToFolder(idList, selectedFolder, repository, versionType, user)
                 msgList.addAll(convertMsgMap(msgMap))
@@ -409,13 +409,13 @@ class OsdController extends BaseController {
             flash.message = message(code: 'iterate.fail', args: [message(code: e.message)])
         }
 
-        flash.msgList = msgList        
+        flash.msgList = msgList
         defaultRedirect([folder: selectedFolder])
     }
 
     protected List convertMsgMap(msgMap) {
         def msgList = []
-        msgMap.each {String k, List v ->
+        msgMap.each { String k, List v ->
             if (v.size() == 1) {
                 msgList.add(message(code: v.get(0), args: [k]))
             }
@@ -432,8 +432,8 @@ class OsdController extends BaseController {
 
     def fetchObjects() {
         try {
-            def folder = folderService.fetchFolder(params.parentid)        
-            if (! folder){
+            def folder = folderService.fetchFolder(params.parentid)
+            if (!folder) {
                 throw new RuntimeException('error.folder.not.found')
             }
             def user = userService.user
@@ -442,7 +442,7 @@ class OsdController extends BaseController {
             results = val.filterUnbrowsableObjects(results);
             Document doc = osdService.generateQueryObjectResultDocument(results);
             addLinksToObjectQuery(params.parentid, doc, val, false)
-            
+
             log.debug("objects for folder ${folder.id} / ${folder.name}:\n ${doc.asXML()}")
             return render(contentType: 'application/xml', text: doc.asXML())
         }
@@ -452,7 +452,7 @@ class OsdController extends BaseController {
         }
     }
 
-    protected void addLinksToObjectQuery(String parentId, Document doc, Validator val, Boolean withMetadata){
+    protected void addLinksToObjectQuery(String parentId, Document doc, Validator val, Boolean withMetadata) {
         Folder parent = Folder.get(parentId);
         Element root = doc.getRootElement();
         Collection<Link> links = linkService.findLinksIn(parent, LinkType.OBJECT);
@@ -466,7 +466,7 @@ class OsdController extends BaseController {
                 continue;
             }
             Element osdNode = link.getOsd().toXmlElement(root);
-            if(withMetadata){
+            if (withMetadata) {
                 osdNode.add(ParamParser.parseXml(link.getOsd().getMetadata(), null));
             }
             linkService.addLinkToElement(link, osdNode);
@@ -564,5 +564,72 @@ class OsdController extends BaseController {
             renderExceptionXml(e)
         }
     }
-    
+
+    //--------------------------- Cinnamon XML API methods -----------------------
+
+    /**
+     * The lock command places a lock for the session owner on an object.
+     * <h2>Needed permissions</h2>
+     * LOCK
+     *
+     * @param cmd HTTP request parameter map:
+     *            <ul>
+     *            <li>command=lock</li>
+     *            <li>id = object id</li>
+     *            </ul>
+     * @return XML-Response:
+     * {@code
+     *         <success>success.object.lock</success>
+     *}
+     */
+    def lockXml(Long id) {
+        try {
+            ObjectSystemData osd = ObjectSystemData.get(id)
+            def user = userService.user
+            (new Validator(user)).validateLock(osd, user)
+            osd.locker = user
+            luceneService.updateIndex(osd, repositoryName)
+            log.debug("lock - done.");
+            render(contentType: 'application/xml') {
+                success('success.object.lock')
+            }
+        }
+        catch (Exception e) {
+            log.debug("Failed to lock #$id.", e)
+            renderExceptionXml(e)
+        }
+    }
+
+    /**
+     * The unlock command removes a lock from an object.
+     *
+     * @param cmd HTTP request parameter map
+     *            <ul>
+     *            <li>command=unlock</li>
+     *            <li>id=object id</li>
+     *            </ul>
+     * @return XML-Response
+     * {@code
+     *         <success>success.object.lock</success>
+     *}
+     */
+    def unlockXml(Long id) {
+        try {
+            def user = userService.user
+            ObjectSystemData osd = ObjectSystemData.get(id)
+            (new Validator(user)).validateUnlock(osd)
+            osd.locker = null
+            luceneService.updateIndex(osd, repositoryName)
+            log.debug("unlock - done")
+            render(contentType: 'application/xml') {
+                success('success.object.unlock')
+            }
+        }
+        catch (Exception e) {
+            log.debug("Failed to unlock #$id.", e)
+            renderExceptionXml(e)
+
+        }
+    }
+
 }

@@ -22,6 +22,7 @@ Cinnamon 3 still needs a list of XML API commands from Cinnamon 2 to be implemen
    getObjTypes
    searchObjects
    getSubfolders
+   unlock
 
 ** Secondary
    Stuff that is secondary or legacy / not or rarely used:
@@ -112,7 +113,7 @@ Cinnamon 3 still needs a list of XML API commands from Cinnamon 2 to be implemen
 	 BROWSE_OBJECT
    - [ ] getSysMeta
 	 READ_OBJECT_SYS_META or BROWSE_FOLDER, depending on type
-   - [ ] lock
+   - [X] lock
 	 LOCK
    - [ ] queryCustomTable
 	 QUERY_CUSTOM_TABLE
