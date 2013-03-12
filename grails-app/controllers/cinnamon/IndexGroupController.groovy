@@ -144,6 +144,7 @@ class IndexGroupController extends BaseController{
     }
 
     //--------------------- XML API ------------------------
+    @Secured(["isAuthenticated()"])
     def listXml() {
         def doc = DocumentHelper.createDocument()
         Element root = doc.addElement("indexGroups");
