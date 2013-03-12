@@ -41,19 +41,6 @@
 
                 <tr class="prop">
                     <td class="name">
-                        <label for="description"><g:message code="group.description"/></label>
-                    </td>
-                    <td class="value ${hasErrors(bean: group, field: 'description', 'errors')}">
-                        <!-- <input type="text" name="description" id="description" value="${fieldValue(bean: group, field: 'description')}" /> -->
-                        <g:descriptionTextArea name="description"
-                                               value="${fieldValue(bean:group,field:'description')}"/>
-                    </td>
-                </tr>
-
-
-
-                <tr class="prop">
-                    <td class="name">
                         <label for="parent"><g:message code="group.parent"/></label>
                     </td>
                     <td class="value ${hasErrors(bean: group, field: 'parent', 'errors')}">

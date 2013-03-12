@@ -40,13 +40,6 @@
             </tr>
 
             <tr class="prop">
-                <td class="name"><g:message code="group.description"/></td>
-
-                <td class="value">${fieldValue(bean: group, field: 'description')}</td>
-
-            </tr>
-
-            <tr class="prop">
                 <td class="name"><g:message code="group.name"/></td>
 
                 <td class="value">${fieldValue(bean: group, field: 'name')}</td>

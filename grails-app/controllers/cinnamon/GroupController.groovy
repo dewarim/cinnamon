@@ -45,17 +45,16 @@ class GroupController extends BaseController {
 
     def showGroupsByUser() {
         def user = UserAccount.get(params.id)
-        def CmnGroupUsers = CmnGroupUser.findAllByUserAccount(user)
+        def cmnGroupUsers = CmnGroupUser.findAllByUserAccount(user)
 
-        // nur die User zum Hinzufügen anbieten, die nicht schon in der Liste sind
-        // this doesn't work, although it does in UserController.showUsersByGroup. Dunno why
-        def addList = CmnGroup.list().findAll { group ->
-            !group.find { CmnGroupUser cmnGroupUser -> cmnGroupUser.cmnGroup == group }
-        }.findAll {
-            !it.name.startsWith("_") && it.name != Constants.GROUP_SUPERUSERS
-        }
+        // filter all users which already are in this group
+        def addList = CmnGroup.executeQuery("""select cg from CmnGroup cg WHERE
+                   cg NOT IN (select cgu.cmnGroup from CmnGroupUser cgu where cgu.userAccount=:user)
+                   and cg.name not like '_%'
+                   and cg.name not like :superuserGroup                   
+""", [user:user, superuserGroup:Constants.GROUP_SUPERUSERS])
 
-        [groupList: CmnGroupUsers.collect {it.cmnGroup},
+        [groupList: cmnGroupUsers.collect {it.cmnGroup},
                 addList: addList,
                 user: user]
     }
