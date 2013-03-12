@@ -798,5 +798,42 @@ class OsdController extends BaseController {
             renderExceptionXml('Failed to delete object', e)
         }        
     }
-    
+
+    /**
+     * The getMeta command retrieves the metadata of the specified object.
+     * <h2>Needed permissions</h2>
+     * READ_OBJECT_CUSTOM_METADATA
+     *
+     * @param id the object id
+     * @param metasets optional parameter: comma-separated list of metasetType names. 
+     *        Defaults to returning the content of all metasets that are referenced by this object.
+     * @return XML-Response:
+     *         The metadata of the specified object.
+     */
+    def getOsdMeta(Long id, String metasets) {
+        try{
+            ObjectSystemData osd = ObjectSystemData.get(id)
+            if(! osd){
+                throw new CinnamonException('error.object.not.found')
+            }
+            (new Validator(userService.user)).validateGetMeta(osd)
+            
+            def xml
+            if(metasets){
+                List<String> metasetNames = metasets.split(",")
+                log.debug("metasetnames: ${metasetNames}")
+                xml = osd.getMetadata(metasetNames)
+            }
+            else{
+                xml = osd.getMetadata()
+            }
+            render(contentType: 'application/xml', text:xml)
+        }
+        catch (Exception e){
+            renderExceptionXml("Failed to fetch OSD ${id} metadata", e)
+        }
+        
+        
+
+    }
 }
