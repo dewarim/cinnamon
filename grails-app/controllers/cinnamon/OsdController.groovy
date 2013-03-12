@@ -749,5 +749,54 @@ class OsdController extends BaseController {
             renderExceptionXml('Failed to delete object', e)
         }
     }
+
+    /**
+     * The deleteAllVersions command deletes all versions of an object.
+     * This operation cascades over related objects,
+     * unless they are protected by the relationtype.
+     * <br/>
+     * <p><i>Note</i>:
+     * This command relies on a database with ascending object ids.
+     * (Meaning that the HQL query will order results by id and assume that the lower an id
+     * the older the object is)</p>
+     *
+     * @param id = object id
+     * @return a HTTP response containing
+     *         <pre>
+     *             {@code <success>success.delete.all_versions</success>}
+     *         </pre> if successful, an XML-error-node if unsuccessful.
+     */
+    def deleteAllVersions(Long id) {        
+        ObjectSystemData osd = ObjectSystemData.get(id);
+        def objectTree
+        try {
+            if (!osd) {
+                throw new CinnamonException('error.object.not.found')
+            }
+            objectTree = osdService.findAllVersions(osd);
+            // first check all objects if they may be deleted, otherwise an exception will
+            // terminate the database operation but not roll back the Lucene index.
+            Validator validator = new Validator(userService.user);
+            for (ObjectSystemData o : objectTree) {
+                validator.validateDelete(osd);
+            }
+            osdService.delete(osd.root, true,true, repositoryName)
+            render(contentType: 'application/xml') {
+                success('success.delete.all_versions')
+            }
+        }
+        catch (Exception e) {
+            if (osd) {
+                luceneService.updateIndex(osd, repositoryName)
+                if(objectTree){
+                    objectTree.remove(osd)
+                    objectTree.each{item ->                        
+                        luceneService.updateIndex(item, repositoryName)
+                    }
+                }
+            }
+            renderExceptionXml('Failed to delete object', e)
+        }        
+    }
     
 }

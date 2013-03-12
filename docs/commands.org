@@ -25,7 +25,7 @@ will not be implemented at the moment.
   - getSubfolders
   - unlock
 
-** Secondary
+** Secondary [2/17]
    Stuff that is secondary or legacy / not or rarely used:
    - [ ] clearIndex
    - [ ] clearMessage
@@ -46,6 +46,8 @@ will not be implemented at the moment.
 	 BROWSE_FOLDER
    - [X] queryObjects // no longer exists.
 	 BROWSE_OBJECT
+   - [ ] queryCustomTable
+	 QUERY_CUSTOM_TABLE
 
 *** superuser
    most of those are availalbe in the GUI
@@ -89,7 +91,7 @@ will not be implemented at the moment.
    - [X] listMessages
    - [X] listPermissions
 
-** Primary, requires permission checking: [4/19]
+** Primary, requires permission checking: [8/19]
    - [X]  copy
 	  READ_OBJECT_CONTENT
 	  READ_OBJECT_CUSTOM_METADATA
@@ -97,15 +99,15 @@ will not be implemented at the moment.
 	  CREATE_OBJECT
    - [X] create
 	 CREATE_OBJECT
-   - [ ] createFolder
+   - [X] createFolder
 	 CREATE_FOLDER
-   - [ ] delete
+   - [X] delete
 	 DELETE_OBJECT
-   - [ ] deleteAllVersions
+   - [X] deleteAllVersions
 	 DELETE_OBJECT
    - [ ] deleteFolder
 	 DELETE_FOLDER
-   - [ ] getContent
+   - [X] getContent
 	 READ_OBJECT_CONTENT
    - [ ] getFolderMeta
 	 READ_OBJECT_CUSTOM_METADATA
@@ -122,12 +124,12 @@ will not be implemented at the moment.
 	 READ_OBJECT_SYS_META or BROWSE_FOLDER, depending on type
    - [X] lock
 	 LOCK
-   - [ ] queryCustomTable
-	 QUERY_CUSTOM_TABLE
    - [ ] searchFolders
 	 BROWSE_FOLDER (tested for each folder found)
    - [ ] setContent
 	 WRITE_OBJECT_CONTENT
+   - [ ] version
+	 VERSION_OBJECT
    - [ ] setMeta
 	 WRITE_OBJECT_CUSTOM_METADATA
    - [ ] setSysMeta
