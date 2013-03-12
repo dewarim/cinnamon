@@ -204,6 +204,7 @@ class CinnamonController extends BaseController {
             case 'getusers': forward(controller: 'userAccount', action: 'listXml'); break
             case 'getusersacls': forward(controller: 'acl', action: 'getUsersAcls'); break
             case 'getuserspermissions': forward(controller: 'acl', action: 'getUsersPermissions'); break
+            case 'listaclentries': forward(controller: 'aclEntry', action: 'listXml');break
             case 'listgroups': forward(controller: 'group', action: 'listXml');break
             case 'listindexitems': forward(controller: 'indexItem', action: 'listXml');break
             case 'listindexgroups': forward(controller: 'indexGroup', action: 'listXml');break

@@ -1,6 +1,9 @@
 package cinnamon
 
+import cinnamon.exceptions.CinnamonException
 import grails.plugins.springsecurity.Secured
+import org.dom4j.DocumentHelper
+import org.dom4j.Element
 
 @Secured(["hasRole('_superusers')"])
 class AclEntryController extends BaseController{
@@ -88,4 +91,46 @@ class AclEntryController extends BaseController{
         redirect(controller: 'aclEntry', action: 'show', params: [id: params.id])
     }
     
+    //---------------------- XML API --------------------------
+    /**
+     * Retrieve a list of all AclEntries for a group or acl.
+     *
+     * @param cmd Map with Key/Value-Pair<br>
+     *            <ul>
+     *            <li>[aclid] = id of an Acl</li>
+     *            <li>[groupid] = id of a Group</li>
+     *            </ul>
+     * @return XML-Response with serialized AclEntries.
+     */
+    def listXml(Long aclid, Long groupid) {
+        try {
+            def aclEntries
+            if (aclid){
+                Acl acl = Acl.get(aclid)
+                if (!acl){
+                    throw new CinnamonException('error.object.not.found')
+                }
+                aclEntries = acl.getAclEntries()
+            }
+            else if(groupid){
+                CmnGroup group = CmnGroup.get(groupid)
+                if (!group ){
+                    throw new CinnamonException('error.object.not.found')
+                }
+                aclEntries = group.getAclEntries();
+            }
+            else{
+                throw new CinnamonException("error.missing_acl_or_group_id")
+            }
+            def doc = DocumentHelper.createDocument()
+            def root = doc.addElement('aclEntries')
+            aclEntries.each{entry ->
+                entry.toXmlElementWithPermissions(root)
+            }
+            render(contentType: 'application/xml', text: doc.asXML())
+        }
+        catch (Exception e) {
+            renderExceptionXml('Failed to listXml', e)            
+        }
+    }
 }
