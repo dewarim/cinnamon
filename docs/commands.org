@@ -91,7 +91,7 @@ will not be implemented at the moment.
    - [X] listMessages
    - [X] listPermissions
 
-** Primary, requires permission checking: [8/19]
+** Primary, requires permission checking: [9/19]
    - [X]  copy
 	  READ_OBJECT_CONTENT
 	  READ_OBJECT_CUSTOM_METADATA
@@ -105,7 +105,7 @@ will not be implemented at the moment.
 	 DELETE_OBJECT
    - [X] deleteAllVersions
 	 DELETE_OBJECT
-   - [ ] deleteFolder
+   - [X] deleteFolder
 	 DELETE_FOLDER
    - [X] getContent
 	 READ_OBJECT_CONTENT

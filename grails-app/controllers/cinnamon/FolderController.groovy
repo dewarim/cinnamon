@@ -672,5 +672,33 @@ class FolderController extends BaseController {
             renderExceptionXml('Failed to create folder.', e)
         }
     }
+
+    /**
+     * Delete an empty folder specified by the id-parameter.
+     * <h2>Needed permissions</h2>
+     * DELETE_FOLDER
+     *
+     * @param id folder id
+     * @return XML-Response:
+     *         {@code
+     *         <success>success.delete.folder</success>
+     *         }
+     */
+    def deleteXml(Long id) {
+        def folder = Folder.get(id)
+        try{
+            (new Validator(userService.user)).validateDeleteFolder(folder)
+            folderService.deleteFolder(id, repositoryName, false)
+            render(contentType: 'application/xml'){
+                success('success.delete.folder')
+            }
+        }
+        catch (Exception e){
+            if (folder){
+                luceneService.updateIndex(folder, repositoryName)
+            }
+            renderExceptionXml('Failed to delete folder.',e)
+        }
+    }
     
 }

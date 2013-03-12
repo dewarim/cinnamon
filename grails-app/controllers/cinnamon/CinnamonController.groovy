@@ -190,6 +190,7 @@ class CinnamonController extends BaseController {
             case 'createrelation': forward(controller: 'relation', action: 'createXml');break
             case 'delete': forward(controller: 'osd', action: 'deleteXml');break
             case 'deleteallversions': forward(controller: 'osd', action: 'deleteAllVersions');break
+            case 'deletefolder': forward(controller: 'folder', action: 'deleteXml');break
             case 'deletelink': forward(controller: 'link', action: 'deleteLink');break
             case 'deleterelation': forward(controller: 'relation', action: 'deleteXml');break
             case 'disconnect': forward(action: 'disconnect');break
