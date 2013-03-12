@@ -3,6 +3,9 @@ package cinnamon
 import grails.plugins.springsecurity.Secured
 import cinnamon.i18n.UiLanguage
 import cinnamon.i18n.Message
+import org.dom4j.Document
+import org.dom4j.DocumentHelper
+import org.dom4j.Element
 
 @Secured(["hasRole('_superusers')"])
 class MessageController extends BaseController {
@@ -344,6 +347,18 @@ class MessageController extends BaseController {
         render(view: 'list', model: [importResults: importResults,
                 messageCount: distinctMessages.size(),
                 distinctMessages: distinctMessages,])
+    }
+
+    //---------------------------------------------------
+    // Cinnamon XML Server API
+    @Secured(["isAuthenticated()"])
+    def listXml() {
+        Document doc = DocumentHelper.createDocument()
+        Element root = doc.addElement("messages");
+        Message.list().each {msg ->
+            msg.toXmlElement(root)
+        }
+        return render(contentType: 'application/xml', text: doc.asXML())
     }
 
 }

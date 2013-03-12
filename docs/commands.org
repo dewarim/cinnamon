@@ -68,7 +68,7 @@ will not be implemented at the moment.
     removeUserFromGroup
 
 * Primary Tasks
-** no further permissions required [10/13]
+** no further permissions required [11/13]
    - [X] createRelation   
    - [X] deleteRelation   
    - [X] getRelations
@@ -76,7 +76,7 @@ will not be implemented at the moment.
    - [ ] getUsers
    - [X] getUsersAcls
    - [X] getUsersPermissions
-   - [ ] listAclEntries
+   - [X] listAclEntries
    - [X] listGroups
    - [X] listIndexGroups
    - [X] listIndexItems
