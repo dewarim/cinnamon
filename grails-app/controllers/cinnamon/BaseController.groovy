@@ -54,6 +54,16 @@ abstract class BaseController {
             }
         }
     }
+    
+    protected void renderExceptionXml(String logMessage, Exception e) {
+        log.debug(logMessage, e)
+        render(contentType: 'application/xml') {
+            error {
+                code(e.message)
+                "message"(message(code: e.message))
+            }
+        }
+    }
 
     protected ObjectSystemData fetchAndFilterOsd(id) {
         fetchAndFilterOsd(id, [PermissionName.BROWSE_OBJECT])
