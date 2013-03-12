@@ -62,30 +62,30 @@ will not be implemented at the moment.
     removeUserFromGroup
 
 
-** Primary, no further permissions required
+** Primary, no further permissions required [11/21]
    - [X] createRelation   
    - [X] deleteRelation   
    - [X] getAclEntry  // is obsolete / unused  
    - [X] getExtension // is obsolete / unused
-   - [ ] getGroupsOfUser
-   - [ ] getIndexGroup
-   - [ ] getPermission
+   - [ ] getGroupsOfUser // unused
+   - [ ] getIndexGroup // unused
+   - [ ] getPermission // unused
    - [X] getRelations
    - [X] getRelationTypes
-   - [ ] getUser
-   - [ ] getUserByName
+   - [ ] getUser // unused
+   - [ ] getUserByName // unused
    - [ ] getUsers
    - [X] getUsersAcls
    - [X] getUsersPermissions
    - [ ] listAclEntries
-   - [ ] listAclMembers
+   - [ ] listAclMembers // unused
    - [ ] listGroups
-   - [ ] listIndexGroups
-   - [ ] listIndexItems
+   - [X] listIndexGroups
+   - [X] listIndexItems
    - [ ] listMessages
    - [X] listPermissions
 
-** Primary, requires permission checking:
+** Primary, requires permission checking: [3/22]
    - [ ]  copy
 	  READ_OBJECT_CONTENT
 	  READ_OBJECT_CUSTOM_METADATA
@@ -111,7 +111,7 @@ will not be implemented at the moment.
 	 BROWSE_OBJECT
    - [ ] getObjectsById
 	 BROWSE_OBJECT
-   - [ ] getObjectsWithCustomMetadata
+   - [ ] getObjectsWithCustomMetadata // unused, but implement 
 	 READ_OBJECT_CUSTOM_METADATA 
 	 BROWSE_OBJECT
    - [ ] getSysMeta
@@ -120,9 +120,9 @@ will not be implemented at the moment.
 	 LOCK
    - [ ] queryCustomTable
 	 QUERY_CUSTOM_TABLE
-   - [ ] queryFolders
+   - [ ] queryFolders  // unused
 	 BROWSE_FOLDER
-   - [ ] queryObjects
+   - [ ] queryObjects // unused
 	 BROWSE_OBJECT
    - [ ] search
 	 BROWSE_OBJECT or BROWSE_FOLDER (tested for each item found)
@@ -137,11 +137,11 @@ will not be implemented at the moment.
 	 with parameter aclId: SET_ACL instead of WRITE_OBJECT_SYS_METADATA
 	 with parameter parent_id: MOVE instead of WRITE_OBJECT_SYS_METADATA
 
-** Translation API:
+** Translation API: [0/2]
    - [ ] createTranslation
    - [ ] checkTranslation
 
-** Lifecycle API:
+** Lifecycle API: [0/7]
    - [ ] attachLifeCycle
    - [ ] detachLifeCycle
    - [ ] changeState
@@ -153,10 +153,10 @@ will not be implemented at the moment.
 ** RenderServerConnector:
    - [ ] startRenderTask
 
-** Workflow API
+** Workflow API [0/4]
    - [ ] createWorkflow
    - [ ] createTask
-   - [ ] findOpenTasks
+   - [ ] findOpenTasks // unused
    - [ ] doTransition
 
 ** Further Functionality / Classes:

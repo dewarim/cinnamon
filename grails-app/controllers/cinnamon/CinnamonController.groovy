@@ -193,7 +193,7 @@ class CinnamonController extends BaseController {
             case 'getfoldertypes': forward(controller: 'folderType', action: 'listXml'); break;
             case 'getformats': forward(controller: 'format', action: 'listXml'); break
             case 'getfolderbypath' : forward(controller:'folder', action: 'fetchFolderByPath');break            
-            case 'getfolder': forward(controller: 'folder', action: 'fetchFolderXml');break                        
+            case 'getfolder': forward(controller: 'folder', action: 'fetchFolderXml');break                                    
             case 'getlink': forward(controller: 'link', action: 'getLink');break
             case 'getobject' : forward(controller:'osd', action: 'getObject');break
             case 'getobjects' : forward(controller:'osd', action: 'fetchObjects');break
@@ -204,6 +204,8 @@ class CinnamonController extends BaseController {
             case 'getusers': forward(controller: 'userAccount', action: 'listXml'); break
             case 'getusersacls': forward(controller: 'acl', action: 'getUsersAcls'); break
             case 'getuserspermissions': forward(controller: 'acl', action: 'getUsersPermissions'); break
+            case 'listindexitems': forward(controller: 'indexItem', action: 'listXml');break
+            case 'listindexgroups': forward(controller: 'indexGroup', action: 'listXml');break
             case 'listlanguages': forward(controller: 'language', action: 'listLanguages');break
             case 'listpermissions': forward(controller: 'permission', action: 'listXml');break
             case 'listuilanguages': forward(controller: 'uiLanguage', action: 'listUiLanguages');break

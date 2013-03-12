@@ -4,6 +4,8 @@ import grails.plugins.springsecurity.Secured
 import cinnamon.index.IndexItem
 import cinnamon.index.IndexType
 import cinnamon.index.IndexGroup
+import org.dom4j.DocumentHelper
+import org.dom4j.Element
 
 @Secured(["hasRole('_superusers')"])
 class IndexItemController extends BaseController{
@@ -154,6 +156,16 @@ class IndexItemController extends BaseController{
     def updateList () {
         setListParams()
         render(template: 'indexItemList', model:[indexItemList:IndexItem.list(params)])
+    }
+    
+    //--------------------- XML API ------------------------
+    def listXml() {
+        def doc = DocumentHelper.createDocument()
+        Element root = doc.addElement("indexItems");
+        IndexItem.list().each { item ->
+            item.toXmlElement(root);
+        }
+        return render(contentType: 'application/xml', text: doc.asXML())
     }
 
 }
