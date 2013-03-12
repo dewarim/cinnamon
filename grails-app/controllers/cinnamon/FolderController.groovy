@@ -10,6 +10,7 @@ import cinnamon.exceptions.CinnamonException
 import cinnamon.global.Constants
 import cinnamon.utils.ZippedFolder
 import cinnamon.relation.RelationType
+import org.dom4j.Document
 import org.dom4j.DocumentHelper
 import org.dom4j.Element
 import cinnamon.index.LuceneResult
@@ -698,6 +699,30 @@ class FolderController extends BaseController {
                 luceneService.updateIndex(folder, repositoryName)
             }
             renderExceptionXml('Failed to delete folder.',e)
+        }
+    }
+
+    /**
+     * The getFolderMeta command retrieves the metadata of the specified folder.
+     * <h2>Needed permissions</h2>
+     * READ_OBJECT_CUSTOM_METADATA
+     *
+     * @param id folder id</li>
+     * @return XML-Response:
+     *         The metadata of the specified folder or an XML error node.
+     */
+    def getFolderMeta(Long id) {
+        try{
+            def folder = Folder.get(id)
+            if(! folder){
+                throw new CinnamonException('error.folder.not.found')
+            }
+            (new Validator(userService.user)).validateGetFolderMeta(folder);
+            def xml = folder.getMetadata()
+            render(contentType: 'application/xml', text:xml)            
+        }
+        catch (Exception e){
+            renderExceptionXml('Failed to fetch folder custom metadata', e)
         }
     }
     
