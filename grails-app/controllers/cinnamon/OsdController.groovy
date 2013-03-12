@@ -632,4 +632,75 @@ class OsdController extends BaseController {
         }
     }
 
+    /**
+     * The copy command creates a new object in the folder specified by targetfolderid as a copy
+     * of the object specified by the sourceobjid parameter.<br>
+     * <br>
+     * <h2>Needed permissions</h2>
+     * <ul>
+     * <li>READ_OBJECT_CONTENT</li>
+     * <li>READ_OBJECT_CUSTOM_METADATA</li>
+     * <li>READ_OBJECT_SYS_METADATA</li>
+     * <li>CREATE_OBJECT</li>
+     * </ul>
+     *
+     * @param cmd parameter map from HTTP request containing:
+     *            <ul>
+     *            <li>command = copy</li>
+     *            <li>sourceid	= source object id</li>
+     *            <li>targetfolderid	= target folder id</li>
+     *            <li>[metasets]=optional, comma-separated list of metasetType-names which will be copied.</li>
+     *            </ul>
+     * @return xml response with id of newly created object (or standard xml error message in case of error):
+     * <pre>
+     *     {@code
+     *     <objectId>12345</objectId>
+     *     }
+     * </pre>
+     */
+    def copy(Long sourceid, Long targetfolderid, String metasets) {
+        try {
+            Folder targetFolder = Folder.get(targetfolderid)
+            if (targetFolder == null) {
+                throw new CinnamonException("error.folder.not_found");
+            }
+            // fetch source object
+            ObjectSystemData osd = ObjectSystemData.get(sourceid);
+            if (osd == null) {
+                throw new CinnamonException("error.object.not.found");
+            }
+            def user = userService.user
+            (new Validator(user)).validateCopy(osd, targetFolder)
+            ObjectSystemData copy = osd.createClone()
+            copy.setAcl(targetFolder.getAcl()) // set ACL to target folder's ACL
+            copy.setParent(targetFolder)
+            copy.setName("Copy_" + osd.getName())
+            copy.setPredecessor(null)
+            copy.setOwner(user)
+            copy.setCmnVersion("1")
+            copy.setLatestBranch(true)
+            copy.setLatestHead(true)
+            copy.setRoot(copy)
+            copy.setModifier(user)
+            copy.setCreator(user)
+            copy.setLocker(null)
+            osdService.copyContent(repositoryName, osd, copy)
+            copy.save()
+            copy.fixLatestHeadAndBranch([])
+            osdService.copyRelations(osd, copy)
+            // execute the new LifeCycleState if necessary.
+            if (copy.getState() != null) {
+                copy.getState().enterState(copy, copy.getState())
+            }
+            metasetService.copyMetasets(osd, copy, metasets)
+            luceneService.addToIndex(copy, repositoryName)
+            render(contentType: 'application/xml'){
+                objectId(copy.id.toString())
+            }
+        }
+        catch (Exception e) {
+            renderExceptionXml("Failed to copy OSD #$sourceid to $targetfolderid", e)
+        }
+    }
+
 }

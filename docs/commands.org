@@ -40,6 +40,12 @@ will not be implemented at the moment.
    - [ ] getUser // unused
    - [ ] getUserByName // unused
    - [ ] listAclMembers // unused
+   - [ ] search // unused
+	 BROWSE_OBJECT or BROWSE_FOLDER (tested for each item found)
+   - [X] queryFolders  // no longer exists.
+	 BROWSE_FOLDER
+   - [X] queryObjects // no longer exists.
+	 BROWSE_OBJECT
 
 *** superuser
    most of those are availalbe in the GUI
@@ -68,23 +74,23 @@ will not be implemented at the moment.
     removeUserFromGroup
 
 * Primary Tasks
-** no further permissions required [11/13]
+** no further permissions required [13/13]
    - [X] createRelation   
    - [X] deleteRelation   
    - [X] getRelations
    - [X] getRelationTypes
-   - [ ] getUsers
+   - [X] getUsers
    - [X] getUsersAcls
    - [X] getUsersPermissions
    - [X] listAclEntries
    - [X] listGroups
    - [X] listIndexGroups
    - [X] listIndexItems
-   - [ ] listMessages
+   - [X] listMessages
    - [X] listPermissions
 
-** Primary, requires permission checking: [3/22]
-   - [ ]  copy
+** Primary, requires permission checking: [4/19]
+   - [X]  copy
 	  READ_OBJECT_CONTENT
 	  READ_OBJECT_CUSTOM_METADATA
 	  READ_OBJECT_SYS_METADATA
@@ -118,12 +124,6 @@ will not be implemented at the moment.
 	 LOCK
    - [ ] queryCustomTable
 	 QUERY_CUSTOM_TABLE
-   - [ ] queryFolders  // unused
-	 BROWSE_FOLDER
-   - [ ] queryObjects // unused
-	 BROWSE_OBJECT
-   - [ ] search
-	 BROWSE_OBJECT or BROWSE_FOLDER (tested for each item found)
    - [ ] searchFolders
 	 BROWSE_FOLDER (tested for each folder found)
    - [ ] setContent
