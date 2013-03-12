@@ -1,5 +1,6 @@
 package cinnamon
 
+import cinnamon.exceptions.CinnamonException
 import org.dom4j.Element
 import org.dom4j.DocumentHelper
 import grails.plugins.springsecurity.Secured
@@ -173,5 +174,55 @@ class AclController extends BaseController {
         setListParams()
         render(template: 'aclList', model: [aclList: Acl.list(params)])
     }
+
+    //--------------------- Cinnamon XML API -------------------------
+
+    /**
+     * Retrieve a list of all ACLs an user is a member of.
+     *
+     * @param cmd HTTP request parameter map
+     *            <ul>
+     *            <li>[id] = Id of a User (long)</li>
+     *            </ul>
+     * @return XML-Response
+     */
+    def getUsersAcls(Long id) {
+        try {
+            def user = UserAccount.get(id)
+            if (! user){
+                throw new CinnamonException('error.object.not.found')
+            }
+            def groups = new HashSet<CmnGroup>()
+            for (CmnGroupUser cu : user.getGroupUsers()) {
+                groups.add(cu.cmnGroup)
+                groups.addAll(cu.cmnGroup.findAncestors())
+            }
+            log.debug("number of groups for this user: " + groups.size())
+            Set<Acl> acls = new HashSet<Acl>();
+            for (CmnGroup group : groups) {
+                /*
+                 * If there are many groups whose AclEntries point to the
+                 * same Acls, it could be better to first collect the
+                 * entries before adding their Acls.
+                 * (or get acls / entries by a HQL-Query)
+                 */
+                for (AclEntry ae : group.getAclEntries()) {
+                    acls.add(ae.getAcl());
+                }
+            }            
+            log.debug("number of acls for this user: " + acls.size());
+            def doc = DocumentHelper.createDocument()
+            def root = doc.addElement('acls')
+            acls.each{acl ->
+                acl.toXmlElement(root)
+            }
+            render(contentType: 'application/xml', text: doc.asXML())
+        }
+        catch (Exception e) {
+            renderExceptionXml("getUsersAcl failed", e)
+        }
+    }
     
+    
+
 }
