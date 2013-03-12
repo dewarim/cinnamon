@@ -530,7 +530,7 @@ class FolderController extends BaseController {
                 Element folderNode = link.getFolder().toXmlElement(root);
                 linkService.addLinkToElement(link, folderNode);
             }
-            
+            log.debug("fetchSubFolders.result:\n${doc.asXML()}")
             return render(contentType: 'application/xml', text: doc.asXML())
         }
         catch (Exception e) {
@@ -559,6 +559,7 @@ class FolderController extends BaseController {
                 }
                 folder.toXmlElement(root);
             }
+            log.debug("result of fetchFolderByPath: ${doc.asXML()}")
             return render(contentType: 'application/xml', text: doc.asXML())
         }
         catch (Exception e) {
