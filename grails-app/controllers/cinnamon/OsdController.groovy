@@ -832,8 +832,46 @@ class OsdController extends BaseController {
         catch (Exception e){
             renderExceptionXml("Failed to fetch OSD ${id} metadata", e)
         }
-        
-        
-
     }
+
+    /**
+     * The getObjectsById command retrieves one or more objects by the given id.
+     * <p/>
+     * <h2>Needed permissions</h2>
+     * BROWSE_OBJECT
+     *
+     * @param ids xml document containing a list of object ids accessible via XPath //ids/id,
+     *        for example: <pre>{@code <ids><id>2170</id><id>22182</id></ids}</pre>
+     * @return XML-Response:
+     *         List of XML serialized objects.
+     */
+    def getObjectsById(String ids) {
+        try {
+            if(! ids){
+                throw new CinnamonException('error.invalid.params')
+            }
+            Document response = DocumentHelper.createDocument()
+            Element root = response.addElement("objects");
+            
+            org.dom4j.Node rootParamNode = ParamParser.parseXml(ids, "error.param.ids.xml")
+            List<org.dom4j.Node> idNodes = rootParamNode.selectNodes("id");
+            Validator validator = new Validator(userService.user)
+            Permission browsePermission = Permission.findByName(PermissionName.BROWSE_OBJECT);
+            for (org.dom4j.Node n : idNodes) {
+                try {
+                    Long id = Long.parseLong(n.getText())
+                    ObjectSystemData osd = ObjectSystemData.get(id);
+                    validator.checkBrowsePermission(osd, browsePermission);
+                    root.add(osd.toXML().getRootElement());
+                } catch (Exception e) {
+                    log.debug("failed to add OSD for '" + n.getText() + "': " + e.getMessage());
+                }
+            }
+            render(contentType: 'application/xml', text: response.asXML())
+        }
+        catch (Exception e) {
+            renderExceptionXml('Failed to do getObjectsById', e)
+        }
+    }
+    
 }
