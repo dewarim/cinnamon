@@ -102,6 +102,7 @@ class AclEntryController extends BaseController{
      *            </ul>
      * @return XML-Response with serialized AclEntries.
      */
+    @Secured(["isAuthenticated()"])
     def listXml(Long aclid, Long groupid) {
         try {
             def aclEntries
