@@ -468,14 +468,17 @@ class OsdController extends BaseController {
         log.debug("Found " + links.size() + " links.");
         for (Link link : links) {
             try {
-                val.validatePermission(link.getAcl(), PermissionName.BROWSE_OBJECT);
-                val.validatePermission(link.getOsd().getAcl(), PermissionName.BROWSE_OBJECT);
+                val.validatePermission(link.acl, PermissionName.BROWSE_OBJECT);
+                val.validatePermission(link.osd.acl, PermissionName.BROWSE_OBJECT);
+                if (withMetadata){
+                    val.validatePermission(link.osd.acl, PermissionName.READ_OBJECT_CUSTOM_METADATA)
+                }
             } catch (Exception e) {
                 log.debug("", e);
                 continue;
             }
             Element osdNode = link.getOsd().toXmlElement(root);
-            if (withMetadata) {
+            if (withMetadata) {                
                 osdNode.add(ParamParser.parseXml(link.getOsd().getMetadata(), null));
             }
             linkService.addLinkToElement(link, osdNode);
@@ -873,5 +876,41 @@ class OsdController extends BaseController {
             renderExceptionXml('Failed to do getObjectsById', e)
         }
     }
-    
+    /**
+     * The getobjectswithmetadata command retrieves some or all objects in the folder with the given id
+     * and returns their metadata and system metadata.
+     * The user needs both the browse object permission and the permission to read the metadata.
+     * <br>
+     * The optional versions parameter allows requesting all versions (all),
+     * only the newest version in the trunk of the version tree (head) or the newest
+     * version including branches (branch).
+     * <h2>Needed permissions</h2>
+     *         <ul>
+     *         <li>READ_OBJECT_CUSTOM_METADATA</li>
+     *         <li>BROWSE_OBJECT</li>
+     *         </ul>
+     * @param parentid parent folder id
+     * @param versions optional version parameter: all,branch,head  (default=head)
+     * @return XML-Response:
+     *         List of object data as XML document.
+     */
+    def fetchObjectsWithCustomMetadata(Long parentid) {
+        try {
+            def folder = folderService.fetchFolder(parentid)
+            if (!folder) {
+                throw new RuntimeException('error.folder.not.found')
+            }
+            def user = userService.user
+            List<ObjectSystemData> results = folderService.getObjects(user, folder, session.repositoryName, params.versions)
+            Validator val = new Validator(user);
+            results = val.filterUnbrowsableObjects(results);            
+            Document doc = osdService.generateQueryObjectResultDocument(results, true);
+            addLinksToObjectQuery(params.parentid, doc, val, true)            
+            return render(contentType: 'application/xml', text: doc.asXML())
+        }
+        catch (Exception e) {
+            log.debug("failed to fetch objects: ", e)
+            renderExceptionXml(e)
+        }
+    }
 }
