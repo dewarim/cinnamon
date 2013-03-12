@@ -141,7 +141,16 @@ class OsdController extends BaseController {
         }
     }
 
-    def getContent(Long id) {
+    /**
+     * Retrieves the content with the given id. The user may then edit the file.
+     * <h2>Needed permissions</h2>
+     * READ_OBJECT_CONTENT
+     *
+     * @param id Id of the requested object
+     * @param resultfile the attachment filename 
+     * @return the raw content of the object as byte stream (MIME-type: binary/octet-stream)
+     */
+    def getContent(Long id, String resultfile) {
         Folder folder = null
         try {
             ObjectSystemData osd = fetchAndFilterOsd(id?.toString() ?: params.osd)
@@ -160,7 +169,7 @@ class OsdController extends BaseController {
             if (osd.contentSize == null || osd.contentSize == 0) {
                 throw new RuntimeException('error.content.not.found')
             }
-            def attachmentName = "${osd.name.encodeAsURL()}${osd.determineExtension()}"
+            def attachmentName = resultfile ?: "${osd.name.encodeAsURL()}${osd.determineExtension()}"
             response.setHeader("Content-disposition", "attachment; filename=${attachmentName}");
             response.setContentType(osd.format.contenttype)
             response.outputStream << data.newInputStream()
@@ -703,4 +712,42 @@ class OsdController extends BaseController {
         }
     }
 
+    /**
+     * The delete command deletes the object in the repository with the given id. This operation
+     * cascades over related objects, unless they are protected by the relationtype.
+     * <h2>Needed permissions</h2>
+     *         DELETE_OBJECT
+     * @param id
+     * @return XML-Response:
+     *         <pre>
+     *         {@code <success>success.delete.object</success> }
+     *         </pre> if successful, an XML-error-node if unsuccessful.
+     */
+    def deleteXml(Long id) {
+        def osd = ObjectSystemData.get(id)
+        try {
+            if (!osd) {
+                throw new CinnamonException('error.object.not.found')
+            }
+            (new Validator(userService.user)).validateDelete(osd)
+            luceneService.removeFromIndex(osd, repositoryName)
+            ObjectSystemData preOsd = osd.getPredecessor();
+            osdService.delete(osd, repositoryName)
+            if (preOsd) {
+                def predecessorChildren = ObjectSystemData.findAllByPredecessor(preOsd)
+                preOsd.fixLatestHeadAndBranch(predecessorChildren)
+                luceneService.updateIndex(preOsd, repositoryName)
+            }
+            render(contentType: 'application/xml') {
+                success('success.delete.object')
+            }
+        }
+        catch (Exception e) {
+            if (osd) {
+                luceneService.updateIndex(osd, repositoryName)
+            }
+            renderExceptionXml('Failed to delete object', e)
+        }
+    }
+    
 }
