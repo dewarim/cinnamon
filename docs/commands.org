@@ -1,31 +1,29 @@
 * Cinnamon 3: XML-API state
 
-Status: 2013-03-04 #1
-
 Cinnamon 3 still needs a list of XML API commands from Cinnamon 2 to be implemented.
 
 Note: API commands which are not currently used by the desktop client 
 will not be implemented at the moment.
 
 ** Already implemented
-   connect
-   disconnect
-   getAcls
-   getFolderTypes
-   getFormats
-   getFolderByPath
-   getFolder
-   listLanguages
-   listUiLanguages      
-   createLink
-   deleteLink
-   updateLink
-   getLink
-   getObjects
-   getObjTypes
-   searchObjects
-   getSubfolders
-   unlock
+  - connect
+  - disconnect
+  - getAcls
+  - getFolderTypes
+  - getFormats
+  - getFolderByPath
+  - getFolder
+  - listLanguages
+  - listUiLanguages      
+  - createLink
+  - deleteLink
+  - updateLink
+  - getLink
+  - getObjects
+  - getObjTypes
+  - searchObjects
+  - getSubfolders
+  - unlock
 
 ** Secondary
    Stuff that is secondary or legacy / not or rarely used:
@@ -34,6 +32,14 @@ will not be implemented at the moment.
    - [ ] initializeDatabase (can be called by anybody as long as there are no user accounts in the database)
    - [ ] reindex
    - [ ] executeXmlQuery ( to view objects, you need: BROWSE_OBJECT )
+   - [ ] getAclEntry  // is obsolete / unused  
+   - [ ] getExtension // is obsolete / unused
+   - [ ] getGroupsOfUser // unused
+   - [ ] getIndexGroup // unused
+   - [ ] getPermission // unused
+   - [ ] getUser // unused
+   - [ ] getUserByName // unused
+   - [ ] listAclMembers // unused
 
 *** superuser
    most of those are availalbe in the GUI
@@ -61,25 +67,17 @@ will not be implemented at the moment.
     removePermissionFromAcl
     removeUserFromGroup
 
-
-** Primary, no further permissions required [11/21]
+* Primary Tasks
+** no further permissions required [10/13]
    - [X] createRelation   
    - [X] deleteRelation   
-   - [X] getAclEntry  // is obsolete / unused  
-   - [X] getExtension // is obsolete / unused
-   - [ ] getGroupsOfUser // unused
-   - [ ] getIndexGroup // unused
-   - [ ] getPermission // unused
    - [X] getRelations
    - [X] getRelationTypes
-   - [ ] getUser // unused
-   - [ ] getUserByName // unused
    - [ ] getUsers
    - [X] getUsersAcls
    - [X] getUsersPermissions
    - [ ] listAclEntries
-   - [ ] listAclMembers // unused
-   - [ ] listGroups
+   - [X] listGroups
    - [X] listIndexGroups
    - [X] listIndexItems
    - [ ] listMessages
@@ -159,6 +157,7 @@ will not be implemented at the moment.
    - [ ] findOpenTasks // unused
    - [ ] doTransition
 
-** Further Functionality / Classes:
+** Further Functionality / Classes: [0/3]
    - [ ] TikaParser
    - [ ] TikaConfig
+   - [ ] LocalMessage is currently just an empty shell.

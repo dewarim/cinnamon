@@ -1,7 +1,10 @@
 package cinnamon
 
+import cinnamon.exceptions.CinnamonException
 import grails.plugins.springsecurity.Secured
 import cinnamon.global.Constants
+import org.dom4j.DocumentHelper
+import org.dom4j.Element
 
 @Secured(["hasRole('_superusers')"])
 class GroupController extends BaseController {
@@ -52,9 +55,9 @@ class GroupController extends BaseController {
                    cg NOT IN (select cgu.cmnGroup from CmnGroupUser cgu where cgu.userAccount=:user)
                    and cg.name not like '_%'
                    and cg.name not like :superuserGroup                   
-""", [user:user, superuserGroup:Constants.GROUP_SUPERUSERS])
+""", [user: user, superuserGroup: Constants.GROUP_SUPERUSERS])
 
-        [groupList: cmnGroupUsers.collect {it.cmnGroup},
+        [groupList: cmnGroupUsers.collect { it.cmnGroup },
                 addList: addList,
                 user: user]
     }
@@ -64,10 +67,10 @@ class GroupController extends BaseController {
         Set<CmnGroup> seen = new HashSet<CmnGroup>()
 
         def recursion = {}
-        def fetchSubGroups = {  group ->
+        def fetchSubGroups = { group ->
             seen.add(group)
-            def childGroups =  CmnGroup.findAllWhere(parent: group)
-            childGroups.each {childGroup ->
+            def childGroups = CmnGroup.findAllWhere(parent: group)
+            childGroups.each { childGroup ->
                 if (!seen.contains(childGroup)) {
                     recursion(childGroup) // cannot directly reference closure in itself.
                 }
@@ -134,8 +137,8 @@ class GroupController extends BaseController {
         if (params.sort && sortBy.get(params.sort)) {
             searchString = searchString + " order by " + sortBy.get(params.sort) + (params.order?.equals('asc') ? ' asc ' : ' desc ')
         }
-        def groupList =  CmnGroup.findAll(searchString, [], [max: params.max, offset: params.offset])
-        def groupCount =  CmnGroup.findAll(searchString)
+        def groupList = CmnGroup.findAll(searchString, [], [max: params.max, offset: params.offset])
+        def groupCount = CmnGroup.findAll(searchString)
         log.debug("groupList.size: ${groupCount.size()}")
         [groupList: groupList, groupCount: groupCount.size()]
     }
@@ -144,15 +147,15 @@ class GroupController extends BaseController {
         def ancestorGroup = CmnGroup.get(params.id)
 
         Set<CmnGroup> seen = new HashSet<CmnGroup>()
-        Set <UserAccount> users = new HashSet <UserAccount>()
+        Set<UserAccount> users = new HashSet<UserAccount>()
 
         def recursion = {}
-        def fetchDeepUsers = {  group ->
+        def fetchDeepUsers = { group ->
             def gus = CmnGroupUser.findAll("from CmnGroupUser as gu where gu.cmnGroup=:group", [group: group])
-            users.addAll(gus.collect {it.userAccount})
+            users.addAll(gus.collect { it.userAccount })
             seen.add(group)
-            def childGroups =  CmnGroup.findAllWhere(parent: group)
-            childGroups.each {childGroup ->
+            def childGroups = CmnGroup.findAllWhere(parent: group)
+            childGroups.each { childGroup ->
                 if (!seen.contains(childGroup)) {
                     recursion(childGroup) // cannot directly reference closure in itself
                 }
@@ -211,22 +214,66 @@ class GroupController extends BaseController {
 
     }
 
-    def delete () {
+    def delete() {
         def group = CmnGroup.get(params.id)
         if (CmnGroupUser.findByCmnGroup(group) || AclEntry.findByGroup(group)) {
             flash.error = message(code: 'error.delete.group')
             redirect(action: 'show', params: [id: params.id])
             return
-        } else {
+        }
+        else {
             flash.message = message(code: 'group.delete.success', args: [group.name])
             group.delete()
         }
         redirect(action: 'list')
     }
 
-    def updateList () {
+    def updateList() {
         setListParams()
         render(template: 'groupList', model: [groupList: CmnGroup.list(params)])
+    }
+
+    //--------------------- XML API ------------------------
+    /**
+     * Generate a list of one or all groups.
+     *
+     * @param cmd HTTP request parameter map:
+     *            <ul>
+     *            <li>command=listgroups</li>
+     *            <li>[optional: groupid=id to retrieve a single group]</li>
+     *            </ul>
+     * @return XML-Response in the format
+     *         <pre>
+     *          {@code
+     *            <groups>
+     *              <group><id>123</id>...</group>
+     *              ...
+     *              </groups>
+     *         }
+     *         </pre>
+     */
+    @Secured(["isAuthenticated()"])
+    def listXml(Long groupid) {
+        try {
+            def doc = DocumentHelper.createDocument()
+            Element root = doc.addElement("groups");
+            if (groupid) {
+                def group = CmnGroup.get(groupid)
+                if (!group) {
+                    throw new CinnamonException('error.object.not.found')
+                }
+                group.toXmlElement(root)
+            }
+            else {
+                CmnGroup.list().each { group ->
+                    group.toXmlElement(root)
+                }
+            }
+            render(contentType: 'application/xml', text: doc.asXML())
+        }
+        catch (Exception e) {
+            renderExceptionXml('listXml failed', e)
+        }
     }
 
 }
