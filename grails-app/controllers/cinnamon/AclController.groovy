@@ -9,11 +9,12 @@ import cinnamon.global.Constants
 @Secured(["isAuthenticated()"])
 class AclController extends BaseController {
 
-    def listXml(){
+    def listXml() {
         List<Acl> results = new ArrayList<Acl>();
         if (params.id) {
             results.add(Acl.get(params.id))
-        } else {
+        }
+        else {
             results = Acl.list();
         }
         def doc = DocumentHelper.createDocument()
@@ -23,10 +24,10 @@ class AclController extends BaseController {
         }
         return render(contentType: 'application/xml', text: doc.asXML())
     }
-    
+
     // --------------------------------------------------------------
     // Dandelion code:
-    def showAclsByGroup () {
+    def showAclsByGroup() {
 
         def group = CmnGroup.get(params.id)
         def aclEntries = AclEntry.findAllByGroup(group)
@@ -41,11 +42,11 @@ class AclController extends BaseController {
                 group: group]
     }
 
-    def index () {
+    def index() {
         return redirect(action: 'list', controller: 'acl')
     }
 
-    def create () {
+    def create() {
 
     }
 
@@ -54,7 +55,7 @@ class AclController extends BaseController {
         [aclList: Acl.list(params)]
     }
 
-    def show () {
+    def show() {
         [acl: Acl.get(params.id)]
     }
 
@@ -72,21 +73,21 @@ class AclController extends BaseController {
 
     def save(String name) {
         try {
-            Acl acl = new Acl(name:name)
+            Acl acl = new Acl(name: name)
             acl.save(flush: true)
             redirect(action: 'show', params: [id: acl.id.toString()])
         }
         catch (Exception e) {
-            log.debug("save acl failed: ",e)
+            log.debug("save acl failed: ", e)
             flash.message = e.getLocalizedMessage()
             redirect(action: 'create')
         }
     }
 
-    def update(String name, Long id) {        
+    def update(String name, Long id) {
         Acl acl = Acl.get(id)
-        if (! acl){
-            flash.message = message(code:'error.object.not.found')
+        if (!acl) {
+            flash.message = message(code: 'error.object.not.found')
         }
         acl.name = name
         if (acl.save(flush: true)) {
@@ -99,7 +100,7 @@ class AclController extends BaseController {
         }
     }
 
-    def delete () {
+    def delete() {
         def acl = Acl.get(params.id)
 
         if (acl.name == Constants.ACL_DEFAULT) {
@@ -133,14 +134,14 @@ class AclController extends BaseController {
         redirect(action: 'list')
     }
 
-    def addAclEntry () {
+    def addAclEntry() {
         try {
             def acl = Acl.get(params.id)
             def group = CmnGroup.get(params.groupId)
             if (!acl || !group) {
                 throw new RuntimeException('error.invalid.object')
             }
-            if (acl.aclEntries.find {it.group == group}) {
+            if (acl.aclEntries.find { it.group == group }) {
                 throw new RuntimeException('acl.group.has_entry')
             }
             AclEntry ae = new AclEntry(acl, group);
@@ -170,7 +171,7 @@ class AclController extends BaseController {
         }
     }
 
-    def updateList () {
+    def updateList() {
         setListParams()
         render(template: 'aclList', model: [aclList: Acl.list(params)])
     }
@@ -189,7 +190,7 @@ class AclController extends BaseController {
     def getUsersAcls(Long id) {
         try {
             def user = UserAccount.get(id)
-            if (! user){
+            if (!user) {
                 throw new CinnamonException('error.object.not.found')
             }
             def groups = new HashSet<CmnGroup>()
@@ -209,11 +210,11 @@ class AclController extends BaseController {
                 for (AclEntry ae : group.getAclEntries()) {
                     acls.add(ae.getAcl());
                 }
-            }            
+            }
             log.debug("number of acls for this user: " + acls.size());
             def doc = DocumentHelper.createDocument()
             def root = doc.addElement('acls')
-            acls.each{acl ->
+            acls.each { acl ->
                 acl.toXmlElement(root)
             }
             render(contentType: 'application/xml', text: doc.asXML())
@@ -222,7 +223,69 @@ class AclController extends BaseController {
             renderExceptionXml("getUsersAcl failed", e)
         }
     }
-    
-    
+
+    /**
+     * Retrieve a list of all Permissions applicable for a user on
+     * a given Acl. For superusers, it returns all permissions, as those
+     * are not restricted by ACLs / permissions.
+     *
+     * @param cmd Map with Key/Value-Pair<br>
+     *            <ul>
+     *            <li>userId = Id of a User</li>
+     *            <li>aclId = Id of an Acl</li>
+     *            </ul>
+     * @return XML-Response, for format see listPermissions command.
+     */
+    def getUsersPermissions(Long userId, Long aclId) {
+        try {
+            def user = UserAccount.get(userId)
+            if (!user) {
+                throw new CinnamonException('error.object.not.found')
+            }
+            if (user.verifySuperuserStatus()) {
+                forward(controller: 'permission', action: 'listXml')
+                return
+            }
+
+            def groups = new HashSet<CmnGroup>()
+            for (CmnGroupUser cu : user.getGroupUsers()) {
+                groups.add(cu.cmnGroup)
+                groups.addAll(cu.cmnGroup.findAncestors())
+            }
+            log.debug("number of groups for this user: " + groups.size())
+            Acl acl = Acl.get(aclId)
+            Set<Permission> permissions = new HashSet<Permission>();
+
+            Set<Acl> acls = new HashSet<Acl>();
+            for (CmnGroup group : groups) {
+                /*
+                 * If there are many groups whose AclEntries point to the
+                 * same Acls, it could be better to first collect the
+                 * entries before adding their Acls.
+                 * (or get acls / entries by a HQL-Query)
+                 */
+                for (AclEntry ae : group.getAclEntries()) {
+                    log.debug("working on AclEntry for Acl:" + ae.getAcl().getName());
+                    if (ae.acl.equals(acl))
+                        log.debug("found acl");
+                    Set<AclEntryPermission> aepSet = ae.getAePermissions();
+                    for (AclEntryPermission aep : aepSet) {
+                        permissions.add(aep.getPermission());
+                    }
+                }
+            }
+            log.debug("number of permissions for this user: " + permissions.size());
+            def doc = DocumentHelper.createDocument()
+            def root = doc.addElement('permissions')
+            permissions.each { permission ->
+                permission.toXmlElement(root)
+            }
+            render(contentType: 'application/xml', text: doc.asXML())
+        }
+
+        catch (Exception e) {
+            renderExceptionXml("getUsersAcl failed", e)
+        }
+    }
 
 }

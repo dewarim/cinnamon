@@ -203,7 +203,9 @@ class CinnamonController extends BaseController {
             case 'getsubfolders': forward(controller: 'folder', action: 'fetchSubFolders'); break
             case 'getusers': forward(controller: 'userAccount', action: 'listXml'); break
             case 'getusersacls': forward(controller: 'acl', action: 'getUsersAcls'); break
+            case 'getuserspermissions': forward(controller: 'acl', action: 'getUsersPermissions'); break
             case 'listlanguages': forward(controller: 'language', action: 'listLanguages');break
+            case 'listpermissions': forward(controller: 'permission', action: 'listXml');break
             case 'listuilanguages': forward(controller: 'uiLanguage', action: 'listUiLanguages');break
             case 'lock': forward(controller: 'osd', action: 'lockXml');break
             case 'searchobjects': params.xmlQuery = true; forward(controller: 'search', action: 'searchObjects'); break

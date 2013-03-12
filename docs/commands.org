@@ -4,6 +4,9 @@ Status: 2013-03-04 #1
 
 Cinnamon 3 still needs a list of XML API commands from Cinnamon 2 to be implemented.
 
+Note: API commands which are not currently used by the desktop client 
+will not be implemented at the moment.
+
 ** Already implemented
    connect
    disconnect
@@ -62,8 +65,8 @@ Cinnamon 3 still needs a list of XML API commands from Cinnamon 2 to be implemen
 ** Primary, no further permissions required
    - [X] createRelation   
    - [X] deleteRelation   
-   - [ ] getAclEntry   
-   - [X] getExtension // is obsolete.
+   - [X] getAclEntry  // is obsolete / unused  
+   - [X] getExtension // is obsolete / unused
    - [ ] getGroupsOfUser
    - [ ] getIndexGroup
    - [ ] getPermission
@@ -72,15 +75,15 @@ Cinnamon 3 still needs a list of XML API commands from Cinnamon 2 to be implemen
    - [ ] getUser
    - [ ] getUserByName
    - [ ] getUsers
-   - [ ] getUsersAcls
-   - [ ] getUsersPermissions
+   - [X] getUsersAcls
+   - [X] getUsersPermissions
    - [ ] listAclEntries
    - [ ] listAclMembers
    - [ ] listGroups
    - [ ] listIndexGroups
    - [ ] listIndexItems
    - [ ] listMessages
-   - [ ] listPermissions
+   - [X] listPermissions
 
 ** Primary, requires permission checking:
    - [ ]  copy
