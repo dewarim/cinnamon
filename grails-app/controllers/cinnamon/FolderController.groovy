@@ -611,4 +611,66 @@ class FolderController extends BaseController {
         }
     }
     
+    
+    //------------------- XML API commands -----------------------
+    /**
+     * The createfolder command creates a folder in the repository with the given name.
+     * The folder name must be unique for the same parent. To create a subfolder of root,
+     * specify 0 as parent id. The id of the newly created folder is returned.<br>
+     * <br>
+     * The metadata must be specified in one row.
+     *
+     * @param cmd HTTP request parameter map:
+     *            <ul>
+     *            <li>command=createfolder</li>
+     *            <li>metadata=xml metadata (optional)</li>
+     *            <li>name=folder name</li>
+     *            <li>parentid=parent folder id</li>
+     *            <li>aclid=id of the new folder's acl</li>
+     *            <li>ownerid=id of the folder's owner</li>
+     *            <li>[typeid]= id of the folderType (if not set, use default_folder_type)</li>
+     *            </ul>
+     * @return XML-Response:
+     *         Folder serialized to XML.
+     *         <h2>Needed permissions</h2>
+     *         CREATE_FOLDER
+     */
+    def createXml(String name, Long parentid, Long aclid, Long ownerid, Long typeid, String metadata) {
+        try {
+            Folder parentFolder;
+            if (parentid == 0L) { // 0 is considered the root folder.
+                parentFolder = folderService.findRootFolder()
+            }
+            else {
+                parentFolder = Folder.get(parentid)
+            }
+            
+            def folderType
+            if(typeid){
+                folderType = FolderType.get(typeid)
+            }
+            else{
+                folderType = FolderType.findByName(Constants.FOLDER_TYPE_DEFAULT)
+            }
+            
+            def user = userService.user
+            def owner = ownerid ? UserAccount.get(ownerid) : user
+            def acl = aclid ? Acl.get(aclid) : parentFolder.acl
+            (new Validator(user)).validateCreateFolder(parentFolder);
+            Folder folder = new Folder(name: name, owner: owner, parent:parentFolder,
+                                type: folderType, acl: acl
+            )
+            folder.save()
+            luceneService.addToIndex(folder, repositoryName);
+
+            def doc = DocumentHelper.createDocument()
+            Element root = doc.addElement("folders");
+            folder.toXmlElement(root);
+            render(contentType: 'application/xml', text: doc.asXML())
+        }
+        catch (Exception e) {
+            renderExceptionXml('Failed to create folder.', e)
+        }
+    }
+    
 }
