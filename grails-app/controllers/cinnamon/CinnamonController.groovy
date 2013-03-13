@@ -209,6 +209,7 @@ class CinnamonController extends BaseController {
             case 'getrelations': forward(controller: 'relation', action: 'listXml');break
             case 'getrelationtypes': forward(controller: 'relationType', action: 'listXml');break
             case 'getsubfolders': forward(controller: 'folder', action: 'fetchSubFolders'); break
+            case 'getsysmeta': forward(controller: 'osd', action: 'getSysMeta'); break
             case 'getusers': forward(controller: 'userAccount', action: 'listXml'); break
             case 'getusersacls': forward(controller: 'acl', action: 'getUsersAcls'); break
             case 'getuserspermissions': forward(controller: 'acl', action: 'getUsersPermissions'); break

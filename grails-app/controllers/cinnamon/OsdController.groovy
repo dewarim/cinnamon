@@ -913,4 +913,81 @@ class OsdController extends BaseController {
             renderExceptionXml(e)
         }
     }
+  
+    /**
+     * The getsysmeta command fetches one of the system attributes of an object specified
+     * by the "parameter" value. The following parameters can be retrieved:*
+     *            <h2>Needed permissions</h2>
+     *            READ_OBJECT_SYS_META oder BROWSE_FOLDER     
+     * @param id the object id
+     * @param parameter one of the following strings:
+     *            <ul>
+     *      <li>preid </li>
+     *      <li>locked </li>
+     *      <li>owner </li>
+     *      <li>contentsize </li>
+     *      <li>cntformat (id of the Format)</li>
+     *      <li>procstate </li>
+     *      <li>creator </li>
+     *      <li>created </li>
+     *      <li>language_id </li>
+     *      <li>modifier </li>
+     *      <li>modifier_id </li>
+     *      <li>modified </li>
+     *      <li>version </li>
+     *      <li>rootid </li>
+     *      <li>objtype (name of the object type)</li>
+     *      <li>objtype_id </li>
+     *      <li>acl_id</li>
+     *           </ul>
+     * @return XML-Response: <pre>{@code <sysMetaValue>$value</sysMetaValue>}</pre>
+     *         If a null value is retrieved, an xml-error-doc is returned with the message:
+     *         "error.result_value_is_null"
+     */
+    def getSysMeta(Long id, String parameter) {
+        try {
+            String value 
+            ObjectSystemData osd = ObjectSystemData.get(id)
+            if (!osd) {
+                throw new CinnamonException('error.object.not.found')
+            }
+            (new Validator(userService.user)).validateGetSysMeta(osd);
+
+            switch (parameter) {
+                case 'objtype': value = osd.type.name; break
+                case 'objtype_id': value = osd.type.id; break;
+                case 'owner_id': value = osd.owner.id; break;
+                case 'modifier_id': value = osd.modifier.id; break;
+                case 'creator_id': value = osd.creator.id; break;
+                case 'owner': value = osd.owner.name; break;
+                case 'modifier': value = osd.modifier.name; break;
+                case 'creator': value = osd.creator.name; break;
+                case 'parentid': value = osd.parent.id; break;
+                case 'preid': value = osd.predecessor?.id; break;
+                case 'name': value = osd.name; break;
+                case 'appname': value = osd.appName; break;
+                case 'contentsize': value = osd.contentSize; break;
+                case 'cntformat': value = osd.format?.id; break;
+                case 'procstate': value = osd.procstate; break;
+                case 'locked': value = osd.locker?.id; break;
+                case 'modified': value = ParamParser.dateToIsoString(osd.modified); break;
+                case 'created': value = ParamParser.dateToIsoString(osd.created); break;
+                case 'acl_id': value = osd.acl.id; break;
+                case 'version': value = osd.cmnVersion; break;
+                case 'rootid': value = osd.root?.id; break;
+                case 'language_id': value = osd.language.id; break;
+                default: throw new CinnamonException("Parameter '$parameter' can not be read on objects.")
+            }
+
+            if (value == null) {
+                throw new CinnamonException("error.result_value_is_null")
+            }
+            render(contentType: 'application/xml') {
+                sysMetaValue(value)
+            }
+        }
+        catch (Exception e) {
+            renderExceptionXml('Failed to getSysMeta($id,$parameter).', e)
+        }
+    }
 }
