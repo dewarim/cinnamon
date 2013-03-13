@@ -17,6 +17,7 @@
  */
 package cinnamon.index
 
+import cinnamon.Validator
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import cinnamon.ItemService
@@ -27,25 +28,24 @@ import cinnamon.ItemService
 class LuceneResult {
 
     transient Logger log = LoggerFactory.getLogger(this.class)
-    
+
     List<String> resultMessages = []
     Boolean failed = false
     String errorMessage
-    
+
     Map<String, Set<Long>> itemIdMap = new HashMap<String, Set<Long>>()
-    Map<Long, Map<String,String>> idFieldMap = new HashMap<>()
-    
+    Map<Long, Map<String, String>> idFieldMap = new HashMap<>()
+
     /**
      * A raw list of search result items from all domain classes found.
-     * @param user the current session's user
      * @param itemService the itemService which is called to filter on user/item access permission
      * @return the (filtered) list of items found by Lucene.
      */
     List filterResults(ItemService itemService) {
         def itemList = []
-        itemIdMap.each {domainClass, idSet ->
+        itemIdMap.each { domainClass, idSet ->
             if (idSet?.size() > 0) {
-                idSet.each {id ->
+                idSet.each { id ->
                     def item = itemService.fetchItem(domainClass, id)
                     if (item) {
                         itemList.add(item)
@@ -62,7 +62,6 @@ class LuceneResult {
     /**
      * Filter the search results (which may already be filtered by the ResultCollector) by optional SearchableDomain
      * and return a map of className::itemSet (currently unordered)
-     * @param user current session's user account
      * @param domain optional searchable domain
      * @param itemService the itemService, which is called for each item for filtering.
      * @return a map className::itemSet with search results.
@@ -71,4 +70,15 @@ class LuceneResult {
         return itemService.filterItemIdMap(itemIdMap, domain)
     }
 
+    /**
+     * Filter the search results (which may already be filtered by the ResultCollector) by optional SearchableDomain
+     * and return an itemSet (currently unordered)
+     * @param domain optional searchable domain
+     * @param itemService the itemService, which is called for each item for filtering.
+     * @param validator A validator object to further filter the search results by their ACL
+     * @return a map className::itemSet with search results.
+     */
+    Set filterResultToSet(SearchableDomain domain, ItemService itemService, Validator validator) {
+        return itemService.filterItemsToSet(itemIdMap, domain, validator)
+    }
 }

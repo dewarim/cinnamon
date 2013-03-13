@@ -17,7 +17,11 @@
  */
 package cinnamon
 
+import cinnamon.global.PermissionName
 import cinnamon.index.SearchableDomain
+import cinnamon.interfaces.Accessible
+import cinnamon.interfaces.Ownable
+import cinnamon.interfaces.XmlConvertable
 
 /**
  * The ItemService is responsible for finding "items" for a user.
@@ -103,7 +107,6 @@ class ItemService {
             def idSet = itemIdMap.get(domainClass)
             if (idSet?.size() > 0) {
                 log.debug("found idSet")
-
                 def itemList = fetchItemsFromIdList(domainClass, idSet)
                 def itemSet = itemMap.get(domainClass)
                 if(! itemSet){
@@ -117,6 +120,40 @@ class ItemService {
             }
         }
         return itemMap
+    } 
+    
+    Set filterItemsToSet(itemIdMap, SearchableDomain domain, Validator validator){
+        def itemSet = new HashSet<XmlConvertable>()
+        def keySet = itemIdMap.keySet()
+        if(domain){
+            // limit search results to a specific domain:
+            keySet = keySet.findAll{it == domain.name}
+        }
+        keySet.each {domainClass ->
+            log.debug("domainClass: $domainClass")
+            def idSet = itemIdMap.get(domainClass)
+            if (idSet?.size() > 0) {
+                log.debug("found idSet")
+                def itemList = fetchItemsFromIdList(domainClass, idSet)
+                if (validator){
+                    Permission browsePermission = Permission.findByName(domain.browsePermission)
+                    itemList = itemList.findAll{item ->
+                        if (item instanceof Accessible){
+                            /*
+                             * We may someday index objects that do not have an Owner,
+                             * which makes ACL-checking impossible.
+                             */
+                            validator.check_acl_entries(item.acl, browsePermission, (Ownable) item)
+                        }
+                    }
+                }
+                itemSet.addAll(itemList)
+            }
+            else{
+                log.debug("no idSet for $domainClass")
+            }
+        }
+        return itemSet
     }
 
 }

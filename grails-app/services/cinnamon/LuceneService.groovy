@@ -1,5 +1,7 @@
 package cinnamon
 
+import cinnamon.index.ResultCollector
+import cinnamon.interfaces.XmlConvertable
 import org.apache.lucene.analysis.Analyzer
 import org.apache.lucene.analysis.standard.StandardAnalyzer
 import org.apache.lucene.util.Version
@@ -23,6 +25,7 @@ import java.text.DecimalFormat
 class LuceneService {
 
     def grailsApplication
+    def itemService
 
     static transactional = false
 
@@ -172,6 +175,14 @@ class LuceneService {
      */
     public static String pad(Long n){
         return formatter.format(n);
+    }
+
+    // TODO: the fields list is currently not returned in the results - needs a new container object
+    Set fetchSearchResults(String query,String repositoryName, 
+            UserAccount user, SearchableDomain domain, List<String> fields) {
+        LuceneResult results = searchXml(query, repositoryName, domain, fields)
+        def validator = new Validator(user)
+        results.filterResultToSet(domain, itemService, validator)
     }
     
 }

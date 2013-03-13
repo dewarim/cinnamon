@@ -91,7 +91,7 @@ will not be implemented at the moment.
    - [X] listMessages
    - [X] listPermissions
 
-** Primary, requires permission checking: [13/19]
+** Primary, requires permission checking: [15/19]
    - [X]  copy
 	  READ_OBJECT_CONTENT
 	  READ_OBJECT_CUSTOM_METADATA
@@ -120,11 +120,11 @@ will not be implemented at the moment.
    - [X] getObjectsWithCustomMetadata // unused, but implement 
 	 READ_OBJECT_CUSTOM_METADATA 
 	 BROWSE_OBJECT
-   - [ ] getSysMeta
+   - [X] getSysMeta
 	 READ_OBJECT_SYS_META or BROWSE_FOLDER, depending on type
    - [X] lock
 	 LOCK
-   - [ ] searchFolders
+   - [X] searchFolders
 	 BROWSE_FOLDER (tested for each folder found)
    - [ ] setContent
 	 WRITE_OBJECT_CONTENT

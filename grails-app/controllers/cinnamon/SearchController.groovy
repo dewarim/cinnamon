@@ -1,19 +1,18 @@
 package cinnamon
 
+import cinnamon.index.SearchableDomain
 import org.dom4j.Element
 import cinnamon.interfaces.XmlConvertable
 import org.dom4j.DocumentHelper
-import cinnamon.utils.ParamParser
 import org.dom4j.Document
 import org.dom4j.Node
 import cinnamon.index.Indexable
-import cinnamon.index.ResultCollector
 import grails.plugins.springsecurity.Secured
 
 @Secured(["isAuthenticated()"])
 class SearchController extends BaseController {
 
-    def searchObjects() {
+    def searchObjects(Integer page_size, Integer page) {
         try {
             Set<XmlConvertable> resultStore;
             resultStore = fetchSearchResults(ObjectSystemData.class);
@@ -22,8 +21,9 @@ class SearchController extends BaseController {
             root.addAttribute("total-results", String.valueOf(resultStore.size()));
 
             if (params.containsKey("page_size")) {
-                addPagedResultsToElement(root, resultStore);
-            } else {
+                addPagedResultsToElement(root, resultStore, page_size, page);
+            }
+            else {
                 for (XmlConvertable conv : resultStore) {
                     conv.toXmlElement(root);
                 }
@@ -39,7 +39,39 @@ class SearchController extends BaseController {
         }
     }
 
-    protected void addPagedResultsToElement(Element root, Set<XmlConvertable> resultStore) {
+    def searchObjectsXml(String query, Integer page_size, Integer page) {
+        try {
+            doSearch(query, page_size, page, SearchableDomain.OSD)
+                      
+        }
+        catch (Exception e) {
+            log.debug("failed searchObjects: ", e)
+            renderExceptionXml(e)
+        }
+    }
+    
+    protected void doSearch(query, pageSize, page, domain){
+        def fields = params.list('field')
+        Set<XmlConvertable> resultStore = luceneService.fetchSearchResults(query, repositoryName, userService.user, domain, fields);
+        def doc = DocumentHelper.createDocument()
+        Element root = doc.addElement(domain.xmlRoot);
+        root.addAttribute("total-results", String.valueOf(resultStore.size()));
+
+        if (pageSize) {
+            addPagedResultsToElement(root, resultStore, pageSize, page);
+        }
+        else {
+            resultStore.each { convertable ->
+                convertable.toXmlElement(root);
+            }
+        }
+        // add parent folders of search results to enable display of folder structure without
+        // repeated path reloads.
+        addPathFolders(doc);
+        render(contentType: 'application/xml', text: doc.asXML())
+    }
+
+    protected void addPagedResultsToElement(Element root, Set<XmlConvertable> resultStore, Integer pageSize, Integer currentPage) {
         List<XmlConvertable> itemList = new ArrayList<XmlConvertable>();
         itemList.addAll(resultStore);
 
@@ -49,12 +81,7 @@ class SearchController extends BaseController {
         }
 
         Collections.sort(itemList); // sort by id
-
-        int pageSize = ParamParser.parseLong(params.page_size, "error.param.max_results").intValue();
-        int page = 1;
-        if (params.page) {
-            page = ParamParser.parseLong(params.page, "error.param.page").intValue();
-        }
+        int page = currentPage ?: 1
 
         // to prevent index-out-of-bound exception:
         if (page <= 0) {
@@ -67,7 +94,7 @@ class SearchController extends BaseController {
         int start = pageSize * (page - 1);
         int end = pageSize * page;
         for (int x = start; x < end && x < itemList.size(); x++) {
-            itemList.get(x).toXmlElement(root);
+            itemList.get(x).toXmlElement(root)
         }
     }
 
@@ -134,4 +161,38 @@ class SearchController extends BaseController {
         resultSet.addAll(val.filterUnbrowsableFolders(itemMap.get(Folder.class.name)))
         return resultSet
     }
+
+    /**
+     * Search for items indexed by Lucene.
+     * <h2>Needed permissions</h2>
+     * BROWSE_FOLDER (per folder, otherwise it will be filtered)
+     *
+     * @param query xml string with the Lucene-xml-query
+     * @param page_size optional: an integer value to use paged results
+     * @param page optional: select which page of paged results to return.
+     *            Defaults to 1 if [page_size] is used without
+     *            a valid [page] value. Parameter is ignored if no page_size is set.
+     * @param field list of stored field values to return - this parameter may be supplied multiple times.
+     * @return XML-Response:
+     *         <pre>
+     * {@code
+     *              <folders>
+     *                <folder><id>5</id>...</folder>
+     *                <folder>...</folder>
+     *                <parentFolders>
+     *                  <folder>...</folder>
+     *                </parentFolders>
+     *              </folders>
+     *}
+     *         </pre>
+     */
+    def searchFolders(String query, Integer page_size, Integer page) {
+        try{
+            doSearch(query, page_size, page, SearchableDomain.FOLDER)
+        }
+        catch (Exception e){
+            renderExceptionXml('Failed to searchFolders',e)
+        }
+    }
+
 }
