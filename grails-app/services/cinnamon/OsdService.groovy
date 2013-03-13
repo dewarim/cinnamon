@@ -205,17 +205,15 @@ class OsdService {
     	   *      do not make v1 to latestHead, since v2 is already latestHead).
            */
         if (predecessor != null) {
-            predecessor.setLatestBranch(true);
-            def latestHeadCount = ObjectSystemData.countByRootAndLatestHead(predecessor.root, true)
-            if (!predecessor.getCmnVersion().contains(".") && latestHeadCount == 0) {
-                predecessor.setLatestHead(true);
-            }
+            predecessor.fixLatestHeadAndBranch(ObjectSystemData.findAllByPredecessor(predecessor))
         }
 
         ContentStore.deleteObjectFile(osd, repository);
 
         // delete metadata and metasets:
-        osd.setMetadata("<meta />")
+        OsdMetaset.findByOsd(osd).each{osdMetaset->
+            metasetService.unlinkMetaset(osd, osdMetaset.metaset )
+        }
         osd.delete(flush: true)
         luceneService.removeFromIndex(osd, repository)
     }
@@ -290,13 +288,13 @@ class OsdService {
             return deleteAllVersions(idList, repository)
         }
 
-        idList.each { id ->
+        idList.sort().reverse().each { id ->
             try {
                 log.debug("delete: $id with version policy: ${versionType}")
 
                 switch (versionType) {
                     case VersionType.BRANCHES: return deleteBranches(idList, repository); break;
-                    case VersionType.HEAD: id = ObjectSystemData.findByIdAndLatestHead(id, true).id.toString(); break;
+                    case VersionType.HEAD: id = ObjectSystemData.findByIdAndLatestHead(id, true).id?.toString(); break;
                     case VersionType.SELECTED: break;
                 }
                 delete(Long.parseLong(id), repository);
@@ -403,8 +401,12 @@ class OsdService {
         luceneService.addToIndex(osd, repositoryName)
         return osd
     }
-    
-    void saveFileUpload(request, ObjectSystemData osd, UserAccount user, formatId, String repositoryName){
+
+    void saveFileUpload(request, ObjectSystemData osd, UserAccount user, formatId, String repositoryName) {
+        saveFileUpload(request, osd, user, formatId, repositoryName, true)
+    }
+
+    void saveFileUpload(request, ObjectSystemData osd, UserAccount user, formatId, String repositoryName, Boolean reIndex) {
         MultipartFile file = request.getFile('file')
         if (file.isEmpty()) {
             throw new RuntimeException('error.missing.content')
@@ -412,7 +414,7 @@ class OsdService {
         else {
             // remove any image thumbnails on the content     
             metasetService.unlinkMetaset(osd, osd.fetchMetaset(Constants.METASET_THUMBNAIL))
-            
+
             acquireLock(osd, user)
             File tempFile = File.createTempFile('cinnamon_upload_', null)
             file.transferTo(tempFile)
@@ -420,8 +422,10 @@ class OsdService {
             osd.updateAccess(user)
             unlock(osd, user)
             osd.save()
-            // TODO: use TikaParser to add parsed content to tika metaset. 
-            luceneService.updateIndex(osd, repositoryName)
+            // TODO: use TikaParser to add parsed content to tika metaset.
+            if (reIndex){
+                luceneService.updateIndex(osd, repositoryName)
+            }
         }
     }
 
@@ -489,24 +493,24 @@ class OsdService {
      * @param file the uploaded file
      * @return Cinnamon Format object
      */
-    Format determineFormat(File file){
+    Format determineFormat(File file) {
         def extension
-        if (file.name.contains('.')){
+        if (file.name.contains('.')) {
             extension = file.name.toLowerCase().split('\\.').last()
-            if (extension == 'jpeg'){
+            if (extension == 'jpeg') {
                 extension = 'jpg'
             }
         }
-        else{
+        else {
             extension = 'unknown'
         }
         def format = Format.findByExtension(extension)
-        if (! format){
-            format =  Format.findByExtension('unknown')
+        if (!format) {
+            format = Format.findByExtension('unknown')
         }
         return format
     }
-    
+
     /**
      * Create a new OSD object with content.
      * While the other createOsd methods work with request / params maps, this method takes a more
