@@ -417,8 +417,10 @@ class OsdService {
             File tempFile = File.createTempFile('cinnamon_upload_', null)
             file.transferTo(tempFile)
             storeContent(osd, file.contentType, formatId, tempFile, repositoryName)
+            osd.updateAccess(user)
             unlock(osd, user)
             osd.save()
+            // TODO: use TikaParser to add parsed content to tika metaset. 
             luceneService.updateIndex(osd, repositoryName)
         }
     }
