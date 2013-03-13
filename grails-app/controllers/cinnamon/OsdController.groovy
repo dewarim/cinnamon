@@ -320,7 +320,6 @@ class OsdController extends BaseController {
     }
 
     def newVersion() {
-        def repositoryName = session.repositoryName
         try {
             def user = userService.user
             ObjectSystemData pre = fetchAndFilterOsd(params.osd, [PermissionName.VERSION_OBJECT])
@@ -1025,4 +1024,107 @@ class OsdController extends BaseController {
 
     }
 
+    /**
+     * The version command creates an object in the repository with the given name,
+     * and links it with the preid object as a new version of the latter. The name,
+     * metadata and parentid parameters are optional.
+     * If they are unspecified, they are copied from preid. It is possible, but unusual
+     * to have different object versions in different folders and with different names.
+     * If a file is specified, the format must also be specified.
+     * The value in the name column of the formats table must be used.
+     * The id of the newly created object is returned.
+     * <br>
+     * If no file parameter is specified, an object without content is created.
+     * The setcontent command can be used to add content later.
+     * <br>
+     * The metadata must be specified in one row.
+     *
+     * @param preid predecessor id
+     * @param metadata xml metadata (optional)
+     * @param name=object name (optional)
+     * @param file=uploaded file
+     * @param format=content format as formats.name value (optional - must be set if file is also set)
+     * @parentid=parent folder id (optional)
+     * @return XML-Response:
+     *         {@code
+     *         <objectId>$id</objectId>
+     *         }
+     *         Id of new version
+     */
+    def newVersionXml(Long preid, Long parentid, String format, String metadata, String name ) {
+        try {
+            def user = userService.user
+            ObjectSystemData pre = fetchAndFilterOsd(preid, [PermissionName.VERSION_OBJECT])
+            ObjectSystemData osd = new ObjectSystemData(pre, user);
+            osd.root = pre.root
+            if (name){
+                osd.name = name
+            }
+            if (metadata){
+                osd.metadata = metadata
+            }
+            if (parentid){
+                osd.parent = Folder.get(parentid)
+            }
+            new Validator(user).validateCreate(osd.parent)
+            osd.predecessor = pre
+            osd.cmnVersion = osd.createNewVersionLabel()
+            osd.fixLatestHeadAndBranch([])
+            Format myFormat = Format.findByName(format)
+            if (params.containsKey('file') ){
+                osdService.saveFileUpload(request, osd, user, myFormat.id, repositoryName, false)
+            }
+            osd.save(flush: true)
+            log.debug("new osd: ${osd.toXML().asXML()}")
+            
+            log.debug("version of new osd: ${osd.cmnVersion}")
+            luceneService.addToIndex(osd, repositoryName)
+            render(contentType: 'application/xml'){
+                objectId(osd.id.toString())
+            }          
+        }
+        catch (RuntimeException e) {
+            log.debug("Failed to version object:", e)
+            return renderException(e)
+        }
+    }
+
+    /**
+     * The saveMeta command sets the metadata to the specified value.
+     * If no metadata parameter is specified, the metadata is set to {@code <meta />}.
+     * <h2>Needed permissions</h2>
+     * WRITE_OBJECT_CUSTOM_METADATA
+     *
+     * @param id the OSD id
+     * @param metadata the metadata to be set
+     * @param write_policy optional write policy for metasets. Allowed values are WRITE IGNORE BRANCH,
+     *      default is 'branch'
+     *      
+     * @return {@code
+     *         <cinnamon>
+     *         <success>success.set.metadata</success>
+     *         </cinnamon>
+     *         }
+     *         if successful, xml-error-doc if unsuccessful.
+     *         The response document may include additional elements as children of the root element
+     *         (for example, {@code <warnings />}
+     */
+    def setMetadataXml(Long id, String metadata, String write_policy) {
+        try{
+            ObjectSystemData osd = ObjectSystemData.get(id)
+            def user = userService.user
+            (new Validator(user)).validateSetMeta(osd)            
+            metadata = metadata == null ? "<meta />" : metadata.trim();
+            WritePolicy policy = WritePolicy.valueOf(write_policy ?: 'BRANCH')
+            osd.setMetadata(metadata, policy);
+            osd.updateAccess(user);
+            luceneService.updateIndex(osd, repositoryName);
+            render(contentType: 'application/xml'){
+                success('success.set.metadata')
+            }
+        }
+        catch (Exception e){
+            renderExceptionXml('Failed to set metadata', e)
+        }
+    }
 }
