@@ -225,6 +225,7 @@ class CinnamonController extends BaseController {
                 case 'lock': forward(controller: 'osd', action: 'lockXml'); break
                 case 'searchobjects': forward(controller: 'search', action: 'searchObjectsXml'); break
                 case 'searchfolders': forward(controller: 'search', action: 'searchFolders'); break
+                case 'setcontent': forward(controller: 'osd', action: 'saveContentXml'); break
                 case 'test': forward(action: 'test'); break
                 case 'unlock': forward(controller: 'osd', action: 'unlockXml'); break
                 case 'updatelink': forward(controller: 'link', action: 'updateLink'); break

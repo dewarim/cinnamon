@@ -319,21 +319,6 @@ class OsdController extends BaseController {
         }
     }
 
-    // unfinished?    
-    def setContent() {
-        try {
-            ObjectSystemData osd = fetchAndFilterOsd(params.osd, [PermissionName.WRITE_OBJECT_CONTENT])
-            return [
-                    osd: osd,
-                    folder: osd.parent
-            ]
-        }
-        catch (RuntimeException e) {
-            flash.message = message(code: e.getMessage())
-            defaultRedirect([folder: params.folder, osd: params.osd])
-        }
-    }
-
     def newVersion() {
         def repositoryName = session.repositoryName
         try {
@@ -343,6 +328,7 @@ class OsdController extends BaseController {
             osd.root = pre.root
             osd.predecessor = pre
             osd.cmnVersion = osd.createNewVersionLabel()
+            osd.fixLatestHeadAndBranch([])
             osd.save()
             log.debug("version of new osd: ${osd.cmnVersion}")
             luceneService.addToIndex(osd, repositoryName)
@@ -990,4 +976,53 @@ class OsdController extends BaseController {
             renderExceptionXml('Failed to getSysMeta($id,$parameter).', e)
         }
     }
+
+
+    /**
+     * The setcontent command replaces the content of an object in the repository.
+     * If a file is specified, the format must also be specified. The value in the name column
+     * of the formats table must be used.
+     * <br>
+     * If no file parameter is specified, the content is removed.
+     * The setcontent command can be used to add content later.
+     * <h2>Needed permissions</h2>
+     * WRITE_OBJECT_CONTENT
+     *
+     * HTTP request parameter map:
+     *            <ul>
+     *            <li>command=setcontent</li>
+     *            <li>file=uploaded file</li>
+     *            <li>format=name of content format</li>
+     *            <li>id=object id</li>
+     *            </ul>
+     * @return XML-Response:
+     *         {@code
+     *         <success>success.set.content</success>
+     *         }
+     *         if successful, xml-error-doc if unsuccessful.
+     * @throws IOException if file upload fails.
+     */
+    def saveContentXml(String format, Long id){
+        try {
+            def user = userService.user
+            def osd = fetchAndFilterOsd(params.osd, [PermissionName.WRITE_OBJECT_CONTENT])
+            Format myFormat = Format.findByName(format)
+            String contentPath = osd.contentPath
+            if (params.containsKey('file') ){
+                osdService.saveFileUpload(request, osd, user, myFormat.id, repositoryName)
+            }
+            if (contentPath){
+                ContentStore.deleteFileInRepository(contentPath, repositoryName)
+            }
+            render(contentType: 'application/xml'){
+                success('success.set.content')
+            }
+        }
+        catch (Exception e) {
+            renderExceptionXml('Failed to set content', e)
+        }
+
+
+    }
+
 }
