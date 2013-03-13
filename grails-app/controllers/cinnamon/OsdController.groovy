@@ -455,7 +455,7 @@ class OsdController extends BaseController {
             try {
                 val.validatePermission(link.acl, PermissionName.BROWSE_OBJECT);
                 val.validatePermission(link.osd.acl, PermissionName.BROWSE_OBJECT);
-                if (withMetadata){
+                if (withMetadata) {
                     val.validatePermission(link.osd.acl, PermissionName.READ_OBJECT_CUSTOM_METADATA)
                 }
             } catch (Exception e) {
@@ -463,7 +463,7 @@ class OsdController extends BaseController {
                 continue;
             }
             Element osdNode = link.getOsd().toXmlElement(root);
-            if (withMetadata) {                
+            if (withMetadata) {
                 osdNode.add(ParamParser.parseXml(link.getOsd().getMetadata(), null));
             }
             linkService.addLinkToElement(link, osdNode);
@@ -650,9 +650,9 @@ class OsdController extends BaseController {
      *            </ul>
      * @return xml response with id of newly created object (or standard xml error message in case of error):
      * <pre>
-     *     {@code
+     * {@code
      *     <objectId>12345</objectId>
-     *     }
+     *}
      * </pre>
      */
     def copy(Long sourceid, Long targetfolderid, String metasets) {
@@ -691,7 +691,7 @@ class OsdController extends BaseController {
             }
             metasetService.copyMetasets(osd, copy, metasets)
             luceneService.addToIndex(copy, repositoryName)
-            render(contentType: 'application/xml'){
+            render(contentType: 'application/xml') {
                 objectId(copy.id.toString())
             }
         }
@@ -708,7 +708,7 @@ class OsdController extends BaseController {
      * @param id
      * @return XML-Response:
      *         <pre>
-     *         {@code <success>success.delete.object</success> }
+     * {@code <success>success.delete.object</success> }
      *         </pre> if successful, an XML-error-node if unsuccessful.
      */
     def deleteXml(Long id) {
@@ -751,10 +751,10 @@ class OsdController extends BaseController {
      * @param id = object id
      * @return a HTTP response containing
      *         <pre>
-     *             {@code <success>success.delete.all_versions</success>}
+     * {@code <success>success.delete.all_versions</success>}
      *         </pre> if successful, an XML-error-node if unsuccessful.
      */
-    def deleteAllVersions(Long id) {        
+    def deleteAllVersions(Long id) {
         ObjectSystemData osd = ObjectSystemData.get(id);
         def objectTree
         try {
@@ -768,7 +768,7 @@ class OsdController extends BaseController {
             for (ObjectSystemData o : objectTree) {
                 validator.validateDelete(osd);
             }
-            osdService.delete(osd.root, true,true, repositoryName)
+            osdService.delete(osd.root, true, true, repositoryName)
             render(contentType: 'application/xml') {
                 success('success.delete.all_versions')
             }
@@ -776,15 +776,15 @@ class OsdController extends BaseController {
         catch (Exception e) {
             if (osd) {
                 luceneService.updateIndex(osd, repositoryName)
-                if(objectTree){
+                if (objectTree) {
                     objectTree.remove(osd)
-                    objectTree.each{item ->                        
+                    objectTree.each { item ->
                         luceneService.updateIndex(item, repositoryName)
                     }
                 }
             }
             renderExceptionXml('Failed to delete object', e)
-        }        
+        }
     }
 
     /**
@@ -799,25 +799,25 @@ class OsdController extends BaseController {
      *         The metadata of the specified object.
      */
     def getOsdMeta(Long id, String metasets) {
-        try{
+        try {
             ObjectSystemData osd = ObjectSystemData.get(id)
-            if(! osd){
+            if (!osd) {
                 throw new CinnamonException('error.object.not.found')
             }
             (new Validator(userService.user)).validateGetMeta(osd)
-            
+
             def xml
-            if(metasets){
+            if (metasets) {
                 List<String> metasetNames = metasets.split(",")
                 log.debug("metasetnames: ${metasetNames}")
                 xml = osd.getMetadata(metasetNames)
             }
-            else{
+            else {
                 xml = osd.getMetadata()
             }
-            render(contentType: 'application/xml', text:xml)
+            render(contentType: 'application/xml', text: xml)
         }
-        catch (Exception e){
+        catch (Exception e) {
             renderExceptionXml("Failed to fetch OSD ${id} metadata", e)
         }
     }
@@ -835,12 +835,12 @@ class OsdController extends BaseController {
      */
     def getObjectsById(String ids) {
         try {
-            if(! ids){
+            if (!ids) {
                 throw new CinnamonException('error.invalid.params')
             }
             Document response = DocumentHelper.createDocument()
             Element root = response.addElement("objects");
-            
+
             org.dom4j.Node rootParamNode = ParamParser.parseXml(ids, "error.param.ids.xml")
             List<org.dom4j.Node> idNodes = rootParamNode.selectNodes("id");
             Validator validator = new Validator(userService.user)
@@ -888,9 +888,9 @@ class OsdController extends BaseController {
             def user = userService.user
             List<ObjectSystemData> results = folderService.getObjects(user, folder, session.repositoryName, params.versions)
             Validator val = new Validator(user);
-            results = val.filterUnbrowsableObjects(results);            
+            results = val.filterUnbrowsableObjects(results);
             Document doc = osdService.generateQueryObjectResultDocument(results, true);
-            addLinksToObjectQuery(params.parentid, doc, val, true)            
+            addLinksToObjectQuery(params.parentid, doc, val, true)
             return render(contentType: 'application/xml', text: doc.asXML())
         }
         catch (Exception e) {
@@ -898,7 +898,7 @@ class OsdController extends BaseController {
             renderExceptionXml(e)
         }
     }
-  
+
     /**
      * The getsysmeta command fetches one of the system attributes of an object specified
      * by the "parameter" value. The following parameters can be retrieved:*
@@ -931,7 +931,7 @@ class OsdController extends BaseController {
      */
     def getSysMeta(Long id, String parameter) {
         try {
-            String value 
+            String value
             ObjectSystemData osd = ObjectSystemData.get(id)
             if (!osd) {
                 throw new CinnamonException('error.object.not.found')
@@ -976,7 +976,6 @@ class OsdController extends BaseController {
         }
     }
 
-
     /**
      * The setcontent command replaces the content of an object in the repository.
      * If a file is specified, the format must also be specified. The value in the name column
@@ -995,25 +994,25 @@ class OsdController extends BaseController {
      *            <li>id=object id</li>
      *            </ul>
      * @return XML-Response:
-     *         {@code
+     * {@code
      *         <success>success.set.content</success>
-     *         }
+     *}
      *         if successful, xml-error-doc if unsuccessful.
      * @throws IOException if file upload fails.
      */
-    def saveContentXml(String format, Long id){
+    def saveContentXml(String format, Long id) {
         try {
             def user = userService.user
             def osd = fetchAndFilterOsd(params.osd, [PermissionName.WRITE_OBJECT_CONTENT])
             Format myFormat = Format.findByName(format)
             String contentPath = osd.contentPath
-            if (params.containsKey('file') ){
+            if (params.containsKey('file')) {
                 osdService.saveFileUpload(request, osd, user, myFormat.id, repositoryName)
             }
-            if (contentPath){
+            if (contentPath) {
                 ContentStore.deleteFileInRepository(contentPath, repositoryName)
             }
-            render(contentType: 'application/xml'){
+            render(contentType: 'application/xml') {
                 success('success.set.content')
             }
         }
@@ -1041,29 +1040,29 @@ class OsdController extends BaseController {
      *
      * @param preid predecessor id
      * @param metadata xml metadata (optional)
-     * @param name=object name (optional)
-     * @param file=uploaded file
-     * @param format=content format as formats.name value (optional - must be set if file is also set)
-     * @parentid=parent folder id (optional)
+     * @param name =object name (optional)
+     * @param file =uploaded file
+     * @param format =content format as formats.name value (optional - must be set if file is also set)
+     * @parentid = p a r e n t folder id (optional)
      * @return XML-Response:
-     *         {@code
+     * {@code
      *         <objectId>$id</objectId>
-     *         }
+     *}
      *         Id of new version
      */
-    def newVersionXml(Long preid, Long parentid, String format, String metadata, String name ) {
+    def newVersionXml(Long preid, Long parentid, String format, String metadata, String name) {
         try {
             def user = userService.user
             ObjectSystemData pre = fetchAndFilterOsd(preid, [PermissionName.VERSION_OBJECT])
             ObjectSystemData osd = new ObjectSystemData(pre, user);
             osd.root = pre.root
-            if (name){
+            if (name) {
                 osd.name = name
             }
-            if (metadata){
+            if (metadata) {
                 osd.metadata = metadata
             }
-            if (parentid){
+            if (parentid) {
                 osd.parent = Folder.get(parentid)
             }
             new Validator(user).validateCreate(osd.parent)
@@ -1071,17 +1070,17 @@ class OsdController extends BaseController {
             osd.cmnVersion = osd.createNewVersionLabel()
             osd.fixLatestHeadAndBranch([])
             Format myFormat = Format.findByName(format)
-            if (params.containsKey('file') ){
+            if (params.containsKey('file')) {
                 osdService.saveFileUpload(request, osd, user, myFormat.id, repositoryName, false)
             }
             osd.save(flush: true)
             log.debug("new osd: ${osd.toXML().asXML()}")
-            
+
             log.debug("version of new osd: ${osd.cmnVersion}")
             luceneService.addToIndex(osd, repositoryName)
-            render(contentType: 'application/xml'){
+            render(contentType: 'application/xml') {
                 objectId(osd.id.toString())
-            }          
+            }
         }
         catch (RuntimeException e) {
             log.debug("Failed to version object:", e)
@@ -1099,32 +1098,136 @@ class OsdController extends BaseController {
      * @param metadata the metadata to be set
      * @param write_policy optional write policy for metasets. Allowed values are WRITE IGNORE BRANCH,
      *      default is 'branch'
-     *      
+     *
      * @return {@code
      *         <cinnamon>
      *         <success>success.set.metadata</success>
      *         </cinnamon>
-     *         }
+     *}
      *         if successful, xml-error-doc if unsuccessful.
      *         The response document may include additional elements as children of the root element
      *         (for example, {@code <warnings />}
      */
     def setMetadataXml(Long id, String metadata, String write_policy) {
-        try{
+        try {
             ObjectSystemData osd = ObjectSystemData.get(id)
             def user = userService.user
-            (new Validator(user)).validateSetMeta(osd)            
+            (new Validator(user)).validateSetMeta(osd)
             metadata = metadata == null ? "<meta />" : metadata.trim();
             WritePolicy policy = WritePolicy.valueOf(write_policy ?: 'BRANCH')
             osd.setMetadata(metadata, policy);
             osd.updateAccess(user);
             luceneService.updateIndex(osd, repositoryName);
-            render(contentType: 'application/xml'){
+            render(contentType: 'application/xml') {
                 success('success.set.metadata')
             }
         }
-        catch (Exception e){
+        catch (Exception e) {
             renderExceptionXml('Failed to set metadata', e)
+        }
+    }
+
+    /**
+     * The setsysmeta command sets one of the system attributes of an object or folder
+     * to the specified value. If an id parameter is specified, the metadata is applied to the object
+     * with the specified id. If a folderid parameter is specified, the metadata is applied to the folder
+     * with the specified id. Either an id or a folderid must be specified,
+     * but not both or none. Folders do not have all the metadata of objects.
+     * The following parameters can be set:
+     * <ul>
+     * <li>     parentid (= id of folder in which the object or folder resides)</li>
+     * <li>     name</li>
+     * <li>     owner  (=id of the owner)</li>
+     * <li>     procstate </li>
+     * <li>     acl_id (= id of an ACL)</li>
+     * <li>     objtype  (currently, this parameter is the _name_ of an objtype, NOT an id!)</li>
+     * <li>     language_id (= id of a language)</li>
+     * </ul>
+     * <p/>
+     * <h2>Needed permissions</h2>
+     * <ul>
+     * <li>LOCK und (WRITE_OBJECT_SYS_METADATA oder EDIT_FOLDER)</li>
+     * <li>for aclId: SET_ACL</li>
+     * <li>for parent_id: MOVE</li>
+     * <ul>
+     *
+     * @param id the object's id
+     * @param parameter the name of the parameter to be set
+     * @param value the value to assign to the given parameter
+     * @return XML-Response:
+     * {@code
+     *         <success>success.set.sys_meta</success>
+     *}
+     */
+    // TODO: owner should be an id-param, not the login name of a user
+    def updateSysMetaXml(Long id, String parameter, String value) {
+        try {
+            if (value == null) {
+                value = "";
+            }
+            def user = userService.user
+            Validator validator = new Validator(user);
+            ObjectSystemData osd = ObjectSystemData.get(id)
+            if (!osd) {
+                throw new CinnamonException('error.object.not.found')
+            }
+
+            switch (parameter) {
+                case 'objtype':
+                    validator.validateSetSysMeta(osd);
+                    ObjectType type = ObjectType.findByName(value)
+                    if (!type) {
+                        throw new CinnamonException("error.param.objtype");
+                    }
+                    osd.type = type
+                    break
+                case 'parentid':
+                    Folder folder = Folder.get(value)
+                    if (!folder) {
+                        throw new CinnamonException("error.parent_folder.not_found")
+                    }
+                    validator.validateMoveObject(osd, folder)
+                    osd.parent = folder
+                    break
+                case 'owner':
+                    def owner = UserAccount.get(value)
+                    if (!owner) {
+                        throw new CinnamonException("error.user.not_found");
+                    }
+                    osd.owner = owner
+                    break
+                case 'language_id': validator.validateSetSysMeta(osd)
+                    def lang = Language.get(value)
+                    if (!lang) {
+                        throw new CinnamonException("error.object.not.found")
+                    }
+                    break
+                case 'name': validator.validateSetSysMeta(osd);
+                    osd.name = value
+                    break
+                case 'appname': validator.validateSetSysMeta(osd)
+                    osd.appName = value
+                    break
+                case 'procstate': validator.validateSetSysMeta(osd);
+                    osd.procstate = value
+                    break
+                case 'acl_id':validator.validateSetObjectAcl(osd)
+                    Acl acl = Acl.get(value)
+                    if (! acl) {
+                        throw new CinnamonException("error.acl.not_found");
+                    }
+                    osd.acl = acl
+                    break
+                default: throw new CinnamonException("Parameter " + parameter + " is invalid on objects.")
+            }
+            osd.updateAccess(user)
+            luceneService.updateIndex(osd, repositoryName)
+            render(contentType: 'application/xml'){
+                success('success.set.sys_meta')
+            }
+        }
+        catch (Exception e) {
+            renderExceptionXml('Failed to updateSysMeta', e)
         }
     }
 }
