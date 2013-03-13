@@ -91,7 +91,7 @@ will not be implemented at the moment.
    - [X] listMessages
    - [X] listPermissions
 
-** Primary, requires permission checking: [15/19]
+** Primary, requires permission checking: [19/21]
    - [X]  copy
 	  READ_OBJECT_CONTENT
 	  READ_OBJECT_CUSTOM_METADATA
@@ -126,16 +126,20 @@ will not be implemented at the moment.
 	 LOCK
    - [X] searchFolders
 	 BROWSE_FOLDER (tested for each folder found)
-   - [ ] setContent
+   - [X] setContent
 	 WRITE_OBJECT_CONTENT
-   - [ ] version
+   - [X] version
 	 VERSION_OBJECT
-   - [ ] setMeta
+   - [X] setMeta
 	 WRITE_OBJECT_CUSTOM_METADATA
-   - [ ] setSysMeta
+   - [X] setSysMeta
 	 LOCK and one of (WRITE_OBJECT_SYS_METADATA or  EDIT_FOLDER)
 	 with parameter aclId: SET_ACL instead of WRITE_OBJECT_SYS_METADATA
 	 with parameter parent_id: MOVE instead of WRITE_OBJECT_SYS_METADATA
+   - [ ] setMetaset
+	 WRITE_OBJECT_CUSTOM_METADATA
+   - [ ] getMetaset 
+	 READ_OBJECT_CUSTOM_METADATA
 
 ** Translation API: [0/2]
    - [ ] createTranslation
