@@ -22,11 +22,11 @@ class CinnamonController extends BaseController {
         render(contentType: "text/xml") {
             repositories {
                 def conf = ConfThreadLocal.conf
-                conf.repositories.each {Node rep ->
+                conf.repositories.each { Node rep ->
                     repository {
                         name(rep.selectSingleNode('name').getText())
                         categories {
-                            rep.selectNodes("categories/category").each {categoryNode ->
+                            rep.selectNodes("categories/category").each { categoryNode ->
                                 category(categoryNode.getText())
                             }
                         }
@@ -70,7 +70,7 @@ class CinnamonController extends BaseController {
                 log.debug("host: ${host}")
                 def repo = host.replaceAll('([^.]+)\\..*', '$1')
                 log.debug("repo from request header: $repo")
-                if (repo && grailsApplication.config.repositories.find {it.name = repo}) {
+                if (repo && grailsApplication.config.repositories.find { it.name = repo }) {
                     repositoryName = repo
                 }
                 else {
@@ -112,7 +112,7 @@ class CinnamonController extends BaseController {
                 }
             }
 
-            def env = Environment.list().find {it.dbName == repository}
+            def env = Environment.list().find { it.dbName == repository }
             if (!env) {
                 log.debug("could not find environment for repository ${repository}")
                 throw new RuntimeException("error.no.environment")
@@ -152,82 +152,87 @@ class CinnamonController extends BaseController {
         }
     }
 
-    def disconnect(){
+    def disconnect() {
         def ticket = params.ticket;
-        if(ticket){
+        if (ticket) {
             Session.findByTicket(ticket)?.delete();
             render(text: '<success>success.disconnect</success>')
         }
-        else{
-            render(status:500, "<error>ticket.unknown</error>")
+        else {
+            render(status: 500, "<error>ticket.unknown</error>")
         }
     }
-    
-    def legacy() {
-        def myAction = params.command
-        if (!myAction) {
-            myAction = 'index'
-        }
-        log.debug("reached legacy filter with command: ${myAction}")
-        log.debug("params:$params")
-        if (userService.user) {
-            log.debug("user is logged in")
-        }
-        else if (myAction == 'connect') {
-            return forward(action: 'connect') // special case.
-        }
-        else {
-            log.debug("user is not logged in: forward to index")
-            return forward(action: 'index')
-        }
 
-        switch (myAction) {
-            case 'connect': forward(action: 'connect'); break
-            case 'copy': forward(controller: 'osd', action: 'copy'); break
-            case 'create': forward(controller: 'osd', action: 'createOsd'); break
-            case 'createfolder': forward(controller: 'folder', action: 'createXml'); break
-            case 'createlink': forward(controller: 'link', action: 'createLink');break
-            case 'createrelation': forward(controller: 'relation', action: 'createXml');break
-            case 'delete': forward(controller: 'osd', action: 'deleteXml');break
-            case 'deleteallversions': forward(controller: 'osd', action: 'deleteAllVersions');break
-            case 'deletefolder': forward(controller: 'folder', action: 'deleteXml');break
-            case 'deletelink': forward(controller: 'link', action: 'deleteLink');break
-            case 'deleterelation': forward(controller: 'relation', action: 'deleteXml');break
-            case 'disconnect': forward(action: 'disconnect');break
-            case 'getacls': forward(controller: 'acl', action: 'listXml'); break
-            case 'getfoldertypes': forward(controller: 'folderType', action: 'listXml'); break;
-            case 'getformats': forward(controller: 'format', action: 'listXml'); break
-            case 'getfolderbypath' : forward(controller:'folder', action: 'fetchFolderByPath');break            
-            case 'getfolder': forward(controller: 'folder', action: 'fetchFolderXml');break                                    
-            case 'getfoldermeta': forward(controller: 'folder', action: 'getFolderMeta');break                                    
-            case 'getlink': forward(controller: 'link', action: 'getLink');break
-            case 'getmeta': forward(controller: 'osd', action: 'getOsdMeta');break
-            case 'getobjects' : forward(controller:'osd', action: 'fetchObjects');break
-            case 'getobjectsbyid' : forward(controller:'osd', action: 'getObjectsById');break
-            case 'getobjectswithcustommetadata' : forward(controller:'osd', action: 'fetchObjectsWithCustomMetadata');break            
-            case 'getobjtypes' : forward(controller:'objectType', action: 'listXml');break
-            case 'getrelations': forward(controller: 'relation', action: 'listXml');break
-            case 'getrelationtypes': forward(controller: 'relationType', action: 'listXml');break
-            case 'getsubfolders': forward(controller: 'folder', action: 'fetchSubFolders'); break
-            case 'getsysmeta': forward(controller: 'osd', action: 'getSysMeta'); break
-            case 'getusers': forward(controller: 'userAccount', action: 'listXml'); break
-            case 'getusersacls': forward(controller: 'acl', action: 'getUsersAcls'); break
-            case 'getuserspermissions': forward(controller: 'acl', action: 'getUsersPermissions'); break
-            case 'listaclentries': forward(controller: 'aclEntry', action: 'listXml');break
-            case 'listgroups': forward(controller: 'group', action: 'listXml');break
-            case 'listindexitems': forward(controller: 'indexItem', action: 'listXml');break
-            case 'listindexgroups': forward(controller: 'indexGroup', action: 'listXml');break
-            case 'listlanguages': forward(controller: 'language', action: 'listLanguages');break
-            case 'listmessages': forward(controller: 'message', action: 'listXml');break
-            case 'listpermissions': forward(controller: 'permission', action: 'listXml');break
-            case 'listuilanguages': forward(controller: 'uiLanguage', action: 'listUiLanguages');break
-            case 'lock': forward(controller: 'osd', action: 'lockXml');break
-            case 'searchobjects': params.xmlQuery = true; forward(controller: 'search', action: 'searchObjects'); break
-            case 'test': forward(action: 'test'); break
-            case 'unlock': forward(controller: 'osd', action: 'unlockXml');break
-            case 'updatelink': forward(controller: 'link', action: 'updateLink');break
-            default: log.error("*********************************************************************************\n"+
-                    "$myAction has no legacy action => forward to index"); forward(action: 'index')
+    def legacy() {
+        try {
+            def myAction = params.command
+            if (!myAction) {
+                myAction = 'index'
+            }
+            log.debug("reached legacy filter with command: ${myAction}")
+            log.debug("params:$params")
+            if (userService.user) {
+                log.debug("user is logged in")
+            }
+            else if (myAction == 'connect') {
+                return forward(action: 'connect') // special case.
+            }
+            else {
+                log.debug("user is not logged in: forward to index")
+                return forward(action: 'index')
+            }
+
+            switch (myAction) {
+                case 'connect': forward(action: 'connect'); break
+                case 'copy': forward(controller: 'osd', action: 'copy'); break
+                case 'create': forward(controller: 'osd', action: 'createOsd'); break
+                case 'createfolder': forward(controller: 'folder', action: 'createXml'); break
+                case 'createlink': forward(controller: 'link', action: 'createLink'); break
+                case 'createrelation': forward(controller: 'relation', action: 'createXml'); break
+                case 'delete': forward(controller: 'osd', action: 'deleteXml'); break
+                case 'deleteallversions': forward(controller: 'osd', action: 'deleteAllVersions'); break
+                case 'deletefolder': forward(controller: 'folder', action: 'deleteXml'); break
+                case 'deletelink': forward(controller: 'link', action: 'deleteLink'); break
+                case 'deleterelation': forward(controller: 'relation', action: 'deleteXml'); break
+                case 'disconnect': forward(action: 'disconnect'); break
+                case 'getacls': forward(controller: 'acl', action: 'listXml'); break
+                case 'getfoldertypes': forward(controller: 'folderType', action: 'listXml'); break;
+                case 'getformats': forward(controller: 'format', action: 'listXml'); break
+                case 'getfolderbypath': forward(controller: 'folder', action: 'fetchFolderByPath'); break
+                case 'getfolder': forward(controller: 'folder', action: 'fetchFolderXml'); break
+                case 'getfoldermeta': forward(controller: 'folder', action: 'getFolderMeta'); break
+                case 'getlink': forward(controller: 'link', action: 'getLink'); break
+                case 'getmeta': forward(controller: 'osd', action: 'getOsdMeta'); break
+                case 'getobjects': forward(controller: 'osd', action: 'fetchObjects'); break
+                case 'getobjectsbyid': forward(controller: 'osd', action: 'getObjectsById'); break
+                case 'getobjectswithcustommetadata': forward(controller: 'osd', action: 'fetchObjectsWithCustomMetadata'); break
+                case 'getobjtypes': forward(controller: 'objectType', action: 'listXml'); break
+                case 'getrelations': forward(controller: 'relation', action: 'listXml'); break
+                case 'getrelationtypes': forward(controller: 'relationType', action: 'listXml'); break
+                case 'getsubfolders': forward(controller: 'folder', action: 'fetchSubFolders'); break
+                case 'getsysmeta': forward(controller: 'osd', action: 'getSysMeta'); break
+                case 'getusers': forward(controller: 'userAccount', action: 'listXml'); break
+                case 'getusersacls': forward(controller: 'acl', action: 'getUsersAcls'); break
+                case 'getuserspermissions': forward(controller: 'acl', action: 'getUsersPermissions'); break
+                case 'listaclentries': forward(controller: 'aclEntry', action: 'listXml'); break
+                case 'listgroups': forward(controller: 'group', action: 'listXml'); break
+                case 'listindexitems': forward(controller: 'indexItem', action: 'listXml'); break
+                case 'listindexgroups': forward(controller: 'indexGroup', action: 'listXml'); break
+                case 'listlanguages': forward(controller: 'language', action: 'listLanguages'); break
+                case 'listmessages': forward(controller: 'message', action: 'listXml'); break
+                case 'listpermissions': forward(controller: 'permission', action: 'listXml'); break
+                case 'listuilanguages': forward(controller: 'uiLanguage', action: 'listUiLanguages'); break
+                case 'lock': forward(controller: 'osd', action: 'lockXml'); break
+                case 'searchobjects': params.xmlQuery = true; forward(controller: 'search', action: 'searchObjects'); break
+                case 'test': forward(action: 'test'); break
+                case 'unlock': forward(controller: 'osd', action: 'unlockXml'); break
+                case 'updatelink': forward(controller: 'link', action: 'updateLink'); break
+                default: throw new RuntimeException("$myAction has no legacy action.")
+            }
+        }
+        catch (Exception e) {
+            log.warn("Call on legacy API failed:", e)
+            renderExceptionXml("Call on legacy API failed:", e)
         }
     }
 
