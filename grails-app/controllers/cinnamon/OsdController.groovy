@@ -542,7 +542,7 @@ class OsdController extends BaseController {
      * @return XML-Response:
      *         XML serialized object or xml-error-doc
      */
-    def getObject(Long id) {
+    def fetchObject(Long id) {
         try {
             Document doc = DocumentHelper.createDocument()
             Element root = doc.addElement("objects");
