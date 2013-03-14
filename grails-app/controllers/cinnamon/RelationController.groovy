@@ -82,7 +82,9 @@ class RelationController extends BaseController {
         def criteria = Relation.createCriteria()
         relations = criteria.list {
             if (name) {
-                eq('type.name', name)
+                type{
+                    eq('name', name)
+                }
             }
         }
 
@@ -90,7 +92,7 @@ class RelationController extends BaseController {
         def doc = DocumentHelper.createDocument()
         Element root = doc.addElement("relations");
         relations.each { relation ->
-            relation.toXmlElement(root)
+            relation.toXmlElement(root, true)
         }
         return render(contentType: 'application/xml', text: doc.asXML())
     }
