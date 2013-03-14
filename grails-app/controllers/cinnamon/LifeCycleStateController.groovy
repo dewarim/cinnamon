@@ -1,10 +1,13 @@
 package cinnamon
 
+import cinnamon.exceptions.CinnamonException
 import grails.plugins.springsecurity.Secured
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import cinnamon.lifecycle.LifeCycleState
 import cinnamon.lifecycle.LifeCycle
 import cinnamon.lifecycle.IState
+import org.dom4j.DocumentHelper
+import org.dom4j.Element
 
 @Secured(["hasRole('_superusers')"])
 class LifeCycleStateController extends BaseController{
@@ -90,7 +93,7 @@ class LifeCycleStateController extends BaseController{
         render(template: 'list_table', model: [lcsList: LifeCycleState.list(params)])
     }
 
-    protected void updateFields(lcs) {
+    protected void updateFields(LifeCycleState lcs) {
         lcs.name = inputValidationService.checkAndEncodeName(params.name, lcs)
         lcs.config = params.config ?: ''
         lcs.lifeCycle = inputValidationService.checkObject(LifeCycle.class, params.lifeCycle, true)
@@ -133,6 +136,57 @@ class LifeCycleStateController extends BaseController{
     def updateList () {
         setListParams()
         render(template: 'list_table', model:[lcsList:LifeCycleState.list(params)])
+    }
+    
+    //----------------------- XML API --------------------------
+
+    /**
+     *
+     * Fetch a specific lifecycle state by id from the database as XML.
+     * @param id id of LifeCycleState object
+     * @return an XML document which
+     * contains the requested lifecycle state object (or an error message if it could not be found).<br>
+     *     Example:
+     * <pre>
+     *  {@code
+     *          <states>
+     *            <lifecycleState>
+     *              <id>543</id>
+     *              <name>TestState</name>
+     *              <sysName>example.test.state</sysName>
+     *              <stateClass>server.lifecycle.state.NopState</stateClass>
+     *              <parameter>&lt;config /&gt;</parameter> (encoded XML string)
+     *              <lifeCycle>44</lifeCycle> (may be empty)
+     *              <lifeCycleStateForCopy>7</lifeCycleStateForCopy> (may be empty)
+     *            </lifecycleState>
+     *          </states>
+     *  }
+     * </pre>
+     */
+    def getLifeCycleState(Long id) {
+        try {
+            LifeCycleState lifeCycleState;
+            if(id){
+                lifeCycleState = LifeCycleState.get(id)
+            }
+            else{
+                throw new CinnamonException("error.param.lcs.id");
+            }
+
+            if(lifeCycleState){
+                def doc = DocumentHelper.createDocument()
+                Element root = doc.addElement('states')
+                lifeCycleState.toXmlElement(root)
+                render(contentType: 'application/xml', text: doc.asXML())
+            }
+            else{
+                throw new CinnamonException("error.object.not.found");
+            }
+        }
+        catch (Exception e) {
+            renderExceptionXml('Failed to ', e)
+        }
+
     }
     
 }

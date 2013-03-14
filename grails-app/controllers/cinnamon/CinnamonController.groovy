@@ -203,6 +203,7 @@ class CinnamonController extends BaseController {
                 case 'getfolder': forward(controller: 'folder', action: 'fetchFolderXml'); break
                 case 'getfoldermeta': forward(controller: 'folder', action: 'getFolderMeta'); break
                 case 'getlifecycle': forward(controller: 'lifeCycle', action: 'getLifeCycle'); break
+                case 'getlifecyclestate': forward(controller: 'lifeCycleState', action: 'getLifeCycleState'); break
                 case 'getlink': forward(controller: 'link', action: 'getLink'); break
                 case 'getmeta': forward(controller: 'osd', action: 'getOsdMeta'); break
                 case 'getobject': forward(controller: 'osd', action: 'fetchObject'); break
