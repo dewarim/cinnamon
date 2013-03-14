@@ -300,4 +300,85 @@ class LifeCycleStateController extends BaseController{
             renderExceptionXml('Failed to ', e)
         }
     }
+
+    /**
+     * Removes all lifecycle state information from an object.
+     * <h2>Needed permissions</h2>
+     * WRITE_OBJECT_SYS_METADATA
+     * @param id the id of the object
+     * @return a CinnamonException on failure or a Response object with
+     * the following XML content:
+     * {@code
+     * <pre>
+     *  <success>success.detach_lifecycle</success>
+     * </pre>
+     * }
+     */
+    def detachLifeCycle(Long id) {
+        try {
+            ObjectSystemData osd = ObjectSystemData.get(id)
+            if(osd){
+                new Validator(userService.user).validateSetSysMeta(osd);
+                osd.state.exitState(osd, null);
+                osd.state = null
+            }
+            else{
+                throw new CinnamonException("error.object.not.found");
+            }
+            render(contentType: 'application/xml') {
+                succees('success.detach_lifecycle')
+            }
+        }
+        catch (Exception e) {
+            renderExceptionXml('Failed to ', e)
+        }
+    }
+
+    /**
+     * Attach a LifeCycle to an object. The lifecycle will start with the
+     * default state or the one specified by the client (the client's choice takes precedence).
+     * If the default state of this lifecycle is undefined, the client must specify a valid
+     * lifecycle state.
+     * <h2>Needed permissions</h2>
+     * WRITE_OBJECT_SYS_METADATA
+     * @param id the id of the object to which the lifecycle will be attached
+     * @param lifecycle_id the id of the lifecycle     
+     * @param lifecycle_state_id optional: the state of the lifecycle. If not set, use the defaultState
+     * @return a CinnamonException on failure or a Response object with
+     * the following XML content:
+     * <pre>
+     * {@code
+     *  <success>success.attach_lifecycle</success>
+     * }
+     * </pre>
+ 
+     * @param cmd a Map of HTTP request parameters
+     */
+    def attachLifeCycle(Long id, Long lifecycle_id, Long lifecycle_state_id) {
+        try {
+            LifeCycle lifeCycle = LifeCycle.get(lifecycle_id)
+            ObjectSystemData osd = ObjectSystemData.get(id)
+            if(osd == null){
+                throw new CinnamonException("error.object.not.found");
+            }
+            new Validator(userService.user).validateSetSysMeta(osd);
+            LifeCycleState lifeCycleState;
+            if(lifecycle_state_id){
+                lifeCycleState = LifeCycleState.get(lifecycle_state_id)
+            }
+            else if(lifeCycle.defaultState){
+                lifeCycleState = lifeCycle.defaultState;
+            }
+            else{
+                throw new CinnamonException("error.undefined.lifecycle_state");
+            }
+            lifeCycleState.enterState(osd, lifeCycleState);
+            render(contentType: 'application/xml') {
+                success('success.attach_lifecycle')
+            }
+        }
+        catch (Exception e) {
+            renderExceptionXml('Failed to ', e)
+        }       
+    }
 }
