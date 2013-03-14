@@ -183,6 +183,7 @@ class CinnamonController extends BaseController {
             }
 
             switch (myAction) {
+                case 'changestate': forward(controller: 'lifeCycleState', action: 'changeState'); break
                 case 'connect': forward(action: 'connect'); break
                 case 'copy': forward(controller: 'osd', action: 'copy'); break
                 case 'create': forward(controller: 'osd', action: 'createOsd'); break

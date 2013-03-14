@@ -238,6 +238,66 @@ class LifeCycleStateController extends BaseController{
             renderExceptionXml('Failed to ', e)
         }
     }
-    
-    
+
+    /**
+     * Change the lifecycle state of an object by moving to another state.
+     * This method checks if the move is allowed and executes the lifecycle state
+     * class of the old and new state, calling the exit() and enter() methods
+     * as appropriate.
+     * <h2>Needed permissions</h2>
+     * WRITE_OBJECT_SYS_METADATA
+     * @param id the id of the OSD whose state should be changed
+     * @param lifecycle_state_id the id of the target lifecycle state<
+     * @param state_name = the optional name of a target lifecycle state of the current lifecycle 
+     * (may be used instead of the lifecycle_state_id)
+     * @return a CinnamonException on failure or 
+     * the following XML content:
+     *  <pre>
+     *  {@code
+     *   <success>success.changed_state</success>
+     *  }
+     *  </pre>
+     */
+    def changeState(Long id, String state_name, Long lifecycle_state_id) {
+        /*
+         * get osd
+         * validate permission
+         * get target state
+         * check target state with current state - is this transition allowed?
+         * checkEnteringObject
+         * call exit() on old state
+         * call enter() on new state
+         * set new state on OSD
+         */
+        try {
+            ObjectSystemData osd = ObjectSystemData.get(id)
+            if(osd){
+                new Validator(userService.user).validateSetSysMeta(osd);
+
+                LifeCycleState lifeCycleState;
+                if(state_name){
+                    lifeCycleState = LifeCycleState.findByNameAndLifeCycle(state_name, osd.state.lifeCycle);
+                    if(! lifeCycleState){
+                        throw new CinnamonException("error.param.state_name")
+                    }
+                }
+                else{
+                    lifeCycleState = LifeCycleState.get(lifecycle_state_id)
+                }
+
+                osd.state.exitState(osd, lifeCycleState)
+                lifeCycleState.enterState(osd, lifeCycleState) // if this fails, rollback occurs.
+                render(contentType: 'application/xml') {
+                    success('success.change_lifecycle')
+                }
+
+            }
+            else{
+                throw new CinnamonException("error.object.not.found");
+            }
+        }
+        catch (Exception e) {
+            renderExceptionXml('Failed to ', e)
+        }
+    }
 }
