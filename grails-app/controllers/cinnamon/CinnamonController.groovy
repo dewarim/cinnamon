@@ -220,7 +220,8 @@ class CinnamonController extends BaseController {
                 case 'listgroups': forward(controller: 'group', action: 'listXml'); break
                 case 'listindexitems': forward(controller: 'indexItem', action: 'listXml'); break
                 case 'listindexgroups': forward(controller: 'indexGroup', action: 'listXml'); break
-                case 'listlanguages': forward(controller: 'language', action: 'listLanguages'); break
+                case 'listlanguages': forward(controller: 'language', action: 'listLanguages'); break                
+                case 'listlifecycles': forward(controller: 'lifeCycle', action: 'listLifeCyclesXml'); break                
                 case 'listmessages': forward(controller: 'message', action: 'listXml'); break
                 case 'listpermissions': forward(controller: 'permission', action: 'listXml'); break
                 case 'listuilanguages': forward(controller: 'uiLanguage', action: 'listUiLanguages'); break

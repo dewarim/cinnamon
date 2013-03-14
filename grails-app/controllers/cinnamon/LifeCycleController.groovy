@@ -3,6 +3,7 @@ package cinnamon
 import grails.plugins.springsecurity.Secured
 import cinnamon.lifecycle.LifeCycle
 import cinnamon.lifecycle.LifeCycleState
+import org.dom4j.DocumentHelper
 
 @Secured(["hasRole('_superusers')"])
 class LifeCycleController extends BaseController {
@@ -160,5 +161,29 @@ class LifeCycleController extends BaseController {
         }
         return lcList
     }
-
+    
+    //----------------------- XML API -------------------------
+    
+    /**
+    * Get all lifecycle objects from the database and return
+    * them as an XML list.
+    * @return a Response object which sends an XML document to the user which
+    * contains all lifecycle objects.
+    */
+	def listLifeCyclesXml() {
+        try{
+            List<LifeCycle> cycles = LifeCycle.list()
+            def doc = DocumentHelper.createDocument()
+            def  root = doc.addElement("lifecycles");
+            for(LifeCycle lc : cycles){
+                lc.toXmlElement(root);
+            }
+            render(contentType: 'application/xml', text: doc.asXML())
+        }
+        catch (Exception e){
+            renderExceptionXml('Failed to listLifeCycles as XML.',e)
+        }
+	}
+    
+    
 }
