@@ -1201,6 +1201,7 @@ class OsdController extends BaseController {
                     if (!lang) {
                         throw new CinnamonException("error.object.not.found")
                     }
+                    osd.language = lang
                     break
                 case 'name': validator.validateSetSysMeta(osd);
                     osd.name = value
