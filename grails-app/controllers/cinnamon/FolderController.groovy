@@ -636,6 +636,7 @@ class FolderController extends BaseController {
      *         <h2>Needed permissions</h2>
      *         CREATE_FOLDER
      */
+    @Secured(["isAuthenticated()"])
     def createXml(String name, Long parentid, Long aclid, Long ownerid, Long typeid, String metadata) {
         try {
             Folder parentFolder;
@@ -685,6 +686,7 @@ class FolderController extends BaseController {
      *         <success>success.delete.folder</success>
      *         }
      */
+    @Secured(["isAuthenticated()"])
     def deleteXml(Long id) {
         def folder = Folder.get(id)
         try{
@@ -711,6 +713,7 @@ class FolderController extends BaseController {
      * @return XML-Response:
      *         The metadata of the specified folder or an XML error node.
      */
+    @Secured(["isAuthenticated()"])
     def getFolderMeta(Long id) {
         try{
             def folder = Folder.get(id)
@@ -742,6 +745,7 @@ class FolderController extends BaseController {
      *         <success>success.update.folder</success>
      *         }
      */
+    @Secured(["isAuthenticated()"])
     def updateFolder(Long id, Long parentid, String name,
                      String metadata, Long typeid,
                      String ownerid, Long aclid) {

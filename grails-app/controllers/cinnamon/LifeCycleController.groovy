@@ -172,6 +172,7 @@ class LifeCycleController extends BaseController {
     * @return a Response object which sends an XML document to the user which
     * contains all lifecycle objects.
     */
+    @Secured(["isAuthenticated()"])
 	def listLifeCyclesXml() {
         try{
             List<LifeCycle> cycles = LifeCycle.list()
@@ -221,6 +222,7 @@ class LifeCycleController extends BaseController {
      *  }
      * </pre>
      */
+    @Secured(["isAuthenticated()"])
     def getLifeCycle(Long id, String name) {
         try {
             LifeCycle lifeCycle;

@@ -198,6 +198,7 @@ class LifeCycleStateController extends BaseController{
      * @param id id of the osd whose state may be changed</li>
      * @return XML response containing the allowed exit states.
      */
+    @Secured(["isAuthenticated()"])
     def getNextStates(Long id) {        
         try {
             /*
@@ -258,6 +259,7 @@ class LifeCycleStateController extends BaseController{
      *  }
      *  </pre>
      */
+    @Secured(["isAuthenticated()"])
     def changeState(Long id, String state_name, Long lifecycle_state_id) {
         /*
          * get osd
@@ -314,6 +316,7 @@ class LifeCycleStateController extends BaseController{
      * </pre>
      * }
      */
+    @Secured(["isAuthenticated()"])
     def detachLifeCycle(Long id) {
         try {
             ObjectSystemData osd = ObjectSystemData.get(id)
@@ -354,6 +357,7 @@ class LifeCycleStateController extends BaseController{
  
      * @param cmd a Map of HTTP request parameters
      */
+    @Secured(["isAuthenticated()"])
     def attachLifeCycle(Long id, Long lifecycle_id, Long lifecycle_state_id) {
         try {
             LifeCycle lifeCycle = LifeCycle.get(lifecycle_id)
