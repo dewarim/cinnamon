@@ -1,6 +1,7 @@
 package cinnamon
 
 import cinnamon.exceptions.CinnamonException
+import cinnamon.global.PermissionName
 import grails.plugins.springsecurity.Secured
 import org.codehaus.groovy.grails.commons.ConfigurationHolder
 import cinnamon.lifecycle.LifeCycleState
@@ -188,5 +189,55 @@ class LifeCycleStateController extends BaseController{
         }
 
     }
+
+    /**
+     * Fetch a list of allowed exit states for a given object with
+     * an attached lifecycle.
+     * <h2>Needed permissions</h2>
+     * READ_OBJECT_SYS_METADATA
+     * @param id id of the osd whose state may be changed</li>
+     * @return XML response containing the allowed exit states.
+     */
+    def getNextStates(Long id) {        
+        try {
+            /*
+             * get OSD
+             * get lifecycle
+             * get lifecycle states
+             * call checkEnteringObject
+             * Note: checkExit is undefined at the moment.
+             */
+            def user = userService.user
+            ObjectSystemData osd = ObjectSystemData.get(id)
+            if(osd){
+                new Validator(user).validatePermission(osd.acl, PermissionName.READ_OBJECT_SYS_METADATA)
+                LifeCycleState state = osd.state
+                if(state == null){
+                    throw new CinnamonException("error.no_lifecycle_set")
+                }
+
+                Collection<LifeCycleState> states = new HashSet<LifeCycleState>();
+                states.addAll(osd.getState().getLifeCycle().getStates());
+                states.remove(osd.getState());
+
+                def doc = DocumentHelper.createDocument()
+                Element root = doc.addElement('lifecycle-states')
+                states.each{LifeCycleState lcs ->
+                    if(lcs.openForEntry(osd)){
+                        lcs.toXmlElement(root);
+                    }
+                }                        
+                render(contentType: 'application/xml', text: doc.asXML())
+            }
+            else{
+                throw new CinnamonException("error.object.not.found");
+            }           
+            
+        }
+        catch (Exception e) {
+            renderExceptionXml('Failed to ', e)
+        }
+    }
+    
     
 }
