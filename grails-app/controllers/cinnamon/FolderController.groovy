@@ -586,7 +586,7 @@ class FolderController extends BaseController {
             folderList.each {
                 it.toXmlElement(root)
             }      
-            log.debug"fetchFolderXml output:\n${doc.asXML()}"
+//            log.debug"fetchFolderXml output:\n${doc.asXML()}"
             render(contentType: 'application/xml', text: doc.asXML())
         }
         catch (Exception e) {
@@ -725,5 +725,43 @@ class FolderController extends BaseController {
             renderExceptionXml('Failed to fetch folder custom metadata', e)
         }
     }
-    
+
+
+    /**
+     * Set name, parent folder, metadata, owner and/or ACL of a folder.
+     *
+     * @param id the Id of the folder.
+     * @param parentid optional: id of new parent folder
+     * @param name optional: new name for this folder
+     * @param aclid optional: id of new ACL
+     * @param ownerid optional: id of new owner
+     * @param metadata optional: new custom metadata for this folder
+     * @param typeid optional: id of new folder type
+     * @return XML-Response:
+     *         {@code
+     *         <success>success.update.folder</success>
+     *         }
+     */
+    def updateFolder(Long id, Long parentid, String name,
+                     String metadata, Long typeid,
+                     String ownerid, Long aclid) {
+        try {
+            def fields = [parentid: parentid, name: name,
+                    ownerid: ownerid, aclid: aclid,
+                    metadata: metadata, typeid: typeid]
+            def folder = fetchAndFilterFolder(id)
+            if (!folder) {
+                throw new RuntimeException('error.folder.not.found')
+            }
+            folder.update(fields)
+            luceneService.updateIndex(folder, repositoryName)
+            render(contentType: 'application/xml') {
+                success('success.update.folder')
+            }
+        }
+
+        catch (Exception e) {
+            renderExceptionXml('Failed to update folder.', e)
+        }
+    }
 }
