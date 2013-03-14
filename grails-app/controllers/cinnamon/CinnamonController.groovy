@@ -196,6 +196,7 @@ class CinnamonController extends BaseController {
                 case 'deleterelation': forward(controller: 'relation', action: 'deleteXml'); break
                 case 'disconnect': forward(action: 'disconnect'); break
                 case 'getacls': forward(controller: 'acl', action: 'listXml'); break
+                case 'getcontent': forward(controller: 'osd', action: 'getContent'); break
                 case 'getfoldertypes': forward(controller: 'folderType', action: 'listXml'); break;
                 case 'getformats': forward(controller: 'format', action: 'listXml'); break
                 case 'getfolderbypath': forward(controller: 'folder', action: 'fetchFolderByPath'); break
