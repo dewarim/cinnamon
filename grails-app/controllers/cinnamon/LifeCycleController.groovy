@@ -1,9 +1,11 @@
 package cinnamon
 
+import cinnamon.exceptions.CinnamonException
 import grails.plugins.springsecurity.Secured
 import cinnamon.lifecycle.LifeCycle
 import cinnamon.lifecycle.LifeCycleState
 import org.dom4j.DocumentHelper
+import org.dom4j.Element
 
 @Secured(["hasRole('_superusers')"])
 class LifeCycleController extends BaseController {
@@ -184,6 +186,67 @@ class LifeCycleController extends BaseController {
             renderExceptionXml('Failed to listLifeCycles as XML.',e)
         }
 	}
+
+    /**
+     * Fetch a specific lifecycle by name or id from the database as XML. If both id and name
+     * parameters are set, it will ignore the name parameter.
+     * @param name  Name of the lifecycle - you must specify either the name or the id
+     * @param id Id of the lifecycle - you must specify either the name or the id.
+     * @return an XML document which
+     * contains the requested lifecycle object 
+     * (or an error message if the lifecycle could not be found).<br>
+     *     Example:
+     * <pre>
+     *  {@code
+     *  <lifecycles>
+     *      <lifecycle>
+     *          <id>1234</id>
+     *          <name>DemoLC</name>
+     *          <sysName>lifecycle.demo</sysName>
+     *          <defaultState> ... (if set, contains serialized LCS)</defaultState>
+     *          <states>
+     *            <lifecycleState>
+     *              <id>543</id>
+     *              <name>TestState</name>
+     *              <sysName>example.test.state</sysName>
+     *              <stateClass>server.lifecycle.state.NopState</stateClass>
+     *              <parameter>&lt;config /&gt;</parameter> (encoded XML string)
+     *              <lifeCycle>44</lifeCycle> (may be empty)
+     *              <lifeCycleStateForCopy>7</lifeCycleStateForCopy> (may be empty)
+     *            </lifecycleState>
+     *            ... (other states)
+     *          </states>
+     *      </lifecycle>
+     *  </lifecycles>
+     *  }
+     * </pre>
+     */
+    def getLifeCycle(Long id, String name) {
+        try {
+            LifeCycle lifeCycle;
+            if(id){
+                lifeCycle = LifeCycle.get(id)
+            }
+            else if(name){
+                lifeCycle = LifeCycle.findByName(name)
+            }
+            else{
+                throw new CinnamonException("error.param.lc.missing");
+            }
+
+            if(lifeCycle == null){
+                throw new CinnamonException("error.lifecycle.missing");
+            }
+            
+            def doc = DocumentHelper.createDocument()
+            Element root = doc.addElement('lifecycles')
+            lifeCycle.toXmlElement(root)
+            render(contentType: 'application/xml', text:doc.asXML() )            
+        }
+        catch (Exception e) {
+            renderExceptionXml('Failed to ', e)
+        }
+    }
     
     
 }
