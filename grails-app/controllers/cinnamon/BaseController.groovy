@@ -42,27 +42,36 @@ abstract class BaseController {
         return new Validator(user)
     }
 
+    protected void renderErrorXml(String errorMessage){
+        render(contentType: 'application/xml') {
+            error {
+                code(errorMessage)
+                "message"(message(code: errorMessage))
+            }
+        }
+    } 
+    
+    protected void renderErrorXml(String logMessage, String errorMessage){
+        log.debug(logMessage)
+        render(contentType: 'application/xml') {
+            error {
+                code(errorMessage)
+                "message"(message(code: errorMessage))
+            }
+        }
+    }
+    
     protected void renderException(Exception e) {
         render(status: 500, text: message(code: e.getMessage()))
     }
 
     protected void renderExceptionXml(Exception e) {
-        render(contentType: 'application/xml') {
-            error {
-                code(e.message)
-                "message"(message(code: e.message))
-            }
-        }
+       renderErrorXml(e.message)
     }
     
     protected void renderExceptionXml(String logMessage, Exception e) {
         log.debug(logMessage, e)
-        render(contentType: 'application/xml') {
-            error {
-                code(e.message)
-                "message"(message(code: e.message))
-            }
-        }
+        renderErrorXml(logMessage, e.message)
     }
 
     protected ObjectSystemData fetchAndFilterOsd(id) {
@@ -152,5 +161,21 @@ abstract class BaseController {
     
     protected String getRepositoryName(){
         return session.repositoryName
+    }
+
+    // for use in XML API.
+    protected withOsd(Long id, Closure c){
+        def osd = ObjectSystemData.get(id)
+        if (osd){
+            try{
+                c.call osd
+            }
+            catch (Exception e){
+                renderExceptionXml("Failed to execute ${actionName} ",e)
+            }
+        }
+        else{
+            renderErrorXml("OSD ${id} was not found.", 'error.object.not.found')
+        }
     }
 }
