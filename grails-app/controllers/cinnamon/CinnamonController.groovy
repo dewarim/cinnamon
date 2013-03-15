@@ -171,7 +171,10 @@ class CinnamonController extends BaseController {
             }
             log.debug("reached legacy filter with command: ${myAction}")
             log.debug("params:$params")
-            if (userService.user) {
+            log.debug("header-ticket:"+request.getHeader('ticket'))
+            def user = userService.user
+            log.debug("user: $user")
+            if (user) {
                 log.debug("user is logged in")
             }
             else if (myAction == 'connect') {
@@ -220,6 +223,7 @@ class CinnamonController extends BaseController {
                 case 'getrelationtypes': forward(controller: 'relationType', action: 'listXml'); break
                 case 'getsubfolders': forward(controller: 'folder', action: 'fetchSubFolders'); break
                 case 'getsysmeta': forward(controller: 'osd', action: 'getSysMeta'); break
+                case 'getuserbyname': forward(controller: 'userAccount', action: 'getUserByName'); break
                 case 'getusers': forward(controller: 'userAccount', action: 'listXml'); break
                 case 'getusersacls': forward(controller: 'acl', action: 'getUsersAcls'); break
                 case 'getuserspermissions': forward(controller: 'acl', action: 'getUsersPermissions'); break
