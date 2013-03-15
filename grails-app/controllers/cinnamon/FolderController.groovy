@@ -540,11 +540,29 @@ class FolderController extends BaseController {
         }
     }
 
-    def fetchFolderByPath() {
+    /**
+     * Retrieve the folder with the given path.
+     * Do not specify the root folder in the path parameter, it will be
+     * automatically prepended.
+     * <h2>Needed permissions</h2>
+     * BROWSE_FOLDER (for each individual folder, else it will be filtered.)
+     *
+     * @param path path in the form /folder1/folder2/...
+     * @param autocreate optional boolean parameter (true,false),
+     *         default:false, will create missing folders if allowed)
+     * @return XML-Response
+     *         <pre>
+     *           {@code
+     *           <folders>
+     *              <folder><id>5</id>...</folder>
+     *               ...
+     *           </folders>
+     *          }
+     *          </pre>
+     */
+    def fetchFolderByPath(String path) {
         try {
-            String path = params.path;
             Boolean autoCreate = params.autocreate && params.autocreate.equals("true");
-
             Validator validator = new Validator(userService.user);
             List<Folder> folderList = folderService.findAllByPath(path, autoCreate, validator);
             log.debug("*** folder list ***")
