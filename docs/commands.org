@@ -91,7 +91,7 @@ will not be implemented at the moment.
    - [X] listMessages
    - [X] listPermissions
 
-** Primary, requires permission checking: [19/21]
+** Primary, requires permission checking: [24/24]
    - [X]  copy
 	  READ_OBJECT_CONTENT
 	  READ_OBJECT_CUSTOM_METADATA
@@ -136,23 +136,29 @@ will not be implemented at the moment.
 	 LOCK and one of (WRITE_OBJECT_SYS_METADATA or  EDIT_FOLDER)
 	 with parameter aclId: SET_ACL instead of WRITE_OBJECT_SYS_METADATA
 	 with parameter parent_id: MOVE instead of WRITE_OBJECT_SYS_METADATA
-   - [ ] setMetaset
+   - [X] setMetaset
 	 WRITE_OBJECT_CUSTOM_METADATA
-   - [ ] getMetaset 
+   - [X] getMetaset
 	 READ_OBJECT_CUSTOM_METADATA
+   - [X] linkMetaset
+	 WRITE_OBJECT_CUSTOM_METADATA
+   - [X] unlinkMetaset
+	 WRITE_OBJECT_CUSTOM_METADATA
+   - [X] updateFolder
+	 WRITE_OBJECT_SYSMETA
 
 ** Translation API: [0/2]
    - [ ] createTranslation
    - [ ] checkTranslation
 
-** Lifecycle API: [0/7]
-   - [ ] attachLifeCycle
-   - [ ] detachLifeCycle
-   - [ ] changeState
-   - [ ] getNextStates
-   - [ ] listLifeCycles
-   - [ ] getLifeCycle
-   - [ ] getLifeCycleState
+** Lifecycle API: [7/7]
+   - [X] attachLifeCycle
+   - [X] detachLifeCycle
+   - [X] changeState
+   - [X] getNextStates
+   - [X] listLifeCycles
+   - [X] getLifeCycle
+   - [X] getLifeCycleState
 
 ** RenderServerConnector:
    - [ ] startRenderTask
