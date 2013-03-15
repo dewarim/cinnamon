@@ -27,12 +27,11 @@ class BootStrap {
         catch (Exception e){
             log.warn("*** dataSource for lifecycleLogging is probably not configured correctly.", e)
         }
-        
-        SpringSecurityUtils.clientRegisterFilter('requestTicketAuthenticationFilter',
-                SecurityFilterPosition.PRE_AUTH_FILTER.getOrder() + 15) 
+
         SpringSecurityUtils.clientRegisterFilter('repositoryLoginFilter',
                 SecurityFilterPosition.PRE_AUTH_FILTER.getOrder() + 20)
-
+        SpringSecurityUtils.clientRegisterFilter('requestTicketAuthenticationFilter',
+                SecurityFilterPosition.PRE_AUTH_FILTER.getOrder() + 15) 
 
         if (grails.util.Environment.currentEnvironment == Environment.TEST){            
             log.debug("Do not initialize luceneService in test environment.")
