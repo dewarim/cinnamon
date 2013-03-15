@@ -1,4 +1,6 @@
-package cinnamon
+package cinnamon.test
+
+import cinnamon.CinnamonController
 import grails.test.mixin.*
 import org.junit.*
 import grails.plugin.spock.*
