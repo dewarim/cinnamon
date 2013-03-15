@@ -1108,7 +1108,7 @@ class OsdController extends BaseController {
      *         The response document may include additional elements as children of the root element
      *         (for example, {@code <warnings />}
      */
-    def setMetadataXml(Long id, String metadata, String write_policy) {
+    def saveMetadataXml(Long id, String metadata, String write_policy) {
         try {
             ObjectSystemData osd = ObjectSystemData.get(id)
             def user = userService.user
