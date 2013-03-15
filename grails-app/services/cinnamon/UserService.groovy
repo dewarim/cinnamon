@@ -31,8 +31,14 @@ class UserService {
     UserAccount getUser() {
         def principal = springSecurityService.getPrincipal();
 //        log.debug("principal: $principal")
-        if (principal instanceof GrailsUser) {
+        if (principal instanceof GrailsUser)
+        {
+            // Note: if it works with getUsername and not with getId,
+            // you may have a problem of accessing the right user in the wrong database...
+            log.debug("id: ${principal.getId()}")
             return UserAccount.get(principal.getId())
+//            log.debug("name: ${principal.username}")
+//            return UserAccount.findByName(principal.getUsername())
         }
         return null
     }
