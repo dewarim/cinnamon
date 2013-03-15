@@ -209,6 +209,7 @@ class CinnamonController extends BaseController {
                 case 'getlifecyclestate': forward(controller: 'lifeCycleState', action: 'getLifeCycleState'); break
                 case 'getlink': forward(controller: 'link', action: 'getLink'); break
                 case 'getmeta': forward(controller: 'osd', action: 'getOsdMeta'); break
+                case 'getmetaset': forward(controller: 'metaset', action: 'fetchMetaset'); break
                 case 'getnextstates': forward(controller: 'lifeCycleState', action: 'getNextStates'); break
                 case 'getobject': forward(controller: 'osd', action: 'fetchObject'); break
                 case 'getobjects': forward(controller: 'osd', action: 'fetchObjects'); break
@@ -222,6 +223,7 @@ class CinnamonController extends BaseController {
                 case 'getusers': forward(controller: 'userAccount', action: 'listXml'); break
                 case 'getusersacls': forward(controller: 'acl', action: 'getUsersAcls'); break
                 case 'getuserspermissions': forward(controller: 'acl', action: 'getUsersPermissions'); break
+                case 'linkmetaset': forward(controller: 'metaset', action: 'linkMetaset'); break
                 case 'listaclentries': forward(controller: 'aclEntry', action: 'listXml'); break
                 case 'listgroups': forward(controller: 'group', action: 'listXml'); break
                 case 'listindexitems': forward(controller: 'indexItem', action: 'listXml'); break
@@ -236,8 +238,10 @@ class CinnamonController extends BaseController {
                 case 'searchfolders': forward(controller: 'search', action: 'searchFolders'); break
                 case 'setcontent': forward(controller: 'osd', action: 'saveContentXml'); break
                 case 'setmeta': forward(controller: 'osd', action: 'saveMetadataXml'); break
+                case 'setmetaset': forward(controller: 'metaset', action: 'saveMetaset'); break
                 case 'setsysmeta': forward(controller: 'osd', action: 'updateSysMetaXml'); break
                 case 'test': forward(action: 'test'); break
+                case 'unlinkmetaset': forward(controller: 'metaset', action: 'unlinkMetaset'); break
                 case 'unlock': forward(controller: 'osd', action: 'unlockXml'); break
                 case 'updatefolder': forward(controller: 'folder', action: 'updateFolder'); break
                 case 'updatelink': forward(controller: 'link', action: 'updateLink'); break
