@@ -146,6 +146,7 @@ InitializingBean, ApplicationEventPublisherAware {
             authResult = authenticationManager.authenticate(authRequest);
             successfulAuthentication(request, response, authResult);
         } catch (AuthenticationException failed) {
+            logger.debug("*** auth failed.")
             unsuccessfulAuthentication(request, response, failed);
 
             if (!continueFilterChainOnUnsuccessfulAuthentication) {
