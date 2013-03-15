@@ -321,4 +321,12 @@ class UserAccountController extends BaseController {
         return render(contentType: 'application/xml', text: doc.asXML())
     }
 
+    def getUserByName(String name) {
+        Document doc = DocumentHelper.createDocument()
+        Element root = doc.addElement("users");
+        def user = UserAccount.findByName(name)
+        root.add(UserAccount.asElement("user", user));
+        return render(contentType: 'application/xml', text: doc.asXML())
+    }
+    
 }
