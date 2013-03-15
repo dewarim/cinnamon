@@ -50,7 +50,7 @@ grails.project.dependency.resolution = {
         runtime 'dom4j:dom4j:1.6.1'
         runtime 'jaxen:jaxen:1.1.4'
         compile 'org.codehaus.gpars:gpars:1.0.0'
-        runtime 'cinnamon:cinnamon-humulus:0.2.1'
+        runtime 'cinnamon:cinnamon-humulus:0.2.3'
         
         // TODO: is this used anywhere? (commented out to test this ;) )
 //        compile("org.codehaus.groovy.modules.http-builder:http-builder:0.6.0"){
@@ -86,7 +86,7 @@ grails.project.dependency.resolution = {
         runtime ":resources:1.1.6"
         compile(':spring-security-core:1.2.7.3')
         compile (":twitter-bootstrap:2.1.0.1"){excludes 'svn'}
-        runtime ':cinnamon-db:3.0.0.12'
+        runtime ':cinnamon-db:3.0.0.13'
         compile ":remote-pagination:0.3"
         compile ":geb:${gebPluginVersion}"
         test (':spock:0.7'){
