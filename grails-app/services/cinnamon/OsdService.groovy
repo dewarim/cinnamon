@@ -420,7 +420,7 @@ class OsdService {
             file.transferTo(tempFile)
             storeContent(osd, file.contentType, formatId, tempFile, repositoryName)
             osd.updateAccess(user)
-            unlock(osd, user)
+//            unlock(osd, user)
             osd.save()
             // TODO: use TikaParser to add parsed content to tika metaset.
             if (reIndex){
