@@ -129,7 +129,7 @@ class FolderController extends BaseController {
     }
 
     def fetchFolderContent() {
-        def repositoryName = session.repositoryName
+        def repositoryName = repositoryName
         def user = userService.user
         Folder folder
         try {
@@ -240,7 +240,7 @@ class FolderController extends BaseController {
             if (!folder.metadata.equals(metadata)) {
                 log.debug("trying to save metadata '$metadata'")
                 folder.metadata = metadata
-                luceneService.updateIndex(folder, session.repositoryName)
+                luceneService.updateIndex(folder, repositoryName)
             }
             else {
                 log.debug("metadata is unchanged")
@@ -326,7 +326,7 @@ class FolderController extends BaseController {
                     case 'type': folder.type = FolderType.get(id); break;
                     case 'acl': fetchAndFilterFolder(params.folder, [PermissionName.SET_ACL]).acl = Acl.get(id); break;
                 }
-                luceneService.updateIndex(folder, session.repositoryName)
+                luceneService.updateIndex(folder, repositoryName)
                 fetchFolderMeta()
             }
             else {
@@ -363,7 +363,7 @@ class FolderController extends BaseController {
             folder.acl = parentFolder.acl
             folder.owner = userService.user
             folder.save()
-            luceneService.addToIndex(folder, session.repositoryName)
+            luceneService.addToIndex(folder, repositoryName)
             return redirect(controller: 'folder', action: 'index', params: [folder: folder.id])
         }
         catch (Exception e) {
@@ -384,7 +384,7 @@ class FolderController extends BaseController {
                 latestHead = null
             }
             log.debug("versions: latestHead = ${latestHead} latestBranch = ${latestBranch}")
-            def repositoryName = session.repositoryName
+            def repositoryName = repositoryName
             def user = userService.user
             def validator = new Validator(user)
             ZippedFolder zf = folder.createZippedFolder(latestHead, latestBranch, validator, repositoryName);
@@ -617,7 +617,7 @@ class FolderController extends BaseController {
         def query = params.query
         try {
             def xmlQuery = groovyPageRenderer.render(template:'/search/simpleSearchQuery', model:[query:query])
-            LuceneResult result = luceneService.searchXml(xmlQuery, session.repositoryName, null)
+            LuceneResult result = luceneService.searchXml(xmlQuery, repositoryName, null)
             def itemMap = result.filterResultToMap(null, itemService)
             log.debug("itemMap: $itemMap")
             def folders = itemMap.get(SearchableDomain.FOLDER.name)

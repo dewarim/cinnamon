@@ -41,7 +41,7 @@ class OsdController extends BaseController {
             ObjectSystemData osd = fetchAndFilterOsd(params.osd)
             if (!osd.metadata.equals(params.metadata)) {
                 osd.metadata = params.metadata
-                luceneService.updateIndex(osd, session.repositoryName)
+                luceneService.updateIndex(osd, repositoryName)
             }
             return render(template: mapTemplate('/osd/objectDetails'), model: [osd: osd, permissions: loadUserPermissions(osd.acl)])
         }
@@ -55,7 +55,7 @@ class OsdController extends BaseController {
             ObjectSystemData osd = fetchAndFilterOsd(params.osd)
             UserAccount user = userService.user
             osd.locker = null
-            luceneService.updateIndex(osd, session.repositoryName)
+            luceneService.updateIndex(osd, repositoryName)
             render(template: mapTemplate('/folder/lockStatus'), model: [user: user, osd: osd,
                     superuserStatus: userService.isSuperuser(user)])
         }
@@ -69,7 +69,7 @@ class OsdController extends BaseController {
             ObjectSystemData osd = fetchAndFilterOsd(params.osd)
             UserAccount user = userService.user
             osdService.acquireLock(osd, user)
-            luceneService.updateIndex(osd, session.repositoryName)
+            luceneService.updateIndex(osd, repositoryName)
             render(template: mapTemplate('/folder/lockStatus'), model: [user: user, osd: osd,
                     superuserStatus: userService.isSuperuser(user)])
 
@@ -122,7 +122,7 @@ class OsdController extends BaseController {
     def renderPreview() {
         try {
             ObjectSystemData osd = fetchAndFilterOsd(params.osd)
-            def osdContent = osd.getContent(session.repositoryName)
+            def osdContent = osd.getContent(repositoryName)
             return render(template: mapTemplate('/osd/objectPreview'),
                     model: [osd: osd, ctype: osd.format?.contenttype, osdContent: osdContent])
         }
@@ -254,7 +254,7 @@ class OsdController extends BaseController {
                     case 'objtype': osd.type = ObjectType.get(id); break;
                     case 'acl': fetchAndFilterOsd(params.osd, [PermissionName.SET_ACL]).acl = Acl.get(id); break;
                 }
-                luceneService.updateIndex(osd, session.repositoryName)
+                luceneService.updateIndex(osd, repositoryName)
                 fetchObjectDetails()
             }
             else {
@@ -373,7 +373,7 @@ class OsdController extends BaseController {
                 // nothing to do
                 defaultRedirect([folder: selectedFolder])
             }
-            def repository = session.repositoryName
+            def repository = repositoryName
             def versionType = VersionType.values().find { it.name() == (params.versions ?: VersionType.ALL.name()) }
 
             if (params.delete) {
@@ -431,7 +431,7 @@ class OsdController extends BaseController {
                 throw new RuntimeException('error.folder.not.found')
             }
             def user = userService.user
-            List<ObjectSystemData> results = folderService.getObjects(user, folder, session.repositoryName, params.versions)
+            List<ObjectSystemData> results = folderService.getObjects(user, folder, repositoryName, params.versions)
             Validator val = new Validator(user);
             results = val.filterUnbrowsableObjects(results);
             Document doc = osdService.generateQueryObjectResultDocument(results);
@@ -883,7 +883,7 @@ class OsdController extends BaseController {
                 throw new RuntimeException('error.folder.not.found')
             }
             def user = userService.user
-            List<ObjectSystemData> results = folderService.getObjects(user, folder, session.repositoryName, params.versions)
+            List<ObjectSystemData> results = folderService.getObjects(user, folder, repositoryName, params.versions)
             Validator val = new Validator(user);
             results = val.filterUnbrowsableObjects(results);
             Document doc = osdService.generateQueryObjectResultDocument(results, true);
@@ -998,22 +998,25 @@ class OsdController extends BaseController {
         try {
             def user = userService.user
             def osd = fetchAndFilterOsd(id, [PermissionName.WRITE_OBJECT_CONTENT])
-            Format myFormat = Format.find("from Format f where name=:name or name=:nameWithPrefix",
-                    [name:format, nameWithPrefix:"format.$format"]
-            )
-            if (! myFormat){
-                throw new CinnamonException('error.format.not.found')
-            }
-            String contentPath = osd.contentPath
+
             if (params.containsKey('file')) {
+                Format myFormat = Format.find("from Format f where name=:name or name=:nameWithPrefix",
+                        [name: format, nameWithPrefix: "format.$format"]
+                )
+                if (!myFormat) {
+                    throw new CinnamonException('error.format.not.found')
+                }
+                String contentPath = osd.contentPath
                 osdService.saveFileUpload(request, osd, user, myFormat.id, repositoryName)
+                if (contentPath) {
+                    ContentStore.deleteFileInRepository(contentPath, repositoryName)
+                }
             }
-            else{
+            else {
                 log.debug("User wants to remove content of $id.")
+                osd.deleteContent(repositoryName)
             }
-            if (contentPath) {
-                ContentStore.deleteFileInRepository(contentPath, repositoryName)
-            }
+
             render(contentType: 'application/xml') {
                 success('success.set.content')
             }

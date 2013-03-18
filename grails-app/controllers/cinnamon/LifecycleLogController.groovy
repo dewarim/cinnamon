@@ -10,11 +10,11 @@ class LifecycleLogController extends BaseController{
         try {
             setEntryListParams()
             Pagination pagination = fetchEntryListPagination()
-            pagination.itemCount = LifecycleLog.countByRepository(session.repositoryName)
+            pagination.itemCount = LifecycleLog.countByRepository(repositoryName)
             return [
                     pagination: pagination,
                     selectedEventType: null,
-                    logEntries: LifecycleLog.findAllByRepository(session.repositoryName, params)                    
+                    logEntries: LifecycleLog.findAllByRepository(repositoryName, params)                    
             ]
         }
         catch (Exception e) {
@@ -42,7 +42,7 @@ class LifecycleLogController extends BaseController{
             ) """.replaceAll('\n', ' ')
 //            log.debug("query: $query order by e.id")
             def filterParams = [
-                    repository:session.repositoryName,
+                    repository:repositoryName,
                     f1: filter,
                     f2: filter, f3: filter, f4: filter, f5: filter, f6: filter
             ]

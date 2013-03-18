@@ -145,10 +145,10 @@ class SearchController extends BaseController {
         log.debug("start search");
         def result
         if (params.xmlQuery) {
-            result = luceneService.searchXml(params.query, session.repositoryName, null)
+            result = luceneService.searchXml(params.query, repositoryName, null)
         }
         else {
-            result = luceneService.search(params.query, session.repositoryName, null)
+            result = luceneService.search(params.query, repositoryName, null)
         }
         def itemMap = result.filterResultToMap(null, itemService)
         log.debug("Received search results, now filtering");

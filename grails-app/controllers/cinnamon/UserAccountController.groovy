@@ -40,13 +40,13 @@ class UserAccountController extends BaseController {
      */
     def replaceUser() {
         [userList: UserAccount.list(),
-                forbidden: !userService.transferAssetsAllowed(session.repositoryName)
+                forbidden: !userService.transferAssetsAllowed(repositoryName)
         ]
     }
 
     def transferAssets() {
         try {
-            if (!userService.transferAssetsAllowed(session.repositoryName)) {
+            if (!userService.transferAssetsAllowed(repositoryName)) {
                 throw new RuntimeException(message(code: 'user.replaceUser.forbidden'))
             }
             if (params.sourceId.equals(params.targetId)) {
@@ -155,14 +155,14 @@ class UserAccountController extends BaseController {
 
     def deleteAsk() {
         [userList: UserAccount.list(),
-                forbidden: !userService.deleteUserAllowed(session.repositoryName),
+                forbidden: !userService.deleteUserAllowed(repositoryName),
                 showTransferLink: params.showTransferLink
         ]
     }
 
     def doDelete() {
         try {
-            if (!userService.deleteUserAllowed(session.repositoryName)) {
+            if (!userService.deleteUserAllowed(repositoryName)) {
                 throw new RuntimeException(message(code: 'user.delete.forbidden'))
             }
             UserAccount user = UserAccount.get(params.user)
@@ -176,7 +176,7 @@ class UserAccountController extends BaseController {
                 throw new RuntimeException(message(code: 'user.has.dependencies'))
             }
             // check that the source user is not an admin
-            userService.deleteUserAllowed(session.repositoryName)
+            userService.deleteUserAllowed(repositoryName)
             flash.message = message(code: 'user.delete.success', args: [user.name.encodeAsHTML()])
         }
         catch (RuntimeException e) {
