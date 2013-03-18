@@ -600,15 +600,12 @@ class OsdController extends BaseController {
     /**
      * The unlock command removes a lock from an object.
      *
-     * @param cmd HTTP request parameter map
-     *            <ul>
-     *            <li>command=unlock</li>
-     *            <li>id=object id</li>
-     *            </ul>
+     * @param id id of the object to unlock.
      * @return XML-Response
      * {@code
      *         <success>success.object.lock</success>
      *}
+     * or an error message if the object was not locked.
      */
     def unlockXml(Long id) {
         try {
@@ -977,22 +974,19 @@ class OsdController extends BaseController {
     }
 
     /**
-     * The setcontent command replaces the content of an object in the repository.
-     * If a file is specified, the format must also be specified. The value in the name column
-     * of the formats table must be used.
+     * Replace the content of an object in the repository.
+     * If a file is specified, the format must also be specified. 
+     * The value in the name column of the formats table must be used.
      * <br>
      * If no file parameter is specified, the content is removed.
      * The setcontent command can be used to add content later.
      * <h2>Needed permissions</h2>
      * WRITE_OBJECT_CONTENT
      *
-     * HTTP request parameter map:
-     *            <ul>
-     *            <li>command=setcontent</li>
-     *            <li>file=uploaded file</li>
-     *            <li>format=name of content format</li>
-     *            <li>id=object id</li>
-     *            </ul>
+     * @param file optional: uploaded file (MultipartFile object) if not set,
+     *        the content of the given object is removed.
+     * @param format the format's name (with or without 'format.'-prefix)
+     * @param id id of the object which receives the content
      * @return XML-Response:
      * {@code
      *         <success>success.set.content</success>
@@ -1003,11 +997,19 @@ class OsdController extends BaseController {
     def saveContentXml(String format, Long id) {
         try {
             def user = userService.user
-            def osd = fetchAndFilterOsd(params.osd, [PermissionName.WRITE_OBJECT_CONTENT])
-            Format myFormat = Format.findByName(format)
+            def osd = fetchAndFilterOsd(id, [PermissionName.WRITE_OBJECT_CONTENT])
+            Format myFormat = Format.find("from Format f where name=:name or name=:nameWithPrefix",
+                    [name:format, nameWithPrefix:"format.$format"]
+            )
+            if (! myFormat){
+                throw new CinnamonException('error.format.not.found')
+            }
             String contentPath = osd.contentPath
             if (params.containsKey('file')) {
                 osdService.saveFileUpload(request, osd, user, myFormat.id, repositoryName)
+            }
+            else{
+                log.debug("User wants to remove content of $id.")
             }
             if (contentPath) {
                 ContentStore.deleteFileInRepository(contentPath, repositoryName)
@@ -1119,7 +1121,9 @@ class OsdController extends BaseController {
             osd.updateAccess(user);
             luceneService.updateIndex(osd, repositoryName);
             render(contentType: 'application/xml') {
-                success('success.set.metadata')
+                cinnamon{
+                    success('success.set.metadata')
+                }
             }
         }
         catch (Exception e) {
