@@ -249,6 +249,7 @@ class CinnamonController extends BaseController {
                 case 'unlock': forward(controller: 'osd', action: 'unlockXml'); break
                 case 'updatefolder': forward(controller: 'folder', action: 'updateFolder'); break
                 case 'updatelink': forward(controller: 'link', action: 'updateLink'); break
+                case 'version': forward(controller: 'osd', action: 'newVersionXml'); break
                 default: throw new RuntimeException("$myAction has no legacy action.")
             }
         }
