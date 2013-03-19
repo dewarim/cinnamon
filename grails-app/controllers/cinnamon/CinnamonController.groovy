@@ -188,12 +188,14 @@ class CinnamonController extends BaseController {
             switch (myAction) {
                 case 'attachlifecycle': forward(controller: 'lifeCycleState', action: 'attachLifeCycle'); break
                 case 'changestate': forward(controller: 'lifeCycleState', action: 'changeState'); break
+                case 'checktranslation': forward(controller: 'translation', action: 'checkTranslation'); break
                 case 'connect': forward(action: 'connect'); break
                 case 'copy': forward(controller: 'osd', action: 'copy'); break
                 case 'create': forward(controller: 'osd', action: 'createOsd'); break
                 case 'createfolder': forward(controller: 'folder', action: 'createXml'); break
                 case 'createlink': forward(controller: 'link', action: 'createLink'); break
                 case 'createrelation': forward(controller: 'relation', action: 'createXml'); break
+                case 'createtranslation': forward(controller: 'translation', action: 'createTranslation'); break
                 case 'delete': forward(controller: 'osd', action: 'deleteXml'); break
                 case 'deleteallversions': forward(controller: 'osd', action: 'deleteAllVersions'); break
                 case 'deletefolder': forward(controller: 'folder', action: 'deleteXml'); break
