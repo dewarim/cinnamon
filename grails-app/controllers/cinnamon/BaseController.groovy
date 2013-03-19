@@ -27,7 +27,7 @@ abstract class BaseController {
     protected Set<String> loadUserPermissions(Acl acl) {
         Set<String> permissions
         try {
-            log.debug("us: ${userService.user} acl: ${acl} repo: ${session.repositoryName}")
+            log.debug("us: ${userService.user} acl: ${acl} repo: ${repositoryName}")
             permissions = userService.getUsersPermissions(userService.user, acl)
         } catch (RuntimeException ex) {
             log.debug("getUserPermissions failed", ex)
@@ -160,7 +160,14 @@ abstract class BaseController {
     }
     
     protected String getRepositoryName(){
-        return session.repositoryName
+        def name = session.repositoryName 
+        if (! name){
+            def ticketSplit = request.getHeader('ticket')?.trim()?.split('@')
+            if (ticketSplit?.size() == 2){
+                name = ticketSplit[1]
+            }
+        }
+        return  name
     }
 
     // for use in XML API.
