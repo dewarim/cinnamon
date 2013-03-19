@@ -194,6 +194,7 @@ class CinnamonController extends BaseController {
                 case 'createlink': forward(controller: 'link', action: 'createLink'); break
                 case 'createrelation': forward(controller: 'relation', action: 'createXml'); break
                 case 'createtranslation': forward(controller: 'translation', action: 'createTranslation'); break
+                case 'createworkflow': forward(controller: 'workflow', action: 'createWorkflow'); break
                 case 'delete': forward(controller: 'osd', action: 'deleteXml'); break
                 case 'deleteallversions': forward(controller: 'osd', action: 'deleteAllVersions'); break
                 case 'deletefolder': forward(controller: 'folder', action: 'deleteXml'); break
@@ -201,6 +202,8 @@ class CinnamonController extends BaseController {
                 case 'deleterelation': forward(controller: 'relation', action: 'deleteXml'); break
                 case 'detachlifecycle': forward(controller: 'lifeCycleState', action: 'detachLifeCycle'); break
                 case 'disconnect': forward(action: 'disconnect'); break
+                case 'dotransition': forward(controller: 'workflow', action: 'doTransition'); break
+                case 'findopentasks': forward(controller: 'workflow', action: 'findOpenTasks'); break
                 case 'getacls': forward(controller: 'acl', action: 'listXml'); break
                 case 'getcontent': forward(controller: 'osd', action: 'getContent'); break
                 case 'getfoldertypes': forward(controller: 'folderType', action: 'listXml'); break;
