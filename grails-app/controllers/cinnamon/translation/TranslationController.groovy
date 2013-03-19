@@ -1,5 +1,7 @@
-package cinnamon
+package cinnamon.translation
 
+import cinnamon.BaseController
+import cinnamon.ObjectSystemData
 import cinnamon.exceptions.CinnamonException
 import cinnamon.relation.Relation
 import cinnamon.relation.RelationType
