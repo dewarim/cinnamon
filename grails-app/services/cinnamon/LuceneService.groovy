@@ -2,6 +2,7 @@ package cinnamon
 
 import cinnamon.index.ResultCollector
 import cinnamon.interfaces.XmlConvertable
+import humulus.EnvironmentHolder
 import org.apache.lucene.analysis.Analyzer
 import org.apache.lucene.analysis.standard.StandardAnalyzer
 import org.apache.lucene.util.Version
@@ -76,15 +77,30 @@ class LuceneService {
         // confuse the actor before its work is done.
         lucene.sendAndWait(cmd)
     }
+    
+    void addToIndex(Indexable indexable){
+        String repository = EnvironmentHolder.getEnvironment().dbName
+        addToIndex(indexable, repository)        
+    }
 
     void updateIndex(Indexable indexable, String database) {
         def cmd = new IndexCommand(indexable: indexable, repository: database, type: CommandType.UPDATE_INDEX)
         lucene.sendAndWait(cmd)
     }
+    
+    void updateIndex(Indexable indexable){
+        String repository = EnvironmentHolder.getEnvironment().dbName
+        updateIndex(indexable, repository)
+    }
 
     void removeFromIndex(Indexable indexable, String database) {
         def cmd = new IndexCommand(indexable: indexable, repository: database, type: CommandType.REMOVE_FROM_INDEX)
         lucene.sendAndWait(cmd)
+    }
+    
+    void removeFromIndex(Indexable indexable){
+        String repository = EnvironmentHolder.getEnvironment().dbName
+        removeFromIndex(indexable, repository)
     }
 
     /**
