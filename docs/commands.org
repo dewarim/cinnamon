@@ -147,9 +147,9 @@ will not be implemented at the moment.
    - [X] updateFolder
 	 WRITE_OBJECT_SYSMETA
 
-** Translation API: [0/2]
-   - [ ] createTranslation
-   - [ ] checkTranslation
+** Translation API: [2/2]
+   - [X] createTranslation
+   - [X] checkTranslation
 
 ** Lifecycle API: [7/7]
    - [X] attachLifeCycle
@@ -161,15 +161,17 @@ will not be implemented at the moment.
    - [X] getLifeCycleState
 
 ** RenderServerConnector:
-   - [ ] startRenderTask
+   - [X] startRenderTask
 
-** Workflow API [0/4]
-   - [ ] createWorkflow
-   - [ ] createTask
-   - [ ] findOpenTasks // unused
-   - [ ] doTransition
+** Workflow API [4/4]
+   - [X] createWorkflow
+   - [X] createTask
+   - [X] findOpenTasks // unused
+   - [X] doTransition
 
-** Further Functionality / Classes: [0/3]
+** Further Functionality / Classes: [0/4]
    - [ ] TikaParser
    - [ ] TikaConfig
    - [ ] LocalMessage is currently just an empty shell.
+   - [ ] WorkflowServer as a Background-Thread / -Actor
+
