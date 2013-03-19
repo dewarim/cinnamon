@@ -8,7 +8,6 @@ import humulus.EnvironmentHolder
 import humulus.Environment
 import humulus.HashMaker
 import cinnamon.i18n.UiLanguage
-import grails.plugins.springsecurity.Secured
 
 // Name was chosen after the main servlet path of the v2 Cinnamon server (/cinnamon/cinnamon)
 
@@ -152,8 +151,7 @@ class CinnamonController extends BaseController {
         }
     }
 
-    def disconnect() {
-        def ticket = params.ticket;
+    def disconnect(String ticket) {
         if (ticket) {
             Session.findByTicket(ticket)?.delete();
             render(text: '<success>success.disconnect</success>')
@@ -246,6 +244,7 @@ class CinnamonController extends BaseController {
                 case 'setmeta': forward(controller: 'osd', action: 'saveMetadataXml'); break
                 case 'setmetaset': forward(controller: 'metaset', action: 'saveMetaset'); break
                 case 'setsysmeta': forward(controller: 'osd', action: 'updateSysMetaXml'); break
+                case 'startrendertask': forward(controller: 'renderServer', action: 'createRenderTask'); break
                 case 'test': forward(action: 'test'); break
                 case 'unlinkmetaset': forward(controller: 'metaset', action: 'unlinkMetaset'); break
                 case 'unlock': forward(controller: 'osd', action: 'unlockXml'); break
