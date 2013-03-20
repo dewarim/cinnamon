@@ -2,7 +2,7 @@ import cinnamon.ImageService
 
 class CinnamonGrailsPlugin {
 
-    def version = "3.0.0.13"
+    def version = "3.0.0.25"
     def grailsVersion = "2.2 > *"
     def dependsOn = [:]
     def pluginExcludes = [
