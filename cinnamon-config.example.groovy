@@ -92,15 +92,7 @@ repositories {
                 name = 'DEMO'
             }
         }
-    }
-    repository {
-        name = 'cmn_test'
-        categories {
-            category {
-                name = 'TEST'
-            }
-        }
-    }
+    }    
 }
 
 /*
