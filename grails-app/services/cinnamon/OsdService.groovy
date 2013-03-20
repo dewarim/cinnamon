@@ -20,6 +20,7 @@ class OsdService {
     def userService
     def imageService
     def metasetService
+    def cinnamonTikaService
 
     /**
      * Turn a collection of data objects into an XML document. Any exceptions encountered during
@@ -87,6 +88,7 @@ class OsdService {
                 log.debug("targetPath = " + targetPath);
                 if (targetPath.length() > 0) {
                     copy.setContentPath(targetPath, repositoryName);
+                    cinnamonTikaService.parse(copy, repositoryName)
                 }
                 copy.setFormat(source.getFormat());
             } catch (IOException ex) {
@@ -211,8 +213,8 @@ class OsdService {
         ContentStore.deleteObjectFile(osd, repository);
 
         // delete metadata and metasets:
-        OsdMetaset.findByOsd(osd).each{osdMetaset->
-            metasetService.unlinkMetaset(osd, osdMetaset.metaset )
+        OsdMetaset.findByOsd(osd).each { osdMetaset ->
+            metasetService.unlinkMetaset(osd, osdMetaset.metaset)
         }
         osd.delete(flush: true)
         luceneService.removeFromIndex(osd, repository)
@@ -274,6 +276,7 @@ class OsdService {
 
         def uploadedFile = new UploadedFile(file.absolutePath, UUID.randomUUID().toString(), osd.name, contentType, file.length())
         def contentPath = ContentStore.upload(uploadedFile, repositoryName);
+        cinnamonTikaService.parse(osd, repositoryName)
         osd.setContentPathAndFormat(contentPath, format, repositoryName);
         if (osd.getContentPath() != null &&
                 osd.getContentPath().length() == 0) {
@@ -398,6 +401,7 @@ class OsdService {
         osd.save(flush: true)
         log.debug("created object with id: ${osd.id}")
         log.debug("repo: ${repositoryName}")
+        cinnamonTikaService.parse(osd, repositoryName)
         luceneService.addToIndex(osd, repositoryName)
         return osd
     }
@@ -422,8 +426,8 @@ class OsdService {
             osd.updateAccess(user)
 //            unlock(osd, user)
             osd.save()
-            // TODO: use TikaParser to add parsed content to tika metaset.
-            if (reIndex){
+            cinnamonTikaService.parse(osd, repositoryName)
+            if (reIndex) {
                 luceneService.updateIndex(osd, repositoryName)
             }
         }
@@ -476,6 +480,7 @@ class OsdService {
                     osd.getContentPath().length() == 0) {
                 throw new CinnamonException("error.storing.upload");
             }
+            cinnamonTikaService.parse(osd, repositoryName)
         }
         osd.type = objectType
         osd.setCmnVersion('1')
@@ -544,6 +549,7 @@ class OsdService {
         osd.save(flush: true)
         log.debug("created object with id: ${osd.id}")
         log.debug("repo: ${repositoryName}")
+        cinnamonTikaService.parse(osd, repositoryName)
         luceneService.addToIndex(osd, repositoryName)
         return osd
     }
