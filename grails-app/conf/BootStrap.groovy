@@ -88,6 +88,7 @@ class BootStrap {
     }
 
     def destroy = {
-
+        workflowService.stopWorkflowMasters()
+        luceneService.stopLuceneMasters()
     }
 }
