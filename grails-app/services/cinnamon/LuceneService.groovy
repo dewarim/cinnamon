@@ -1,7 +1,5 @@
 package cinnamon
 
-import cinnamon.index.ResultCollector
-import cinnamon.interfaces.XmlConvertable
 import humulus.EnvironmentHolder
 import org.apache.lucene.analysis.Analyzer
 import org.apache.lucene.analysis.standard.StandardAnalyzer
