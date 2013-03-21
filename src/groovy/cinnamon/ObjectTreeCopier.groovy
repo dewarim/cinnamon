@@ -118,7 +118,7 @@ public class ObjectTreeCopier {
         fixLatestHeadAndBranch(copy);
         
         copy.save();
-        luceneService.updateIndex(copy.predecessor)
+        copy.predecessor.indexOk = null
         luceneService.addToIndex(copy)
         copyCache.put(osd, copy);
         return copy;

@@ -331,7 +331,7 @@ class OsdController extends BaseController {
             osd.save()
             log.debug("version of new osd: ${osd.cmnVersion}")
             luceneService.addToIndex(osd)
-            luceneService.updateIndex(osd.predecessor)
+            osd.predecessor.indexOk = null
             def osdList = folderService.getObjects(user, osd.parent, repositoryName, params.versions)
             def folderContentTemplate = folderService.fetchFolderTemplate(osd.parent.type.config)
             return render(template: folderContentTemplate, model: [folder: osd.parent,
@@ -1083,7 +1083,7 @@ class OsdController extends BaseController {
             log.debug("new osd: ${osd.toXML().asXML()}")
 
             log.debug("version of new osd: ${osd.cmnVersion}")
-            luceneService.updateIndex(osd.predecessor)
+            osd.predecessor.indexOk = null
             luceneService.addToIndex(osd)
             render(contentType: 'application/xml') {
                 objectId(osd.id.toString())
