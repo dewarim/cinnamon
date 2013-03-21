@@ -13,6 +13,7 @@ import cinnamon.interfaces.Transition
 import cinnamon.relation.Relation
 import cinnamon.relation.RelationType
 import cinnamon.utils.ParamParser
+import humulus.Environment
 import humulus.EnvironmentHolder
 import org.dom4j.Document
 
@@ -65,13 +66,13 @@ class WorkflowService {
         workflow.setType(workflowType);
         workflow.setProcstate(Constants.PROCSTATE_WORKFLOW_STARTED);
         workflow.save()
-        
+
         log.debug("Creating new Start Task from task_definition");
         RelationType startTaskRelType = RelationType.findByName(Constants.RELATION_TYPE_WORKFLOW_TO_START_TASK);
 
 
         def relation = Relation.findByLeftOSDAndType(workflowTemplate, startTaskRelType);
-        if (! relation) {
+        if (!relation) {
             throw new CinnamonException("error.missing.start_task_relation");
         }
         ObjectSystemData startTaskDef = relation.rightOSD
@@ -205,16 +206,51 @@ class WorkflowService {
             ObjectType objectType, String processingState, UserAccount owner, ObjectSystemData workflow) {
         final String query = "select o from ObjectSystemData o where o.type=:type and o.procstate=:procstate and o.owner=:owner " +
                 "and o.id in (select r1.rightOSD.id from Relation r1 where r1.leftOSD=:leftOSD)"
-        return ObjectSystemData.findAll(query, [procstate:processingState, type:objectType, owner:owner, leftOSD:workflow])
+        return ObjectSystemData.findAll(query, [procstate: processingState, type: objectType, owner: owner, leftOSD: workflow])
     }
 
     List<ObjectSystemData> findOpenTasksByWorkflow(
             ObjectType objectType, String processingState, ObjectSystemData workflow) {
         final String query = "select o from ObjectSystemData o where o.type=:type and o.procstate=:procstate " +
                 "and o.id in (select r1.rightOSD.id from Relation r1 where r1.leftOSD=:leftOSD)"
-        return ObjectSystemData.findAll(query, [procstate:processingState, type:objectType, leftOSD:workflow])
+        return ObjectSystemData.findAll(query, [procstate: processingState, type: objectType, leftOSD: workflow])
     }
 
-    
-    
+    def workflowMasters = [:]
+
+    void initializeWorkflowMasters() {
+        def currentEnv = EnvironmentHolder.environment
+        Environment.list().each { repo ->
+            def name = repo.dbName
+            log.debug("create workflow master object for ${name}")
+            try {
+                EnvironmentHolder.environment = repo
+                def master = new WorkflowMaster()
+                master.start()
+                master.sendAndContinue(new WorkflowCommand(type: WorkflowCommandType.RUN_WORKFLOW,
+                        repositoryName: name)) { WorkflowResult workflowResult ->
+                    log.debug("Received workflowResult: ${workflowResult}, status: ${ workflowResult.failed ? 'failed' : 'ok'}")
+                }
+                workflowMasters.put(name, master)
+            } catch (Exception e) {
+                log.debug("failed to initialize workflow master actor for repository $name", e)
+                throw new RuntimeException("Failed to initialize workflow master actor for repository $name.", e);
+            }
+        }
+        EnvironmentHolder.environment = currentEnv
+    }
+
+    void stopWorkflowMasters() {
+        workflowMasters.each { String name, WorkflowMaster master ->
+            WorkflowResult result = master.sendAndWait(new WorkflowCommand(type: WorkflowCommandType.STOP_RUNNING, repositoryName: name))
+            if (result.failed) {
+                log.warn("Looks like I could not stop the workflowMaster for ${name} properly.\n" +
+                        "Messages: ${result.messages}")
+            }
+            else {
+                log.debug("WorkflowMaster for ${name} stopped.")
+            }
+        }
+    }
+
 }

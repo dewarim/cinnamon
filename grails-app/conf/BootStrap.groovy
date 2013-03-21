@@ -10,6 +10,7 @@ class BootStrap {
 
     def grailsApplication
     def luceneService
+    def workflowService
         
     def init = { servletContext ->
 
@@ -39,6 +40,7 @@ class BootStrap {
         }
         
         luceneService.initialize()
+        workflowService.initializeWorkflowMasters()
 
         // 0.3.2.23:
         // check for new binary Format object:
