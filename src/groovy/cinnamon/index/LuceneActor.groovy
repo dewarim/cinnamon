@@ -17,7 +17,12 @@
  */
 package cinnamon.index
 
-import groovyx.gpars.actor.DefaultActor
+import cinnamon.Folder
+import cinnamon.ObjectSystemData
+import cinnamon.workflow.WorkflowCommand
+import cinnamon.workflow.WorkflowResult
+import groovy.util.logging.Log4j
+import groovyx.gpars.actor.DynamicDispatchActor
 import org.apache.lucene.analysis.standard.StandardAnalyzer
 import org.apache.lucene.document.Document
 import org.apache.lucene.document.Field
@@ -45,51 +50,88 @@ import org.apache.lucene.analysis.LimitTokenCountAnalyzer
 
 /**
  * Actor class which does the heavy lifting in searching and indexing.
- * This class borrows heavily from the cinnamon project (http://cinnamon-cms.de) [LGPL license]
  */
-class LuceneActor extends
-        DefaultActor {
+@Log4j
+class LuceneActor extends DynamicDispatchActor {
 
-    Logger log = LoggerFactory.getLogger(this.class)
-
-    Map<String, Repository> repositories = new HashMap<String, Repository>()
+//    Logger log = LoggerFactory.getLogger(this.class)
 
     void onDeliveryError(msg) {
         log.warn("Could not deliver msg: $msg")
     }
 
-    protected void act() {
-        loop {
-            react { command ->
-                LuceneResult result = new LuceneResult()
-                try {
-//                    log.debug("LuceneActor received: $command")
-                    def env = Environment.list().find {it.dbName == command.repository}
-                    log.debug("found env: $env")
-                    EnvironmentHolder.setEnvironment(env)
-                    switch (command.type) {
-                        case CommandType.ADD_TO_INDEX: addToIndex(command); break
-                        case CommandType.REMOVE_FROM_INDEX: removeFromIndex(command); break
-                        case CommandType.UPDATE_INDEX: removeFromIndex(command); addToIndex(command); break
-                        case CommandType.SEARCH: result = search(command); break;
-                    }
-                    log.debug("reply & finish")
-                    reply result
-                }
-                catch (Exception e) {
-                    log.debug("repositories: ${repositories}")
-                    log.debug("Failed to act on command: ${command?.dump()}", e)
-                    result.failed = true
-                    result.errorMessage = e.message
-                    reply result
-                }
+    void onMessage(IndexCommand command) {
+        LuceneResult result = new LuceneResult()
+        try {
+            def env = Environment.list().find { it.dbName == command.repository }
+            log.debug("onMessage: receveived indexCommand ${command.dump()}")
+            EnvironmentHolder.setEnvironment(env)
+            switch (command.type) {
+                case CommandType.REMOVE_FROM_INDEX: removeFromIndex(command); break
+                case CommandType.UPDATE_INDEX: result = updateIndex(command); break
+                case CommandType.SEARCH: result = search(command); break;
+                default: throw new RuntimeException("LuceneActor called with unknown command type: ${command.type}")
             }
+            log.debug("reply & finish")
+            reply result
+        }
+        catch (Exception e) {
+            log.warn("Failed to act on command: ${command?.dump()}", e)
+            result.failed = true
+            result.errorMessage = e.message
+            reply result
         }
     }
 
+    LuceneResult updateIndex(IndexCommand command) {
+        def repository = command.repository
+        log.debug("Update repository: ${repository.name}")
+        def env = Environment.list().find { it.dbName == repository.name }
+        EnvironmentHolder.setEnvironment(env)
+        def osds = []
+        ObjectSystemData.withTransaction {
+            osds = ObjectSystemData.findAll("from ObjectSystemData o where o.indexOk is NULL", [max: 50])
+        }
+        log.debug("Found ${osds.size()} objects watiting for indexing in ${repository.name}.")
+        osds.each { osd ->
+            ObjectSystemData.withTransaction {
+                osd = ObjectSystemData.get(osd.id)
+                log.debug("going to update osd #${osd.id}")
+                deleteIndexableFromIndex(osd, repository)
+                addToIndex(osd, repository)
+            }
+        }
+        def folders = []
+        Folder.withTransaction {
+            folders = Folder.findAll("from Folder f where f.indexOk is NULL", [max: 50])
+        }
+        log.debug("Found ${folders.size()} folders waiting for indexing in ${repository.name}.")
+        folders.each { folder ->
+            Folder.withTransaction {
+                try {
+                    Folder reloadedFolder = Folder.get(folder.id)
+                    log.debug("going to update folder #${reloadedFolder.id}")
+                    deleteIndexableFromIndex(reloadedFolder, repository)
+                    addToIndex(reloadedFolder, repository)
+                }
+                catch (Throwable e) {
+                    log.error("could not index folder ${folder.id}", e)
+                }
+            }
+        }
+        def resultMessages = ["Updated osds: ${osds.size()}", "Updated folders. ${folders.size()}"]
+        def luceneResult = new LuceneResult(resultMessages: resultMessages)
+        return luceneResult
+    }
+
+    void deleteIndexableFromIndex(Indexable indexable, Repository repository) {
+        def uniqueId = "${indexable.class.name}@${indexable.myId()}"
+        log.debug("remove from Index: $uniqueId")
+        deleteDocument(repository, new Term("uniqueId", uniqueId), 2);
+    }
 
     LuceneResult search(IndexCommand command) {
-        def repository = repositories.get(command.repository)
+        def repository = command.repository
         Query query
 
         if (command.xmlQuery) {
@@ -111,18 +153,18 @@ class LuceneActor extends
                 searcher: repository.indexSearcher, domain: command.domain)
         searcher.search(query, collector)
         log.debug("Found: ${collector.documents.size()} documents.")
-                
+
         def luceneResult = new LuceneResult(itemIdMap: collector.itemIdMap)
-        if (command.fields.size() > 0){
+        if (command.fields.size() > 0) {
             luceneResult.idFieldMap = collector.getIdFieldMap(command.domain, command.fields)
         }
-        
+
         return luceneResult
     }
 
     void removeFromIndex(IndexCommand command) {
         try {
-            def repository = repositories.get(command.repository)
+            def repository = command.repository
             def indexDir = repository.indexDir
             if (!IndexReader.indexExists(indexDir)) {
                 log.debug("Index does not exist.");
@@ -134,9 +176,7 @@ class LuceneActor extends
                 log.debug("indexable is NULL");
                 return;
             }
-            def uniqueId = "${indexable.class.name}@${indexable.myId()}"
-            log.debug("remove from Index: $uniqueId")
-            deleteDocument(repository, new Term("uniqueId", uniqueId), 2);
+            deleteIndexableFromIndex(indexable, repository)
         } catch (FileNotFoundException f) {
             log.warn("File not found - if the index does not yet exist, " +
                     "removeFromIndex is expected to fail", f);
@@ -145,15 +185,15 @@ class LuceneActor extends
         }
     }
 
-/**
- * Delete the documents found by the given Term from the given repository's index.
- *
- * @param term the search term
- * @param retries how often to retry deleting the document. Probably useful only
- *                if other programs / servlets are also interacting with the index.
- *                (which should not happen with an actor based implementation)
- * @throws java.io.IOException if anything IO-related goes wrong.
- */
+    /**
+     * Delete the documents found by the given Term from the given repository's index.
+     *
+     * @param term the search term
+     * @param retries how often to retry deleting the document. Probably useful only
+     *                if other programs / servlets are also interacting with the index.
+     *                (which should not happen with an actor based implementation)
+     * @throws java.io.IOException if anything IO-related goes wrong.
+     */
     void deleteDocument(Repository repository, Term term, Integer retries) throws IOException {
         def indexWriter = repository.indexWriter
         try {
@@ -170,15 +210,11 @@ class LuceneActor extends
         } finally {
             indexWriter.close(true)
             repository.createWriter()
-//            repository.unlockIfNecessary();
         }
     }
 
-    void addToIndex(IndexCommand command) {
+    void addToIndex(Indexable indexable, Repository repository) {
         log.debug("store standard fields")
-        def indexable = command.indexable
-        log.debug("repository:${command.repository}")
-        def repository = repositories.get(command.repository)
         IndexSearcher indexSearcher = repository.indexSearcher
         try {
             // check that the document does not already exist - otherwise, remove it.
@@ -203,13 +239,7 @@ class LuceneActor extends
             else {
                 content = new ContentContainer(indexable, "<empty />".getBytes())
             }
-            if (command.reloadIndexable) {
-                indexWithReloading(indexable, content, repository, doc)
-            }
-            else {
-                indexWithoutReloading(indexable, content, repository, doc)
-            }
-
+            doIndex(indexable, content, repository, doc)
         } catch (OutOfMemoryError e) {
             log.error("indexing failed: ", e)
             indexable.indexOk = false
@@ -217,26 +247,6 @@ class LuceneActor extends
         finally {
             repository.indexWriter.close(true)
             repository.createWriter()
-        }
-    }
-
-    void indexWithReloading(Indexable indexable, content, repository, doc) {
-        indexable.class.withTransaction {
-            // reloading the Indexable from the database inside the transaction
-            // helps against lazyInitializationException
-//                log.debug("id: ${indexable.myId()}")
-            indexable = indexable.class.get(indexable.myId())
-            log.debug("indexable: ${indexable}")
-            if (!indexable) {
-                throw new RuntimeException("cannot find indexable.")
-            }
-            doIndex(indexable, content, repository, doc)
-        }
-    }
-
-    void indexWithoutReloading(Indexable indexable, content, repository, doc) {
-        indexable.class.withTransaction {
-            doIndex(indexable, content, repository, doc)
         }
     }
 
@@ -278,7 +288,6 @@ class LuceneActor extends
 
         doc.add(new Field("javaClass", className, Field.Store.YES, Field.Index.NOT_ANALYZED));
         doc.add(new Field("uniqueId", uniqueId, Field.Store.YES, Field.Index.NOT_ANALYZED));
-//        log.debug("added standard fields.")
         return doc
     }
 
@@ -289,7 +298,6 @@ class LuceneActor extends
      * @param params input for XML-Query-Parser
      * @return a ResultCollector, which contains a collection of all documents found.
      */
-    // TODO: XML-Search is not working yet in v3, refactor.
     public ResultCollector search(String params, repository) {
         log.debug("starting search");
         ResultCollector results = new ResultCollector();

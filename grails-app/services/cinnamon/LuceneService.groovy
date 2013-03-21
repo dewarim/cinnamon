@@ -1,5 +1,6 @@
 package cinnamon
 
+import cinnamon.index.LuceneMaster
 import humulus.EnvironmentHolder
 import org.apache.lucene.analysis.Analyzer
 import org.apache.lucene.analysis.standard.StandardAnalyzer
@@ -17,7 +18,6 @@ import cinnamon.index.CommandType
 import cinnamon.index.LuceneResult
 import humulus.Environment
 import cinnamon.index.SearchableDomain
-import cinnamon.index.LuceneBackgroundActor
 
 import java.text.DecimalFormat
 
@@ -31,15 +31,17 @@ class LuceneService {
     static Map<String, Repository> repositories = new HashMap<String, Repository>()
 
     static LuceneActor lucene
-    static LuceneBackgroundActor backgroundActor
+    static LuceneMaster backgroundActor
 
     static {
         lucene = new LuceneActor()
         lucene.start()
-        backgroundActor = new LuceneBackgroundActor(lucene)
+        backgroundActor = new LuceneMaster()
         backgroundActor.start()
     }
-
+    
+    static luceneMasters = [:]
+    
     void initialize() {
         Analyzer standardAnalyzer = new StandardAnalyzer(Version.LUCENE_36)
 
@@ -55,35 +57,36 @@ class LuceneService {
                         analyzer: analyzer)
                 repository.createWriter()
                 repositories.put(name, repository)
+
+                def master = new LuceneMaster()
+                master.start()
+                def indexStartCommand = new IndexCommand(repository: repository, type: CommandType.START_INDEXING)
+                master.sendAndContinue(indexStartCommand){LuceneResult result ->
+                    log.debug("result of starting LuceneMaster for $name: ${result.failed ? 'failed' : 'ok'} on $name ")
+                }
+                luceneMasters.put(name, master)
+                
             } catch (IOException e) {
                 log.debug("failed to initialize lucene for repository $name",e)
                 throw new RuntimeException("error.lucene.IO", e);
             }
         }
-        lucene.repositories = repositories
-        backgroundActor.repositories = Environment.list().collect {it.dbName}
-        def reIndexCommand = new IndexCommand(type: CommandType.RE_INDEX)
-        backgroundActor.sendAndContinue(reIndexCommand){ LuceneResult result ->
-            log.debug("received re-index result: ${result.resultMessages}")
-        }
-        
     }
 
+    @Deprecated
     void addToIndex(Indexable indexable, String database) {
-        def cmd = new IndexCommand(indexable: indexable, repository: database, type: CommandType.ADD_TO_INDEX)
-        // we have to sendAndWait, because otherwise the thread would finish and
-        // confuse the actor before its work is done.
-        lucene.sendAndWait(cmd)
+        indexable.indexOk = null
     }
     
+    @Deprecated
     void addToIndex(Indexable indexable){
-        String repository = EnvironmentHolder.getEnvironment().dbName
-        addToIndex(indexable, repository)        
+        indexable.indexOk = null
     }
 
     void updateIndex(Indexable indexable, String database) {
-        def cmd = new IndexCommand(indexable: indexable, repository: database, type: CommandType.UPDATE_INDEX)
-        lucene.sendAndWait(cmd)
+        def cmd = new IndexCommand(indexable: indexable, repository: repositories.get(database), type: CommandType.UPDATE_INDEX)
+        indexable.indexOk = null
+//        lucene.sendAndWait(cmd)
     }
     
     void updateIndex(Indexable indexable){
@@ -92,7 +95,7 @@ class LuceneService {
     }
 
     void removeFromIndex(Indexable indexable, String database) {
-        def cmd = new IndexCommand(indexable: indexable, repository: database, type: CommandType.REMOVE_FROM_INDEX)
+        def cmd = new IndexCommand(indexable: indexable, repository: repositories.get(database), type: CommandType.REMOVE_FROM_INDEX)        
         lucene.sendAndWait(cmd)
     }
     
@@ -124,10 +127,9 @@ class LuceneService {
      * @return
      */
     LuceneResult search(String query, String database, SearchableDomain domain, List fields) {
-        def cmd = new IndexCommand(repository: database, type: CommandType.SEARCH,
+        def cmd = new IndexCommand(repository: repositories.get(database), type: CommandType.SEARCH,
                 query: query, domain: domain)
         LuceneResult result = lucene.sendAndWait(cmd)
-        log.debug("LuceneService received: ${result}")
         if(result.failed){
             log.debug("search error: ${result.errorMessage}")
         }
@@ -156,10 +158,9 @@ class LuceneService {
      * @return
      */
     LuceneResult searchXml(String query, String database, SearchableDomain domain, List fields) {
-        def cmd = new IndexCommand(repository: database, type: CommandType.SEARCH,
+        def cmd = new IndexCommand(repository: repositories.get(database), type: CommandType.SEARCH,
                 query: query, domain: domain, xmlQuery:true, fields: fields)
         LuceneResult result = lucene.sendAndWait(cmd)
-        log.debug("LuceneService received: ${result}")
         return result
     }
 
@@ -197,6 +198,17 @@ class LuceneService {
         LuceneResult results = searchXml(query, repositoryName, domain, fields)
         def validator = new Validator(user)
         results.filterResultToSet(domain, itemService, validator)
+    }
+    
+    void stopLuceneMasters(){
+        luceneMasters.each{String name, LuceneMaster master ->
+            log.debug("Stopping LuceneMAster for $name")
+            master.sendAndContinue(new IndexCommand(type: CommandType.STOP_INDEXING)){LuceneResult result ->
+                log.debug("stopped: ${result.failed ? 'failed' : 'ok'}")
+                
+            }
+            
+        }
     }
     
 }

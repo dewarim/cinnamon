@@ -24,10 +24,11 @@ package cinnamon.index
  */
 public enum CommandType {
 
-    ADD_TO_INDEX,
     REMOVE_FROM_INDEX,
     UPDATE_INDEX,
     SEARCH,
-    RE_INDEX
+    
+    START_INDEXING,
+    STOP_INDEXING
 
 }

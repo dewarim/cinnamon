@@ -24,20 +24,12 @@ package cinnamon.index
 class IndexCommand {
 
     SearchableDomain domain
-    String repository
+    Repository repository
     CommandType type
     Indexable indexable
     String query
     Boolean xmlQuery = false
     
-    /**
-     * The backgroundThread needs to reload the indexable from the database.
-     * But if the lucene actor is used by a controller with fresh OSDs, those will not be in the database
-     * before they are persisted at the end of the already running transaction. So, a synchronously 
-     * called luceneActor should not reload the OSD.
-     */
-    Boolean reloadIndexable = false
-
     /**
      * A list of fields for which the field values should be retrieved for each document found.
      */
