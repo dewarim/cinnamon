@@ -1,5 +1,7 @@
 * Cinnamon 3: XML-API state
 
+(This is an emacs ORG file)
+
 Cinnamon 3 still needs a list of XML API commands from Cinnamon 2 to be implemented.
 
 Note: API commands which are not currently used by the desktop client 
@@ -169,9 +171,10 @@ will not be implemented at the moment.
    - [X] findOpenTasks // unused
    - [X] doTransition
 
-** Further Functionality / Classes: [0/4]
-   - [ ] TikaParser
-   - [ ] TikaConfig
+** Further Functionality / Classes: [4/5]
+   - [X] TikaParser
+   - [X] TikaConfig
    - [ ] LocalMessage is currently just an empty shell.
-   - [ ] WorkflowServer as a Background-Thread / -Actor
+   - [X] WorkflowServer as a Background-Thread / -Actor
+   - [X] LuceneService as continually running Background-Thread / -Actor
 
