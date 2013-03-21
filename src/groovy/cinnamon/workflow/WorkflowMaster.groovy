@@ -16,6 +16,7 @@ class WorkflowMaster extends DefaultActor {
     Logger log = LoggerFactory.getLogger(this.class)
     Boolean running = true
     TransitionActor transitionActor
+    Long sleeping = 2000
 
     protected void act() {
         loop {
@@ -63,13 +64,14 @@ class WorkflowMaster extends DefaultActor {
     def runTransitions(WorkflowCommand cmd) {
         if (running) {
             log.debug("calling transitionActor for ${cmd.repositoryName}")
-            WorkflowCommand tc = new WorkflowCommand(cmd)
-            transitionActor.sendAndContinue(tc) { WorkflowResult result ->
+            WorkflowCommand wc = new WorkflowCommand(cmd)
+            transitionActor.sendAndContinue(wc) { WorkflowResult result ->
                 if (result.failed) {
                     log.warn("TransitionActor failed: ${result.messages}")
                 }
                 else {
-                    runTransitions(tc)
+                    Thread.sleep(sleeping)
+                    runTransitions(wc)
                 }
             }
         }

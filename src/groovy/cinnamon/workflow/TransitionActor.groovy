@@ -20,6 +20,7 @@ class TransitionActor extends DynamicDispatchActor{
 
     void onMessage(WorkflowCommand command){
         try{
+//            log.debug("TransitionActor::onMessage")
             reply executeTransitions(command, new WorkflowResult())
         }
         catch (Exception e){
@@ -29,7 +30,6 @@ class TransitionActor extends DynamicDispatchActor{
     
     WorkflowResult executeTransitions(WorkflowCommand cmd, WorkflowResult result) {
         try {             
-            
             ObjectSystemData.withTransaction {
                 def mainContext = new ObjectSystemData().domainClass.grailsApplication.mainContext
                 def luceneService = mainContext.getBean('luceneService')
@@ -53,8 +53,7 @@ class TransitionActor extends DynamicDispatchActor{
 
                 // find all workflows with passed deadline:
                 checkWorkflowDeadlines(cmd, luceneService, itemService, workflowService)
-            }
-            Thread.sleep(2000)
+            }            
         }
         catch (Exception e) {
             result.failed = true
