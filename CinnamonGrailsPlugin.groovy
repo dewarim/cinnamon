@@ -1,5 +1,3 @@
-import cinnamon.ImageService
-
 class CinnamonGrailsPlugin {
 
     def version = "3.0.0.25"
