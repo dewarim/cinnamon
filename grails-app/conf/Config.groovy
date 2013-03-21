@@ -85,8 +85,18 @@ log4j = {
     //
     appenders {
         'null' name: 'stacktrace'
-        console name: 'stdout', layout: pattern(conversionPattern: '%d{ISO8601} %c %m%n')
+        console name: 'stdout', layout: pattern(conversionPattern: '%d{ISO8601} %t %c %m%n')
     }
+
+    error 'net.sf.ehcache.hibernate',
+            'org.apache.tomcat.util',
+            'org.apache.coyote',
+            'org.apache.commons.beanutils',
+            'org.springframework',
+            'org.hibernate',
+            'org.apache.naming.SelectorContext',
+            'net.sf.ehcache',
+            'org.apache.catalina'
 
     error 'org.codehaus.groovy.grails.web.servlet',  //  controllers
             'org.codehaus.groovy.grails.web.pages', //  GSP
@@ -96,36 +106,37 @@ log4j = {
             'org.codehaus.groovy.grails.commons', // core / classloading
             'org.codehaus.groovy.grails.plugins', // plugins
             'org.codehaus.groovy.grails.orm.hibernate', // hibernate integration
-            'org.springframework',
-            'org.hibernate',
-            'net.sf.ehcache.hibernate',
-            'org.apache.tomcat.util',
-            'org.apache.coyote',
-            'org.apache.commons.beanutils',
-            'org.grails.plugin.resource',
             'grails.app.taglib.org.grails.plugin.resource',
-            'org.codehaus.groovy.grails.context',
-            'org.apache.catalina',
+            'org.grails.plugin.resource',
+            'org.codehaus.groovy.grails.io'
+
+    debug 'org.codehaus.groovy.grails.context',
             'org.codehaus.groovy.grails.io',
             'org.codehaus.groovy.grails.web',
-            'cinnamon.global.ConfThreadLocal',
-            'org.apache.naming.SelectorContext',
-            'net.sf.ehcache'
-    
-    info    'grails.plugins.twitterbootstrap.BootstrapResources'        
+            'cinnamon.global.ConfThreadLocal'
+
+    info 'grails.plugins.twitterbootstrap.BootstrapResources'
     info 'cinnamon.RequestTicketAuthenticationFilter'
     info 'cinnamon.debug.ProviderManager'
     info 'humulus.RepositoryLoginFilter'
     info 'cinnamon.CinnamonUserDetailsService'
     info 'grails.app.filters.cinnamon.PageFilters'
     warn 'grails.app.filters.TriggerFilters'
-    debug 'cinnamon'
-//            'humulus',
-//            'cinnamon.UserAccountController',
-//            'cinnamon.TriggerFilters',
-//            'cinnamon.index.indexer.ParentFolderPathIndexer',
-//            'org.springframework.security.authentication',
-//            'cinnamon.PreAuthenticatedAuthenticationProvider'
+    debug 'cinnamon.data'
+    debug 'cinnamon.OsdController'
+    info 'cinnamon.index.LuceneActor'
+    info 'cinnamon.index.LuceneMaster'
+    info 'cinnamon.index.LuceneService'
+    info 'cinnamon.workflow.TransitionActor'
+    info 'cinnamon.workflow'
+    info 'humulus',
+            'cinnamon.UserAccountController',
+            'cinnamon.TriggerFilters',
+            'cinnamon.index.indexer.ParentFolderPathIndexer',
+            'org.springframework.security.authentication',
+            'cinnamon.PreAuthenticatedAuthenticationProvider'
+
+    info 'grails.app.domain.cinnamon.index'
 
     root {
         debug 'stdout'
@@ -144,7 +155,7 @@ grails.plugins.springsecurity.userLookup.authoritiesPropertyName = 'groupUsers'
 grails.plugins.springsecurity.successHandler.defaultTargetUrl = '/folder/index'
 grails.plugins.springsecurity.auth.loginFormUrl = '/login/auth'
 grails.plugins.springsecurity.providerNames = ['preauthAuthProvider', 'daoAuthenticationProvider', 'anonymousAuthenticationProvider']
-grails.plugins.springsecurity.logout.afterLogoutUrl='/login/auth'
+grails.plugins.springsecurity.logout.afterLogoutUrl = '/login/auth'
 
 grails.logging.jul.usebridge = false
 
