@@ -67,8 +67,12 @@ class TransitionActor extends DynamicDispatchActor{
         for(ObjectSystemData task : tasks){
             try{
                 workflowService.executeTransition(task, transitionXpath)
+                task.indexOk = null
             }
             catch (Exception e) {
+                // TODO: extended error handling, transitions should not fail silently
+                // Always notify the task user and / or workflow owner or set error state
+                // on workflow / task
                 log.error("Failed to execute Transition",e);
             }
         }
