@@ -29,7 +29,7 @@ class OsdController extends BaseController {
     def editMetadata() {
         try {
             ObjectSystemData osd = fetchAndFilterOsd(params.osd)
-            return render(template: mapTemplate('/osd/editMetadata'), model: [osd: osd])
+            render(template: mapTemplate('/osd/editMetadata'), model: [osd: osd])
         }
         catch (Exception e) {
             renderException(e)
@@ -43,7 +43,7 @@ class OsdController extends BaseController {
                 osd.metadata = params.metadata
                 luceneService.updateIndex(osd, repositoryName)
             }
-            return render(template: mapTemplate('/osd/objectDetails'), model: [osd: osd, permissions: loadUserPermissions(osd.acl)])
+            render(template: mapTemplate('/osd/objectDetails'), model: [osd: osd, permissions: loadUserPermissions(osd.acl)])
         }
         catch (Exception e) {
             renderException(e)
@@ -89,7 +89,7 @@ class OsdController extends BaseController {
             def leftRelations = Relation.findAllByLeftOSD(osd)
             def rightRelations = Relation.findAllByRightOSD(osd)
 
-            return render(template: mapTemplate('/osd/listRelations'),
+            render(template: mapTemplate('/osd/listRelations'),
                     model: [leftRelations: leftRelations, rightRelations: rightRelations,
                             osd: osd
                     ]
@@ -108,7 +108,7 @@ class OsdController extends BaseController {
                     [o1: osd, o2: osd]) ? true : false
             def permissions = loadUserPermissions(osd.acl)
             def user = userService.user
-            return render(template: mapTemplate("/osd/objectDetails"),
+            render(template: mapTemplate("/osd/objectDetails"),
                     model: [osd: osd, permissions: permissions,
                             superuserStatus: userService.isSuperuser(user),
                             hasRelations: hasRelations])
@@ -123,7 +123,7 @@ class OsdController extends BaseController {
         try {
             ObjectSystemData osd = fetchAndFilterOsd(params.osd)
             def osdContent = osd.getContent(repositoryName)
-            return render(template: mapTemplate('/osd/objectPreview'),
+            render(template: mapTemplate('/osd/objectPreview'),
                     model: [osd: osd, ctype: osd.format?.contenttype, osdContent: osdContent])
         }
         catch (Exception e) {
@@ -134,7 +134,7 @@ class OsdController extends BaseController {
     def renderMetadata() {
         try {
             ObjectSystemData osd = fetchAndFilterOsd(params.osd)
-            return render(template: mapTemplate('/osd/renderMetadata'), model: [osd: osd])
+            render(template: mapTemplate('/osd/renderMetadata'), model: [osd: osd])
         }
         catch (Exception e) {
             renderException(e)
@@ -306,7 +306,7 @@ class OsdController extends BaseController {
 
             // on success: redirect fetchFolderContent
             log.debug("set content on object #${osd.id}")
-            return redirect(controller: 'folder', action: 'index', params: [folder: params.folder, osd: params.osd])
+            redirect(controller: 'folder', action: 'index', params: [folder: params.folder, osd: params.osd])
         }
         catch (RuntimeException e) {
             log.debug("Failed to set content on object ${osd?.id}: ", e)
@@ -315,7 +315,7 @@ class OsdController extends BaseController {
                 return redirect(controller: 'folder', action: 'index')
             }
 
-            return redirect(controller: 'osd', action: 'setContent', params: [folder: params.folder, osd: params.osd])
+            redirect(controller: 'osd', action: 'setContent', params: [folder: params.folder, osd: params.osd])
         }
     }
 
@@ -330,11 +330,11 @@ class OsdController extends BaseController {
             osd.fixLatestHeadAndBranch([])
             osd.save()
             log.debug("version of new osd: ${osd.cmnVersion}")
-            luceneService.addToIndex(osd)
+            osd.locker = null
             osd.predecessor.indexOk = null
             def osdList = folderService.getObjects(user, osd.parent, repositoryName, params.versions)
             def folderContentTemplate = folderService.fetchFolderTemplate(osd.parent.type.config)
-            return render(template: folderContentTemplate, model: [folder: osd.parent,
+            render(template: folderContentTemplate, model: [folder: osd.parent,
                     osdList: osdList,
                     folders: fetchChildFolders(osd.parent),
                     permissions: loadUserPermissions(osd.parent.acl),
@@ -346,7 +346,7 @@ class OsdController extends BaseController {
         }
         catch (RuntimeException e) {
             log.debug("Failed to version object:", e)
-            return renderException(e)
+            renderException(e)
         }
     }
 
@@ -439,7 +439,7 @@ class OsdController extends BaseController {
             addLinksToObjectQuery(params.parentid, doc, val, false)
 
             log.debug("objects for folder ${folder.id} / ${folder.name}:\n ${doc.asXML()}")
-            return render(contentType: 'application/xml', text: doc.asXML())
+            render(contentType: 'application/xml', text: doc.asXML())
         }
         catch (Exception e) {
             log.debug("failed to fetch objects: ", e)
@@ -889,7 +889,7 @@ class OsdController extends BaseController {
             results = val.filterUnbrowsableObjects(results);
             Document doc = osdService.generateQueryObjectResultDocument(results, true);
             addLinksToObjectQuery(params.parentid, doc, val, true)
-            return render(contentType: 'application/xml', text: doc.asXML())
+            render(contentType: 'application/xml', text: doc.asXML())
         }
         catch (Exception e) {
             log.debug("failed to fetch objects: ", e)
@@ -1073,7 +1073,7 @@ class OsdController extends BaseController {
             }
             new Validator(user).validateCreate(osd.parent)
             osd.predecessor = pre
-            osd.cmnVersion = osd.createNewVersionLabel()
+            osd.cmnVersion = osd.createNewVersionLabel()             
             osd.fixLatestHeadAndBranch([])
             Format myFormat = Format.findByName(format)
             osd.save(flush: true)
@@ -1083,15 +1083,15 @@ class OsdController extends BaseController {
             log.debug("new osd: ${osd.toXML().asXML()}")
 
             log.debug("version of new osd: ${osd.cmnVersion}")
+            osd.locker = null
             osd.predecessor.indexOk = null
-            luceneService.addToIndex(osd)
             render(contentType: 'application/xml') {
                 objectId(osd.id.toString())
             }
         }
         catch (RuntimeException e) {
             log.debug("Failed to version object:", e)
-            return renderException(e)
+            renderException(e)
         }
     }
 
