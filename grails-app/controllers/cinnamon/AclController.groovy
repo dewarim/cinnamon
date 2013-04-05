@@ -9,10 +9,10 @@ import cinnamon.global.Constants
 @Secured(["isAuthenticated()"])
 class AclController extends BaseController {
 
-    def listXml() {
+    def listXml(Long id) {
         List<Acl> results = new ArrayList<Acl>();
-        if (params.id) {
-            results.add(Acl.get(params.id))
+        if (id) {
+            results.add(Acl.get(id))
         }
         else {
             results = Acl.list();
@@ -22,7 +22,8 @@ class AclController extends BaseController {
         for (Acl acl : results) {
             acl.toXmlElement(root);
         }
-        return render(contentType: 'application/xml', text: doc.asXML())
+        log.debug("acls: ${doc.asXML()}")
+        render(contentType: 'application/xml', text: doc.asXML())
     }
 
     // --------------------------------------------------------------
