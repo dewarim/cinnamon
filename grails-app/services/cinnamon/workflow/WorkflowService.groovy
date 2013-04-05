@@ -1,6 +1,7 @@
 package cinnamon.workflow
 
 import cinnamon.Folder
+import cinnamon.Metaset
 import cinnamon.ObjectSystemData
 import cinnamon.ObjectType
 import cinnamon.UserAccount
@@ -16,6 +17,7 @@ import cinnamon.utils.ParamParser
 import humulus.Environment
 import humulus.EnvironmentHolder
 import org.dom4j.Document
+import org.dom4j.Element
 
 class WorkflowService {
 
@@ -253,4 +255,27 @@ class WorkflowService {
         }
     }
 
+
+    void publishStacktrace(ObjectSystemData task, Exception e, String metasetName, String procstate){
+        StringBuilder trace = new StringBuilder()
+        Throwable cause = e
+        while (cause != null) {
+            trace.append(cause.toString())
+            for (StackTraceElement ste : cause.getStackTrace()) {
+                trace.append("\n  ")
+                trace.append(ste)
+            }
+            trace.append('\n')
+            cause = cause.getCause()
+        }
+        Document errorDoc = ParamParser.parseXmlToDocument("<error timestamp='${new Date().toString()}'/>");
+        errorDoc.getRootElement().addText(trace.toString());
+        Metaset metaset = task.fetchMetaset(metasetName, true);
+        String meta = metaset.getContent();
+        Document metaDoc = ParamParser.parseXmlToDocument(meta);
+        Element metasetElement = metaDoc.getRootElement();
+        metasetElement.add(errorDoc.getRootElement().detach());
+        metaset.setContent(metaDoc.asXML());
+        task.setProcstate(procstate);
+    }
 }

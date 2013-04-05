@@ -70,10 +70,9 @@ class TransitionActor extends DynamicDispatchActor{
                 task.indexOk = null
             }
             catch (Exception e) {
-                // TODO: extended error handling, transitions should not fail silently
-                // Always notify the task user and / or workflow owner or set error state
-                // on workflow / task
-                log.error("Failed to execute Transition",e);
+                log.error("Failed to execute Transition",e)
+                workflowService.publishStacktrace(task, e, Constants.METASET_LOG, Constants.PROCSTATE_TRANSITION_FAILED)                
+                // TODO: notify the task user and / or workflow owner on workflow / task errors
             }
         }
     }
