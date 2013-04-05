@@ -151,7 +151,7 @@ class IndexGroupController extends BaseController{
         IndexGroup.list().each { group ->
             group.toXmlElement(root);
         }
-        return render(contentType: 'application/xml', text: doc.asXML())
+        render(contentType: 'application/xml', text: doc.asXML())
     }
     
 }

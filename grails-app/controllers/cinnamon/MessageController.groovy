@@ -100,13 +100,13 @@ class MessageController extends BaseController {
             msg.translation = params.translation
             log.debug("translation updated: " + msg.dump())
             msg.save()
-            return render(text: message(code: 'translation.update.success'),
+            render(text: message(code: 'translation.update.success'),
                     contentType: "text/plain", encoding: "UTF-8")
         }
         else {
             msg = new Message(params.messageId, language, params.translation)
             msg.save(failOnError: true)
-            return render(text: message(code: 'message.translation.added'),
+            render(text: message(code: 'message.translation.added'),
                     contentType: "text/plain", encoding: "UTF-8")
         }
     }
@@ -278,7 +278,7 @@ class MessageController extends BaseController {
             ])
 
             def distinctMessages = getDistinctMessages()
-            return render(view: 'list', model: [importResults: importResults,
+            render(view: 'list', model: [importResults: importResults,
                     messageCount: distinctMessages.size(),
                     distinctMessages: distinctMessages,])
         }
@@ -358,7 +358,7 @@ class MessageController extends BaseController {
         Message.list().each {msg ->
             msg.toXmlElement(root)
         }
-        return render(contentType: 'application/xml', text: doc.asXML())
+        render(contentType: 'application/xml', text: doc.asXML())
     }
 
 }

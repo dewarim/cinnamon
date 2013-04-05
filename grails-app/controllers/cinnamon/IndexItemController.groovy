@@ -166,7 +166,7 @@ class IndexItemController extends BaseController{
         IndexItem.list().each { item ->
             item.toXmlElement(root);
         }
-        return render(contentType: 'application/xml', text: doc.asXML())
+        render(contentType: 'application/xml', text: doc.asXML())
     }
 
 }

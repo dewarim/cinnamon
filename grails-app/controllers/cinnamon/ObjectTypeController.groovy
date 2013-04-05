@@ -118,6 +118,6 @@ class ObjectTypeController extends BaseController{
         ObjectType.list().each{ot ->
             root.add(ObjectType.asElement('objectType',ot))
         }
-        return render(contentType: 'application/xml', text:doc.asXML())
+        render(contentType: 'application/xml', text:doc.asXML())
     }
 }

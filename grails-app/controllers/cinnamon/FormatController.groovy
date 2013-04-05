@@ -134,7 +134,7 @@ class FormatController extends BaseController {
         formats.each{format ->
             root.add(Format.asElement("format", format));
         }
-        return render(contentType: 'application/xml', text: doc.asXML())
+        render(contentType: 'application/xml', text: doc.asXML())
     }
            
 }

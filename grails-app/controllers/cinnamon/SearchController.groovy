@@ -31,7 +31,7 @@ class SearchController extends BaseController {
 
             addPathFolders(doc);
             log.debug("searchObjects result: \n${doc.asXML()}")
-            return render(contentType: 'application/xml', text: doc.asXML())
+            render(contentType: 'application/xml', text: doc.asXML())
         }
         catch (Exception e) {
             log.debug("failed searchObjects: ", e)

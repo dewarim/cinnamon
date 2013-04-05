@@ -52,14 +52,14 @@ class LifecycleLogController extends BaseController{
             pagination.filter = params.filter.encodeAsHTML()
             pagination.itemCount = (int) LifecycleLog.executeQuery('select count(*) ' + query, filterParams,)[0]
             log.debug("itemCount in update:${pagination.itemCount}")
-            return render(template: 'logTable', model: [
+            render(template: 'logTable', model: [
                     pagination: pagination,
                     logEntries: logEntries,
             ])
         }
         catch (Exception e) {
             log.debug("failed to update entry list:", e)
-            return render(status: 500, text: message(code: 'error.log.list', args: [message(code: e.message)]))
+            render(status: 500, text: message(code: 'error.log.list', args: [message(code: e.message)]))
         }
     }
 

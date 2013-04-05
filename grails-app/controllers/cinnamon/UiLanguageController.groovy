@@ -107,6 +107,6 @@ class UiLanguageController extends BaseController{
         UiLanguage.list().each {language->
             language.toXmlElement(root)
         }
-        return render(contentType: 'application/xml', text: doc.asXML())
+        render(contentType: 'application/xml', text: doc.asXML())
     }
 }

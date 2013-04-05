@@ -318,7 +318,7 @@ class UserAccountController extends BaseController {
         UserAccount.list().each {user ->
             root.add(UserAccount.asElement("user", user));
         }
-        return render(contentType: 'application/xml', text: doc.asXML())
+        render(contentType: 'application/xml', text: doc.asXML())
     }
 
     def getUserByName(String name) {
@@ -326,7 +326,7 @@ class UserAccountController extends BaseController {
         Element root = doc.addElement("users");
         def user = UserAccount.findByName(name)
         root.add(UserAccount.asElement("user", user));
-        return render(contentType: 'application/xml', text: doc.asXML())
+        render(contentType: 'application/xml', text: doc.asXML())
     }
     
 }

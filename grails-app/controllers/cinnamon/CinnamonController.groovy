@@ -58,7 +58,8 @@ class CinnamonController extends BaseController {
                 throw new RuntimeException("logo object ${params.id} was not found in repository.")
             }
             if (!osd.format?.contenttype?.startsWith('image/')) {
-                return render(status: 503, text: message(code: 'error.wrong.format'))
+                render(status: 503, text: message(code: 'error.wrong.format'))
+                return
             }
             response.setContentType(osd.format.contenttype)
             Conf conf = ConfThreadLocal.getConf()
@@ -85,11 +86,11 @@ class CinnamonController extends BaseController {
             File image = new File(filename)
             if (!image.exists()) {
                 log.debug("could not find: $filename")
-                return render(status: 503, text: message(code: 'error.image.not.found'))
+                render(status: 503, text: message(code: 'error.image.not.found'))
+                return
             }
             response.outputStream << image.readBytes()
             response.outputStream.close()
-            return null
         }
         catch (Exception e) {
             log.debug("Failed to show logo:", e)
@@ -265,6 +266,6 @@ class CinnamonController extends BaseController {
 
     def test() {
         log.debug("reached test method")
-        return render(text: 'test method')
+        render(text: 'test method')
     }
 }

@@ -46,13 +46,15 @@ class ImageController extends BaseController {
         try {
             ObjectSystemData osd = fetchAndFilterOsd(params.id)
             if (!osd.format?.contenttype?.startsWith('image/')) {
-                return render(status: 503, text: message(code: 'error.wrong.format'))
+                render(status: 503, text: message(code: 'error.wrong.format'))
+                return
             }
             response.setContentType(osd.format.contenttype)
             File image = new File(osd.getFullContentPath(repositoryName))
             if (!image.exists()) {
                 log.debug("could not find: ${image.absolutePath}")
-                return render(status: 503, text: message(code: 'error.image.not.found'))
+                render(status: 503, text: message(code: 'error.image.not.found'))
+                return
             }
             if(params.longestSide){
                 // do not store thumbnail, as this could lead to malicious people creating 1000 thumbnails and

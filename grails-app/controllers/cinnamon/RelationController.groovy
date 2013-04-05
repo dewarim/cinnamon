@@ -94,7 +94,7 @@ class RelationController extends BaseController {
         relations.each { relation ->
             relation.toXmlElement(root, true)
         }
-        return render(contentType: 'application/xml', text: doc.asXML())
+        render(contentType: 'application/xml', text: doc.asXML())
     }
 
     /**

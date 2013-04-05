@@ -98,7 +98,7 @@ class FolderTypeController extends BaseController{
         FolderType.list().each{folderType ->
             root.add(FolderType.asElement("folderType", folderType));
         }
-        return render(contentType: 'application/xml', text: doc.asXML())
+        render(contentType: 'application/xml', text: doc.asXML())
     }
 
 

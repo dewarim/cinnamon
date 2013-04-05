@@ -13,6 +13,6 @@ class PermissionController extends BaseController {
         Permission.list().each { permission ->
             permission.toXmlElement(root);
         }
-        return render(contentType: 'application/xml', text: doc.asXML())
+        render(contentType: 'application/xml', text: doc.asXML())
     }
 }

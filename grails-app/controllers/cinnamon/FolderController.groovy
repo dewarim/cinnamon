@@ -10,7 +10,6 @@ import cinnamon.exceptions.CinnamonException
 import cinnamon.global.Constants
 import cinnamon.utils.ZippedFolder
 import cinnamon.relation.RelationType
-import org.dom4j.Document
 import org.dom4j.DocumentHelper
 import org.dom4j.Element
 import cinnamon.index.LuceneResult
@@ -111,7 +110,7 @@ class FolderController extends BaseController {
                 triggerSet = folderService.createTriggerSet(session.triggerFolder, session.triggerOsd)
             }
 
-            return render(
+            render(
                     template: "/folder/subFolders",
                     model: [folder: folder,
                             children: childFolders,
@@ -124,7 +123,7 @@ class FolderController extends BaseController {
         }
         catch (Exception e) {
             log.debug("fetchFolder failed", e)
-            return render(status: 500, text: message(code: e.message))
+            render(status: 500, text: message(code: e.message))
         }
     }
 
@@ -165,7 +164,7 @@ class FolderController extends BaseController {
             def folderTemplate = folderService.fetchFolderTemplate(folder.type.config)            
             def osdListTemplate = folderService.fetchOsdListTemplate(folder.type.config)
             
-            return render(template: folderTemplate, model: [folder: folder,
+            render(template: folderTemplate, model: [folder: folder,
                     osdList: osdList,
                     previews:previews,
                     permissions: permissions,
@@ -178,7 +177,7 @@ class FolderController extends BaseController {
         }
         catch (Exception e) {
             log.debug("fetchFolderContent failed", e)
-            return render(status: 500, text: message(code: e.message))
+            render(status: 500, text: message(code: e.message))
         }
     }
 
@@ -192,25 +191,26 @@ class FolderController extends BaseController {
                 log.debug("permissions. $permissions")
             } catch (RuntimeException ex) {
                 log.debug("getUserPermissions failed", ex)
-                return render(status: 503, text: message(code: 'error.access.failed'))
+                render(status: 503, text: message(code: 'error.access.failed'))
+                return
             }
 
-            return render(template: '/folder/folderMeta', model: [folder: folder, permissions: permissions])
+            render(template: '/folder/folderMeta', model: [folder: folder, permissions: permissions])
         }
         catch (Exception e) {
             log.debug("renderMetadata failed", e)
-            return render(status: 500, text: message(code: e.message))
+            render(status: 500, text: message(code: e.message))
         }
     }
 
     def renderMetadata() {
         try {
             Folder folder = fetchAndFilterFolder(params.folder)
-            return render(template: 'renderMetadata', model: [folder: folder])
+            render(template: 'renderMetadata', model: [folder: folder])
         }
         catch (Exception e) {
             log.debug("renderMetadata failed", e)
-            return render(status: 500, text: message(code: e.message))
+            render(status: 500, text: message(code: e.message))
         }
 
     }
@@ -218,11 +218,11 @@ class FolderController extends BaseController {
     def editMetadata() {
         try {
             Folder folder = fetchAndFilterFolder(params.folder)
-            return render(template: '/folder/editMetadata', model: [folder: folder])
+            render(template: '/folder/editMetadata', model: [folder: folder])
         }
         catch (Exception e) {
             log.debug("editMetadata failed", e)
-            return render(status: 500, text: message(code: e.message))
+            render(status: 500, text: message(code: e.message))
         }
     }
 
@@ -245,18 +245,18 @@ class FolderController extends BaseController {
             else {
                 log.debug("metadata is unchanged")
             }
-            return render(template: 'renderMetadata',
+            render(template: 'renderMetadata',
                     model: [folder: folder, permissions: loadUserPermissions(folder.acl)])
         }
         catch (Exception e) {
             log.debug("failed to update folder metadata: ", e)
             if (folder) {
-                return render(template: 'editMetadata', model: [folder: folder, saveMetaError: message(code: e.message),
+                render(template: 'editMetadata', model: [folder: folder, saveMetaError: message(code: e.message),
                         metadata: params.metadata
                 ])
             }
             else {
-                return render(status: 500, message(code: e.message))
+                render(status: 500, message(code: e.message))
             }
         }
 
@@ -532,11 +532,11 @@ class FolderController extends BaseController {
                 linkService.addLinkToElement(link, folderNode);
             }
             log.debug("fetchSubFolders.result:\n${doc.asXML()}")
-            return render(contentType: 'application/xml', text: doc.asXML())
+            render(contentType: 'application/xml', text: doc.asXML())
         }
         catch (Exception e) {
             log.debug("fetchFolderContent failed for ${params}", e)
-            return render(status: 500, text: message(code: e.message))
+            render(status: 500, text: message(code: e.message))
         }
     }
 
@@ -579,7 +579,7 @@ class FolderController extends BaseController {
                 folder.toXmlElement(root);
             }
             log.debug("result of fetchFolderByPath: ${doc.asXML()}")
-            return render(contentType: 'application/xml', text: doc.asXML())
+            render(contentType: 'application/xml', text: doc.asXML())
         }
         catch (Exception e) {
             log.debug("fetchFolderByPath: ",e)
