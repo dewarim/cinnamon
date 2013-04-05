@@ -75,20 +75,20 @@ class LuceneService {
 
     @Deprecated
     void addToIndex(Indexable indexable, String database) {
-        indexable.indexOk = null
+        indexable.updateIndex()
     }
     
     @Deprecated
     void addToIndex(Indexable indexable){
-        indexable.indexOk = null
-    }
-
-    void updateIndex(Indexable indexable, String database) {
-        def cmd = new IndexCommand(indexable: indexable, repository: repositories.get(database), type: CommandType.UPDATE_INDEX)
-        indexable.indexOk = null
-//        lucene.sendAndWait(cmd)
+        indexable.updateIndex()
     }
     
+    @Deprecated
+    void updateIndex(Indexable indexable, String database) {
+        indexable.updateIndex()
+    }
+    
+    @Deprecated
     void updateIndex(Indexable indexable){
         String repository = EnvironmentHolder.getEnvironment().dbName
         updateIndex(indexable, repository)
