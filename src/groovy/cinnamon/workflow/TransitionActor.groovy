@@ -67,7 +67,7 @@ class TransitionActor extends DynamicDispatchActor{
         for(ObjectSystemData task : tasks){
             try{
                 workflowService.executeTransition(task, transitionXpath)
-                task.indexOk = null
+                task.updateIndex()
             }
             catch (Exception e) {
                 log.error("Failed to execute Transition",e)

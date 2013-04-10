@@ -219,8 +219,8 @@ class FolderService {
                             validator.validateCreateFolder(parent);
                         }
                         Folder newFolder = new Folder(seg,"<meta />", parent.getAcl(), parent, parent.getOwner(), parent.getType() );
-                        newFolder.setIndexOk(null); // so the IndexServer will index it.
                         newFolder.save()
+                        newFolder.updateIndex()
                         ret.add(newFolder);
                         parent = newFolder;
                     }
@@ -259,24 +259,6 @@ class FolderService {
      */
     public Folder findByPath(String path, Boolean autoCreate){
         return findAllByPath(path, true, null).last()
-    }
-
-    /**
-     * Find all Folders where index_ok is NULL. Those are the ones
-     * whose index is not current.
-     * @param maxResults maximum number of results
-     * @return List of Folders to index (limited by maxResults).
-     */
-    public List<Folder> findIndexTargets(Integer maxResults){
-        return Folder.findAll("from Folder f where f.indexOk is NULL",[:], [max:maxResults])
-    }
-
-    /**
-     * Set the indexed-column to 0 and trigger a re-indexing by the IndexServer.
-     * @return the number of affected rows.
-     */
-    public Integer prepareReIndex() {
-        return Folder.executeUpdate("UPDATE Folder f SET f.indexOk=NULL")
     }
 
     /**

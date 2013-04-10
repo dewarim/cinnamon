@@ -402,7 +402,7 @@ class OsdService {
         log.debug("created object with id: ${osd.id}")
         log.debug("repo: ${repositoryName}")
         cinnamonTikaService.parse(osd, repositoryName)
-        luceneService.addToIndex(osd, repositoryName)
+        osd.updateIndex()
         return osd
     }
 
@@ -487,7 +487,7 @@ class OsdService {
         osd.save(flush: true)
         log.debug("created object with id: ${osd.id}")
         log.debug("repo: ${repositoryName}")
-        luceneService.addToIndex(osd, repositoryName)
+        osd.updateIndex()
         return osd
     }
 
@@ -550,7 +550,7 @@ class OsdService {
         log.debug("created object with id: ${osd.id}")
         log.debug("repo: ${repositoryName}")
         cinnamonTikaService.parse(osd, repositoryName)
-        luceneService.addToIndex(osd, repositoryName)
+        osd.updateIndex()
         return osd
     }
 
@@ -576,7 +576,7 @@ class OsdService {
                         Folder oldFolder = osd.parent
                         osd.parent = folder
                         osd.save(flush: true)
-                        luceneService.updateIndex(osd, repository)
+                        osd.updateIndex()
                         log.debug("moved #${osd.id} from folder #${oldFolder.id}: ${oldFolder.name} to #${folder.id}: ${folder.name}")
                         msgMap.put(id, ['osd.move.ok'])
                     }

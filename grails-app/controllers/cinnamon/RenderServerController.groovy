@@ -86,7 +86,7 @@ class RenderServerController extends BaseController {
             }
             osd.setType(renderTaskType);
             osd.save()
-            luceneService.addToIndex(osd);
+            osd.updateIndex()
 
             // create response
             render(contentType: 'application/xml') {

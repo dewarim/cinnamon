@@ -83,8 +83,8 @@ class WorkflowService {
         log.debug("Indexing new workflow and start task");
 
         // index new workflow and start task:
-        luceneService.addToIndex(workflow);
-        luceneService.addToIndex(startTask);
+        workflow.updateIndex()
+        startTask.updateIndex()
         return workflow.id
     }
 
@@ -195,12 +195,12 @@ class WorkflowService {
 
         // index new tasks with Lucene:
         log.debug("updating Lucene index");
-        luceneService.updateIndex(task);
+        task.updateIndex()
         for (ObjectSystemData aTask : newTasks) {
-            luceneService.addToIndex(aTask);
+            aTask.updateIndex()
         }
         if (workflow.getProcstate().equals(Constants.PROCSTATE_WORKFLOW_FINISHED)) {
-            luceneService.updateIndex(workflow);
+            workflow.updateIndex()
         }
     }
 

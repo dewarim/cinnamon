@@ -363,7 +363,7 @@ class FolderController extends BaseController {
             folder.acl = parentFolder.acl
             folder.owner = userService.user
             folder.save()
-            luceneService.addToIndex(folder, repositoryName)
+            folder.updateIndex()
             return redirect(controller: 'folder', action: 'index', params: [folder: folder.id])
         }
         catch (Exception e) {
@@ -415,7 +415,7 @@ class FolderController extends BaseController {
                     throw new CinnamonException("error.store.upload", e);
                 }
                 osd.save()
-                luceneService.addToIndex(osd, repositoryName);
+                osd.updateIndex()
 //                XmlResponse resp = new XmlResponse(res);
 //                resp.addTextNode("objectId", String.valueOf(osd.getId()));
 //                return resp;
@@ -681,7 +681,7 @@ class FolderController extends BaseController {
                                 type: folderType, acl: acl
             )
             folder.save()
-            luceneService.addToIndex(folder, repositoryName);
+            folder.updateIndex()
 
             def doc = DocumentHelper.createDocument()
             Element root = doc.addElement("folders");

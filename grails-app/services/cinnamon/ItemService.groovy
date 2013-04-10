@@ -33,8 +33,6 @@ import cinnamon.interfaces.XmlConvertable
 class ItemService {
 
     def grailsApplication
-    static final def defaultClazzNames = ["pue.TmgModel"]
-
 
     Integer countItems(className) {
         def items = grailsApplication.getDomainClass(className).clazz.findAll("""from $className a

@@ -128,7 +128,7 @@ class CopyService {
             copy.name = "${source.name}_${copy.id}"
             copy.save(flush: true)
         }
-        luceneService.addToIndex(copy, repositoryName)
+        copy.updateIndex()
         copyResult.addFolder(copy);
 
         // copy child folders
@@ -257,7 +257,7 @@ class CopyService {
         osdService.copyMetadata(osd, newCopy)        
         osdService.copyContent(osd, newCopy)
         osdService.copyRelations(osd, newCopy)
-        luceneService.addToIndex(newCopy, repository)
+        newCopy.updateIndex()
         return newCopy
     }
     

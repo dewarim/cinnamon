@@ -327,11 +327,12 @@ class OsdController extends BaseController {
             osd.root = pre.root
             osd.predecessor = pre
             osd.cmnVersion = osd.createNewVersionLabel()
-            osd.fixLatestHeadAndBranch([])
-            osd.save()
-            log.debug("version of new osd: ${osd.cmnVersion}")
             osd.locker = null
-            osd.predecessor.indexOk = null
+            osd.save()
+            osd.fixLatestHeadAndBranch([])
+            log.debug("version of new osd: ${osd.cmnVersion}")
+            osd.predecessor.updateIndex()
+            osd.updateIndex()
             def osdList = folderService.getObjects(user, osd.parent, repositoryName, params.versions)
             def folderContentTemplate = folderService.fetchFolderTemplate(osd.parent.type.config)
             render(template: folderContentTemplate, model: [folder: osd.parent,
@@ -518,7 +519,7 @@ class OsdController extends BaseController {
 
             osd.save(flush: true)
             metasetService.initializeMetasets(osd, (String) params.metasets)
-            luceneService.addToIndex(osd, repositoryName)
+            osd.updateIndex()
 
             render(contentType: 'application/xml') {
                 objectId(osd.id.toString())
@@ -688,7 +689,7 @@ class OsdController extends BaseController {
                 copy.getState().enterState(copy, copy.getState())
             }
             metasetService.copyMetasets(osd, copy, metasets)
-            luceneService.addToIndex(copy, repositoryName)
+            osd.updateIndex()
             render(contentType: 'application/xml') {
                 objectId(copy.id.toString())
             }
@@ -1076,15 +1077,17 @@ class OsdController extends BaseController {
             osd.cmnVersion = osd.createNewVersionLabel()             
             osd.fixLatestHeadAndBranch([])
             Format myFormat = Format.findByName(format)
-            osd.save(flush: true)
+            osd.locker = null
+            osd.save(flush: true)            
             if (params.containsKey('file')) {
                 osdService.saveFileUpload(request, osd, user, myFormat.id, repositoryName, false)
             }        
             log.debug("new osd: ${osd.toXML().asXML()}")
-
             log.debug("version of new osd: ${osd.cmnVersion}")
-            osd.locker = null
-            osd.predecessor.indexOk = null
+            
+            osd.predecessor.updateIndex()
+            osd.updateIndex()
+            
             render(contentType: 'application/xml') {
                 objectId(osd.id.toString())
             }

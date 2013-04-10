@@ -89,7 +89,7 @@ class MetasetController extends BaseController{
             }
 
             Metaset metaset = metasetService.createOrUpdateMetaset(metasetOwner, metasetType, content, writePolicy);
-            luceneService.addToIndex(metasetOwner, repositoryName)
+            metasetOwner.updateIndex()
             def doc = DocumentHelper.createDocument()
             doc.add(Metaset.asElement('meta', metaset))
             render(contentType: 'application/xml', text: doc.asXML())

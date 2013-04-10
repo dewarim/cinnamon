@@ -88,42 +88,67 @@ class LuceneActor extends DynamicDispatchActor {
         log.debug("Update repository: ${repository.name}")
         def env = Environment.list().find { it.dbName == repository.name }
         EnvironmentHolder.setEnvironment(env)
-        def osds = []
-        ObjectSystemData.withTransaction {
-            osds = ObjectSystemData.findAll("from ObjectSystemData o where o.indexOk is NULL", [max: 50])
+        def osdJobs = []
+        def seen = new HashSet<Long>(100)
+        IndexJob.withTransaction{
+            osdJobs = IndexJob.findAll("from IndexJob i where i.indexableClass=:indexableClass and i.failed = false",
+                   [indexableClass:ObjectSystemData.class], [max:100])
         }
-        log.debug("Found ${osds.size()} objects watiting for indexing in ${repository.name}.")
-        osds.each { osd ->
+        log.debug("Found ${osdJobs.size()} objects watiting for indexing in ${repository.name}.")
+        osdJobs.each { IndexJob job ->            
             ObjectSystemData.withTransaction {
-                osd = ObjectSystemData.get(osd.id)
-                log.debug("going to update osd #${osd.id}")
-                deleteIndexableFromIndex(osd, repository)
-                addToIndex(osd, repository)
+                Long id = job.indexableId
+                if(seen.contains(id)){
+                    // remove duplicate jobs in the current transaction
+                    job.delete()
+                    return
+                }
+                def osd = ObjectSystemData.get(id)
+                doIndexJob(osd, job, repository)
+                seen.add(id)
             }
         }
-        def folders = []
-        Folder.withTransaction {
-            folders = Folder.findAll("from Folder f where f.indexOk is NULL", [max: 50])
+        def folderJobs = []
+        def seenFolders = new HashSet<Long>(100)
+        IndexJob.withTransaction {
+            folderJobs = IndexJob.findAll("from IndexJob i where i.indexableClass=:indexableClass and i.failed=false", 
+                    [indexableClass: Folder.class], [ max: 100])
         }
-        log.debug("Found ${folders.size()} folders waiting for indexing in ${repository.name}.")
-        folders.each { folder ->
-            Folder.withTransaction {
-                try {
-                    Folder reloadedFolder = Folder.get(folder.id)
-                    log.debug("going to update folder #${reloadedFolder.id}")
-                    deleteIndexableFromIndex(reloadedFolder, repository)
-                    addToIndex(reloadedFolder, repository)
+        log.debug("Found ${folderJobs.size()} folders waiting for indexing in ${repository.name}.")
+        folderJobs.each { IndexJob job ->
+            IndexJob.withTransaction {
+                Long id = job.indexableId
+                if(seenFolders.contains(id)){
+                    job.delete()
+                    return
                 }
-                catch (Throwable e) {
-                    log.error("could not index folder ${folder.id}", e)
-                }
+                Folder reloadedFolder = Folder.get(id)
+                doIndexJob(reloadedFolder, job, repository)
+                seenFolders.add(id)
             }
         }
-        def resultMessages = ["Updated osds: ${osds.size()}", "Updated folders. ${folders.size()}"]
+        def resultMessages = ["Updated osds: ${seen.size()}", "Updated folders. ${seenFolders.size()}"]
         def luceneResult = new LuceneResult(resultMessages: resultMessages)
         return luceneResult
     }
-
+    
+    def doIndexJob(Indexable indexable, job, Repository repository){
+        if(indexable){
+            try{
+                deleteIndexableFromIndex(indexable, repository)
+                addToIndex(indexable, repository)
+                job.delete()
+            }
+            catch(Exception e){
+                log.warn("Index job for ${indexable.toString()} failed with:",e)
+                job.failed = true
+            }
+        }
+        else{
+            job.delete()
+        }
+    }
+    
     void deleteIndexableFromIndex(Indexable indexable, Repository repository) {
         def uniqueId = "${indexable.class.name}@${indexable.myId()}"
         log.debug("remove from Index: $uniqueId")
@@ -204,9 +229,10 @@ class LuceneActor extends DynamicDispatchActor {
                 log.debug("retry-delete document");
                 deleteDocument(repository, term, --retries);
             }
+            throw new RuntimeException('delete document from index failed', e)
         } catch (OutOfMemoryError e) {
             log.warn("OOM-error during indexing:", e);
-            // according to Lucene docs, we should close the writer after OOM-Problems.
+            throw new RuntimeException('delete document from index failed', e)
         } finally {
             indexWriter.close(true)
             repository.createWriter()
@@ -242,7 +268,7 @@ class LuceneActor extends DynamicDispatchActor {
             doIndex(indexable, content, repository, doc)
         } catch (OutOfMemoryError e) {
             log.error("indexing failed: ", e)
-            indexable.indexOk = false
+            throw new RuntimeException('Indexing failed', e)
         }
         finally {
             repository.indexWriter.close(true)
@@ -274,8 +300,6 @@ class LuceneActor extends DynamicDispatchActor {
             }
         }
         repository.indexWriter.addDocument(doc)
-        indexable.indexOk = true
-        indexable.indexed = new Date()
     }
 
     Document storeStandardFields(Indexable indexable, Document doc) {

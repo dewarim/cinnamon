@@ -119,8 +119,7 @@ public class ObjectTreeCopier {
         
         copy.save();
         copy.updateIndex()
-        copy.predecessor.indexOk = null
-        luceneService.addToIndex(copy)
+        copy.predecessor.updateIndex()
         copyCache.put(osd, copy);
         return copy;
     }
@@ -225,7 +224,7 @@ public class ObjectTreeCopier {
         if (copy.predecessor){
             luceneService.updateIndex(copy.predecessor)
         }
-        luceneService.addToIndex(copy, repositoryName )
+        copy.updateIndex()
         copyResult.addObject(copy);
         copyCache.put(osd, copy);
         return copy;
