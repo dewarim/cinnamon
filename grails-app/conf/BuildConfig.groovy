@@ -49,7 +49,8 @@ grails.project.dependency.resolution = {
         runtime 'jaxen:jaxen:1.1.4'
         compile 'org.codehaus.gpars:gpars:1.0.0'
         runtime 'cinnamon:cinnamon-humulus:0.2.3'
-        
+        runtime 'commons-net:commons-net:3.2'
+        compile 'javax.mail:mail:1.4.6'
         test "org.spockframework:spock-grails-support:0.7-groovy-2.0"
         test "org.gebish:geb-spock:${gebPluginVersion}" 
         
