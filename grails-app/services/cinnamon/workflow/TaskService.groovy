@@ -33,7 +33,6 @@ import javax.xml.xpath.XPathFactory
  */
 class TaskService {
     
-    def copyService
     def osdService
     def folderService
     
@@ -349,7 +348,7 @@ class TaskService {
     void createNotifications(org.w3c.dom.Node actionNode, model) {
         def users = fetchUserListFromParam(actionNode, 'values/value')
         def actionLabel = selectFirstNode(actionNode, 'label').textContent
-        model.put(actionlabel: actionLabel)
+        model.put(actionLabel, actionLabel)
         def content = """<metaset>${getNotificationContent(actionNode, 'content', model)}</metaset>"""
         users.each { user ->
             new CinnamonNotification().create(user, actionLabel, content)
@@ -359,7 +358,7 @@ class TaskService {
     void createWorkflowMail(org.w3c.dom.Node actionNode, model) {
         def users = fetchUserListFromParam(actionNode, 'values/value')
         def actionLabel = selectFirstNode(actionNode, 'label').textContent
-        model.put(actionlabel: actionLabel)
+        model.put(actionLabel: actionLabel)
         def content = """<metaset>${getNotificationContent(actionNode, 'content', model)}</metaset>"""
         users.each { user ->
             if (user.email) {
