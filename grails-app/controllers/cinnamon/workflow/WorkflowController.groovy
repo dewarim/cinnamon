@@ -127,10 +127,7 @@ class WorkflowController extends BaseController {
                 throw new CinnamonException("error.object.not.found")
             }
             Validator val = new Validator(userService.user)
-            Acl acl = task.acl
-            val.validatePermission(acl, PermissionName.READ_OBJECT_CUSTOM_METADATA); // read workflow metadata
-            val.validatePermission(acl, PermissionName.WRITE_OBJECT_CUSTOM_METADATA); // write workflow metadata
-            val.validatePermission(acl, PermissionName.WRITE_OBJECT_SYS_METADATA); // change procstate
+            val.validatePermissions(task, [PermissionName.READ_OBJECT_CUSTOM_METADATA, PermissionName.WRITE_OBJECT_CUSTOM_METADATA, PermissionName.WRITE_OBJECT_SYS_METADATA]);
 
             String transitionXpath = String.format("/meta/metaset[@type='transition']/transition[name='%s']", transition_name)
             workflowService.executeTransition(task, transitionXpath)
