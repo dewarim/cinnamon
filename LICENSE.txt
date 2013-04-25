@@ -1,5 +1,5 @@
 // cinnamon - the Open Enterprise CMS project
-// Copyright (C) 2007-2012 Horner GmbH (http://www.horner-project.eu)
+// Copyright (C) 2007-2013 Texolution GmbH (http://texolution.eu)
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
