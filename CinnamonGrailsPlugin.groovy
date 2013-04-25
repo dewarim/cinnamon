@@ -9,7 +9,6 @@ class CinnamonGrailsPlugin {
 
     def title = "Cinnamon 3 CMS Plugin" // Headline display name of the plugin
     def author = "Ingo Wiarda"
-    def authorEmail = "ingo.wiarda@horner-project.eu"
     def description = '''\
 The Cinnamon ECMS plugin - adds a whole content management system to your application as Grails plugin,
 allowing you to create custom apps based upon Cinnamon.
@@ -19,7 +18,7 @@ allowing you to create custom apps based upon Cinnamon.
     def license = "LGPL 2.1"
     def organization = [ name: "Horner GmbH", url: "http://horner-project.de/" ]
     def developers = [ 
-            [ name: "Ingo Wiarda", email: "ingo.wiarda@horner-project.eu" ]
+            [ name: "Ingo Wiarda", email: "ingo.wiarda@texolution.eu" ]
     ]
 
     def issueManagement = [ system: "github", url: "https://github.com/dewarim/cinnamon/issues" ]
