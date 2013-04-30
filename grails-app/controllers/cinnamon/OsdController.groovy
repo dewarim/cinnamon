@@ -360,11 +360,13 @@ class OsdController extends BaseController {
             log.debug("selected folder: ${selectedFolder}")
             Folder targetFolder = Folder.get(selectedFolder)
             def user = userService.user
-            if (!targetFolder) {
-                throw new RuntimeException('error.folder.not.found')
-            }
-            if (!folderService.checkPermissions(targetFolder, user, [PermissionName.CREATE_OBJECT])) {
-                throw new RuntimeException('error.access.denied')
+            if(! params.delete){
+                if (!targetFolder) {
+                    throw new RuntimeException('error.folder.not.found')          
+                }
+                if(!folderService.checkPermissions(targetFolder, user, [PermissionName.CREATE_OBJECT])) {
+                        throw new RuntimeException('error.access.denied')
+                }
             }
 
             log.debug("*** start iterate")
