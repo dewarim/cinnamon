@@ -162,11 +162,7 @@ class RelationController extends BaseController {
     /**
      * Delete a relation
      *
-     * @param cmd HTTP request parameter map:
-     *            <ul>
-     *            <li>command=deleterelation</li>
-     *            <li>id=id of relation to delete</li>
-     *            </ul>
+     * @param id the relation's id
      * @return XML-Response
      *         {@code
      *         <success>success.delete.relation</success>
