@@ -196,7 +196,6 @@ class FolderService {
         }
         
         folder.delete();
-        luceneService.removeFromIndex(folder, repository)
     }
 
     public List<Folder> findAllByPath(String path){
@@ -220,7 +219,6 @@ class FolderService {
                         }
                         Folder newFolder = new Folder(seg,"<meta />", parent.getAcl(), parent, parent.getOwner(), parent.getType() );
                         newFolder.save()
-                        newFolder.updateIndex()
                         ret.add(newFolder);
                         parent = newFolder;
                     }
@@ -557,8 +555,8 @@ class FolderService {
                 msgMap.put(id, ['folder.move.fail', e.message])
             }
         }
-        reindexList.each{folder ->
-            luceneService.updateIndex(folder, repositoryName)
+        reindexList.each{Folder folder ->
+            folder.updateIndex()
         }
         return msgMap
     }

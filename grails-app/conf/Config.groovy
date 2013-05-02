@@ -108,8 +108,11 @@ log4j = {
             'org.codehaus.groovy.grails.orm.hibernate', // hibernate integration
             'grails.app.taglib.org.grails.plugin.resource',
             'org.grails.plugin.resource',
-            'org.codehaus.groovy.grails.io'
-
+            'org.codehaus.groovy.grails.io',
+            'org.codehaus.groovy.grails.io.support',
+            'org.codehaus.groovy.grails.context.support.PluginAwareResourceBundleMessageSource'
+            
+    
     debug 'org.codehaus.groovy.grails.context',
             'org.codehaus.groovy.grails.io',
             'org.codehaus.groovy.grails.web',

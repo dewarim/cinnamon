@@ -217,7 +217,6 @@ class OsdService {
             metasetService.unlinkMetaset(osd, osdMetaset.metaset)
         }
         osd.delete(flush: true)
-        luceneService.removeFromIndex(osd, repository)
     }
 
     public void delete(Long id, String repository) {
@@ -402,7 +401,6 @@ class OsdService {
         log.debug("created object with id: ${osd.id}")
         log.debug("repo: ${repositoryName}")
         cinnamonTikaService.parse(osd, repositoryName)
-        osd.updateIndex()
         return osd
     }
 
@@ -424,12 +422,8 @@ class OsdService {
             file.transferTo(tempFile)
             storeContent(osd, file.contentType, formatId, tempFile, repositoryName)
             osd.updateAccess(user)
-//            unlock(osd, user)
             osd.save()
             cinnamonTikaService.parse(osd, repositoryName)
-            if (reIndex) {
-                luceneService.updateIndex(osd, repositoryName)
-            }
         }
     }
 
@@ -487,7 +481,6 @@ class OsdService {
         osd.save(flush: true)
         log.debug("created object with id: ${osd.id}")
         log.debug("repo: ${repositoryName}")
-        osd.updateIndex()
         return osd
     }
 
@@ -550,7 +543,6 @@ class OsdService {
         log.debug("created object with id: ${osd.id}")
         log.debug("repo: ${repositoryName}")
         cinnamonTikaService.parse(osd, repositoryName)
-        osd.updateIndex()
         return osd
     }
 
@@ -576,7 +568,6 @@ class OsdService {
                         Folder oldFolder = osd.parent
                         osd.parent = folder
                         osd.save(flush: true)
-                        osd.updateIndex()
                         log.debug("moved #${osd.id} from folder #${oldFolder.id}: ${oldFolder.name} to #${folder.id}: ${folder.name}")
                         msgMap.put(id, ['osd.move.ok'])
                     }

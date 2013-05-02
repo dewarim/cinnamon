@@ -2,6 +2,7 @@ package cinnamon
 
 import cinnamon.exceptions.CinnamonException
 import cinnamon.global.PermissionName
+import cinnamon.index.IndexAction
 import cinnamon.index.Indexable
 import cinnamon.interfaces.IMetasetOwner
 import org.dom4j.DocumentHelper
@@ -89,7 +90,7 @@ class MetasetController extends BaseController{
             }
 
             Metaset metaset = metasetService.createOrUpdateMetaset(metasetOwner, metasetType, content, writePolicy);
-            metasetOwner.updateIndex()
+            LocalRepository.addIndexable(metasetOwner, IndexAction.UPDATE)
             def doc = DocumentHelper.createDocument()
             doc.add(Metaset.asElement('meta', metaset))
             render(contentType: 'application/xml', text: doc.asXML())
@@ -121,9 +122,7 @@ class MetasetController extends BaseController{
             if(metaset == null){
                 throw new CinnamonException("error.param.metaset_id");
             }
-
             metasetOwner.addMetaset(metaset);
-            luceneService.updateIndex(metasetOwner, repositoryName);
             render(contentType: 'application/xml') {
                 success('success.link.metaset')
             }

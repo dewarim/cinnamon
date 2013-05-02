@@ -123,7 +123,7 @@ class FolderController extends BaseController {
         }
         catch (Exception e) {
             log.debug("fetchFolder failed", e)
-            render(status: 500, text: message(code: e.message))
+            renderException(e)
         }
     }
 
@@ -177,7 +177,7 @@ class FolderController extends BaseController {
         }
         catch (Exception e) {
             log.debug("fetchFolderContent failed", e)
-            render(status: 500, text: message(code: e.message))
+            renderException(e)
         }
     }
 
@@ -191,7 +191,7 @@ class FolderController extends BaseController {
                 log.debug("permissions. $permissions")
             } catch (RuntimeException ex) {
                 log.debug("getUserPermissions failed", ex)
-                render(status: 503, text: message(code: 'error.access.failed'))
+                renderErrorXml('error.access.failed')
                 return
             }
 
@@ -199,7 +199,7 @@ class FolderController extends BaseController {
         }
         catch (Exception e) {
             log.debug("renderMetadata failed", e)
-            render(status: 500, text: message(code: e.message))
+            renderException(e)
         }
     }
 
@@ -210,7 +210,7 @@ class FolderController extends BaseController {
         }
         catch (Exception e) {
             log.debug("renderMetadata failed", e)
-            render(status: 500, text: message(code: e.message))
+            renderException(e)
         }
 
     }
@@ -222,7 +222,7 @@ class FolderController extends BaseController {
         }
         catch (Exception e) {
             log.debug("editMetadata failed", e)
-            render(status: 500, text: message(code: e.message))
+            renderException(e)
         }
     }
 
@@ -240,7 +240,6 @@ class FolderController extends BaseController {
             if (!folder.metadata.equals(metadata)) {
                 log.debug("trying to save metadata '$metadata'")
                 folder.metadata = metadata
-                luceneService.updateIndex(folder, repositoryName)
             }
             else {
                 log.debug("metadata is unchanged")
@@ -249,6 +248,7 @@ class FolderController extends BaseController {
                     model: [folder: folder, permissions: loadUserPermissions(folder.acl)])
         }
         catch (Exception e) {
+            LocalRepository.cleanUp()
             log.debug("failed to update folder metadata: ", e)
             if (folder) {
                 render(template: 'editMetadata', model: [folder: folder, saveMetaError: message(code: e.message),
@@ -256,7 +256,7 @@ class FolderController extends BaseController {
                 ])
             }
             else {
-                render(status: 500, message(code: e.message))
+                renderException(e)
             }
         }
 
@@ -326,7 +326,6 @@ class FolderController extends BaseController {
                     case 'type': folder.type = FolderType.get(id); break;
                     case 'acl': fetchAndFilterFolder(params.folder, [PermissionName.SET_ACL]).acl = Acl.get(id); break;
                 }
-                luceneService.updateIndex(folder, repositoryName)
                 fetchFolderMeta()
             }
             else {
@@ -363,12 +362,12 @@ class FolderController extends BaseController {
             folder.acl = parentFolder.acl
             folder.owner = userService.user
             folder.save()
-            folder.updateIndex()
             return redirect(controller: 'folder', action: 'index', params: [folder: folder.id])
         }
         catch (Exception e) {
             log.debug("save folder failed: ", e)
             flash.message = message(code: e.message)
+            LocalRepository.cleanUp()
             return redirect(controller: 'folder', action: 'index', params: [folder: parentFolder?.id])
         }
     }
@@ -415,15 +414,8 @@ class FolderController extends BaseController {
                     throw new CinnamonException("error.store.upload", e);
                 }
                 osd.save()
-                osd.updateIndex()
-//                XmlResponse resp = new XmlResponse(res);
-//                resp.addTextNode("objectId", String.valueOf(osd.getId()));
-//                return resp;
             }
             else {
-//                return new FileResponse(res, zipFile.getAbsolutePath(), zipFile.length(), zipFile.getName());
-
-
                 response.setHeader("Content-disposition", "attachment; filename=${zipFile.getName().encodeAsURL()}.zip");
                 response.setContentType('application/zip')
                 response.outputStream << zipFile.newInputStream()
@@ -433,6 +425,7 @@ class FolderController extends BaseController {
 
         }
         catch (Exception e) {
+            LocalRepository.cleanUp()
             log.debug("zip folder failed: ", e)
             flash.message = message(code: 'zip.folder.fail', args: [e.message])
             return redirect(controller: 'folder', action: 'index', params: [folder: folder?.id])
@@ -536,7 +529,7 @@ class FolderController extends BaseController {
         }
         catch (Exception e) {
             log.debug("fetchFolderContent failed for ${params}", e)
-            render(status: 500, text: message(code: e.message))
+            renderExceptionXml(e)
         }
     }
 
@@ -626,7 +619,7 @@ class FolderController extends BaseController {
             render(template: 'searchResult', model: [searchResult: result, folders: folders, objects: objects])
         }
         catch (Exception e) {
-            render(status: 503, text: message(code: e.message))
+            renderException(e)
         }
     }
     
@@ -681,7 +674,6 @@ class FolderController extends BaseController {
                                 type: folderType, acl: acl
             )
             folder.save()
-            folder.updateIndex()
 
             def doc = DocumentHelper.createDocument()
             Element root = doc.addElement("folders");
@@ -714,10 +706,7 @@ class FolderController extends BaseController {
                 success('success.delete.folder')
             }
         }
-        catch (Exception e){
-            if (folder){
-                luceneService.updateIndex(folder, repositoryName)
-            }
+        catch (Exception e){        
             renderExceptionXml('Failed to delete folder.',e)
         }
     }
@@ -776,7 +765,6 @@ class FolderController extends BaseController {
                 throw new RuntimeException('error.folder.not.found')
             }
             folder.update(fields)
-            luceneService.updateIndex(folder, repositoryName)
             render(contentType: 'application/xml') {
                 success('success.update.folder')
             }

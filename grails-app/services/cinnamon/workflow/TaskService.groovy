@@ -149,8 +149,6 @@ class TaskService {
 
         pre.fixLatestHeadAndBranch([copy])
         // schedule pre and copy for re-indexing 
-        pre.updateIndex()
-        copy.updateIndex()
         return copy
     }
 
@@ -306,7 +304,6 @@ class TaskService {
         }
         renderTask.setType(renderTaskType);
         renderTask.save()
-        renderTask.updateIndex()
 
         String renderInput = """<metaset type="render_input">
                 <renderTaskName>calculatrix</renderTaskName>

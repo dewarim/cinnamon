@@ -29,6 +29,7 @@ class IndexCommand {
     Indexable indexable
     String query
     Boolean xmlQuery = false
+    Boolean removeFirst = true
     
     /**
      * A list of fields for which the field values should be retrieved for each document found.

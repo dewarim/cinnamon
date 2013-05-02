@@ -1,6 +1,7 @@
 package cinnamon
 
 import cinnamon.exceptions.CinnamonException
+import cinnamon.index.IndexAction
 import cinnamon.relation.Relation
 import cinnamon.relation.RelationType
 import grails.plugins.springsecurity.Secured
@@ -43,8 +44,8 @@ class RelationController extends BaseController {
             if (!alreadyExists) {
                 Relation relation = new Relation(rt, left, right, '<meta/>')
                 relation.save()
-                luceneService.updateIndex(left, repositoryName)
-                luceneService.updateIndex(right, repositoryName)
+                LocalRepository.addIndexable(left, IndexAction.UPDATE)
+                LocalRepository.addIndexable(right, IndexAction.UPDATE)
             }
             forward(controller: 'osd', action: 'listRelations', id: osd)
         }
@@ -62,8 +63,8 @@ class RelationController extends BaseController {
                 def leftOsd = relation.leftOSD
                 def rightOsd = relation.rightOSD
                 relation.delete(flush: true)
-                luceneService.updateIndex(leftOsd, repositoryName)
-                luceneService.updateIndex(rightOsd, repositoryName)
+                LocalRepository.addIndexable(leftOsd, IndexAction.UPDATE)
+                LocalRepository.addIndexable(rightOsd, IndexAction.UPDATE)
             }
             render(status: 200, text: '<!-- delete relation: success -->')
         }
@@ -135,8 +136,8 @@ class RelationController extends BaseController {
                 relation = new Relation(type, left, right, metadata)
                 relation.save()
                 // update because Indexers may index relations.
-                luceneService.updateIndex(left, repositoryName)
-                luceneService.updateIndex(right, repositoryName)
+                LocalRepository.addIndexable(left, IndexAction.UPDATE)
+                LocalRepository.addIndexable(right, IndexAction.UPDATE)
             }
             /*
              * Update relations, because it is possible that some
@@ -182,8 +183,8 @@ class RelationController extends BaseController {
             ObjectSystemData right = relation.rightOSD
             relation.delete()
             // update because Indexers may index relations.
-            luceneService.updateIndex(left, repositoryName)
-            luceneService.updateIndex(right, repositoryName)
+            LocalRepository.addIndexable(left, IndexAction.UPDATE)
+            LocalRepository.addIndexable(right, IndexAction.UPDATE)
             
             render(contentType: 'application/xml') {
                 success('success.delete.relation')

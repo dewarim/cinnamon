@@ -18,7 +18,6 @@ class CinnamonNotification {
         
         def notification = new ObjectSystemData(name, user, inbox)
         notification.save()
-        notification.updateIndex()
         def noteMeta = notification.fetchMetaset(Constants.METASET_NOTIFICATION, true)
         noteMeta.content = content
         return notification

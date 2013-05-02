@@ -97,7 +97,6 @@ class TranslationService {
         } else {
             throw new CinnamonException("error.translation_exists");
         }
-        targetNode.updateIndex()
         translationResult.targetNode = targetNode
         translationResult.newObjects = newObjects
         return translationResult
@@ -287,9 +286,9 @@ class TranslationService {
             ObjectSystemData emptyCopy = objectTreeCopier.createEmptyCopy(osd);
             log.debug(String.format("Empty copy of %d is %d", osd.getId(), emptyCopy.getId()));
             emptyCopy.setMetadata(metaNode);
+            
             objectTreeCopier.getCopyCache().put(osd, emptyCopy);
             newTree.add(emptyCopy);
-            emptyCopy.updateIndex()
             newObjects.add(emptyCopy);
         }
         ObjectSystemData treeRoot = newTree.get(0).getRoot();

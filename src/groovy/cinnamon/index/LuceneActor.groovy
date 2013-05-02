@@ -69,6 +69,9 @@ class LuceneActor extends DynamicDispatchActor {
             switch (command.type) {
                 case CommandType.REMOVE_FROM_INDEX: removeFromIndex(command); break
                 case CommandType.UPDATE_INDEX: result = updateIndex(command); break
+                case CommandType.ADD_TO_INDEX_NOW: command.removeFirst=false; doIndexJobNow(command); break
+                case CommandType.REMOVE_FROM_INDEX_NOW: removeFromIndex(command); break
+                case CommandType.UPDATE_INDEX_NOW: doIndexJobNow(command); break
                 case CommandType.SEARCH: result = search(command); break;
                 default: throw new RuntimeException("LuceneActor called with unknown command type: ${command.type}")
             }
@@ -104,7 +107,7 @@ class LuceneActor extends DynamicDispatchActor {
                     return
                 }
                 def osd = ObjectSystemData.get(id)
-                doIndexJob(osd, job, repository)
+                doIndexJob(osd, job, repository, command.removeFirst)
                 seen.add(id)
             }
         }
@@ -123,7 +126,7 @@ class LuceneActor extends DynamicDispatchActor {
                     return
                 }
                 Folder reloadedFolder = Folder.get(id)
-                doIndexJob(reloadedFolder, job, repository)
+                doIndexJob(reloadedFolder, job, repository, command.removeFirst)
                 seenFolders.add(id)
             }
         }
@@ -132,12 +135,27 @@ class LuceneActor extends DynamicDispatchActor {
         return luceneResult
     }
     
-    def doIndexJob(Indexable indexable, job, Repository repository){
+    def doIndexJobNow(IndexCommand command){
+        def repository = command.repository
+        log.debug("Update repository: ${repository.name}")
+        def env = Environment.list().find { it.dbName == repository.name }
+        EnvironmentHolder.setEnvironment(env)
+        IndexJob.withNewTransaction {
+            def reloadedIndexable = command.indexable.reload()         
+            doIndexJob(reloadedIndexable, null, repository, command.removeFirst)
+        }
+    }
+    
+    def doIndexJob(Indexable indexable, job, Repository repository, Boolean removeFirst){
         if(indexable){
             try{
-                deleteIndexableFromIndex(indexable, repository)
+                if(removeFirst){
+                    deleteIndexableFromIndex(indexable, repository)
+                }
                 addToIndex(indexable, repository)
-                job.delete()
+                if(job){
+                    job.delete()
+                }
             }
             catch(Exception e){
                 log.warn("Index job for ${indexable.toString()} failed with:",e)
@@ -150,7 +168,7 @@ class LuceneActor extends DynamicDispatchActor {
     }
     
     void deleteIndexableFromIndex(Indexable indexable, Repository repository) {
-        def uniqueId = "${indexable.class.name}@${indexable.myId()}"
+        def uniqueId = indexable.uniqueId()
         log.debug("remove from Index: $uniqueId")
         deleteDocument(repository, new Term("uniqueId", uniqueId), 2);
     }
@@ -172,7 +190,7 @@ class LuceneActor extends DynamicDispatchActor {
             QueryParser queryParser = new QueryParser(Version.LUCENE_36, "content", new StandardAnalyzer(Version.LUCENE_36))
             query = queryParser.parse(command.query);
         }
-
+        
         IndexSearcher searcher = repository.indexSearcher
         ResultCollector collector = new ResultCollector(reader: repository.indexReader,
                 searcher: repository.indexSearcher, domain: command.domain)

@@ -37,6 +37,7 @@ class CinnamonTikaService {
             Metadata tikaMeta = new Metadata();
 
             String xhtml = tikaService.parseFile(content, tikaConfig, tikaMeta);
+            log.debug("xhtml from tika:\n"+xhtml)
             xhtml = xhtml.replaceAll("xmlns=\"http://www\\.w3\\.org/1999/xhtml\"", "");
             org.dom4j.Node resultNode = ParamParser.parseXml(xhtml, "Failed to parse tika-generated xml");
             Document meta = ParamParser.parseXmlToDocument(osd.getMetadata());

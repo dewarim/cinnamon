@@ -23,9 +23,12 @@ package cinnamon.index
  *
  */
 public enum CommandType {
-
+    
+    ADD_TO_INDEX_NOW,
+    REMOVE_FROM_INDEX_NOW,
     REMOVE_FROM_INDEX,
     UPDATE_INDEX,
+    UPDATE_INDEX_NOW,
     SEARCH,
     
     START_INDEXING,

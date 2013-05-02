@@ -128,8 +128,6 @@ class CopyService {
             copy.name = "${source.name}_${copy.id}"
             copy.save(flush: true)
         }
-        copy.updateIndex()
-        copyResult.addFolder(copy);
 
         // copy child folders
         List<Folder> children = folderService.getSubfolders(source);
@@ -257,7 +255,6 @@ class CopyService {
         osdService.copyMetadata(osd, newCopy)        
         osdService.copyContent(osd, newCopy)
         osdService.copyRelations(osd, newCopy)
-        newCopy.updateIndex()
         return newCopy
     }
     

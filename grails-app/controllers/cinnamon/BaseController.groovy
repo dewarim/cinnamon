@@ -43,6 +43,7 @@ abstract class BaseController {
     }
 
     protected void renderErrorXml(String errorMessage){
+        LocalRepository.cleanUp()
         render(contentType: 'application/xml') {
             error {
                 code(errorMessage)
@@ -52,6 +53,7 @@ abstract class BaseController {
     } 
     
     protected void renderErrorXml(String logMessage, String errorMessage){
+        LocalRepository.cleanUp()
         log.debug(logMessage)
         render(contentType: 'application/xml') {
             error {
@@ -62,10 +64,11 @@ abstract class BaseController {
     }
     
     protected void renderException(Exception e) {
+        LocalRepository.cleanUp()
         render(status: 500, text: message(code: e.getMessage()))
     }
 
-    protected void renderExceptionXml(Exception e) {
+    protected void renderExceptionXml(Exception e) {       
        renderErrorXml(e.message)
     }
     

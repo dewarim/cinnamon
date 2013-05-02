@@ -56,6 +56,7 @@ class LuceneService {
                         indexDir: indexDir, indexFolder: indexFolder,
                         analyzer: analyzer)
                 repository.createWriter()
+//                LocalRepository.addRepository(name, repository)
                 repositories.put(name, repository)
 
                 def master = new LuceneMaster()
@@ -73,35 +74,22 @@ class LuceneService {
         }
     }
 
-    @Deprecated
-    void addToIndex(Indexable indexable, String database) {
-        indexable.updateIndex()
+    void addToIndex(Indexable indexable) {
+        String repository = EnvironmentHolder.getEnvironment().dbName        
+        def cmd = new IndexCommand(indexable: indexable, repository: repositories.get(repository), type: CommandType.ADD_TO_INDEX_NOW)
+        lucene.sendAndWait(cmd)
     }
-    
-    @Deprecated
-    void addToIndex(Indexable indexable){
-        indexable.updateIndex()
-    }
-    
-    @Deprecated
-    void updateIndex(Indexable indexable, String database) {
-        indexable.updateIndex()
-    }
-    
-    @Deprecated
-    void updateIndex(Indexable indexable){
+  
+    void updateIndex(Indexable indexable) {
         String repository = EnvironmentHolder.getEnvironment().dbName
-        updateIndex(indexable, repository)
-    }
-
-    void removeFromIndex(Indexable indexable, String database) {
-        def cmd = new IndexCommand(indexable: indexable, repository: repositories.get(database), type: CommandType.REMOVE_FROM_INDEX)        
+        def cmd = new IndexCommand(indexable: indexable, repository: repositories.get(repository), type: CommandType.UPDATE_INDEX_NOW)
         lucene.sendAndWait(cmd)
     }
     
-    void removeFromIndex(Indexable indexable){
+    void removeFromIndex(Indexable indexable) {
         String repository = EnvironmentHolder.getEnvironment().dbName
-        removeFromIndex(indexable, repository)
+        def cmd = new IndexCommand(indexable: indexable, repository: repositories.get(repository), type: CommandType.REMOVE_FROM_INDEX_NOW)        
+        lucene.sendAndWait(cmd)
     }
 
     /**

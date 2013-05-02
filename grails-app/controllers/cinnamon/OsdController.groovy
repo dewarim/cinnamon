@@ -24,7 +24,6 @@ import cinnamon.global.Constants
 class OsdController extends BaseController {
 
     def metasetService
-    def imageService
 
     def editMetadata() {
         try {
@@ -41,7 +40,6 @@ class OsdController extends BaseController {
             ObjectSystemData osd = fetchAndFilterOsd(params.osd)
             if (!osd.metadata.equals(params.metadata)) {
                 osd.metadata = params.metadata
-                luceneService.updateIndex(osd, repositoryName)
             }
             render(template: mapTemplate('/osd/objectDetails'), model: [osd: osd, permissions: loadUserPermissions(osd.acl)])
         }
@@ -55,7 +53,6 @@ class OsdController extends BaseController {
             ObjectSystemData osd = fetchAndFilterOsd(params.osd)
             UserAccount user = userService.user
             osd.locker = null
-            luceneService.updateIndex(osd, repositoryName)
             render(template: mapTemplate('/folder/lockStatus'), model: [user: user, osd: osd,
                     superuserStatus: userService.isSuperuser(user)])
         }
@@ -69,7 +66,6 @@ class OsdController extends BaseController {
             ObjectSystemData osd = fetchAndFilterOsd(params.osd)
             UserAccount user = userService.user
             osdService.acquireLock(osd, user)
-            luceneService.updateIndex(osd, repositoryName)
             render(template: mapTemplate('/folder/lockStatus'), model: [user: user, osd: osd,
                     superuserStatus: userService.isSuperuser(user)])
 
@@ -177,6 +173,7 @@ class OsdController extends BaseController {
             return null
         }
         catch (Exception e) {
+            LocalRepository.cleanUp()
             flash.mesasge = message(code: e.message)
             defaultRedirect([folder: folder?.id])
         }
@@ -254,7 +251,6 @@ class OsdController extends BaseController {
                     case 'objtype': osd.type = ObjectType.get(id); break;
                     case 'acl': fetchAndFilterOsd(params.osd, [PermissionName.SET_ACL]).acl = Acl.get(id); break;
                 }
-                luceneService.updateIndex(osd, repositoryName)
                 fetchObjectDetails()
             }
             else {
@@ -309,12 +305,12 @@ class OsdController extends BaseController {
             redirect(controller: 'folder', action: 'index', params: [folder: params.folder, osd: params.osd])
         }
         catch (RuntimeException e) {
+            LocalRepository.cleanUp()
             log.debug("Failed to set content on object ${osd?.id}: ", e)
             flash.message = message(code: e.getMessage())
             if (!osd) {
                 return redirect(controller: 'folder', action: 'index')
             }
-
             redirect(controller: 'osd', action: 'setContent', params: [folder: params.folder, osd: params.osd])
         }
     }
@@ -331,8 +327,6 @@ class OsdController extends BaseController {
             osd.save()
             osd.fixLatestHeadAndBranch([])
             log.debug("version of new osd: ${osd.cmnVersion}")
-            osd.predecessor.updateIndex()
-            osd.updateIndex()
             def osdList = folderService.getObjects(user, osd.parent, repositoryName, params.versions)
             def folderContentTemplate = folderService.fetchFolderTemplate(osd.parent.type.config)
             render(template: folderContentTemplate, model: [folder: osd.parent,
@@ -403,6 +397,7 @@ class OsdController extends BaseController {
             log.debug("*** done iterate")
         }
         catch (Exception e) {
+            LocalRepository.cleanUp()
             log.debug("Failed to iterate over ${params.osd}.", e)
             flash.message = message(code: 'iterate.fail', args: [message(code: e.message)])
         }
@@ -521,8 +516,6 @@ class OsdController extends BaseController {
 
             osd.save(flush: true)
             metasetService.initializeMetasets(osd, (String) params.metasets)
-            osd.updateIndex()
-
             render(contentType: 'application/xml') {
                 objectId(osd.id.toString())
             }
@@ -589,7 +582,6 @@ class OsdController extends BaseController {
             def user = userService.user
             (new Validator(user)).validateLock(osd, user)
             osd.locker = user
-            luceneService.updateIndex(osd, repositoryName)
             log.debug("lock - done.");
             render(contentType: 'application/xml') {
                 success('success.object.lock')
@@ -617,7 +609,6 @@ class OsdController extends BaseController {
             ObjectSystemData osd = ObjectSystemData.get(id)
             (new Validator(user)).validateUnlock(osd)
             osd.locker = null
-            luceneService.updateIndex(osd, repositoryName)
             log.debug("unlock - done")
             render(contentType: 'application/xml') {
                 success('success.object.unlock')
@@ -691,7 +682,6 @@ class OsdController extends BaseController {
                 copy.getState().enterState(copy, copy.getState())
             }
             metasetService.copyMetasets(osd, copy, metasets)
-            osd.updateIndex()
             render(contentType: 'application/xml') {
                 objectId(copy.id.toString())
             }
@@ -719,22 +709,17 @@ class OsdController extends BaseController {
                 throw new CinnamonException('error.object.not.found')
             }
             (new Validator(userService.user)).validateDelete(osd)
-            luceneService.removeFromIndex(osd, repositoryName)
             ObjectSystemData preOsd = osd.getPredecessor();
             osdService.delete(osd, repositoryName)
             if (preOsd) {
                 def predecessorChildren = ObjectSystemData.findAllByPredecessor(preOsd)
                 preOsd.fixLatestHeadAndBranch(predecessorChildren)
-                luceneService.updateIndex(preOsd, repositoryName)
             }
             render(contentType: 'application/xml') {
                 success('success.delete.object')
             }
         }
         catch (Exception e) {
-            if (osd) {
-                luceneService.updateIndex(osd, repositoryName)
-            }
             renderExceptionXml('Failed to delete object', e)
         }
     }
@@ -774,16 +759,7 @@ class OsdController extends BaseController {
                 success('success.delete.all_versions')
             }
         }
-        catch (Exception e) {
-            if (osd) {
-                luceneService.updateIndex(osd, repositoryName)
-                if (objectTree) {
-                    objectTree.remove(osd)
-                    objectTree.each { item ->
-                        luceneService.updateIndex(item, repositoryName)
-                    }
-                }
-            }
+        catch (Exception e) {            
             renderExceptionXml('Failed to delete object', e)
         }
     }
@@ -1087,9 +1063,6 @@ class OsdController extends BaseController {
             log.debug("new osd: ${osd.toXML().asXML()}")
             log.debug("version of new osd: ${osd.cmnVersion}")
             
-            osd.predecessor.updateIndex()
-            osd.updateIndex()
-            
             render(contentType: 'application/xml') {
                 objectId(osd.id.toString())
             }
@@ -1129,7 +1102,6 @@ class OsdController extends BaseController {
             WritePolicy policy = WritePolicy.valueOf(write_policy ?: 'BRANCH')
             osd.setMetadata(metadata, policy);
             osd.updateAccess(user);
-            luceneService.updateIndex(osd, repositoryName);
             render(contentType: 'application/xml') {
                 cinnamon{
                     success('success.set.metadata')
@@ -1236,7 +1208,6 @@ class OsdController extends BaseController {
                 default: throw new CinnamonException("Parameter " + parameter + " is invalid on objects.")
             }
             osd.updateAccess(user)
-            luceneService.updateIndex(osd, repositoryName)
             render(contentType: 'application/xml'){
                 success('success.set.sys_meta')
             }

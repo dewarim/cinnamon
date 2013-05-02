@@ -86,7 +86,6 @@ class RenderServerController extends BaseController {
             }
             osd.setType(renderTaskType);
             osd.save()
-            osd.updateIndex()
 
             // create response
             render(contentType: 'application/xml') {

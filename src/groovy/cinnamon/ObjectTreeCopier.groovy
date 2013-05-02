@@ -114,12 +114,9 @@ public class ObjectTreeCopier {
         }
         copy.setType(osd.getType());
         copy.setCmnVersion(osd.getCmnVersion())
-
+        copy.save();
         fixLatestHeadAndBranch(copy);
         
-        copy.save();
-        copy.updateIndex()
-        copy.predecessor.updateIndex()
         copyCache.put(osd, copy);
         return copy;
     }
@@ -221,10 +218,6 @@ public class ObjectTreeCopier {
         osdService.copyContent(osd, copy);
         osdService.copyMetadata(osd, copy)
         osdService.copyRelations(osd, copy)
-        if (copy.predecessor){
-            luceneService.updateIndex(copy.predecessor)
-        }
-        copy.updateIndex()
         copyResult.addObject(copy);
         copyCache.put(osd, copy);
         return copy;
