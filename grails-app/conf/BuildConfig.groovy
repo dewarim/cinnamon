@@ -81,7 +81,7 @@ grails.project.dependency.resolution = {
         runtime ":resources:1.2"
         compile(':spring-security-core:1.2.7.3')
         compile (":twitter-bootstrap:2.1.0.1"){excludes 'svn'}
-        runtime ':cinnamon-db:3.0.0.26'
+        runtime ':cinnamon-db:3.0.0.27'
         runtime ':tika-parser:1.3.0.1'
         compile ":remote-pagination:0.3"
         compile ":geb:${gebPluginVersion}"
