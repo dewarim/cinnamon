@@ -507,14 +507,12 @@ class OsdController extends BaseController {
             def user = userService.user
             ObjectSystemData osd = new ObjectSystemData(params, user, false)
             (new Validator(user)).validateCreate(osd.parent)
+            osd.save(flush: true)
             log.debug("osd created: " + osd)
 
             if (params.containsKey("file")) {
                 osdService.saveFileUpload(request, osd, user, osd.format?.id, repositoryName)
-                // new TikaParser().parse(osd, repository.getName());
             }
-
-            osd.save(flush: true)
             metasetService.initializeMetasets(osd, (String) params.metasets)
             render(contentType: 'application/xml') {
                 objectId(osd.id.toString())
