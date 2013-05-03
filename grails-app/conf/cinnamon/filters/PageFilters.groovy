@@ -1,5 +1,7 @@
-package cinnamon
+package cinnamon.filters
 
+import cinnamon.ConfigEntry
+import cinnamon.ObjectSystemData
 import groovy.util.slurpersupport.GPathResult
 
 class PageFilters {

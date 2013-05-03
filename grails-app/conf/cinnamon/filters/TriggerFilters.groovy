@@ -1,3 +1,4 @@
+package cinnamon.filters
 
 import cinnamon.trigger.ChangeTrigger
 import cinnamon.trigger.ITrigger

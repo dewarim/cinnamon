@@ -1,5 +1,7 @@
-package cinnamon
+package cinnamon.filters
 
+import cinnamon.LocalRepository
+import cinnamon.ObjectSystemData
 import cinnamon.index.IndexAction
 import cinnamon.index.Indexable
 
@@ -20,8 +22,7 @@ class LuceneFilters {
                 if(e){    
                     log.debug("*** After View-Exception ***",e)
                 }
-                if(session.repositoryName && e == null){
-                    // only act if the user is logged in.
+                else{
                     ObjectSystemData.withNewTransaction {                        
                         Map<Indexable, IndexAction> updatedObjects = LocalRepository.getUpdatedObjects();
                         for(Indexable indexable : updatedObjects.keySet()){
