@@ -1,5 +1,7 @@
 package cinnamon
 
+import cinnamon.exceptions.CinnamonException
+import org.dom4j.Element
 import org.dom4j.Node
 import cinnamon.global.Constants
 import cinnamon.global.ConfThreadLocal
@@ -8,6 +10,8 @@ import humulus.EnvironmentHolder
 import humulus.Environment
 import humulus.HashMaker
 import cinnamon.i18n.UiLanguage
+
+import javax.persistence.NoResultException
 
 // Name was chosen after the main servlet path of the v2 Cinnamon server (/cinnamon/cinnamon)
 
@@ -205,7 +209,9 @@ class CinnamonController extends BaseController {
                 case 'disconnect': forward(action: 'disconnect'); break
                 case 'dotransition': forward(controller: 'workflow', action: 'doTransition'); break
                 case 'findopentasks': forward(controller: 'workflow', action: 'findOpenTasks'); break
+                case 'forksession': forward(controller: 'cinnamon', action: 'forkSession'); break
                 case 'getacls': forward(controller: 'acl', action: 'listXml'); break
+                case 'getconfigentry': forward(controller: 'configEntry', action: 'getConfigEntryXml'); break
                 case 'getcontent': forward(controller: 'osd', action: 'getContent'); break
                 case 'getfoldertypes': forward(controller: 'folderType', action: 'listXml'); break;
                 case 'getformats': forward(controller: 'format', action: 'listXml'); break
@@ -244,7 +250,8 @@ class CinnamonController extends BaseController {
                 case 'lock': forward(controller: 'osd', action: 'lockXml'); break
                 case 'searchobjects': forward(controller: 'search', action: 'searchObjectsXml'); break
                 case 'searchfolders': forward(controller: 'search', action: 'searchFolders'); break
-                case 'setcontent': forward(controller: 'osd', action: 'saveContentXml'); break
+                case 'setconfigentry': forward(controller: 'configEntry', action: 'setConfigEntryXml'); break
+                case 'setcontent': forward(controller: 'osd', action: 'saveContentXml'); break                
                 case 'setmeta': forward(controller: 'osd', action: 'saveMetadataXml'); break
                 case 'setmetaset': forward(controller: 'metaset', action: 'saveMetaset'); break
                 case 'setsysmeta': forward(controller: 'osd', action: 'updateSysMetaXml'); break
@@ -264,6 +271,45 @@ class CinnamonController extends BaseController {
         }
     }
 
+    /**
+     * Fork a session and receive another session ticket for the current repository.
+     * This method should be used by multi-threaded clients, which must not share
+     * the same ticket over parallel requests.
+     *
+     * @param cmd HTTP request params as Map
+     *            The request contains the following parameters:
+     *            <ul>
+     *            <li>command=forksession</li>
+     *            <li>ticket=current session ticket</li>
+     * @return a Response containing
+     *         <pre>
+     *         {@code
+     *         <connection>
+     *            <ticket>$ticket</ticket>
+     *         </connection>
+     *         }
+     *         </pre>
+     *         or an XML error message.
+     */
+    def forkSession(String sessionTicket) {
+        try{
+            Session session = Session.findByTicket(sessionTicket)
+            if(! session){
+                throw new CinnamonException("error.unknown.ticket")    
+            }
+            String repository = sessionTicket.split("@")[1]
+            Session forkedSession = session.copy(repository);
+            forkedSession.save()
+            render(contentType: 'application/xml'){
+                connection{
+                    ticket(forkedSession.ticket)
+                }
+            }
+        } catch (Exception e) {
+            renderExceptionXml(e)
+        }
+    }
+    
     def test() {
         log.debug("reached test method")
         render(text: 'test method')
