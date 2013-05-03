@@ -46,7 +46,6 @@ class CinnamonTikaService {
                 oldTikaXml.detach();
             }
             // TODO: work directly with tika metaset instead of going by setMetadata.
-            log.debug("set osd.metadata to:\n"+osd.getMetadata());
             Element tikaMetaset = meta.getRootElement().addElement("metaset");
             tikaMetaset.addAttribute("type","tika");
             tikaMetaset.add(resultNode);
@@ -63,7 +62,6 @@ class CinnamonTikaService {
             tikaMetaset.addAttribute("type","tika");
             tikaMetaset.addElement("error").addText(e.getLocalizedMessage());
             osd.setMetadata(meta.asXML());
-            log.debug("set osd.metadata to:\n"+osd.getMetadata());
         }
     }
 
