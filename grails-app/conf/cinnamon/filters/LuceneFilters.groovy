@@ -7,6 +7,8 @@ import cinnamon.index.Indexable
 
 class LuceneFilters {
 
+    def dependsOn = [TriggerFilters]
+    
     def luceneService
     def userService
     
