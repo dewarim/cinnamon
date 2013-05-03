@@ -1,6 +1,6 @@
 class CinnamonGrailsPlugin {
 
-    def version = "3.0.0.31"
+    def version = "3.0.0.32"
     def grailsVersion = "2.2 > *"
     def dependsOn = [:]
     def pluginExcludes = [
@@ -14,9 +14,9 @@ The Cinnamon ECMS plugin - adds a whole content management system to your applic
 allowing you to create custom apps based upon Cinnamon.
 '''
 
-    def documentation = "http://cinnamon-cms.de"
+    def documentation = "http://cinnamon-cms.com"
     def license = "LGPL 2.1"
-    def organization = [ name: "Horner GmbH", url: "http://horner-project.de/" ]
+    def organization = [ name: "Texolution GmbH", url: "http://texolution.eu/" ]
     def developers = [ 
             [ name: "Ingo Wiarda", email: "ingo.wiarda@texolution.eu" ]
     ]

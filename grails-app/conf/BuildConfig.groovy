@@ -48,7 +48,7 @@ grails.project.dependency.resolution = {
         runtime 'dom4j:dom4j:1.6.1'
         runtime 'jaxen:jaxen:1.1.4'
         compile 'org.codehaus.gpars:gpars:1.0.0'
-        runtime 'cinnamon:cinnamon-humulus:0.2.3'
+        runtime 'org.grails.plugins:cinnamon-humulus:0.2.5'
         runtime 'commons-net:commons-net:3.2'
         compile 'javax.mail:mail:1.4.6'
         test "org.spockframework:spock-grails-support:0.7-groovy-2.0"
@@ -77,12 +77,12 @@ grails.project.dependency.resolution = {
             export = false
         }
         
-        runtime ":jquery:1.8.0"
-        runtime ":resources:1.1.6"
+        runtime ":jquery:1.8.3"
+        runtime ":resources:1.2"
         compile(':spring-security-core:1.2.7.3')
         compile (":twitter-bootstrap:2.1.0.1"){excludes 'svn'}
         runtime ':cinnamon-db:3.0.0.26'
-        runtime ':tika-parser:1.3.0'
+        runtime ':tika-parser:1.3.0.1'
         compile ":remote-pagination:0.3"
         compile ":geb:${gebPluginVersion}"
         test (':spock:0.7'){
