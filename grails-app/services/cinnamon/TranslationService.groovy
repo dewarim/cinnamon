@@ -366,7 +366,14 @@ class TranslationService {
         for (String xml : xmlForm) {
             log.debug("testing: " + attribute + " value: " + attributeValue);
             log.debug("against: " + xml);
-            Document doc = ParamParser.parseXmlToDocument(xml, null);
+            Document doc;
+            try{
+                doc = ParamParser.parseXmlToDocument(xml, null);
+            }
+            catch (Exception e){
+                log.debug("Failed to parse xml [will ignore non-xml content]: "+e.getMessage());
+                continue;
+            }
             try {
                 org.dom4j.Node node = doc.selectSingleNode(attribute);
                 if (node != null && node.getText().equals(attributeValue)) {
