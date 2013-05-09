@@ -148,7 +148,8 @@ class CinnamonController extends BaseController {
             def cinnamonSession = new Session(repository, user, machine, uiLanguage)
             cinnamonSession.lifetime = new Date().time + ConfThreadLocal.conf.getSessionExpirationTime(repository)
             cinnamonSession.save()
-            render(text: "<connection><ticket>${cinnamonSession.ticket}</ticket></connection>")
+            log.debug("connect was successful, rendering response")
+            render(contentType: 'application/xml', text: "<connection><ticket>${cinnamonSession.ticket}</ticket></connection>")
         }
         catch (Exception e) {
             log.debug("failed to connect: ", e)
@@ -242,9 +243,10 @@ class CinnamonController extends BaseController {
                 case 'listgroups': forward(controller: 'group', action: 'listXml'); break
                 case 'listindexitems': forward(controller: 'indexItem', action: 'listXml'); break
                 case 'listindexgroups': forward(controller: 'indexGroup', action: 'listXml'); break
-                case 'listlanguages': forward(controller: 'language', action: 'listLanguages'); break                
+                case 'listlanguages': forward(controller: 'language', action: 'listLanguages'); break                                                
                 case 'listlifecycles': forward(controller: 'lifeCycle', action: 'listLifeCyclesXml'); break                
                 case 'listmessages': forward(controller: 'message', action: 'listXml'); break
+                case 'listmetasettypes': forward(controller: 'metasetType', action: 'listXml'); break
                 case 'listpermissions': forward(controller: 'permission', action: 'listXml'); break
                 case 'listuilanguages': forward(controller: 'uiLanguage', action: 'listUiLanguages'); break
                 case 'lock': forward(controller: 'osd', action: 'lockXml'); break

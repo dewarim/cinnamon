@@ -1,6 +1,8 @@
 package cinnamon
 
 import grails.plugins.springsecurity.Secured
+import org.dom4j.DocumentHelper
+import org.dom4j.Element
 import org.springframework.dao.DataIntegrityViolationException
 import cinnamon.utils.ParamParser
 
@@ -123,5 +125,16 @@ class MetasetTypeController {
 			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'metasetType.label', default: 'MetasetType'), params.id])
             redirect(action: "show", id: params.id)
         }
+    }
+
+    //---------------------------------------------------
+    // Cinnamon XML Server API
+    def listXml() {
+        def doc = DocumentHelper.createDocument()
+        Element root = doc.addElement("metasetTypes")
+        MetasetType.list().each{metasetType ->
+            root.add(MetasetType.asElement("metasetType", metasetType))
+        }
+        render(contentType: 'application/xml', text:doc.asXML())
     }
 }
