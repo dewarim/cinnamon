@@ -104,7 +104,7 @@ class LanguageController extends BaseController {
 
     //---------------------------------------------------
     // Cinnamon XML Server API
-    def listLanguages() {
+    def listXml() {
         Document doc = DocumentHelper.createDocument()
         Element root = doc.addElement("languages");
         Language.list().each {language->

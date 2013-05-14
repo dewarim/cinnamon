@@ -1,7 +1,6 @@
 package cinnamon
 
 import cinnamon.exceptions.CinnamonException
-import org.dom4j.Element
 import org.dom4j.Node
 import cinnamon.global.Constants
 import cinnamon.global.ConfThreadLocal
@@ -10,8 +9,6 @@ import humulus.EnvironmentHolder
 import humulus.Environment
 import humulus.HashMaker
 import cinnamon.i18n.UiLanguage
-
-import javax.persistence.NoResultException
 
 // Name was chosen after the main servlet path of the v2 Cinnamon server (/cinnamon/cinnamon)
 
@@ -243,12 +240,12 @@ class CinnamonController extends BaseController {
                 case 'listgroups': forward(controller: 'group', action: 'listXml'); break
                 case 'listindexitems': forward(controller: 'indexItem', action: 'listXml'); break
                 case 'listindexgroups': forward(controller: 'indexGroup', action: 'listXml'); break
-                case 'listlanguages': forward(controller: 'language', action: 'listLanguages'); break                                                
+                case 'listlanguages': forward(controller: 'language', action: 'listXml'); break                                                
                 case 'listlifecycles': forward(controller: 'lifeCycle', action: 'listLifeCyclesXml'); break                
                 case 'listmessages': forward(controller: 'message', action: 'listXml'); break
                 case 'listmetasettypes': forward(controller: 'metasetType', action: 'listXml'); break
                 case 'listpermissions': forward(controller: 'permission', action: 'listXml'); break
-                case 'listuilanguages': forward(controller: 'uiLanguage', action: 'listUiLanguages'); break
+                case 'listuilanguages': forward(controller: 'uiLanguage', action: 'listXml'); break
                 case 'lock': forward(controller: 'osd', action: 'lockXml'); break
                 case 'searchobjects': forward(controller: 'search', action: 'searchObjectsXml'); break
                 case 'searchfolders': forward(controller: 'search', action: 'searchFolders'); break

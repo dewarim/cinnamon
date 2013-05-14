@@ -101,7 +101,7 @@ class UiLanguageController extends BaseController{
 
     //---------------------------------------------------
     // Cinnamon XML Server API
-    def listUiLanguages() {
+    def listXml() {
         Document doc = DocumentHelper.createDocument()
         Element root = doc.addElement("languages");
         UiLanguage.list().each {language->
