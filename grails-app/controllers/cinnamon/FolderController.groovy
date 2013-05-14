@@ -580,10 +580,22 @@ class FolderController extends BaseController {
         }
     }
 
-    def fetchFolderXml() {
-        log.debug("Getfolderbyid: " + params.id);
-        try {
-            Folder folder = Folder.get(params.id);
+    /**
+     * Fetch an XML representation of the given folder, provided the current user has read-access.
+     * @param id the id of the folder. If 0, return the root folder.
+     * @return an XML document in the form /folders/folder, containing the requested folder 
+     * as well as its ancestors, if any.
+     */
+    def fetchFolderXml(Long id) {
+        log.debug("Getfolderbyid: " + id);
+        try {            
+            Folder folder
+            if(id == 0){
+                folder = folderService.findRootFolder()
+            }
+            else{
+                folder = Folder.get(id);
+            }
             def validator = new Validator(userService.user)
             validator.validateGetFolder(folder);
             List<Folder> folderList = new ArrayList<Folder>();
