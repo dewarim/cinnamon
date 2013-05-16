@@ -17,6 +17,8 @@ driver = {
     driver
 }
 
+reportsDir = "target/test-reports"
+
 environments {
 
     // run as “grails -Dgeb.env=chrome test-app”
