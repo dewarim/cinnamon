@@ -33,6 +33,7 @@ import javax.xml.xpath.XPathFactory
  */
 class TaskService {
     
+    def infoService
     def osdService
     def folderService
     
@@ -390,7 +391,7 @@ class TaskService {
         transferConfig.filename = selectFirstNodeText(model.taskMetasetDoc,
                 "//param[name='success.ftp.filename']/value")  ?: document.name
         def protocol = selectFirstNodeText(ftpNode, 'protocol')
-        def file = new File(document.getFullContentPath(EnvironmentHolder.environment.dbName))
+        def file = new File(document.getFullContentPath())
         switch (protocol){
             case 'ftp': fileService.ftpUpload(file, transferConfig)
                 break

@@ -334,7 +334,7 @@ class FolderService {
 
                     zipEntryPath = zipEntryPath.replaceAll("\\\\","/");
                     zos.putArchiveEntry(new ZipArchiveEntry(zipEntryPath));
-                    IOUtils.copy(new FileInputStream(osd.getFullContentPath(repositoryName)), zos);
+                    IOUtils.copy(new FileInputStream(osd.getFullContentPath()), zos);
                     zos.closeArchiveEntry();
                 }
             }

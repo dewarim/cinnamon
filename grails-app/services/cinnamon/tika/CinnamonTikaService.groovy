@@ -32,7 +32,7 @@ class CinnamonTikaService {
             return;
         }
         try {
-            File content = new File(osd.getFullContentPath(repository));
+            File content = new File(osd.getFullContentPath());
             TikaConfig tikaConfig = new TikaConfig();
             Metadata tikaMeta = new Metadata();
 

@@ -50,7 +50,7 @@ class ImageController extends BaseController {
                 return
             }
             response.setContentType(osd.format.contenttype)
-            File image = new File(osd.getFullContentPath(repositoryName))
+            File image = new File(osd.getFullContentPath())
             if (!image.exists()) {
                 log.debug("could not find: ${image.absolutePath}")
                 render(status: 503, text: message(code: 'error.image.not.found'))

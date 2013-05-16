@@ -28,13 +28,14 @@ allowing you to create custom apps based upon Cinnamon.
     }
     
     def doWithSpring = {
+        
     }
 
     def doWithDynamicMethods = { ctx ->
     }
 
     def doWithApplicationContext = { applicationContext ->
-        applicationContext.imageService.osdServiceBean = applicationContext.osdService
+        applicationContext.imageService.osdServiceBean = applicationContext.osdService        
     }
 
     def onChange = { event ->

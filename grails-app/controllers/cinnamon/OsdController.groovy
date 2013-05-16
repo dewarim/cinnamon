@@ -5,17 +5,13 @@ import cinnamon.references.LinkType
 import cinnamon.utils.ParamParser
 import org.dom4j.DocumentHelper
 import org.dom4j.Element
-import org.springframework.web.multipart.MultipartFile
 import grails.plugins.springsecurity.Secured
-import cinnamon.global.Conf
 
 import cinnamon.global.PermissionName
 import cinnamon.relation.Relation
-import cinnamon.global.ConfThreadLocal
 import cinnamon.i18n.Language
 import cinnamon.exceptions.CinnamonException
 import org.dom4j.Document
-import cinnamon.global.Constants
 
 /**
  *
@@ -24,6 +20,7 @@ import cinnamon.global.Constants
 class OsdController extends BaseController {
 
     def metasetService
+    def infoService
 
     def editMetadata() {
         try {
@@ -152,8 +149,7 @@ class OsdController extends BaseController {
             ObjectSystemData osd = fetchAndFilterOsd(id?.toString() ?: params.osd)
             folder = osd.parent
 
-            Conf conf = ConfThreadLocal.getConf()
-            def filename = conf.getDataRoot() + File.separator + repositoryName +
+            def filename = infoService.config.data_root + File.separator + repositoryName +
                     File.separator + osd.contentPath
             log.debug("getContent called for #${osd.id} @ $filename")
             File data = new File(filename)

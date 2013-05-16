@@ -206,7 +206,7 @@ class ImageService {
 
     ObjectSystemData rescaleImage(String idName, String repositoryName, params) {
         ObjectSystemData osd = ObjectSystemData.get(params."$idName")
-        BufferedImage buffy = ImageIO.read(new File(osd.getFullContentPath(repositoryName)))
+        BufferedImage buffy = ImageIO.read(new File(osd.getFullContentPath()))
         Integer x = params.x?.toBigDecimal()?.intValue()
         Integer y = params.y?.toBigDecimal()?.intValue()
         Integer width = params.width?.toBigDecimal()?.intValue()

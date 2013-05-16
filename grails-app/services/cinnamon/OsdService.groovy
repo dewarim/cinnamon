@@ -79,7 +79,7 @@ class OsdService {
     void copyContent(String repositoryName, ObjectSystemData source, ObjectSystemData copy) {
         String conPath = source.getContentPath();
         if (conPath != null && conPath.length() > 0) {
-            String fullContentPath = source.getFullContentPath(repositoryName);
+            String fullContentPath = source.getFullContentPath();
 
             log.debug("ContentPath: " + fullContentPath +
                     " and Size is: " + source.getContentSize());
@@ -114,9 +114,22 @@ class OsdService {
     /**
      * Copy relations of an object if the relationType demands it.
      *
+     * @param source from which the relations will copied.
      * @param target for which the new relations will be created.
      */
     public void copyRelations(ObjectSystemData source, ObjectSystemData target) {
+        copyRelations(source, target, CopyRelationMode.COPY)
+    }
+
+    /**
+     * Copy relations of an object if the relationType demands it.
+     *
+     * @param source from which the relations will copied.
+     * @param target for which the new relations will be created.
+     * @param mode chooses whether to look at the version- or copy-related flags when determining 
+     *  the need to copy relations 
+     */
+    public void copyRelations(ObjectSystemData source, ObjectSystemData target, CopyRelationMode mode) {
         List<Relation> relations =
             Relation.findAll("from Relation r where r.leftOSD=:left or r.rightOSD=:right",
                     [left: source, right: source]);
@@ -129,14 +142,26 @@ class OsdService {
              * will not have a relation to the html file. If the html file is copied, the copy
              * should have a relation to the image.
              */
-            RelationType relationType = rel.getType();
-            if (relationType.getCloneOnLeftCopy() && rel.getLeftOSD().equals(source)) {
-                Relation relCopy = Relation.findOrSaveWhere(type: rel.getType(), leftOSD: target, rightOSD: rel.getRightOSD(), metadata: rel.getMetadata());
-                log.debug("created new Relation: " + relCopy);
+            RelationType relationType = rel.type
+            if (mode.equals(CopyRelationMode.COPY)) {
+                if (relationType.cloneOnLeftCopy && rel.leftOSD.equals(source)) {
+                    Relation relCopy = Relation.findOrSaveWhere(type: rel.type, leftOSD: target, rightOSD: rel.rightOSD, metadata: rel.metadata)
+                    log.debug("created new Relation: " + relCopy)
+                }
+                if (relationType.cloneOnRightCopy && rel.rightOSD.equals(source)) {
+                    Relation relCopy = Relation.findOrSaveWhere(type: rel.type, leftOSD: rel.leftOSD, rightOSD: target, metadata: rel.metadata)
+                    log.debug("created new Relation: " + relCopy)
+                }
             }
-            if (relationType.getCloneOnRightCopy() && rel.getRightOSD().equals(source)) {
-                Relation relCopy = Relation.findOrSaveWhere(type: rel.getType(), leftOSD: rel.getLeftOSD(), rightOSD: target, metadata: rel.getMetadata());
-                log.debug("created new Relation: " + relCopy);
+            else { // = CopyRelationMode.VERSION
+                if (relationType.cloneOnLeftVersion && rel.leftOSD.equals(source)) {
+                    Relation relCopy = Relation.findOrSaveWhere(type: rel.type, leftOSD: target, rightOSD: rel.rightOSD, metadata: rel.metadata)
+                    log.debug("created new Relation: " + relCopy)
+                }
+                if (relationType.cloneOnRightVersion && rel.rightOSD.equals(source)) {
+                    Relation relCopy = Relation.findOrSaveWhere(type: rel.type, leftOSD: rel.leftOSD, rightOSD: target, metadata: rel.metadata)
+                    log.debug("created new Relation: " + relCopy)
+                }
             }
         }
     }
