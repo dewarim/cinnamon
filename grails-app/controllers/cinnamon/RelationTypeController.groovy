@@ -1,6 +1,5 @@
 package cinnamon
 
-import cinnamon.relation.Relation
 import grails.plugins.springsecurity.Secured
 import cinnamon.relation.RelationResolver
 import cinnamon.relation.RelationType
@@ -17,18 +16,11 @@ class RelationTypeController extends BaseController {
     }
 
     def save(String name) {
-        log.debug("relationType::${params}")
-        Boolean leftprotected = params.leftobjectprotected?.matches(/true|on/) ?: false
-        Boolean rightprotected = params.rightobjectprotected?.matches(/true|on/) ?: false
-        Boolean cloneOnLeftCopy = params.cloneOnLeftCopy?.matches(/true|on/) ?: false
-        Boolean cloneOnRightCopy = params.cloneOnRightCopy?.matches(/true|on/) ?: false
+        log.debug("relationType::${params}")       
         RelationResolver leftResolver = RelationResolver.get(params.left_resolver_id)
         RelationResolver rightResolver = RelationResolver.get(params.right_resolver_id)
-        RelationType relationType = new RelationType(name,
-                leftprotected, rightprotected,
-                leftResolver, rightResolver,
-                cloneOnLeftCopy, cloneOnRightCopy
-        )
+        RelationType relationType = new RelationType(name:name, leftResolver:leftResolver, rightResolver:rightResolver)
+        setBooleanFields(relationType)     
         try {
             relationType.save(failOnError: true)
         }
@@ -42,6 +34,20 @@ class RelationTypeController extends BaseController {
         return redirect(action: 'show', params: [id: relationType?.id])
     }
 
+    protected final booleanFields = ['leftobjectprotected', 'rightobjectprotected',
+            'cloneOnLeftCopy', 'cloneOnRightCopy', 'cloneOnLeftVersion', 'cloneOnRightVersion']
+
+    protected setBooleanFields(relationType){
+        booleanFields.each{ fName ->
+            if(params.containsKey(fName)){
+                relationType."$fName" = params.get(fName).toString().matches(/true|on/) ?: false
+            }
+            else{
+                relationType."$fName" = false
+            }
+        }
+    }
+    
     def list() {
         setListParams()
         [relationTypeList: RelationType.list(params)]
@@ -82,18 +88,7 @@ class RelationTypeController extends BaseController {
             if (!rt) {
                 throw new RuntimeException('error.object.not.found')
             }
-            if (params.leftobjectprotected) {
-                rt.leftobjectprotected = params.leftobjectprotected?.matches(/true|on/) ?: false
-            }
-            if (params.rightobjectprotected) {
-                rt.rightobjectprotected = params.rightobjectprotected?.matches(/true|on/) ?: false
-            }
-            if (params.cloneOnLeftCopy) {
-                rt.cloneOnLeftCopy = params.cloneOnLeftCopy?.matches(/true|on/) ?: false
-            }
-            if (params.cloneOnRightCopy) {
-                rt.cloneOnRightCopy = params.cloneOnRightCopy?.matches(/true|on/) ?: false
-            }
+            setBooleanFields(rt)           
             rt.leftResolver = RelationResolver.get(params.left_resolver_id);
             rt.rightResolver = RelationResolver.get(params.right_resolver_id);
             rt.name = name

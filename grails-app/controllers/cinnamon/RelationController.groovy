@@ -149,7 +149,7 @@ class RelationController extends BaseController {
             relationService.updateRelations(right);
             def doc = DocumentHelper.createDocument()
             def root = doc.addElement('relations')
-            relation.toXmlElement(root)
+            relation.toXmlElement(root, true)
             log.debug("Created relation as:" + doc.asXML());
             render(contentType: 'application/xml', text: doc.asXML())
         }

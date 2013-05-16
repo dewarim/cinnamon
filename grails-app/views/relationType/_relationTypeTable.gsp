@@ -76,6 +76,35 @@
             </g:else>
         </td>
     </tr>
+    <tr class="prop">
+        <td class="name"><g:message code="relationType.cloneOnLeftVersion"/></td>
+
+        <td class="value">
+            <g:if test="${relationType.cloneOnLeftVersion}">
+                <img src="<g:resource dir='/images' file='ok.png'/>"
+                     alt="<g:message code="input.disabled"/>">
+            </g:if>
+            <g:else>
+                <img src="<g:resource dir='/images' file='no.png'/>"
+                     alt="<g:message code="input.enabled"/>">
+            </g:else>
+        </td>
+    </tr>
+
+    <tr class="prop">
+        <td class="name"><g:message code="relationType.cloneOnRightVersion"/></td>
+
+        <td class="value">
+            <g:if test="${relationType.cloneOnRightVersion}">
+                <img src="<g:resource dir='/images' file='ok.png'/>"
+                     alt="<g:message code="input.disabled"/>">
+            </g:if>
+            <g:else>
+                <img src="<g:resource dir='/images' file='no.png'/>"
+                     alt="<g:message code="input.enabled"/>">
+            </g:else>
+        </td>
+    </tr>
 
     <tr class="prop">
         <td>
