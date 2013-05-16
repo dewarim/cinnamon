@@ -123,8 +123,8 @@ log4j = {
     info 'cinnamon.debug.ProviderManager'
     info 'humulus.RepositoryLoginFilter'
     info 'cinnamon.CinnamonUserDetailsService'
-    info 'grails.app.filters.cinnamon.PageFilters'
-    warn 'grails.app.filters.TriggerFilters'
+    info 'grails.app.filters.cinnamon.filters.PageFilters'
+    warn 'grails.app.filters.cinnamon.filters.TriggerFilters'
     debug 'cinnamon.data'
     debug 'cinnamon.OsdController'
     info 'cinnamon.index.LuceneActor'
@@ -132,9 +132,10 @@ log4j = {
     info 'cinnamon.index.LuceneService'
     info 'cinnamon.workflow.TransitionActor'
     info 'cinnamon.workflow'
+    info 'cinnamon.index'
     info 'humulus',
             'cinnamon.UserAccountController',
-            'cinnamon.TriggerFilters',
+            'cinnamon.cinnamon.filters.TriggerFilters',
             'cinnamon.index.indexer.ParentFolderPathIndexer',
             'org.springframework.security.authentication',
             'cinnamon.PreAuthenticatedAuthenticationProvider'
