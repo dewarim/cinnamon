@@ -32,19 +32,19 @@ encryptPasswords = true
 /*
  * Where the system files are kept (currently: log files)
  */
-system_root = '/home/ingo/cinnamon/cinnamon-system'
+system_root = '/opt/cinnamon/cinnamon-system'
 
 /*
  * Where the data files are kept.
  */
-data_root = '/home/ingo/cinnamon/cinnamon-data'
+data_root = '/opt/cinnamon/cinnamon-data'
 
 /*
  * Where to store the Lucene index files.
  * The recommended place is in $data_root/index, 
  * but some legacy systems have stored the index in system_root/index.
  */
-luceneIndexPath = '/home/ingo/cinnamon/cinnamon-system/index'
+luceneIndexPath = '/opt/cinnamon/cinnamon-system/index'
 
 /*
  * System administrator - currently not used.
