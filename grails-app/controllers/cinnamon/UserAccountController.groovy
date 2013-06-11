@@ -7,9 +7,10 @@ import grails.plugins.springsecurity.Secured
 import cinnamon.global.Constants
 import cinnamon.i18n.UiLanguage
 
-@Secured(["hasRole('_users')"])
+@Secured(["isAuthenticated()"])
 class UserAccountController extends BaseController {
 
+    @Secured(["hasRole('_superusers')"])
     def showUsersByGroup() {
         def group = CmnGroup.get(params.id)
         def groupUsers = CmnGroupUser.findAllByCmnGroup(group)
@@ -38,12 +39,14 @@ class UserAccountController extends BaseController {
      * Present a form with source and target user.
      * All objects which belong to the source user in some way will be transferred.
      */
+    @Secured(["hasRole('_superusers')"])
     def replaceUser() {
         [userList: UserAccount.list(),
                 forbidden: !userService.transferAssetsAllowed(repositoryName)
         ]
     }
 
+    @Secured(["hasRole('_superusers')"])
     def transferAssets() {
         try {
             if (!userService.transferAssetsAllowed(repositoryName)) {
@@ -74,23 +77,28 @@ class UserAccountController extends BaseController {
         return redirect(controller: 'userAccount', action: 'replaceUser')
     }
 
+    @Secured(["hasRole('_superusers')"])
     def create() {
 
     }
 
+    @Secured(["hasRole('_superusers')"])
     def list() {
         setListParams()
         [userList: UserAccount.list(params)]
     }
 
+    @Secured(["hasRole('_superusers')"])
     def show() {
         [user: UserAccount.get(params.id)]
     }
 
+    @Secured(["hasRole('_superusers')"])
     def edit() {
         [user: UserAccount.get(params.id)]
     }
 
+    @Secured(["hasRole('_superusers')"])
     def update() {
         log.debug(params.dump())
         UserAccount user = UserAccount.get(params.id)
@@ -141,6 +149,7 @@ class UserAccountController extends BaseController {
         user.language = UiLanguage.get(params.'language.id')
         if (params.pwd) {
             // set separately to prevent an empty/null pwd from being set.
+            log.debug("setting password of user ${user.name}")
             user.pwd = params.pwd
         }
         if (user.save(flush: true)) {
@@ -153,6 +162,7 @@ class UserAccountController extends BaseController {
         }
     }
 
+    @Secured(["hasRole('_superusers')"])
     def deleteAsk() {
         [userList: UserAccount.list(),
                 forbidden: !userService.deleteUserAllowed(repositoryName),
@@ -160,6 +170,7 @@ class UserAccountController extends BaseController {
         ]
     }
 
+    @Secured(["hasRole('_superusers')"])
     def doDelete() {
         try {
             if (!userService.deleteUserAllowed(repositoryName)) {
@@ -190,6 +201,7 @@ class UserAccountController extends BaseController {
     /**
      * add a group to a user
      */
+    @Secured(["hasRole('_superusers')"])
     def addGroup() {
         // -get selected user and group
         // -add group to user via groupuser
@@ -204,6 +216,7 @@ class UserAccountController extends BaseController {
     /**
      * Remove a group from a user
      */
+    @Secured(["hasRole('_superusers')"])
     def removeGroup() {
         // -get selected user and group
         // -remove group from user via groupuser
@@ -219,6 +232,7 @@ class UserAccountController extends BaseController {
     /**
      * Called after the 'save' button in create.gsp is called
      */
+    @Secured(["hasRole('_superusers')"])
     def save() {
 //        setHibernateSessionEm(session)
         def user = null
@@ -305,6 +319,7 @@ class UserAccountController extends BaseController {
         return user
     }
 
+    @Secured(["hasRole('_superusers')"])
     def updateList() {
         setListParams()
         render(template: 'userList', model: [userList: UserAccount.list(params)])
