@@ -76,8 +76,20 @@ class RelationController extends BaseController {
 
     //---------------------------------------------------
     // Cinnamon XML Server API
+    
+    /* The getrelations command retrieves a list of relations.
+     * Without the "name", leftid and rightid parameters, it lists all relations.
+     * If one or both of the ids and \/ or the name are specified, the results will be filtered accordingly.
+     *
+     * @param name relation type (optional)
+     * @param leftid id of "left object" (optional)
+     * @param rightid id of "right object" (optional)
+     * @param include_metadata optional parameter whether to include or exclude metadata
+     *            from the XML response, defaults to 'true'
+     * @return XML response: the serialized relation objects.
+     */
     @Secured(["isAuthenticated()"])
-    def listXml(String name, Long leftId, Long rightId, Boolean includeMetadata) {
+    def listXml(String name, Long leftid, Long rightid, Boolean include_metadata) {
         List<Relation> relations
 
         def criteria = Relation.createCriteria()
@@ -87,13 +99,23 @@ class RelationController extends BaseController {
                     eq('name', name)
                 }
             }
+            if(leftid){
+                leftOSD{
+                    eq('id', leftid)
+                }
+            }
+            if(rightid){
+                rightOSD{
+                    eq('id', rightid)
+                }
+            }
         }
 
 
         def doc = DocumentHelper.createDocument()
         Element root = doc.addElement("relations");
         relations.each { relation ->
-            relation.toXmlElement(root, true)
+            relation.toXmlElement(root, include_metadata != null ? include_metadata : true)
         }
         render(contentType: 'application/xml', text: doc.asXML())
     }
@@ -103,14 +125,9 @@ class RelationController extends BaseController {
      * with a relation of the type specified by name. If the relation already exists,
      * it will not create a new one but return the existing relation.
      *
-     * @param cmd HTTP request parameter map:
-     *            <ul>
-     *            <li>command=createrelation</li>
-     *            <li>name=name of the relation type</li>
-     *            <li>leftid=id of "left object"</li>
-     *            <li>rightid=id of "right object"</li>
-     *            <li>[metadata]= optional metadata in XML format, defaults to {@code <meta/>}</li>
-     *            </ul>
+     * @param leftid id of "left object"
+     * @param rightid id of "right object"
+     * @param metadata optional metadata in XML format, defaults to {@code <meta/>}
      * @return XML response with format:
      *         <pre>
      * {@code
