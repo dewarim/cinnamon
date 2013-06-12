@@ -227,7 +227,7 @@ class UserService {
             }
         }
         log.debug("number of permissions for this user: " + permissions.size());
-        return permissions
+        return permissions.toList()
     }
 
     /**
