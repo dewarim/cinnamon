@@ -1,7 +1,6 @@
 package cinnamon.filters
 
 import cinnamon.trigger.ChangeTrigger
-import cinnamon.trigger.ITrigger
 import cinnamon.PoBox
 
 class TriggerFilters {
