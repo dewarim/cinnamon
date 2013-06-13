@@ -18,11 +18,11 @@ import cinnamon.utils.ParamParser;
 
 /**
  * Log changes to an object's lifecycle state into a special table.
- *
+ * See source code for detailed installation hints.
+ * 
  */
-
 /*
-   Installation hints:
+  Installation hints:
   create table lifecycle_log(id serial  primary key, repository character varying(255) not null,
   hibernate_id bigint not null, 
   user_name varchar(255) not null, user_id bigint not null, date_created timestamp without time zone not null, 
@@ -51,13 +51,40 @@ import cinnamon.utils.ParamParser;
     Indexes:
         "lifecycle_log_pkey" PRIMARY KEY, btree (id)
  
- insert into customtables values(1,'jdbc:postgresql://127.0.0.1/demo?user=cinnamon&password=cinnamon',
- 'org.postgresql.Driver','audit.connection', 0, 3)
-
+ Configure the database connection for logging in cinnamon-config.groovy:
+ 
+ Quote from example file:
+ -------------------------------------------
+ This defines a dataSource for the audit-log for lifecycle changes.
+ You may use one of your Cinnamon repository databases or a separate
+ (depending on your security requirements)
+ This config file uses the "demo" repository.
+    dataSource_logging {
+    dialect = org.hibernate.dialect.PostgreSQLDialect
+    driverClassName = 'org.postgresql.Driver'
+    username = 'cinnamon'
+    password = 'cinnamon'
+    url = 'jdbc:postgresql://localhost/demo'
+    properties {
+        maxActive = -1
+        minEvictableIdleTimeMillis = 1800000
+        timeBetweenEvictionRunsMillis = 1800000
+        numTestsPerEvictionRun = 3
+        testOnBorrow = true
+        testWhileIdle = true
+        testOnReturn = true
+        validationQuery = "SELECT 1"
+    }
+    }
+ ------------------------------------------
+ 
  insert into change_trigger_types(id, description, name, trigger_class) values(
- 2, 'Lifecyclestate Audit ChangeTrigger','lifecycle.state.trigger','server.trigger.impl.LifecycleStateAuditTrigger');
+ 2, 'Lifecyclestate Audit ChangeTrigger','lifecycle.state.trigger','cinnamon.trigger.impl.LifecycleStateAuditTrigger');
 
- insert into change_triggers values(6,true,0,100,2,'changestate', true,true,'<config />');
+  --  adjust insert statement (w.r.t. id)
+  insert into change_triggers (id, active, obj_version,ranking, change_trigger_type_id, controller, action, pre_trigger,
+     post_trigger, config)
+  values(6,true,0,100,2,'cinnamon', 'changestate', true,true,'<config />');
   grant SELECT,INSERT on lifecycle_log TO cinnamon ;
   grant USAGE on lifecycle_log_id_seq TO cinnamon ;
  * 
