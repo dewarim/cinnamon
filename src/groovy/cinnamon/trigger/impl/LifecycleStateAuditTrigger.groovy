@@ -77,11 +77,14 @@ import cinnamon.utils.ParamParser;
     }
     }
  ------------------------------------------
+
+  --  adjust insert statement as needed
+  insert into customtables values(1,'jdbc:postgresql://127.0.0.1/demo?user=cinnamon&password=cinnamon',
+ 'org.postgresql.Driver','audit.connection', 0, 3)
  
  insert into change_trigger_types(id, description, name, trigger_class) values(
  2, 'Lifecyclestate Audit ChangeTrigger','lifecycle.state.trigger','cinnamon.trigger.impl.LifecycleStateAuditTrigger');
 
-  --  adjust insert statement (w.r.t. id)
   insert into change_triggers (id, active, obj_version,ranking, change_trigger_type_id, controller, action, pre_trigger,
      post_trigger, config)
   values(6,true,0,100,2,'cinnamon', 'changestate', true,true,'<config />');
