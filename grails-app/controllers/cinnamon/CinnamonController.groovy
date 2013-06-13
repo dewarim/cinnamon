@@ -210,12 +210,12 @@ class CinnamonController extends BaseController {
                 case 'forksession': forward(controller: 'cinnamon', action: 'forkSession'); break
                 case 'getacls': forward(controller: 'acl', action: 'listXml'); break
                 case 'getconfigentry': forward(controller: 'configEntry', action: 'getConfigEntryXml'); break
-                case 'getcontent': forward(controller: 'osd', action: 'getContent'); break
+                case 'getcontent': forward(controller: 'osd', action: 'getContent'); break                                                
+                case 'getfolder': forward(controller: 'folder', action: 'fetchFolderXml'); break
+                case 'getfolderbypath': forward(controller: 'folder', action: 'fetchFolderByPath'); break
+                case 'getfoldermeta': forward(controller: 'folder', action: 'getFolderMeta'); break
                 case 'getfoldertypes': forward(controller: 'folderType', action: 'listXml'); break;
                 case 'getformats': forward(controller: 'format', action: 'listXml'); break
-                case 'getfolderbypath': forward(controller: 'folder', action: 'fetchFolderByPath'); break
-                case 'getfolder': forward(controller: 'folder', action: 'fetchFolderXml'); break
-                case 'getfoldermeta': forward(controller: 'folder', action: 'getFolderMeta'); break
                 case 'getlifecycle': forward(controller: 'lifeCycle', action: 'getLifeCycle'); break
                 case 'getlifecyclestate': forward(controller: 'lifeCycleState', action: 'getLifeCycleState'); break
                 case 'getlink': forward(controller: 'link', action: 'getLink'); break
@@ -238,8 +238,8 @@ class CinnamonController extends BaseController {
                 case 'linkmetaset': forward(controller: 'metaset', action: 'linkMetaset'); break
                 case 'listaclentries': forward(controller: 'aclEntry', action: 'listXml'); break
                 case 'listgroups': forward(controller: 'group', action: 'listXml'); break
-                case 'listindexitems': forward(controller: 'indexItem', action: 'listXml'); break
                 case 'listindexgroups': forward(controller: 'indexGroup', action: 'listXml'); break
+                case 'listindexitems': forward(controller: 'indexItem', action: 'listXml'); break
                 case 'listlanguages': forward(controller: 'language', action: 'listXml'); break                                                
                 case 'listlifecycles': forward(controller: 'lifeCycle', action: 'listLifeCyclesXml'); break                
                 case 'listmessages': forward(controller: 'message', action: 'listXml'); break
