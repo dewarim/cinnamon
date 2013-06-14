@@ -1038,9 +1038,6 @@ class OsdController extends BaseController {
             if (name) {
                 osd.name = name
             }
-            if (metadata) {
-                osd.metadata = metadata
-            }
             if (parentid) {
                 osd.parent = Folder.get(parentid)
             }
@@ -1053,7 +1050,10 @@ class OsdController extends BaseController {
             osd.save(flush: true)            
             if (params.containsKey('file')) {
                 osdService.saveFileUpload(request, osd, user, myFormat.id, repositoryName, false)
-            }        
+            }
+            if (metadata) {
+                osd.metadata = metadata
+            }
             log.debug("new osd: ${osd.toXML().asXML()}")
             log.debug("version of new osd: ${osd.cmnVersion}")
             
