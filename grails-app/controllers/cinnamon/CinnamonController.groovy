@@ -210,7 +210,7 @@ class CinnamonController extends BaseController {
                 case 'forksession': forward(controller: 'cinnamon', action: 'forkSession'); break
                 case 'getacls': forward(controller: 'acl', action: 'listXml'); break
                 case 'getconfigentry': forward(controller: 'configEntry', action: 'getConfigEntryXml'); break
-                case 'getcontent': forward(controller: 'osd', action: 'getContent'); break                                                
+                case 'getcontent': forward(controller: 'osd', action: 'getContentXml'); break                                                
                 case 'getfolder': forward(controller: 'folder', action: 'fetchFolderXml'); break
                 case 'getfolderbypath': forward(controller: 'folder', action: 'fetchFolderByPath'); break
                 case 'getfoldermeta': forward(controller: 'folder', action: 'getFolderMeta'); break

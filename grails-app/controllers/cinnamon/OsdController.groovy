@@ -1210,4 +1210,41 @@ class OsdController extends BaseController {
             renderExceptionXml('Failed to updateSysMeta', e)
         }
     }
+
+    /**
+     * Retrieves the content with the given id. The user may then edit the file.
+     * <h2>Needed permissions</h2>
+     * READ_OBJECT_CONTENT
+     *
+     * @param id Id of the requested object
+     * @param resultfile the attachment filename 
+     * @return the raw content of the object as byte stream (MIME-type: binary/octet-stream)
+     */
+    def getContentXml(Long id, String resultfile) {
+        try {
+            ObjectSystemData osd = fetchAndFilterOsd(id?.toString() ?: params.osd)
+            def filename = infoService.config.data_root + File.separator + repositoryName +
+                    File.separator + osd.contentPath
+            log.debug("getContent called for #${osd.id} @ $filename")
+            File data = new File(filename)
+            if (!data.exists()) {
+                log.debug("could not find: $filename")
+                throw new RuntimeException('error.file.not.found')
+            }
+
+            if (osd.contentSize == null || osd.contentSize == 0) {
+                throw new RuntimeException('error.content.not.found')
+            }
+            def attachmentName = resultfile ?: "${osd.name.encodeAsURL()}${osd.determineExtension()}"
+            response.setHeader("Content-disposition", "attachment; filename=${attachmentName}");
+            response.setContentType(osd.format.contenttype)
+            response.outputStream << data.newInputStream()
+            response.outputStream.flush()
+            return null
+        }
+        catch (Exception e) {
+            LocalRepository.cleanUp()
+            render(status: 500, text: e.localizedMessage)
+        }
+    }
 }
