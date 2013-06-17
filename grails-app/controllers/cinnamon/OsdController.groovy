@@ -1244,7 +1244,7 @@ class OsdController extends BaseController {
         }
         catch (Exception e) {
             LocalRepository.cleanUp()
-            render(status: 500, text: e.localizedMessage)
+            renderExceptionXml(e)
         }
     }
 }
