@@ -25,6 +25,7 @@ class WorkflowService {
     def folderService
     def luceneService
     def osdService
+    def metasetService
     def relationService
 
     Long createWorkflow(Long templateId) {
@@ -68,6 +69,8 @@ class WorkflowService {
         workflow.setType(workflowType);
         workflow.setProcstate(Constants.PROCSTATE_WORKFLOW_STARTED);
         workflow.save()
+        metasetService.copyMetasets(workflowTemplate, workflow, null)
+
 
         log.debug("Creating new Start Task from task_definition");
         RelationType startTaskRelType = RelationType.findByName(Constants.RELATION_TYPE_WORKFLOW_TO_START_TASK);
@@ -96,7 +99,8 @@ class WorkflowService {
         task.setPredecessor(null);
         task.setOwner(userService.user)
         task.setType(taskType);
-
+        task.save()
+        metasetService.copyMetasets(taskDef, task, null)
 
         Document metaDoc = ParamParser.parseXmlToDocument(task.getMetadata(), null);
         org.dom4j.Node manualNode = metaDoc.selectSingleNode("/meta/metaset[@type='task_definition']/manual[text()='true']");
@@ -112,7 +116,6 @@ class WorkflowService {
             task.setProcstate(Constants.PROCSTATE_TASK_TODO);
         }
 
-        task.save()
         // copy content of startTask
         osdService.copyContent(taskDef, task);
 
