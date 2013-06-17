@@ -667,7 +667,6 @@ class OsdController extends BaseController {
             copy.setModifier(user)
             copy.setCreator(user)
             copy.setLocker(null)
-            osdService.copyContent(repositoryName, osd, copy)
             copy.save()
             copy.fixLatestHeadAndBranch([])
             osdService.copyRelations(osd, copy)
@@ -676,6 +675,7 @@ class OsdController extends BaseController {
                 copy.getState().enterState(copy, copy.getState())
             }
             metasetService.copyMetasets(osd, copy, metasets)
+            osdService.copyContent(repositoryName, osd, copy)
             render(contentType: 'application/xml') {
                 objectId(copy.id.toString())
             }
