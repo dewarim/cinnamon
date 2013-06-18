@@ -23,7 +23,6 @@ class WorkflowService {
 
     def userService
     def folderService
-    def luceneService
     def osdService
     def metasetService
     def relationService
