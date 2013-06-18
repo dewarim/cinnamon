@@ -157,8 +157,7 @@ class MetasetController extends BaseController{
             }
 
             metasetService.unlinkMetaset(metasetOwner, metaset)
-            luceneService.updateIndex(metasetOwner, repositoryName)
-
+            
             render(contentType: 'application/xml') {
                 success('success.link.metaset')
             }
