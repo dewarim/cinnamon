@@ -101,6 +101,7 @@ class UiLanguageController extends BaseController{
 
     //---------------------------------------------------
     // Cinnamon XML Server API
+    @Secured(["isAuthenticated()"])
     def listXml() {
         Document doc = DocumentHelper.createDocument()
         Element root = doc.addElement("languages");

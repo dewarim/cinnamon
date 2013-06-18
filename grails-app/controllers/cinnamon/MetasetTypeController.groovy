@@ -129,6 +129,7 @@ class MetasetTypeController {
 
     //---------------------------------------------------
     // Cinnamon XML Server API
+    @Secured(["isAuthenticated()"])
     def listXml() {
         def doc = DocumentHelper.createDocument()
         Element root = doc.addElement("metasetTypes")

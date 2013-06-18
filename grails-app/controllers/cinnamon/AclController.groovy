@@ -47,6 +47,7 @@ class AclController extends BaseController {
         return redirect(action: 'list', controller: 'acl')
     }
 
+    @Secured(["hasRole('_superusers')"])
     def create() {
 
     }
@@ -60,6 +61,7 @@ class AclController extends BaseController {
         [acl: Acl.get(params.id)]
     }
 
+    @Secured(["hasRole('_superusers')"])
     def edit() {
         def acl = Acl.get(params.id)
         if (!acl) {
@@ -72,6 +74,7 @@ class AclController extends BaseController {
         }
     }
 
+    @Secured(["hasRole('_superusers')"])
     def save(String name) {
         try {
             Acl acl = new Acl(name: name)
@@ -85,6 +88,7 @@ class AclController extends BaseController {
         }
     }
 
+    @Secured(["hasRole('_superusers')"])
     def update(String name, Long id) {
         Acl acl = Acl.get(id)
         if (!acl) {
@@ -101,6 +105,7 @@ class AclController extends BaseController {
         }
     }
 
+    @Secured(["hasRole('_superusers')"])
     def delete() {
         def acl = Acl.get(params.id)
 
@@ -135,6 +140,7 @@ class AclController extends BaseController {
         redirect(action: 'list')
     }
 
+    @Secured(["hasRole('_superusers')"])
     def addAclEntry() {
         try {
             def acl = Acl.get(params.id)
@@ -154,6 +160,7 @@ class AclController extends BaseController {
         }
     }
 
+    @Secured(["hasRole('_superusers')"])
     def removeAclEntry() {
         try {
             Acl acl = Acl.get(params.id)
