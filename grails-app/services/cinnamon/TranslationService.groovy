@@ -13,7 +13,6 @@ import org.dom4j.Element
 class TranslationService {
 
     def osdService
-    def luceneService
     def userService
     def relationService
 
@@ -250,8 +249,6 @@ class TranslationService {
                     throw new CinnamonException("error.translation.internal");
                 }
                 leaf.setMetadata(metaNode);
-
-                luceneService.u(leaf);
                 newObjects.add(leaf);
                 emptyCopies.put(osd, leaf);
             }
