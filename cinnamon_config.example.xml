@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cinnamon_config>
+ 
+  <!--
+    The individual elements of this config file are explained under:
+    http://cinnamon-cms.com/en/cinnamon-server/installation
+    
+    This file is currently still needed in addition to the more recent cinnamon-config.groovy.
+    Some settings are duplicated here.
+   -->
+
+  <minimalPasswordLength>4</minimalPasswordLength>
+  <encryptPasswords>true</encryptPasswords>
+    
+  <!-- optional passwordSalt: (default is 0xCHICKENSOUPx0 as defined in utils.security.HashMaker) -->   
+  <!-- <passwordSalt>##asitwereicannotthinkofabetterone##</passwordSalt> -->
+  <maxTokensPerDay>3</maxTokensPerDay>
+   
+  <startIndexServer>true</startIndexServer>
+  <startWorkflowServer>false</startWorkflowServer>
+
+  <sql_user>cinnamon</sql_user>
+  <sql_pwd>cinnamon</sql_pwd>
+  <log_verbosity>OFF</log_verbosity>
+  
+  <!-- Logging options: --> 
+  <logback_configuration_path>c:/cinnamon-system/logback.xml</logback_configuration_path>
+  	<!-- session logging: create a separate log file for each cinnamon session --> 
+  <use_session_logging>false</use_session_logging>
+  <!-- End logging options -->
+   
+  <system_root>c:\\cinnamon-system\\</system_root>
+  <data_root>c:\\cinnamon-data\\</data_root>
+  
+  <!-- Note: you should add a messageId for "password.reset.mail.subject" with translation in the AdminTool.
+  	see: http://cinnamon-cms.de/cinnamonserver/installation-of-binary-package/3.-customizing-your-cinnamon-server
+  	for more information.
+   -->
+  <mail>
+  	<from>CinnamonServer@localhost</from>
+  	<smtp-host>example.invalid</smtp-host>
+  	<user>cinnamon</user>
+  	<password>_cinnamon's_password</password>
+  </mail>
+  <system-administrator>cinnamon@localhost</system-administrator>
+  
+  <!-- the URL where the server can be reached. Needed for links in password reset mail etc.  -->
+ <server-url>http://localhost:8080/cinnamon/cinnamon</server-url>
+    
+  <repositories>
+ 	<repository>
+ 		<name>cmn_test</name>
+ 		<!-- session expiration time in milliseconds -->
+ 	    <sessionExpirationTime>360000</sessionExpirationTime>
+        <!-- Note: cinnamon_test will always create a new database. Use 'cinnamon' for production use -->
+ 		<persistence_unit>cinnamon</persistence_unit>
+        <apiClasses>
+           <!-- The only obligatory apiClass: -->
+	       <apiClass>server.CmdInterpreter</apiClass>
+	       <!-- extensions: -->
+	       <apiClass>server.extension.Initializer</apiClass> <!-- needed for testing -->
+           <apiClass>server.extension.Translation</apiClass>
+           <apiClass>server.extension.TransformationEngine</apiClass>
+           <apiClass>server.extension.QueryCustomTable</apiClass> <!-- needed for CustomTableTest -->
+            <!-- the following classes are needed for testing: -->
+           <apiClass>server.extension.admin.UserManager</apiClass>
+           <apiClass>server.extension.admin.ObjectTypeManager</apiClass>
+           <apiClass>server.extension.admin.AclManager</apiClass>
+           <apiClass>server.extension.admin.PermissionManager</apiClass>
+           <apiClass>server.extension.admin.FormatManager</apiClass>
+           <apiClass>server.extension.admin.GroupManager</apiClass>
+           <apiClass>server.extension.admin.RelationTypeManager</apiClass>
+           <apiClass>server.extension.admin.FolderTypeManager</apiClass>
+           <apiClass>server.extension.WorkflowApi</apiClass>
+           <apiClass>server.extension.LinkApi</apiClass>
+	    </apiClasses>
+        <categories>
+            <category>TEST</category>
+        </categories>
+ 	</repository>
+  </repositories>
+
+  <sql_host>127.0.0.1</sql_host>
+
+  <!-- alternatives: mssql2000 mssql postgresql mysql -->
+  <db_type>mssql2000</db_type> 
+  <jdbc_driver>net.sourceforge.jtds.jdbc.Driver</jdbc_driver>
+  <jdbc_protocol>sqlserver</jdbc_protocol>
+    
+  <audit-jdbc-driver>org.postgresql.Driver</audit-jdbc-driver>
+  <audit-jdbc-url>jdbc:postgresql://127.0.0.1/cinnamon_audit?user=cinnamon&amp;password=cinnamon</audit-jdbc-url>
+</cinnamon_config>
