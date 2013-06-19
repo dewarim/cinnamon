@@ -11,3 +11,4 @@ target/**
 plugin.xml
 cinnamon-config.groovy
 grails-cinnamon*.zip
+*.zip.sha1
