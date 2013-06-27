@@ -150,6 +150,12 @@ class UserAccountController extends BaseController {
         if (params.pwd) {
             // set separately to prevent an empty/null pwd from being set.
             log.debug("setting password of user ${user.name}")
+            def minPasswordLength = grailsApplication.config.minimalPasswordLength?.toInteger() ?: 4
+            if(params.pwd.length() < minPasswordLength ){
+                flash.message = message(code: 'error.password.too.short')
+                redirect(action: 'edit', params: [id: user.id])
+                return
+            }
             user.pwd = params.pwd
         }
         if (user.save(flush: true)) {
