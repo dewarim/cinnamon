@@ -1,6 +1,6 @@
 class CinnamonGrailsPlugin {
 
-    def version = "3.0.0.34"
+    def version = "3.0.0.35"
     def grailsVersion = "2.2 > *"
     def dependsOn = [:]
     def pluginExcludes = [
@@ -16,9 +16,9 @@ allowing you to create custom apps based upon Cinnamon.
 
     def documentation = "http://cinnamon-cms.com"
     def license = "LGPL 2.1"
-    def organization = [ name: "Texolution GmbH", url: "http://texolution.eu/" ]
+//    def organization = [ name: "Texolution GmbH", url: "http://texolution.eu/" ]
     def developers = [ 
-            [ name: "Ingo Wiarda", email: "ingo.wiarda@texolution.eu" ]
+            [ name: "Ingo Wiarda", email: "ingo_wiarda@dewarim.de" ]
     ]
 
     def issueManagement = [ system: "github", url: "https://github.com/dewarim/cinnamon/issues" ]
