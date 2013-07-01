@@ -103,7 +103,15 @@ class ImageService {
     BufferedImage loadImage(String repositoryName, String contentPath) {
         def file = new File(ConfThreadLocal.conf.getDataRoot() + File.separator + repositoryName, contentPath)
         log.debug("looking at image file: ${file.absolutePath}")
-        def buffy = ImageIO.read(file)        
+        def buffy
+        if(file.exists()){
+            buffy = ImageIO.read(file)
+        }
+        else{
+            log.error("Could not find file ${file.absolutePath}")
+            // TODO: report broken image file to user, perhaps by using a notification object.
+            return new BufferedImage(1,1, BufferedImage.TYPE_INT_RGB)
+        }
         return convert(buffy, BufferedImage.TYPE_INT_RGB)
     }
 
