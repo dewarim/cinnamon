@@ -215,6 +215,10 @@ class OsdService {
         links.each {
             it.delete()
         }
+        
+        osd.metasets.collect{it}.each{
+            metasetService.unlinkMetaset(osd, it.metaset)
+        }
         log.debug("object deleted.");
 
         /*
@@ -236,11 +240,6 @@ class OsdService {
         }
 
         ContentStore.deleteObjectFile(osd, repository);
-
-        // delete metadata and metasets:
-        OsdMetaset.findByOsd(osd).each { osdMetaset ->
-            metasetService.unlinkMetaset(osd, osdMetaset.metaset)
-        }
         osd.delete(flush: true)
     }
 
@@ -315,7 +314,8 @@ class OsdService {
             return deleteAllVersions(idList, repository)
         }
 
-        idList.sort().reverse().each { id ->
+        // http://jira.grails.org/browse/GRAILS-9091
+        idList.collect{it}.sort().reverse().each { id ->
             try {
                 log.debug("delete: $id with version policy: ${versionType}")
 
