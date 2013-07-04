@@ -480,23 +480,22 @@ class OsdController extends BaseController {
      * <h2>Needed permissions</h2>
      * CREATE_OBJECT
      *
-     * @param cmd HTTP request parameter map
-     *            <ul>
-     *            <li>command=create</li>
-     *            <li>[preid]= optional predecessor id - basically this may be used to create another (empty) version of an object.</li>
-     *            <li>name = name of this object</li>
-     *            <li>[appname] = internally used by desktop client to determine which DTDs etc are needed for this object</li>
-     *            <li>metadata = XML string of metadata with required root element {@code <meta>}</li>
-     *            <li>[objtype_id OR objtype]= Id or Name of object type. If no object type is specified, use Constants.OBJTYPE_DEFAULT.</li>
-     *            <li>parentid = id of parent folder</li>
-     *            <li>[format OR format_id] = Id or name of format (optional)</li>
-     *            <li>[acl_id] = optional Id of ACL - if not specified, will use ACL of parent folder</li>
-     *            <li>[language_id]=optional id of language, will use default language "und" for undetermined if not specified.</li>
-     *            </ul>
+     * Request parameters (parameters in [...] are optional)
+     * <ul>
+     *  <li>[preid]= optional predecessor id - basically this may be used to create another (empty) version of an object.</li>
+     *   <li>name = name of this object</li>
+     *   <li>[appname] = internally used by desktop client to determine which DTDs etc are needed for this object</li>
+     *   <li>[metadata] = XML string of metadata with required root element {@code <meta>}</li>
+     *   <li>[objtype_id OR objtype]= Id or Name of object type. If no object type is specified, use Constants.OBJTYPE_DEFAULT.</li>
+     *   <li>parentid = id of parent folder</li>
+     *   <li>[format OR format_id] = Id or name of format (optional)</li>
+     *   <li>[acl_id] = optional Id of ACL - if not specified, will use ACL of parent folder</li>
+     *   <li>[language_id]=optional id of language, will use default language "und" for undetermined if not specified.</li>
+     *  </ul>
      * @return a Response which contains:
      *         <pre>
      * {@code <objectId>$id_of_new_object</objectId>}
-     *                         </pre>
+     *         </pre>
      */
     def createOsd() {
         try {
@@ -525,11 +524,7 @@ class OsdController extends BaseController {
      * <h2>Needed permissions</h2>
      * BROWSE_OBJECT
      *
-     * @param cmd HTTP request parameter map:
-     *            <ul>
-     *            <li>command=getobject</li>
-     *            <li>id=object id</li>
-     *            </ul>
+     * @param id the ide of the OSD you want to fetch.
      * @return XML-Response:
      *         XML serialized object or xml-error-doc
      */
@@ -560,11 +555,7 @@ class OsdController extends BaseController {
      * <h2>Needed permissions</h2>
      * LOCK
      *
-     * @param cmd HTTP request parameter map:
-     *            <ul>
-     *            <li>command=lock</li>
-     *            <li>id = object id</li>
-     *            </ul>
+     * @param id = object id
      * @return XML-Response:
      * {@code
      *         <success>success.object.lock</success>
@@ -627,13 +618,9 @@ class OsdController extends BaseController {
      * <li>CREATE_OBJECT</li>
      * </ul>
      *
-     * @param cmd parameter map from HTTP request containing:
-     *            <ul>
-     *            <li>command = copy</li>
-     *            <li>sourceid	= source object id</li>
-     *            <li>targetfolderid	= target folder id</li>
-     *            <li>[metasets]=optional, comma-separated list of metasetType-names which will be copied.</li>
-     *            </ul>
+     * @param sourceid the original object
+     * @param targetfolderid = the id of the target folder
+     * @param metasets optional, comma-separated list of metasetType-names which will be copied.
      * @return xml response with id of newly created object (or standard xml error message in case of error):
      * <pre>
      * {@code
@@ -690,7 +677,7 @@ class OsdController extends BaseController {
      * cascades over related objects, unless they are protected by the relationtype.
      * <h2>Needed permissions</h2>
      *         DELETE_OBJECT
-     * @param id
+     * @param id the id of the object that should be deleted.
      * @return XML-Response:
      *         <pre>
      * {@code <success>success.delete.object</success> }
@@ -873,11 +860,11 @@ class OsdController extends BaseController {
     /**
      * The getsysmeta command fetches one of the system attributes of an object specified
      * by the "parameter" value. The following parameters can be retrieved:*
-     *            <h2>Needed permissions</h2>
+     *   <h2>Needed permissions</h2>
      *            READ_OBJECT_SYS_META oder BROWSE_FOLDER     
      * @param id the object id
      * @param parameter one of the following strings:
-     *            <ul>
+     *   <ul>
      *      <li>preid </li>
      *      <li>locked </li>
      *      <li>owner </li>
