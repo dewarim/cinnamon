@@ -503,6 +503,14 @@ class OsdController extends BaseController {
             ObjectSystemData osd = new ObjectSystemData(params, user, false)
             (new Validator(user)).validateCreate(osd.parent)
             osd.save(flush: true)
+            if(params.metadata){
+                osd.setMetadata(params.metadata)
+            }
+            if(params.preid){
+                // TODO: should probably not copy all metadata...
+                // but that is currently the legacy behaviour.
+                osd.metadata = osd.predecessor.metadata
+            }
             log.debug("osd created: " + osd)
 
             if (params.containsKey("file")) {
