@@ -1,6 +1,7 @@
 package cinnamon
 
 import cinnamon.exceptions.CinnamonException
+import org.dom4j.Element
 import org.dom4j.Node
 import cinnamon.global.Constants
 import cinnamon.global.ConfThreadLocal
@@ -255,6 +256,7 @@ class CinnamonController extends BaseController {
                 case 'setmetaset': forward(controller: 'metaset', action: 'saveMetaset'); break
                 case 'setsysmeta': forward(controller: 'osd', action: 'updateSysMetaXml'); break
                 case 'startrendertask': forward(controller: 'renderServer', action: 'createRenderTask'); break
+                case 'sudo': forward(action: 'sudo'); break
                 case 'test': forward(action: 'test'); break
                 case 'unlinkmetaset': forward(controller: 'metaset', action: 'unlinkMetaset'); break
                 case 'unlock': forward(controller: 'osd', action: 'unlockXml'); break
@@ -319,5 +321,68 @@ class CinnamonController extends BaseController {
     def test() {
         log.debug("reached test method")
         render(text: 'test method')
+    }
+
+    /**
+     * Sudo: create a new session for another user and receive his session ticket.<br>
+     * This method can be used by external processes to work in the name of normal users. For example,
+     * a user creates a task for the RenderServer. The render process now creates a rendition of an
+     * object and wants to store it in the repository - but we need to check that a user cannot create
+     * tasks that produce output in a form or place that he may not use. <br>
+     * Note that the sudo API method can be dangerous, so it needs to be restricted. This is achieved by
+     * having two fields in the User object:
+     * <ul>
+     * <li>sudoer = boolean value, true if the User is allowed to use the sudo command</li>
+     * <li>sudoable = boolean value, true if the user may be the target of a sudo.</li>
+     * </ul>
+     * <p/>
+     * Unless the system administrator needs to debug a specific task, administrator accounts should
+     * always have the sudoable field set to false.
+     *
+     * @param user_id= id of the user who you want to impersonate
+     * @return XML document with the ticket of the user's session.
+     */
+    def sudo(Long user_id) {
+        try {
+            // check user_id parameter
+            if (!user_id) {
+                throw new RuntimeException("error.missing.param.user_id")
+            }
+            UserAccount user = userService.user
+            // check if current user may do sudo
+            if (user.sudoer) {
+                log.debug("User ${user.name} is sudoer - ok.")
+            }
+            else {
+                log.debug("User ${user.name} may not do sudo.")
+                throw new CinnamonException("error.sudo.forbidden")
+            }
+
+            // load user to which sudo is being done ;)
+            UserAccount alias = UserAccount.get(user_id)
+            if (alias == null) {
+                throw new CinnamonException("error.user.not_found")
+            }
+
+            // check if target is sudoable
+            if (!alias.sudoable) {
+                log.warn("User ${user.name} tried to become ${alias.name} via sudo, who is not a valid target.")
+                throw new CinnamonException("error.sudo.misuse")
+            }
+
+            // create session for target user:
+            Session session = new Session(repositoryName, alias, "--- sudo by ${user.name} ---", user.language)
+            session.save()
+            log.debug("session.ticket:" + session.ticket)
+
+            // create response:
+            render(contentType: 'application/xml') {
+                sudoTicket(session.ticket)
+            }
+        }
+        catch (Exception e) {
+            log.debug("failed to sudo: ", e)
+            renderErrorXml(e.message)
+        }
     }
 }
