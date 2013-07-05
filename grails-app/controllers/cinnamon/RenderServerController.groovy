@@ -62,7 +62,7 @@ class RenderServerController extends BaseController {
             
             String metasetStr = "<meta>"+renderInput+"<metaset type=\"render_output\"></metaset></meta>";
             org.dom4j.Node metaset = ParamParser.parseXml(metasetStr, null);
-            osd.metadata = metaset.asXML()
+            
             LifeCycle lc = LifeCycle.findByName(Constants.RENDER_SERVER_LIFECYCLE);
             if(lc == null){
                 throw new CinnamonConfigurationException(Constants.RENDER_SERVER_LIFECYCLE+" lifecycle was not found.");
@@ -85,8 +85,9 @@ class RenderServerController extends BaseController {
                 throw new CinnamonConfigurationException("Could not find required render task object type.");
             }
             osd.setType(renderTaskType);
-            osd.save()
-
+            osd.save(flush:true)
+            osd.metadata = metaset.asXML()
+            
             // create response
             render(contentType: 'application/xml') {
                 startRenderTask{
