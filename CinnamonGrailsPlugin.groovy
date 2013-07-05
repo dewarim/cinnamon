@@ -1,6 +1,8 @@
+import cinnamon.Session
+
 class CinnamonGrailsPlugin {
 
-    def version = "3.0.0.35"
+    def version = "3.0.0.41"
     def grailsVersion = "2.2 > *"
     def dependsOn = [:]
     def pluginExcludes = [
@@ -35,7 +37,8 @@ allowing you to create custom apps based upon Cinnamon.
     }
 
     def doWithApplicationContext = { applicationContext ->
-        applicationContext.imageService.osdServiceBean = applicationContext.osdService        
+        applicationContext.imageService.osdServiceBean = applicationContext.osdService
+        Session.infoService = applicationContext.infoService
     }
 
     def onChange = { event ->

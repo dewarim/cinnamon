@@ -290,22 +290,29 @@ class CinnamonController extends BaseController {
      *         </pre>
      *         or an XML error message.
      */
-    def forkSession(String sessionTicket) {
+    def forkSession(String ticket) {
         try{
-            Session session = Session.findByTicket(sessionTicket)
+            Session session = Session.findByTicket(ticket)
             if(! session){
+                log.warn("unknown session ticket for forkSession: '$ticket'")
                 throw new CinnamonException("error.unknown.ticket")    
             }
-            String repository = sessionTicket.split("@")[1]
+            String repository = ticket.split("@")[1]            
             Session forkedSession = session.copy(repository);
             forkedSession.save()
-            render(contentType: 'application/xml'){
-                connection{
-                    ticket(forkedSession.ticket)
-                }
-            }
+            renderTicket(forkedSession.ticket)
+          
         } catch (Exception e) {
+            log.debug("failed to fork session:",e)
             renderExceptionXml(e)
+        }
+    }
+    
+    private renderTicket(myTicket){
+        render(contentType: 'application/xml'){
+            connection{
+                ticket(myTicket)
+            }
         }
     }
     
