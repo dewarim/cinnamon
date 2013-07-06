@@ -3,10 +3,8 @@ package cinnamon
 import cinnamon.exceptions.CinnamonException
 import cinnamon.global.PermissionName
 import cinnamon.index.IndexAction
-import cinnamon.index.Indexable
 import cinnamon.interfaces.IMetasetOwner
 import org.dom4j.DocumentHelper
-import org.dom4j.Element
 
 class MetasetController extends BaseController{
     
@@ -70,9 +68,9 @@ class MetasetController extends BaseController{
      *              }
      *            </pre>
      * @param write_policy optional write policy, allowed values are write|ignore|branch, default is branch.
-     *            On write, the content is written regardless of other items linking to this metaset.
-     *            On ignore, the content is ignored if there are other references to the metaset.
-     *            On branch, if other references exist, a separate metaset for this item is created.
+     *            On WRITE, the content is written regardless of other items linking to this metaset.
+     *            On IGNORE, the content is ignored if there are other references to the metaset.
+     *            On BRANCH, if other references exist, a separate metaset for this item is created.
      * @return XML-Response:
      *         The metaset or an XML error message.
      */
