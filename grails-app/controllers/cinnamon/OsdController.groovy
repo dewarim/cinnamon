@@ -592,9 +592,9 @@ class OsdController extends BaseController {
      * @param id id of the object to unlock.
      * @return XML-Response
      * {@code
-     *         <success>success.object.lock</success>
+     *         <success>success.object.unlock</success>
      *}
-     * or an error message if the object was not locked.
+     * or an error message if something went wrong.
      */
     def unlockXml(Long id) {
         try {
@@ -610,7 +610,6 @@ class OsdController extends BaseController {
         catch (Exception e) {
             log.debug("Failed to unlock #$id.", e)
             renderExceptionXml(e)
-
         }
     }
 
@@ -1103,7 +1102,7 @@ class OsdController extends BaseController {
     }
 
     /**
-     * The setsysmeta command sets one of the system attributes of an object or folder
+     * The updateSysMeta command sets one of the system attributes of an object or folder
      * to the specified value. If an id parameter is specified, the metadata is applied to the object
      * with the specified id. If a folderid parameter is specified, the metadata is applied to the folder
      * with the specified id. Either an id or a folderid must be specified,
@@ -1118,7 +1117,10 @@ class OsdController extends BaseController {
      * <li>     objtype  (currently, this parameter is the _name_ of an objtype, NOT an id!)</li>
      * <li>     language_id (= id of a language)</li>
      * </ul>
-     * <p/>
+     * On OSDs, you can additionally set:
+     * <ul>
+     *     <li>appname= appname field (mostly for application type associated with this object)</li>
+     * </ul>
      * <h2>Needed permissions</h2>
      * <ul>
      * <li>LOCK und (WRITE_OBJECT_SYS_METADATA oder EDIT_FOLDER)</li>
