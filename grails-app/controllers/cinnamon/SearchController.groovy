@@ -21,7 +21,7 @@ class SearchController extends BaseController {
             root.addAttribute("total-results", String.valueOf(resultStore.size()));
 
             if (params.containsKey("page_size")) {
-                addPagedResultsToElement(root, resultStore, page_size, page);
+                addPagedResultsToElement(root, resultStore, page_size, page, null);
             }
             else {
                 for (XmlConvertable conv : resultStore) {
@@ -38,11 +38,15 @@ class SearchController extends BaseController {
             renderExceptionXml(e)
         }
     }
-
-    def searchObjectsXml(String query, Integer page_size, Integer page) {
+    
+    def searchObjectsXml(String query, Integer page_size, Integer page, String metaset_list) {
         try {
-            doSearch(query, page_size, page, SearchableDomain.OSD)
-                      
+            List metasets = []
+            if(metaset_list){
+                metasets = metaset_list.split(/,\s*/)
+            }
+            log.debug("metasets: $metasets")
+            doSearch(query, page_size, page, SearchableDomain.OSD, metasets)                      
         }
         catch (Exception e) {
             log.debug("failed searchObjects: ", e)
@@ -50,7 +54,7 @@ class SearchController extends BaseController {
         }
     }
     
-    protected void doSearch(query, pageSize, page, domain){
+    protected void doSearch(query, pageSize, page, domain, List metasets){
         def fields = params.list('field')
         Set<XmlConvertable> resultStore = luceneService.fetchSearchResults(query, repositoryName, userService.user, domain, fields);
         def doc = DocumentHelper.createDocument()
@@ -58,11 +62,11 @@ class SearchController extends BaseController {
         root.addAttribute("total-results", String.valueOf(resultStore.size()));
 
         if (pageSize) {
-            addPagedResultsToElement(root, resultStore, pageSize, page);
+            addPagedResultsToElement(root, resultStore, pageSize, page, metasets);
         }
         else {
             resultStore.each { convertable ->
-                convertable.toXmlElement(root);
+                convertable.toXmlElement(root, metasets);
             }
         }
         // add parent folders of search results to enable display of folder structure without
@@ -71,7 +75,7 @@ class SearchController extends BaseController {
         render(contentType: 'application/xml', text: doc.asXML())
     }
 
-    protected void addPagedResultsToElement(Element root, Set<XmlConvertable> resultStore, Integer pageSize, Integer currentPage) {
+    protected void addPagedResultsToElement(Element root, Set<XmlConvertable> resultStore, Integer pageSize, Integer currentPage, List metasets) {
         List<XmlConvertable> itemList = new ArrayList<XmlConvertable>();
         itemList.addAll(resultStore);
 
@@ -94,7 +98,7 @@ class SearchController extends BaseController {
         int start = pageSize * (page - 1);
         int end = pageSize * page;
         for (int x = start; x < end && x < itemList.size(); x++) {
-            itemList.get(x).toXmlElement(root)
+            itemList.get(x).toXmlElement(root, metasets)
         }
     }
 
@@ -186,9 +190,13 @@ class SearchController extends BaseController {
      *}
      *         </pre>
      */
-    def searchFolders(String query, Integer page_size, Integer page) {
+    def searchFolders(String query, Integer page_size, Integer page, String metaset_list) {
         try{
-            doSearch(query, page_size, page, SearchableDomain.FOLDER)
+            def metasets = []
+            if(metaset_list){
+                metasets = metaset_list.split(/,\s*/)
+            }
+            doSearch(query, page_size, page, SearchableDomain.FOLDER, metasets)
         }
         catch (Exception e){
             renderExceptionXml('Failed to searchFolders',e)
