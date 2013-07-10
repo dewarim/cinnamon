@@ -2,7 +2,7 @@ import cinnamon.Session
 
 class CinnamonGrailsPlugin {
 
-    def version = "3.0.1.0"
+    def version = "3.0.1.3"
     def grailsVersion = "2.2 > *"
     def dependsOn = [:]
     def pluginExcludes = [
@@ -18,7 +18,6 @@ allowing you to create custom apps based upon Cinnamon.
 
     def documentation = "http://cinnamon-cms.com"
     def license = "LGPL 2.1"
-//    def organization = [ name: "Texolution GmbH", url: "http://texolution.eu/" ]
     def developers = [ 
             [ name: "Ingo Wiarda", email: "ingo_wiarda@dewarim.de" ]
     ]
