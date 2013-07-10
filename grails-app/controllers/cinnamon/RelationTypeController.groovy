@@ -108,12 +108,8 @@ class RelationTypeController extends BaseController {
 
     //---------------------------------- Cinnamon XML API --------------------------------------
     /**
-     * The getrelationtypes command retrieves a list of all relation types.
+     * The (legacy) getrelationtypes command retrieves a list of all relation types.
      *
-     * @param cmd HTTP request parameter map:
-     *            <ul>
-     *            <li>command=getrelationtypes</li>
-     *            </ul>
      * @return XML-Response:
      *         <pre>
      * {@code
