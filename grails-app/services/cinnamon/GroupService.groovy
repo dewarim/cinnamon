@@ -5,7 +5,7 @@ package cinnamon
  */
 class GroupService {
 
-    void createUserGroup(UserAccount user) {
+    CmnGroup createUserGroup(UserAccount user) {
         String groupName = "_${user.id}_${user.name}"
         def group = new CmnGroup(groupName, true, null)
         group.save(flush: true)
@@ -13,5 +13,6 @@ class GroupService {
         user.addToGroupUsers(gu)
         group.addToGroupUsers(gu)
         gu.save(flush: true)
+        return group
     }
 }

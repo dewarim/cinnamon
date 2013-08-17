@@ -138,9 +138,15 @@ class UserAccountController extends BaseController {
 
         // if the name was changed, also change the user's personal group name
         if (!user.name.equals(params.name)) {
-            CmnGroup group = CmnGroup.findByName("_${user.id}_${user.name}")
+            String groupName = "_${user.id}_${user.name}"
+            CmnGroup group = CmnGroup.findByName(groupName)
+            if(group == null){
+                // create user-group:
+                group = groupService.createUserGroup(user)
+                userService.addUserToUsersGroup(user)
+                
+            }
             group.name = "_${user.id}_${params.name}"
-            group.description = "${params.name}'s personal group"
             group.save()
         }
 
@@ -150,7 +156,7 @@ class UserAccountController extends BaseController {
         if (params.pwd) {
             // set separately to prevent an empty/null pwd from being set.
             log.debug("setting password of user ${user.name}")
-            def minPasswordLength = grailsApplication.config.minimalPasswordLength?.toInteger() ?: 4
+            def minPasswordLength = grailsApplication.config.minimalPasswordLength ?: 4
             if(params.pwd.length() < minPasswordLength ){
                 flash.message = message(code: 'error.password.too.short')
                 redirect(action: 'edit', params: [id: user.id])
