@@ -193,7 +193,9 @@ class UserAccountController extends BaseController {
                 throw new RuntimeException(message(code: 'user.has.dependencies'))
             }
             // check that the source user is not an admin
-            userService.deleteUserAllowed(repositoryName)
+            if(userService.deleteUserAllowed(repositoryName)){
+                user.delete()
+            }
             flash.message = message(code: 'user.delete.success', args: [user.name.encodeAsHTML()])
         }
         catch (RuntimeException e) {
