@@ -11,6 +11,6 @@ The development version 3 here is still in its early stages and subject to chang
 
 License is LGPL 2.1 or later - if you require other license conditions, please contact us.
 
-Contact: ingo.wiarda@horner-project.eu  
+Contact: ingo_wiarda@dewarim.de 
 Project Homepage: http://cinnamon-cms.de  
 Sourceforge Project: http://sourceforge.net/projects/cinnamon  
