@@ -41,6 +41,7 @@ class TriggerFilters {
                     return false
                     // TODO: redirect to error view
                 }
+                return true
             }
 
             after = { Map model ->
@@ -70,7 +71,7 @@ class TriggerFilters {
                     return false
                     // TODO: redirect to / render error view
                 }
-
+                return true
             }
             afterView = { Exception e ->
 
