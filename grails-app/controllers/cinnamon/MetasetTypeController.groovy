@@ -1,6 +1,6 @@
 package cinnamon
 
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured
 import org.dom4j.DocumentHelper
 import org.dom4j.Element
 import org.springframework.dao.DataIntegrityViolationException

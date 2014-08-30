@@ -1,6 +1,6 @@
 package cinnamon
 
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured
 import cinnamon.i18n.UiLanguage
 import org.dom4j.Document
 import org.dom4j.DocumentHelper

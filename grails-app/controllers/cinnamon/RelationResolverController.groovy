@@ -1,6 +1,6 @@
 package cinnamon
 
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured
 import cinnamon.relation.RelationResolver
 import cinnamon.interfaces.IRelationResolver
 import cinnamon.relation.RelationType

@@ -63,13 +63,13 @@ abstract class BaseController {
         }
     }
     
-    protected void renderException(Exception e) {
+    protected void renderException(String msg) {
         LocalRepository.cleanUp()
-        render(status: 500, text: message(code: e.getMessage()))
+        render(status: 500, text: message(code: msg))
     }
 
-    protected void renderExceptionXml(Exception e) {       
-       renderErrorXml(e.message)
+    protected void renderExceptionXml(String msg) {       
+       renderErrorXml(msg)
     }
     
     protected void renderExceptionXml(String logMessage, Exception e) {

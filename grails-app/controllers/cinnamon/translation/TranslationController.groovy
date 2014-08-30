@@ -4,7 +4,7 @@ import cinnamon.BaseController
 import cinnamon.ObjectSystemData
 import cinnamon.relation.Relation
 import cinnamon.relation.RelationType
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured
 import org.dom4j.DocumentHelper
 import org.dom4j.Element
 
@@ -98,7 +98,7 @@ class TranslationController extends BaseController {
 
         } catch (Exception e) {
             log.debug("failed to create translation:", e);
-            renderExceptionXml(e)
+            renderExceptionXml(e.message)
         }
     }
 
@@ -179,7 +179,7 @@ class TranslationController extends BaseController {
             render(contentType: 'application/xml', text: doc.asXML())
         }
         catch (Exception e) {
-            renderExceptionXml(e)
+            renderExceptionXml(e.message)
         }
     }
 

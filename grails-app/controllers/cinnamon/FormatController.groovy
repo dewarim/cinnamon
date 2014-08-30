@@ -2,7 +2,7 @@ package cinnamon
 
 import org.dom4j.Element
 import org.dom4j.DocumentHelper
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(["isAuthenticated()"])
 class FormatController extends BaseController {

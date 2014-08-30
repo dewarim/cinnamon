@@ -1,7 +1,7 @@
 package cinnamon
 
 import cinnamon.exceptions.CinnamonException
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured
 import cinnamon.lifecycle.LifeCycle
 import cinnamon.lifecycle.LifeCycleState
 import org.dom4j.DocumentHelper

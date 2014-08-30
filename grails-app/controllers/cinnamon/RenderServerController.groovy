@@ -4,7 +4,7 @@ import cinnamon.exceptions.CinnamonConfigurationException
 import cinnamon.global.Constants
 import cinnamon.lifecycle.LifeCycle
 import cinnamon.utils.ParamParser
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(["isAuthenticated()"])
 class RenderServerController extends BaseController {

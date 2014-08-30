@@ -1,6 +1,6 @@
 package cinnamon
 
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured
 import cinnamon.relation.RelationResolver
 import cinnamon.relation.RelationType
 import org.dom4j.DocumentHelper

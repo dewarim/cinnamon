@@ -4,7 +4,7 @@ import cinnamon.exceptions.CinnamonException
 import cinnamon.index.IndexAction
 import cinnamon.relation.Relation
 import cinnamon.relation.RelationType
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured
 import org.dom4j.DocumentHelper
 import org.dom4j.Element
 
@@ -26,7 +26,7 @@ class RelationController extends BaseController {
         }
         catch (Exception e) {
             log.debug("failed: relation.create", e)
-            renderException(e)
+            renderException(e.message)
         }
     }
 
@@ -51,7 +51,7 @@ class RelationController extends BaseController {
         }
         catch (Exception e) {
             log.debug("failed: relation.create", e)
-            renderException(e)
+            renderException(e.message)
         }
     }
 
@@ -70,7 +70,7 @@ class RelationController extends BaseController {
         }
         catch (Exception e) {
             log.debug("failed: relation.create", e)
-            renderException(e)
+            renderException(e.message)
         }
     }
 
@@ -172,7 +172,7 @@ class RelationController extends BaseController {
         }
         catch (Exception e) {
             log.debug("Failed to create relation.", e)
-            renderExceptionXml(e)
+            renderExceptionXml(e.message)
         }
     }
 
@@ -205,7 +205,7 @@ class RelationController extends BaseController {
         }
         catch (Exception e) {
             log.debug("Failed to delete relation #$id.", e)
-            renderExceptionXml(e)
+            renderExceptionXml(e.message)
             
         }
     }

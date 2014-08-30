@@ -3,7 +3,7 @@ package cinnamon
 import cinnamon.global.Conf
 import cinnamon.global.ConfThreadLocal
 import grails.converters.JSON
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(["isAuthenticated()"])
 class ImageController extends BaseController {
@@ -38,7 +38,7 @@ class ImageController extends BaseController {
             }
         }
         catch (Exception e) {
-            renderException(e)
+            renderException(e.message)
         }
     }
 
@@ -71,7 +71,7 @@ class ImageController extends BaseController {
         }
         catch (Exception e) {
             log.debug("imageLoader fail:",e)
-            renderException(e)
+            renderException(e.message)
         }
     }
 }

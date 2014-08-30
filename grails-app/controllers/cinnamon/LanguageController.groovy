@@ -1,7 +1,7 @@
 package cinnamon
 
 import cinnamon.i18n.UiLanguage
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured
 import cinnamon.i18n.Language
 import cinnamon.global.Constants
 import org.dom4j.Document

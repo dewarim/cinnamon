@@ -6,7 +6,7 @@ import cinnamon.references.LinkResolver
 import cinnamon.references.LinkService
 import cinnamon.references.LinkType
 import cinnamon.utils.ParamParser
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured
 import org.dom4j.DocumentHelper
 
 @Secured(["hasRole('_users')"])
@@ -113,7 +113,7 @@ class LinkController extends BaseController {
         }
         catch (Exception e) {
             log.debug("failed to fetch objects: ", e)
-            renderExceptionXml(e)
+            renderExceptionXml(e.message)
         }
     }
 
@@ -197,7 +197,7 @@ class LinkController extends BaseController {
         }
         catch (Exception e) {
             log.debug("failed to fetch objects: ", e)
-            renderExceptionXml(e)
+            renderExceptionXml(e.message)
         }
     }
 
@@ -275,7 +275,7 @@ class LinkController extends BaseController {
         }
         catch (Exception e) {
             log.debug("failed to fetch objects: ", e)
-            renderExceptionXml(e)
+            renderExceptionXml(e.message)
         }
     }
 
@@ -323,7 +323,7 @@ class LinkController extends BaseController {
         }
         catch (Exception e) {
             log.debug("failed to delete link: ", e)
-            renderExceptionXml(e)
+            renderExceptionXml(e.message)
         }
 
     }

@@ -96,7 +96,7 @@ class CinnamonController extends BaseController {
         }
         catch (Exception e) {
             log.debug("Failed to show logo:", e)
-            renderException(e)
+            renderException(e.message)
         }
     }
 
@@ -151,7 +151,7 @@ class CinnamonController extends BaseController {
         }
         catch (Exception e) {
             log.debug("failed to connect: ", e)
-            renderException(e)
+            renderException(e.message)
         }
     }
 
@@ -306,7 +306,7 @@ class CinnamonController extends BaseController {
           
         } catch (Exception e) {
             log.debug("failed to fork session:",e)
-            renderExceptionXml(e)
+            renderExceptionXml(e.message)
         }
     }
     

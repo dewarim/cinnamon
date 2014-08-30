@@ -9,7 +9,7 @@ import cinnamon.Validator
 import cinnamon.exceptions.CinnamonException
 import cinnamon.global.Constants
 import cinnamon.global.PermissionName
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured
 import org.dom4j.Document
 import org.dom4j.Element
 

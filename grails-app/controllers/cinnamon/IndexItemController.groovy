@@ -1,6 +1,6 @@
 package cinnamon
 
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured
 import cinnamon.index.IndexItem
 import cinnamon.index.IndexType
 import cinnamon.index.IndexGroup

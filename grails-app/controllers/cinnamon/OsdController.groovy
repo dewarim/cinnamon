@@ -5,7 +5,7 @@ import cinnamon.references.LinkType
 import cinnamon.utils.ParamParser
 import org.dom4j.DocumentHelper
 import org.dom4j.Element
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured
 
 import cinnamon.global.PermissionName
 import cinnamon.relation.Relation
@@ -28,7 +28,7 @@ class OsdController extends BaseController {
             render(template: mapTemplate('/osd/editMetadata'), model: [osd: osd])
         }
         catch (Exception e) {
-            renderException(e)
+            renderException(e.message)
         }
     }
 
@@ -41,7 +41,7 @@ class OsdController extends BaseController {
             render(template: mapTemplate('/osd/objectDetails'), model: [osd: osd, permissions: loadUserPermissions(osd.acl)])
         }
         catch (Exception e) {
-            renderException(e)
+            renderException(e.message)
         }
     }
 
@@ -54,7 +54,7 @@ class OsdController extends BaseController {
                     superuserStatus: userService.isSuperuser(user)])
         }
         catch (Exception e) {
-            renderException(e)
+            renderException(e.message)
         }
     }
 
@@ -68,7 +68,7 @@ class OsdController extends BaseController {
 
         }
         catch (Exception e) {
-            renderException(e)
+            renderException(e.message)
         }
     }
 
@@ -89,7 +89,7 @@ class OsdController extends BaseController {
             )
         }
         catch (Exception e) {
-            renderException(e)
+            renderException(e.message)
         }
 
     }
@@ -108,7 +108,7 @@ class OsdController extends BaseController {
         }
         catch (Exception e) {
             log.debug("failed to fetchObjectDetails: ", e)
-            renderException(e)
+            renderException(e.message)
         }
     }
 
@@ -120,7 +120,7 @@ class OsdController extends BaseController {
                     model: [osd: osd, ctype: osd.format?.contenttype, osdContent: osdContent])
         }
         catch (Exception e) {
-            renderException(e)
+            renderException(e.message)
         }
     }
 
@@ -130,7 +130,7 @@ class OsdController extends BaseController {
             render(template: mapTemplate('/osd/renderMetadata'), model: [osd: osd])
         }
         catch (Exception e) {
-            renderException(e)
+            renderException(e.message)
         }
     }
 
@@ -182,7 +182,7 @@ class OsdController extends BaseController {
         }
         catch (Exception e) {
             log.debug("failed: editName", e)
-            renderException(e)
+            renderException(e.message)
         }
     }
 
@@ -192,7 +192,7 @@ class OsdController extends BaseController {
             render(template: mapTemplate('/osd/editAcl'), model: [osd: osd])
         }
         catch (Exception e) {
-            renderException(e)
+            renderException(e.message)
         }
     }
 
@@ -202,7 +202,7 @@ class OsdController extends BaseController {
             render(template: mapTemplate('/osd/editLanguage'), model: [osd: osd])
         }
         catch (Exception e) {
-            renderException(e)
+            renderException(e.message)
         }
     }
 
@@ -212,7 +212,7 @@ class OsdController extends BaseController {
             render(template: mapTemplate('/osd/editOwner'), model: [osd: osd])
         }
         catch (Exception e) {
-            renderException(e)
+            renderException(e.message)
         }
     }
 
@@ -222,7 +222,7 @@ class OsdController extends BaseController {
             render(template: mapTemplate('/osd/editType'), model: [osd: osd])
         }
         catch (Exception e) {
-            renderException(e)
+            renderException(e.message)
         }
     }
 
@@ -253,7 +253,7 @@ class OsdController extends BaseController {
                 render(status: 401, text: message(code: 'error.illegal.parameter', args: [params.fieldName?.encodeAsHTML()]))
             }
         } catch (Exception e) {
-            renderException(e)
+            renderException(e.message)
         }
     }
 
@@ -337,7 +337,7 @@ class OsdController extends BaseController {
         }
         catch (RuntimeException e) {
             log.debug("Failed to version object:", e)
-            renderException(e)
+            renderException(e.message)
         }
     }
 
@@ -437,7 +437,7 @@ class OsdController extends BaseController {
         }
         catch (Exception e) {
             log.debug("failed to fetch objects: ", e)
-            renderExceptionXml(e)
+            renderExceptionXml(e.message)
         }
     }
 
@@ -523,7 +523,7 @@ class OsdController extends BaseController {
         }
         catch (Exception e) {
             log.debug("failed to create OSD", e)
-            renderExceptionXml(e)
+            renderExceptionXml(e.message)
         }
     }
 
@@ -552,7 +552,7 @@ class OsdController extends BaseController {
         }
         catch (Exception e) {
             log.debug("failed to fetch OSD", e)
-            renderExceptionXml(e)
+            renderExceptionXml(e.message)
         }
     }
 
@@ -582,7 +582,7 @@ class OsdController extends BaseController {
         }
         catch (Exception e) {
             log.debug("Failed to lock #$id.", e)
-            renderExceptionXml(e)
+            renderExceptionXml(e.message)
         }
     }
 
@@ -609,7 +609,7 @@ class OsdController extends BaseController {
         }
         catch (Exception e) {
             log.debug("Failed to unlock #$id.", e)
-            renderExceptionXml(e)
+            renderExceptionXml(e.message)
         }
     }
 
@@ -860,7 +860,7 @@ class OsdController extends BaseController {
         }
         catch (Exception e) {
             log.debug("failed to fetch objects: ", e)
-            renderExceptionXml(e)
+            renderExceptionXml(e.message)
         }
     }
 
@@ -1057,7 +1057,7 @@ class OsdController extends BaseController {
         }
         catch (RuntimeException e) {
             log.debug("Failed to version object:", e)
-            renderException(e)
+            renderException(e.message)
         }
     }
 
@@ -1241,7 +1241,7 @@ class OsdController extends BaseController {
         }
         catch (Exception e) {
             LocalRepository.cleanUp()
-            renderExceptionXml(e)
+            renderExceptionXml(e.message)
         }
     }
 }

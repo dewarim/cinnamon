@@ -1,12 +1,12 @@
 package cinnamon
 
 import cinnamon.index.DataType
-import grails.plugins.springsecurity.Secured
-import org.codehaus.groovy.grails.commons.ConfigurationHolder
+import grails.plugin.springsecurity.annotation.Secured
 import cinnamon.index.IndexType
 import cinnamon.index.ValueAssistanceProvider
 import cinnamon.index.Indexer
 import cinnamon.index.IndexItem
+import grails.util.Holders
 
 @Secured(["hasRole('_superusers')"])
 class IndexTypeController extends BaseController{
@@ -24,14 +24,14 @@ class IndexTypeController extends BaseController{
 
     def create () {
         return [
-                indexers : ConfigurationHolder.config.indexers,
-                valueAssistanceProviders : ConfigurationHolder.config.vaProviders,
+                indexers : Holders.config.indexers,
+                valueAssistanceProviders : Holders.config.vaProviders,
         ]
     }
 
     def save () {
-        def saveModel = [  indexers : ConfigurationHolder.config.indexers,
-                valueAssistanceProviders : ConfigurationHolder.config.vaProviders]
+        def saveModel = [  indexers : Holders.config.indexers,
+                valueAssistanceProviders : Holders.config.vaProviders]
     	if (params.name.length() == 0) {
     		flash.error = message(code: 'error.create.indexType.empty.name')
     		render(view: "create", model: saveModel)
@@ -67,8 +67,8 @@ class IndexTypeController extends BaseController{
 	        }
 	        else {
 	            render(view: "create", model: [indexTypeInstance: indexTypeInstance, 
-                        indexers : ConfigurationHolder.config.indexers,
-                        valueAssistanceProviders : ConfigurationHolder.config.vaProviders, ])
+                        indexers : Holders.config.indexers,
+                        valueAssistanceProviders : Holders.config.vaProviders, ])
 	        }
     	} catch (ClassNotFoundException ex) {
             log.debug("ClassNotFound: ", ex);
@@ -107,8 +107,8 @@ class IndexTypeController extends BaseController{
         }
         else {
             return [indexTypeInstance: indexTypeInstance,
-                    indexers : ConfigurationHolder.config.indexers,
-                    valueAssistanceProviders : ConfigurationHolder.config.vaProviders,
+                    indexers : Holders.config.indexers,
+                    valueAssistanceProviders : Holders.config.vaProviders,
             ]
         }
     }

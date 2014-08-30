@@ -7,7 +7,7 @@ import org.dom4j.DocumentHelper
 import org.dom4j.Document
 import org.dom4j.Node
 import cinnamon.index.Indexable
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(["isAuthenticated()"])
 class SearchController extends BaseController {
@@ -35,7 +35,7 @@ class SearchController extends BaseController {
         }
         catch (Exception e) {
             log.debug("failed searchObjects: ", e)
-            renderExceptionXml(e)
+            renderExceptionXml(e.message)
         }
     }
     
@@ -50,7 +50,7 @@ class SearchController extends BaseController {
         }
         catch (Exception e) {
             log.debug("failed searchObjects: ", e)
-            renderExceptionXml(e)
+            renderExceptionXml(e.message)
         }
     }
     

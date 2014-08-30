@@ -4,7 +4,7 @@ import cinnamon.references.Link
 import cinnamon.references.LinkType
 import humulus.EnvironmentHolder
 
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured
 import cinnamon.global.PermissionName
 import cinnamon.exceptions.CinnamonException
 import cinnamon.global.Constants
@@ -20,7 +20,8 @@ import grails.gsp.PageRenderer
 class FolderController extends BaseController {
     
     PageRenderer groovyPageRenderer;
-    
+
+    @Secured(["isAuthenticated()"])
     def index() {
         try {
             Folder rootFolder = folderService.findRootFolder()
@@ -123,7 +124,7 @@ class FolderController extends BaseController {
         }
         catch (Exception e) {
             log.debug("fetchFolder failed", e)
-            renderException(e)
+            renderException(e.message)
         }
     }
 
@@ -177,7 +178,7 @@ class FolderController extends BaseController {
         }
         catch (Exception e) {
             log.debug("fetchFolderContent failed", e)
-            renderException(e)
+            renderException(e.message)
         }
     }
 
@@ -199,7 +200,7 @@ class FolderController extends BaseController {
         }
         catch (Exception e) {
             log.debug("renderMetadata failed", e)
-            renderException(e)
+            renderException(e.message)
         }
     }
 
@@ -210,7 +211,7 @@ class FolderController extends BaseController {
         }
         catch (Exception e) {
             log.debug("renderMetadata failed", e)
-            renderException(e)
+            renderException(e.message)
         }
 
     }
@@ -222,7 +223,7 @@ class FolderController extends BaseController {
         }
         catch (Exception e) {
             log.debug("editMetadata failed", e)
-            renderException(e)
+            renderException(e.message)
         }
     }
 
@@ -256,7 +257,7 @@ class FolderController extends BaseController {
                 ])
             }
             else {
-                renderException(e)
+                renderException(e.message)
             }
         }
 
@@ -269,7 +270,7 @@ class FolderController extends BaseController {
         }
         catch (Exception e) {
             log.debug("failed: editName", e)
-            renderException(e)
+            renderException(e.message)
         }
     }
 
@@ -280,7 +281,7 @@ class FolderController extends BaseController {
         }
         catch (Exception e) {
             log.debug("failed: editAcl", e)
-            renderException(e)
+            renderException(e.message)
         }
     }
 
@@ -291,7 +292,7 @@ class FolderController extends BaseController {
         }
         catch (Exception e) {
             log.debug("failed: editOwner", e)
-            renderException(e)
+            renderException(e.message)
         }
     }
 
@@ -302,7 +303,7 @@ class FolderController extends BaseController {
         }
         catch (Exception e) {
             log.debug("failed: editType", e)
-            renderException(e)
+            renderException(e.message)
         }
     }
 
@@ -333,7 +334,7 @@ class FolderController extends BaseController {
             }
         } catch (Exception e) {
             log.debug("failed to save field: ", e)
-            renderException(e)
+            renderException(e.message)
         }
     }
 
@@ -452,7 +453,7 @@ class FolderController extends BaseController {
         }
         catch (Exception e) {
             log.debug(" failed", e)
-            renderException(e)
+            renderException(e.message)
         }
     }
     
@@ -476,7 +477,7 @@ class FolderController extends BaseController {
         }
         catch (Exception e) {
             log.debug(" failed", e)
-            renderException(e)
+            renderException(e.message)
         }
     }
     
@@ -529,7 +530,7 @@ class FolderController extends BaseController {
         }
         catch (Exception e) {
             log.debug("fetchFolderContent failed for ${params}", e)
-            renderExceptionXml(e)
+            renderExceptionXml(e.message)
         }
     }
 
@@ -576,7 +577,7 @@ class FolderController extends BaseController {
         }
         catch (Exception e) {
             log.debug("fetchFolderByPath: ",e)
-            renderExceptionXml(e)
+            renderExceptionXml(e.message)
         }
     }
 
@@ -614,7 +615,7 @@ class FolderController extends BaseController {
         }
         catch (Exception e) {
             log.debug("fetchFolderXml failed: ", e)
-            renderExceptionXml(e)
+            renderExceptionXml(e.message)
         }
     }
 
@@ -631,7 +632,7 @@ class FolderController extends BaseController {
             render(template: 'searchResult', model: [searchResult: result, folders: folders, objects: objects])
         }
         catch (Exception e) {
-            renderException(e)
+            renderException(e.message)
         }
     }
     

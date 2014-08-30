@@ -2,11 +2,11 @@ package cinnamon
 
 import cinnamon.exceptions.CinnamonException
 import cinnamon.global.PermissionName
-import grails.plugins.springsecurity.Secured
-import org.codehaus.groovy.grails.commons.ConfigurationHolder
+import grails.plugin.springsecurity.annotation.Secured
 import cinnamon.lifecycle.LifeCycleState
 import cinnamon.lifecycle.LifeCycle
 import cinnamon.lifecycle.IState
+import grails.util.Holders
 import org.dom4j.DocumentHelper
 import org.dom4j.Element
 
@@ -17,7 +17,7 @@ class LifeCycleStateController extends BaseController{
         LifeCycleState lcs = new LifeCycleState()
         def copyStates = lifeCycleStateService.fetchCopyStates(null)
         render(template: 'create', model: [lcs: lcs, copyStates: copyStates,
-                 stateClasses:ConfigurationHolder.config.lifeCycleStateClasses,
+                 stateClasses:Holders.config.lifeCycleStateClasses,
         ])
     }
 
@@ -41,7 +41,7 @@ class LifeCycleStateController extends BaseController{
             render(status: 503, template: 'create',
                     model: [lcs: lcs,
                             copyStates: lifeCycleStateService.fetchCopyStates(lcs),
-                            stateClasses:ConfigurationHolder.config.lifeCycleStateClasses,
+                            stateClasses:Holders.config.lifeCycleStateClasses,
                             errorMessage: e.getLocalizedMessage().encodeAsHTML()])
             return
         }
@@ -56,7 +56,7 @@ class LifeCycleStateController extends BaseController{
     def edit () {
         def lcs = LifeCycleState.get(Long.parseLong(params.id))
         render(template: 'edit', model: [lcs: lcs,
-                stateClasses:ConfigurationHolder.config.lifeCycleStateClasses,
+                stateClasses:Holders.config.lifeCycleStateClasses,
                 copyStates: lifeCycleStateService.fetchCopyStates(lcs)
         ])
     }

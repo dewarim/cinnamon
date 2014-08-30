@@ -1,6 +1,6 @@
 package cinnamon
 
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured
 import cinnamon.trigger.ChangeTriggerType
 import cinnamon.trigger.ITrigger
 import cinnamon.trigger.ChangeTrigger

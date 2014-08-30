@@ -2,7 +2,7 @@ package cinnamon
 
 import cinnamon.exceptions.CinnamonException
 import cinnamon.utils.ParamParser
-import grails.plugins.springsecurity.Secured
+import grails.plugin.springsecurity.annotation.Secured
 import org.dom4j.Document
 
 @Secured(["hasRole('_superusers')"])
@@ -148,7 +148,7 @@ class ConfigEntryController extends BaseController{
         render(contentType: 'application/xml', text: "<configEntryId>"+configEntry.id+"</configEntryId>")
         }
         catch (Exception e){
-            renderExceptionXml(e)
+            renderExceptionXml(e.message)
         }
     }
     
