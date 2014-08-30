@@ -6,9 +6,9 @@
                 <span id="hideChildren_${folder.id}" style="display:none;">
                     <a href="#" onClick="hideChildren('${folder.id}');
                     return false;">
-                        <img src="${resource( dir: '/images/icons', file: 'folder_open.png')}" height="16" width="16"
+                        <asset:image src="/icons/folder_open.png" height="16" width="16"
                                alt="${message(code: 'folder.close.view')}"
-                               title="${message(code: 'folder.close.view')}">
+                               title="${message(code: 'folder.close.view')}"/>
                     </a>
                 </span>
                 <span id="fetchLink_${folder.id}">
@@ -20,7 +20,7 @@
                                   onLoading="showSpinner('folder_${folder.id}');"
                                   onLoaded="hideSpinner('folder_${folder.id}');"
                                   onFailure="hideSpinner('folder_${folder.id}');showClearButton();">
-                        <img  src="${resource( dir: '/images/icons', file: 'folder.png')}"   height="16" width="16"
+                        <asset:image  src="/icons/folder.png"   height="16" width="16"
                                alt="${message(code: 'folder.open.view')}"
                                title="${message(code: 'folder.open.view')}"/>
                     </g:remoteLink>
@@ -62,8 +62,8 @@
                               onLoading="showSpinner('fetchFolderMetaLink_${folder.id}');"
                               onLoaded="hideSpinner('fetchFolderMetaLink_${folder.id}');"
                               onFailure="hideSpinner('fetchFolderMetaLink_${folder.id}');showClearButton();">
-                    <img class="folder_info"
-                         src="${resource(dir: '/images/skin', file:'information.png')}"
+                    <asset:image class="folder_info"
+                         src="skin/information.png"
                          alt="${message(code: 'icon.info.link')}"
                          title="${message(code: 'folder.info.title')}"/>
                 </g:remoteLink>

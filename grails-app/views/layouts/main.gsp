@@ -6,9 +6,20 @@
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-<r:require modules="jquery"/>
-%{--<r:require modules="jqueryUi"/>--}%
-<r:require modules="bootstrap"/>
+    <asset:javascript src="jquery-2.1.1.js"/>
+    <asset:javascript src="cinnamon.js"/>
+    <asset:javascript src="jquery-ui-1.11.1/jquery-ui.js"/>
+    
+    <asset:javascript src="codemirror/lib/codemirror.js"/>
+    <asset:javascript src="codemirror/mode/xml.js"/>
+    <asset:javascript src="codemirror/mode/hmlmixed.js"/>
+    <asset:javascript src="codemirror-ui/js/codemirror-ui.js"/>
+    <asset:stylesheet src="codemirror/lib/codemirror.css"/>
+    <asset:stylesheet src="codemirror-ui/css/codemirror-ui.css"/>
+    <asset:stylesheet src="jquery-ui-1.11.1/jquery-ui.css"/>
+    <asset:stylesheet src="main.css"/>
+    <asset:link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
+    
 <script type="text/javascript">
  
     function showInfoMessage(info){
@@ -27,12 +38,9 @@
 
 </script>
 
-<link rel="stylesheet" href="${resource(dir:'css', file:'main.css')}">
-<link rel="shortcut icon" href="${resource(dir:'images',file:'favicon.ico')}" type="image/x-icon">
-
 <g:layoutHead/>
 
-<r:script>
+<asset:script>
     $.ajaxSetup({
         type:'POST'
     });
@@ -63,24 +71,11 @@
         }
     }
 
-</r:script>
+</asset:script>
 
-<script type="text/javascript" src="<g:resource dir="/js/codemirror/lib" file="codemirror.js"/>"></script>
-<link rel="stylesheet" href="<g:resource dir="/js/codemirror/lib" file="codemirror.css"/>">
-<script type="text/javascript" src="<g:resource dir="/js/codemirror/mode/xml" file="xml.js"/>"></script>
-<script type="text/javascript"  src="<g:resource dir="/js/codemirror/mode/htmlmixed" file="htmlmixed.js"/>"></script>
-
-<script src='<g:resource dir="js/codemirror-ui/js" file="codemirror-ui.js"/>' type="text/javascript"></script>
-<link rel="stylesheet" href="<g:resource dir="js/codemirror-ui/css/" file="codemirror-ui.css"/>" 
-      type="text/css"
-      media="screen"/>
-
-<link rel="stylesheet" href="${resource(dir:'css/ui-lightness',file: 'jquery-ui-1.10.0.custom.css')}"/>
-
-<g:render template="/shared/variables"/>    
-    <script type="text/javascript" src="${resource(dir:'js', file: 'cinnamon.js')}"></script>
+<g:render template="/shared/variables"/>
     
-<r:script disposition="head">
+    <asset:script type="text/javascript">
 
   
 
@@ -91,7 +86,7 @@
     var codeMirrorEditor;
     
     function createEditor(id, readOnly) {
-        var uiOptions = { path:'<g:resource dir="js/codemirror-ui/" file="js" />/', searchMode:'popup' };
+        var uiOptions = { path:'<g:createLink uri="/assets/codemirror-ui/js" />/', searchMode:'popup' };
         var cmOptions = {
             mode:'application/xml',
             lineNumbers:true,
@@ -102,7 +97,7 @@
     }
  
     function showSpinner(id) {
-        $("#" + id).prepend('<img src="<g:resource dir="/images" file="spinner.gif"/>" alt="<g:message code="message.loading"/>" id="' + id + '_spinner">');
+        $("#" + id).prepend('<img src="<g:createLink uri="/assets/images/spinner.gif"/>" alt="<g:message code="message.loading"/>" id="' + id + '_spinner">');
     }
 
     function hideSpinner(id) {
@@ -113,7 +108,7 @@
         var msg = $("#message");
 
         msg.append('<a class="close_button" href="#" onclick="hideClearButton();return false;">' +
-'<r:img border="0" uri="/images/no.png" alt="${message(code:"message.clear").encodeAsJavaScript()}"/>' +
+'<asset:image border="0" src="no.png" alt="${message(code:"message.clear").encodeAsJavaScript()}"/>' +
 '</a> ');
         msg.addClass('error_message');
 
@@ -157,14 +152,13 @@ var s4 = '#' + id + ': ' + name + '</a></div>';
     }
 
 
-</r:script>
-<r:layoutResources/>
+</asset:script>
 </head>
 <body>
 <header>
     <div id="header">
         <a href="${resource(dir: 'folder', file: 'index')}">
-            <r:img uri="/images/illicium_100.jpg" alt="${message(code: 'app.illicium')}" border="0"/>
+            <asset:image src="illicium_100.jpg" alt="${message(code: 'app.illicium')}" border="0"/>
         </a>
 
         <h1 id="TITLE"><g:message code="${ headline ?: grailsApplication.config.appName}"/></h1>
@@ -200,6 +194,5 @@ var s4 = '#' + id + ': ' + name + '</a></div>';
     </sec:ifNotLoggedIn>
 </p>
 </footer>
-<r:layoutResources/>
 </body>
 </html>
