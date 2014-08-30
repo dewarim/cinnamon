@@ -1,8 +1,8 @@
 import cinnamon.Format
+import grails.plugin.springsecurity.SecurityFilterPosition
+import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.util.Environment
 import humulus.EnvironmentHolder
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
-import org.codehaus.groovy.grails.plugins.springsecurity.SecurityFilterPosition
 import cinnamon.ObjectSystemData
 import cinnamon.Folder
 import cinnamon.LifecycleLog
