@@ -1,19 +1,19 @@
 package cinnamon
 
-import org.springframework.security.core.userdetails.AuthenticationUserDetailsService
-import org.springframework.security.core.userdetails.UserDetails
-import org.springframework.security.core.Authentication
 import humulus.Environment
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedCredentialsNotFoundException
 import humulus.EnvironmentHolder
 import cinnamon.global.ConfThreadLocal
+import org.springframework.security.core.Authentication
+import org.springframework.security.core.userdetails.AuthenticationUserDetailsService
+import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedCredentialsNotFoundException
 
 class CinnamonPreAuthUserDetailsService implements AuthenticationUserDetailsService{
     
     def grailsApplication
     def cinnamonUserDetailsService
     
-    @Override
+//    @Override
     UserDetails loadUserDetails(Authentication token) {
         String ticket = token.credentials
         if(! ticket){

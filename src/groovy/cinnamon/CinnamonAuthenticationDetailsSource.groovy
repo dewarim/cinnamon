@@ -1,14 +1,13 @@
 package cinnamon
 
+import grails.plugin.springsecurity.SpringSecurityUtils
 import org.springframework.security.core.authority.GrantedAuthoritiesContainer
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
 import javax.servlet.http.HttpServletRequest
 import humulus.Environment
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedCredentialsNotFoundException
 import humulus.EnvironmentHolder
 import org.springframework.security.core.authority.GrantedAuthorityImpl
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
 
 /**
  * The Cinnamon desktop client communicates with the server via XML messages which are authenticated by

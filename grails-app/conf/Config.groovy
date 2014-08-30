@@ -92,7 +92,7 @@ log4j = {
             'org.apache.tomcat.util',
             'org.apache.coyote',
             'org.apache.commons.beanutils',
-            'org.springframework',
+//            'org.springframework',
             'org.hibernate',
             'org.apache.naming.SelectorContext',
             'net.sf.ehcache',
@@ -113,18 +113,18 @@ log4j = {
             'org.codehaus.groovy.grails.context.support.PluginAwareResourceBundleMessageSource'
             
     
-    debug 'org.codehaus.groovy.grails.context',
+    info 'org.codehaus.groovy.grails.context',
             'org.codehaus.groovy.grails.io',
             'org.codehaus.groovy.grails.web',
             'cinnamon.global.ConfThreadLocal'
 
     info 'grails.plugins.twitterbootstrap.BootstrapResources'
     info 'cinnamon.RequestTicketAuthenticationFilter'
-    info 'cinnamon.debug.ProviderManager'
-    info 'humulus.RepositoryLoginFilter'
-    info 'cinnamon.CinnamonUserDetailsService'
+    debug 'cinnamon.debug.ProviderManager'
+    debug 'humulus.RepositoryLoginFilter'
+    debug 'cinnamon.CinnamonUserDetailsService'
     info 'grails.app.filters.cinnamon.filters.PageFilters'
-    warn 'grails.app.filters.cinnamon.filters.TriggerFilters'
+    debug 'grails.app.filters.cinnamon.filters.TriggerFilters'
     debug 'cinnamon.data'
     debug 'cinnamon.OsdController'
     info 'cinnamon.index.LuceneActor'
@@ -133,40 +133,67 @@ log4j = {
     info 'cinnamon.workflow.TransitionActor'
     info 'cinnamon.workflow'
     info 'cinnamon.index'
-    info 'humulus',
-            'cinnamon.UserAccountController',
-            'cinnamon.cinnamon.filters.TriggerFilters',
-            'cinnamon.index.indexer.ParentFolderPathIndexer',
-            'org.springframework.security.authentication',
-            'cinnamon.PreAuthenticatedAuthenticationProvider'
+    debug 'humulus',
+          'cinnamon.UserAccountController',
+          'cinnamon.cinnamon.filters.TriggerFilters',
+          'cinnamon.index.indexer.ParentFolderPathIndexer',
+          'org.springframework.security.authentication',
+          'cinnamon.PreAuthenticatedAuthenticationProvider'
 
     info 'grails.app.domain.cinnamon.index'
-
+    info 'org.springframework'
+    info 'grails.plugin.springsecurity.web'
     root {
         debug 'stdout'
     }
 }
 
 // Added by the Spring Security Core plugin:
-grails.plugins.springsecurity.userLookup.userDomainClassName = 'cinnamon.UserAccount'
-grails.plugins.springsecurity.userLookup.authorityJoinClassName = 'cinnamon.CmnGroupUser'
-grails.plugins.springsecurity.authority.className = 'cinnamon.CmnGroup'
-grails.plugins.springsecurity.authority.nameField = 'name'
-grails.plugins.springsecurity.userLookup.usernamePropertyName = 'name'
-grails.plugins.springsecurity.userLookup.passwordPropertyName = 'pwd'
-grails.plugins.springsecurity.userLookup.enabledPropertyName = 'activated'
-grails.plugins.springsecurity.userLookup.authoritiesPropertyName = 'groupUsers'
-grails.plugins.springsecurity.successHandler.defaultTargetUrl = '/folder/index'
-grails.plugins.springsecurity.auth.loginFormUrl = '/login/auth'
-grails.plugins.springsecurity.providerNames = ['preauthAuthProvider', 'daoAuthenticationProvider', 'anonymousAuthenticationProvider']
-grails.plugins.springsecurity.logout.afterLogoutUrl = '/login/auth'
-
+grails.plugin.springsecurity.userLookup.userDomainClassName = 'cinnamon.UserAccount'
+grails.plugin.springsecurity.userLookup.authorityJoinClassName = 'cinnamon.CmnGroupUser'
+grails.plugin.springsecurity.authority.className = 'cinnamon.CmnGroup'
+grails.plugin.springsecurity.authority.nameField = 'name'
+grails.plugin.springsecurity.userLookup.usernamePropertyName = 'name'
+grails.plugin.springsecurity.userLookup.passwordPropertyName = 'pwd'
+grails.plugin.springsecurity.userLookup.enabledPropertyName = 'activated'
+grails.plugin.springsecurity.userLookup.authoritiesPropertyName = 'groupUsers'
+grails.plugin.springsecurity.successHandler.defaultTargetUrl = '/folder/index'
+grails.plugin.springsecurity.auth.loginFormUrl = '/login/auth'
+grails.plugin.springsecurity.providerNames = ['preauthAuthProvider', 'daoAuthenticationProvider', 'anonymousAuthenticationProvider']
+grails.plugin.springsecurity.logout.afterLogoutUrl = '/login/auth'
+grails.plugin.springsecurity.controllerAnnotations.staticRules = [
+   '/assets/**':               ['permitAll'],
+        ]
 grails.logging.jul.usebridge = false
 
 /*
  The default page is responsible for connecting to the right database,
  so we always redirect the user there:
 */
-grails.plugins.springsecurity.successHandler.alwaysUseDefault = false
-grails.plugins.springsecurity.http.useExpressions = false
+grails.plugin.springsecurity.successHandler.alwaysUseDefault = false
+grails.plugin.springsecurity.http.useExpressions = false
 
+
+// Uncomment and edit the following lines to start using Grails encoding & escaping improvements
+
+/* remove this line 
+// GSP settings
+grails {
+    views {
+        gsp {
+            encoding = 'UTF-8'
+            htmlcodec = 'xml' // use xml escaping instead of HTML4 escaping
+            codecs {
+                expression = 'html' // escapes values inside null
+                scriptlet = 'none' // escapes output from scriptlets in GSPs
+                taglib = 'none' // escapes output from taglibs
+                staticparts = 'none' // escapes output from static template parts
+            }
+        }
+        // escapes all not-encoded output at final stage of outputting
+        filteringCodecForContentType {
+            //'text/html' = 'html'
+        }
+    }
+}
+remove this line */

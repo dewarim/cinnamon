@@ -10,6 +10,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.security.authentication.*;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.CredentialsContainer;
@@ -64,7 +65,7 @@ import org.springframework.util.Assert;
  *
  * @see org.springframework.security.authentication.DefaultAuthenticationEventPublisher
  */
-public class ProviderManager extends AbstractAuthenticationManager implements MessageSourceAware, InitializingBean {
+public class ProviderManager extends org.springframework.security.authentication.ProviderManager implements MessageSourceAware, InitializingBean {
     //~ Static fields/initializers =====================================================================================
 
     private static final Log logger = LogFactory.getLog(ProviderManager.class);

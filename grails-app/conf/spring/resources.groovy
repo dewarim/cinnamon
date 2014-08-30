@@ -15,18 +15,9 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 // Place your Spring DSL code here
 beans = {
     
-//    objectTreeCopier(ObjectTreeCopier){
-//        osdService = ref('OsdService')
-//    }
-//
-//    relationChangeTrigger(RelationChangeTrigger){
-//        relationService = ref('RelationService')
-//    }
-
     parentDataSource(DriverManagerDataSource) { bean ->
         bean.'abstract' = true;
         username = "sa"
-//    	pooled = true
     }
 
     Environment.list().each { env ->
@@ -64,6 +55,12 @@ beans = {
 
     authenticationProvider(DaoAuthenticationProvider){
         userDetailsService = ref('userDetailsService')
+        passwordEncoder = ref('passwordEncoder')
+    }
+    // TODO: do we really need to configure both authenticationProvider & daoAuthenticationProvider?
+    daoAuthenticationProvider(DaoAuthenticationProvider){
+        userDetailsService = ref('userDetailsService')
+        passwordEncoder = ref('passwordEncoder')
     }
 
     preAuthenticatedUserDetailsService(CinnamonPreAuthUserDetailsService){
@@ -81,11 +78,6 @@ beans = {
         providers = ref('authenticationProvider')
     }  
     
-////    preAuthManager(org.springframework.security.authentication.ProviderManager){
-//    preAuthManager(org.springframework.security.authentication.ProviderManager){
-//        providers = ref('preauthAuthProvider')
-//    }
-
     repositoryLoginFilter(RepositoryLoginFilter){
         authenticationManager = ref('authenticationManager')
         grailsApplication = ref('grailsApplication')

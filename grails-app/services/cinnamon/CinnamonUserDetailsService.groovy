@@ -1,21 +1,17 @@
 package cinnamon
 
+import grails.plugin.springsecurity.SpringSecurityUtils
+import grails.plugin.springsecurity.userdetails.GrailsUser
+import grails.plugin.springsecurity.userdetails.GrailsUserDetailsService
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.GrantedAuthorityImpl
 
-import org.codehaus.groovy.grails.plugins.springsecurity.SpringSecurityUtils
-import org.codehaus.groovy.grails.plugins.springsecurity.GormUserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.core.userdetails.UserDetails
-import org.codehaus.groovy.grails.plugins.springsecurity.GrailsUser
-
-import org.codehaus.groovy.grails.plugins.springsecurity.GrailsUserDetailsService
-
-import org.codehaus.groovy.grails.plugins.springsecurity.SecurityRequestHolder as SRH
+import grails.plugin.springsecurity.web.SecurityRequestHolder as SRH
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import org.codehaus.groovy.grails.plugins.springsecurity.SecurityRequestHolder
 import humulus.EnvironmentHolder
 
 /*
@@ -40,7 +36,7 @@ class CinnamonUserDetailsService implements GrailsUserDetailsService {
 
     /**
      * {@inheritDoc}
-     * @see org.codehaus.groovy.grails.plugins.springsecurity.GrailsUserDetailsService #loadUserByUsername(
+     * @see grails.plugin.springsecurity.userdetails.GrailsUserDetailsService #loadUserByUsername(
      * 	java.lang.String, boolean)
      */
     UserDetails loadUserByUsername(String username, boolean loadRoles) throws UsernameNotFoundException {

@@ -2,8 +2,8 @@ import cinnamon.Session
 
 class CinnamonGrailsPlugin {
 
-    def version = "3.0.1.5"
-    def grailsVersion = "2.2 > *"
+    def version = "3.0.2"
+    def grailsVersion = "2.4 > *"
     def dependsOn = [:]
     def pluginExcludes = [
             "grails-app/views/error.gsp"

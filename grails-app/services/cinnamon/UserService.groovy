@@ -1,13 +1,10 @@
 package cinnamon
 
 import cinnamon.global.Constants
-import org.dom4j.Element
-import cinnamon.utils.ParamParser
-import org.dom4j.DocumentHelper
 import cinnamon.global.ConfThreadLocal
 import cinnamon.exceptions.CinnamonException
 import cinnamon.global.Conf
-import org.codehaus.groovy.grails.plugins.springsecurity.GrailsUser
+import grails.plugin.springsecurity.userdetails.GrailsUser
 import humulus.EnvironmentHolder
 import cinnamon.i18n.UiLanguage
 

@@ -6,7 +6,7 @@ grails.project.target.level = 1.7
 grails.project.source.level = 1.7
 grails.project.war.file = "target/${appName}.war"
 grails.project.repos.default = "myRepo"
-
+grails.project.dependency.resolver = "maven"
 grails.project.dependency.resolution = {
     // inherit Grails' default dependencies
     inherits("global") {
@@ -21,22 +21,10 @@ grails.project.dependency.resolution = {
     def seleniumVersion = "2.31.0"
 
     repositories {
-        inherits true // Whether to inherit repository definitions from plugins
-        mavenRepo name:'myRepo'
-        mavenLocal()
-       
-        grailsRepo "http://grails.org/plugins"
+//        mavenRepo name:'myRepo'
         mavenCentral()
-        
-        grailsPlugins()
-        grailsHome()
         grailsCentral()
-//        mavenRepo "http://mvnrepository.com"
-        // uncomment these to enable remote dependency resolution from public Maven repositories
-        //mavenRepo "http://snapshots.repository.codehaus.org"
-        //mavenRepo "http://repository.codehaus.org"
-        //mavenRepo "http://download.java.net/maven/2/"
-        //mavenRepo "http://repository.jboss.com/maven2/"
+        mavenRepo 'http://repo.spring.io/milestone'  
     }
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
@@ -45,14 +33,18 @@ grails.project.dependency.resolution = {
         runtime('org.apache.lucene:lucene-xml-query-parser:3.6.2')
         runtime('org.apache.lucene:lucene-queries:3.6.2')
         runtime 'postgresql:postgresql:9.1-901.jdbc4'
-        runtime 'dom4j:dom4j:1.6.1'
+        runtime 'xml-apis:xml-apis:1.4.01'
+        runtime('dom4j:dom4j:1.6.1'){
+            exclude 'xml-apis'
+        }
         runtime 'jaxen:jaxen:1.1.4'
-        compile 'org.codehaus.gpars:gpars:1.0.0'
-        runtime 'org.grails.plugins:cinnamon-humulus:0.2.6.3'
+        compile 'org.codehaus.gpars:gpars:1.2.1'
+        runtime 'org.grails.plugins:cinnamon-humulus:0.2.7.4'
         runtime 'commons-net:commons-net:3.2'
-        compile 'javax.mail:mail:1.4.6'
+        compile 'javax.mail:mail:1.4.7'
         test "org.spockframework:spock-grails-support:0.7-groovy-2.0"
         test "org.gebish:geb-spock:${gebPluginVersion}" 
+//        compile "org.springframework.security:spring-security-core:3.2.5.RELEASE"
         
         /*
          * Note: run test like -Dgeb.env=firefox test-app -functional RelationController
@@ -67,27 +59,29 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-        runtime (":hibernate:$grailsVersion"){
+        runtime (":hibernate:3.6.10.14"){
+//        runtime (":hibernate4:4.3.5.5"){
             export = false
         }
-        compile (":release:2.2.1"){
+        compile (":release:3.0.0"){
             export = false
         }
-        build (":tomcat:$grailsVersion"){
+        build (":tomcat:7.0.52.1"){
             export = false
         }
         
-        runtime ":jquery:1.8.3"
-        runtime ":resources:1.2.RC2"
-        compile(':spring-security-core:1.2.7.3')
-        compile (":twitter-bootstrap:2.1.0.1"){excludes 'svn'}
-        runtime ':cinnamon-db:3.0.1.6'
+//        runtime ":jquery:1.11.1"
+//        runtime ":resources:1.2.RC2"
+        compile(':spring-security-core:2.0-RC4')
+        compile ":rest-client-builder:2.0.3"
+        compile (":twitter-bootstrap:3.2.0.2"){excludes 'svn'}
+        compile ":cinnamon-db:3.0.2"
         runtime ':tika-parser:1.3.0.1'
         compile ":remote-pagination:0.3"
         compile ":geb:${gebPluginVersion}"
         test (':spock:0.7'){
             exclude "spock-grails-support"
         }
-       
+        compile ":asset-pipeline:1.9.7"
     }
 }
