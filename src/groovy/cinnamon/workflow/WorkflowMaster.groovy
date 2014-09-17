@@ -48,7 +48,7 @@ class WorkflowMaster extends DefaultActor {
                 transitionActor = new TransitionActor()
                 transitionActor.start()
             }
-            def currentEnvironment = EnvironmentHolder.environment
+            Map currentEnvironment = EnvironmentHolder.environment
             EnvironmentHolder.environment = Environment.list().find{it.dbName == command.repositoryName}
             WorkflowCommand cmd = new WorkflowCommand(type: WorkflowCommandType.DO_TRANSITION,
                     repositoryName: command.repositoryName,

@@ -98,7 +98,7 @@ class SearchController extends BaseController {
         int start = pageSize * (page - 1);
         int end = pageSize * page;
         for (int x = start; x < end && x < itemList.size(); x++) {
-            itemList.get(x).toXmlElement(root, metasets)
+            itemList[x].toXmlElement(root, metasets)
         }
     }
 

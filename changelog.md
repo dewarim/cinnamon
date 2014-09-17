@@ -1,5 +1,21 @@
 # Changelog for Cinnamon 3
 
+## 3.0.2.1
+
+* Code cleanup
+
+## 3.0.2
+
+* Upgrade to Grails 2.4.3
+
+## 3.0.1
+
+* searchObjectsXml now has additional parameter metaset_list so search results can include an object's metasets.
+
+## 3.0.0.X
+
+First published version of Cinnamon 3. For changes, see Github commits.
+
 ## 0.3.2
 
 * Add rescaleImage(...) to ImageService to create new OSDs from existing images objects.
@@ -9,7 +25,7 @@
 
 ## 0.3.1
 
-* OsdController.imageLoader has new optional integer parameter: longestSide (to downscale images if necessary) 
+* OsdController.imageLoader has new optional integer parameter: longestSide (to downscale images if necessary)
 * Improved ImageService: new methods allow more ways to fetch images.
 
 ## 0.3.0

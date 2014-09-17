@@ -227,7 +227,7 @@ class FolderService {
                     }
                 }
                 else {
-                    Folder folder = results.get(0);
+                    Folder folder = results[0];
                     parent = folder;
                     ret.add(folder);
                 }
