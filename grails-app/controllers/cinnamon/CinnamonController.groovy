@@ -1,5 +1,7 @@
 package cinnamon
 
+import grails.plugin.springsecurity.annotation.Secured
+
 import cinnamon.exceptions.CinnamonException
 import org.dom4j.Element
 import org.dom4j.Node
@@ -19,6 +21,7 @@ import cinnamon.i18n.UiLanguage
 class CinnamonController extends BaseController {
 
     // default response: list repositories
+    @Secured(['IS_AUTHENTICATED_ANONYMOUSLY'])
     def index() {
         render(contentType: "text/xml") {
             repositories {

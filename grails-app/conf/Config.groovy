@@ -2,10 +2,10 @@
 // config files can either be Java properties files or ConfigSlurper scripts
 
 grails.config.locations = ["classpath:${appName}-config.properties",
-        "classpath:${appName}-config.groovy",
-        "file:${userHome}/.grails/${appName}-config.properties",
-        "file:${userHome}/.grails/${appName}-config.groovy",
-        "file:${System.env.CINNAMON_HOME_DIR}/${appName}-config.groovy"
+                           "classpath:${appName}-config.groovy",
+                           "file:${userHome}/.grails/${appName}-config.properties",
+                           "file:${userHome}/.grails/${appName}-config.groovy",
+                           "file:${System.env.CINNAMON_HOME_DIR}/${appName}-config.groovy"
 ]
 
 // if (System.properties["${appName}.config.location"]) {
@@ -16,18 +16,18 @@ grails.config.locations = ["classpath:${appName}-config.properties",
 grails.project.groupId = appName // change this to alter the default package name and Maven publishing destination
 grails.mime.file.extensions = true // enables the parsing of file extensions from URLs into the request format
 grails.mime.use.accept.header = false
-grails.mime.types = [html: ['text/html', 'application/xhtml+xml'],
-        xml: ['text/xml', 'application/xml'],
-        text: 'text/plain',
-        js: 'text/javascript',
-        rss: 'application/rss+xml',
-        atom: 'application/atom+xml',
-        css: 'text/css',
-        csv: 'text/csv',
-        all: '*/*',
-        json: ['application/json', 'text/json'],
-        form: 'application/x-www-form-urlencoded',
-        multipartForm: 'multipart/form-data'
+grails.mime.types = [html         : ['text/html', 'application/xhtml+xml'],
+                     xml          : ['text/xml', 'application/xml'],
+                     text         : 'text/plain',
+                     js           : 'text/javascript',
+                     rss          : 'application/rss+xml',
+                     atom         : 'application/atom+xml',
+                     css          : 'text/css',
+                     csv          : 'text/csv',
+                     all          : '*/*',
+                     json         : ['application/json', 'text/json'],
+                     form         : 'application/x-www-form-urlencoded',
+                     multipartForm: 'multipart/form-data'
 ]
 
 // URL Mapping Cache Max Size, defaults to 5000
@@ -111,8 +111,8 @@ log4j = {
             'org.codehaus.groovy.grails.io',
             'org.codehaus.groovy.grails.io.support',
             'org.codehaus.groovy.grails.context.support.PluginAwareResourceBundleMessageSource'
-            
-    
+
+
     info 'org.codehaus.groovy.grails.context',
             'org.codehaus.groovy.grails.io',
             'org.codehaus.groovy.grails.web',
@@ -134,19 +134,23 @@ log4j = {
     info 'cinnamon.workflow'
     info 'cinnamon.index'
     debug 'humulus',
-          'cinnamon.UserAccountController',
-          'cinnamon.cinnamon.filters.TriggerFilters',
-          'cinnamon.index.indexer.ParentFolderPathIndexer',
-          'org.springframework.security.authentication',
-          'cinnamon.PreAuthenticatedAuthenticationProvider'
+            'cinnamon.UserAccountController',
+            'cinnamon.FolderController',
+            'cinnamon.cinnamon.filters.TriggerFilters',
+            'cinnamon.index.indexer.ParentFolderPathIndexer',
+            'org.springframework.security.authentication',
+            'cinnamon.PreAuthenticatedAuthenticationProvider'
 
-    info 'grails.app.domain.cinnamon.index'
+    debug 'grails.app.domain.cinnamon.index'
+    debug 'grails.app.controllers.cinnamon.FolderController'
     info 'org.springframework'
-    info 'grails.plugin.springsecurity.web'
+    debug 'grails.plugin.springsecurity.web'
     root {
         debug 'stdout'
     }
 }
+
+grails.views.javascript.library = "jquery"
 
 // Added by the Spring Security Core plugin:
 grails.plugin.springsecurity.userLookup.userDomainClassName = 'cinnamon.UserAccount'
@@ -162,8 +166,10 @@ grails.plugin.springsecurity.auth.loginFormUrl = '/login/auth'
 grails.plugin.springsecurity.providerNames = ['preauthAuthProvider', 'daoAuthenticationProvider', 'anonymousAuthenticationProvider']
 grails.plugin.springsecurity.logout.afterLogoutUrl = '/login/auth'
 grails.plugin.springsecurity.controllerAnnotations.staticRules = [
-   '/assets/**':               ['permitAll'],
-        ]
+        '/assets/**'              : ['permitAll'],
+        '/cinnamon/cinnamon/index': ['permitAll'],
+        '/error/**'               : ['permitAll'],
+]
 grails.logging.jul.usebridge = false
 
 /*
@@ -172,7 +178,6 @@ grails.logging.jul.usebridge = false
 */
 grails.plugin.springsecurity.successHandler.alwaysUseDefault = false
 grails.plugin.springsecurity.http.useExpressions = false
-
 
 // Uncomment and edit the following lines to start using Grails encoding & escaping improvements
 

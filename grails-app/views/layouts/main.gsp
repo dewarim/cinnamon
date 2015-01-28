@@ -6,9 +6,9 @@
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-    <asset:javascript src="jquery-2.1.1.js"/>
+    %{--<asset:javascript src="jquery-2.1.1.js"/>--}%
     <asset:javascript src="cinnamon.js"/>
-    <asset:javascript src="jquery-ui-1.11.1/jquery-ui.js"/>
+    %{--<asset:javascript src="jquery-ui-1.11.1/jquery-ui.js"/>--}%
     
     <asset:javascript src="codemirror/lib/codemirror.js"/>
     <asset:javascript src="codemirror/mode/xml.js"/>
@@ -130,7 +130,7 @@
         var selection = $('#selectionOsd');
         var s1 = '<div id="selected_div_' + id + '">';
 var s2 = '<input id="selected_input_' + id + '" type="hidden" name="osd" value="' + id + '">';
-var s3 = '<a href="#" class="deselectObject" onclick="$(\'#selected_div_' + id + '\').remove();\$(\'#addToSelection_' + id + '\').show();return false;"> ';
+var s3 = '<a href="#" class="deselectObject" onclick="jQuery(\'#selected_div_' + id + '\').remove();\$(\'#addToSelection_' + id + '\').show();return false;"> ';
 var s4 = '#' + id + ': ' + name + '</a></div>';
         selection.prepend(s1 + s2 + s3 + s4);
         $('#objectSelection').show();
@@ -145,7 +145,7 @@ var s4 = '#' + id + ': ' + name + '</a></div>';
         var selection = $('#selectionFolder');
         var s1 = '<div id="selected_folder_div_' + id + '">';
 var s2 = '<input id="sourceFolder_input_' + id + '" type="hidden" name="folder" value="' + id + '">';
-var s3 = '<a href="#" class="deselectFolder" onclick="$(\'#selected_folder_div_' + id + '\').remove();\$(\'.addToFolderSelection_' + id + '\').show();return false;"> ';
+var s3 = '<a href="#" class="deselectFolder" onclick="jQuery(\'#selected_folder_div_' + id + '\').remove();\$(\'.addToFolderSelection_' + id + '\').show();return false;"> ';
 var s4 = '#' + id + ': ' + name + '</a></div>';
         selection.prepend(s1 + s2 + s3 + s4);
         $('#objectSelection').show();
@@ -153,6 +153,8 @@ var s4 = '#' + id + ': ' + name + '</a></div>';
 
 
 </asset:script>
+    <asset:deferredScripts/>
+
 </head>
 <body>
 <header>

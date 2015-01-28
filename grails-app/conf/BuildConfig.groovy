@@ -2,11 +2,12 @@ grails.servlet.version = "3.0"
 grails.project.class.dir = "target/classes"
 grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
-grails.project.target.level = 1.7
-grails.project.source.level = 1.7
+grails.project.target.level = 1.8
+grails.project.source.level = 1.8
 grails.project.war.file = "target/${appName}.war"
 grails.project.repos.default = "myRepo"
 grails.project.dependency.resolver = "maven"
+
 grails.project.dependency.resolution = {
     // inherit Grails' default dependencies
     inherits("global") {
@@ -21,10 +22,9 @@ grails.project.dependency.resolution = {
     def seleniumVersion = "2.31.0"
 
     repositories {
-//        mavenRepo name:'myRepo'
+        mavenLocal()
         mavenCentral()
         grailsCentral()
-        mavenRepo 'http://repo.spring.io/milestone'  
     }
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
@@ -59,18 +59,18 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-        runtime (":hibernate:3.6.10.18"){
+        runtime (":hibernate:3.6.10.18") {
 //        runtime (":hibernate4:4.3.5.5"){
             export = false
         }
-        compile (":release:3.0.0"){
+        compile (":release:3.0.1"){
             export = false
         }
         build (":tomcat:8.0.15"){
             export = false
         }
         
-//        runtime ":jquery:1.11.1"
+        runtime ":jquery:1.11.1"
 //        runtime ":resources:1.2.RC2"
         compile(':spring-security-core:2.0-RC4')
         compile ":rest-client-builder:2.0.3"
@@ -82,6 +82,6 @@ grails.project.dependency.resolution = {
         test (':spock:0.7'){
             exclude "spock-grails-support"
         }
-        compile ":asset-pipeline:1.9.7"
+        compile ":asset-pipeline:1.9.9"
     }
 }

@@ -62,7 +62,7 @@ class FolderController extends BaseController {
 
         }
         catch (Exception e) {
-            log.debug("failed to show index:", e)
+            log.warn("failed to show index:", e)
             def logoutMessage = message(code: 'error.loading.folders', args: [e.getMessage()])
             return redirect(controller: 'logout', action: 'info', params: [logoutMessage: logoutMessage])
         }
