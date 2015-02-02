@@ -101,5 +101,32 @@ class FolderTypeController extends BaseController{
         render(contentType: 'application/xml', text: doc.asXML())
     }
 
-
+    @Secured(["hasRole('_superusers')"])
+    def saveXml(String name, String config){
+        def conf = config
+        if( config == null ){
+            conf = '<meta />'
+        }
+        def doc = DocumentHelper.createDocument()
+        FolderType folderType = new FolderType(name: name, config: conf )
+        if(folderType.validate()){
+            folderType.save()
+            log.debug("folderType: ${folderType}")
+            Element root = doc.addElement("folderTypes");
+            root.add(FolderType.asElement("folderType", folderType))
+            log.debug("request success: "+doc.asXML())
+            render(contentType: 'application/xml', text: doc.asXML())
+        }
+        else{
+            // TODO: XML error list.
+            // TODO: generic method for all domain objects to turn their errors into a list
+            def errorList = folderType.errors.allErrors
+            def errorsFlat = errorList.collect(errorList){error ->
+                error.toString()
+            }.join(" ") 
+            log.debug("request has errors: "+errorsFlat)
+            renderException(errorsFlat)
+        }
+        
+    }
 }
