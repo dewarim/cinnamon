@@ -33,9 +33,6 @@ class IndexGroupController extends BaseController{
     		render(view: "create", model: [:])
     		return
     	}
-//        IndexGroup.class.declaredMethods.each{
-//            log.debug(it)
-//        }
 
     	if (IndexGroup.findByName(params.name)) {
     	//if (! IndexGroup.findAll("from IndexGroup as ig where ig.name=?",params.name)?.isEmpty()) {

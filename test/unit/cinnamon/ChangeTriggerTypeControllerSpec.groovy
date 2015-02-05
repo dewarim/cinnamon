@@ -3,11 +3,11 @@ package cinnamon
 import cinnamon.trigger.ChangeTrigger
 import cinnamon.trigger.ChangeTriggerType
 import cinnamon.trigger.impl.LifecycleStateAuditTrigger
-import grails.plugin.spock.UnitSpec
 import grails.test.mixin.Mock
+import spock.lang.Specification
 
 @Mock([ChangeTriggerType, ChangeTrigger])
-class ChangeTriggerTypeControllerSpec extends UnitSpec {
+class ChangeTriggerTypeControllerSpec extends Specification {
     
     def inputValidationService = new InputValidationService()
     

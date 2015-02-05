@@ -42,7 +42,6 @@ grails.project.dependency.resolution = {
         runtime 'org.grails.plugins:cinnamon-humulus:0.2.7.4'
         runtime 'commons-net:commons-net:3.2'
         compile 'javax.mail:mail:1.4.7'
-        test "org.spockframework:spock-grails-support:0.7-groovy-2.0"
         test "org.gebish:geb-spock:${gebPluginVersion}" 
 //        compile "org.springframework.security:spring-security-core:3.2.5.RELEASE"
         
@@ -79,9 +78,6 @@ grails.project.dependency.resolution = {
         runtime ':tika-parser:1.3.0.1'
         compile ":remote-pagination:0.3"
         compile ":geb:${gebPluginVersion}"
-        test (':spock:0.7'){
-            exclude "spock-grails-support"
-        }
         compile ":asset-pipeline:1.9.9"
     }
 }

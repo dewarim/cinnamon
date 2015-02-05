@@ -1,8 +1,8 @@
 package cinnamon
 
-import grails.plugin.spock.UnitSpec
 import grails.test.mixin.*
 import grails.test.mixin.domain.DomainClassUnitTestMixin
+import spock.lang.Specification
 import spock.lang.Unroll
 
 /**
@@ -11,7 +11,7 @@ import spock.lang.Unroll
 @TestFor(OsdService)
 @Mock([Format])
 @TestMixin(DomainClassUnitTestMixin)
-class OsdServiceSpec extends UnitSpec {
+class OsdServiceSpec extends Specification {
 
     def setupSpec() {
     }
