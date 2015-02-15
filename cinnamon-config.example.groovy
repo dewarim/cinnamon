@@ -49,7 +49,7 @@ luceneIndexPath = '/opt/cinnamon/cinnamon-system/index'
 /*
  * System administrator - currently not used.
  */
-system_administrator = 'ingo.wiarda@texolution.eu'
+system_administrator = 'ingo_wiarda@dewarim.de'
 
 default_repository = 'demo'
 
