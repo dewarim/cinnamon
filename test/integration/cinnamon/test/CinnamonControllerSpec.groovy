@@ -2,12 +2,10 @@ package cinnamon.test
 
 import cinnamon.CinnamonController
 import grails.test.mixin.*
-import org.junit.*
-import grails.plugin.spock.*
-import spock.lang.* 
+import spock.lang.Specification
 
 @TestFor(CinnamonController)
-class CinnamonControllerSpec extends spock.lang.Specification {
+class CinnamonControllerSpec extends Specification {
     
     def "connect via connect method"(){
         setup:        
