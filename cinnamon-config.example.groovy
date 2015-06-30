@@ -44,7 +44,7 @@ data_root = '/opt/cinnamon/cinnamon-data'
  * The recommended place is in $data_root/index, 
  * but some legacy systems have stored the index in system_root/index.
  */
-luceneIndexPath = '/opt/cinnamon/cinnamon-system/index'
+luceneIndexPath = '/opt/cinnamon/cinnamon-data/index'
 
 /*
  * System administrator - currently not used.
@@ -55,6 +55,49 @@ default_repository = 'demo'
 
 // Size of preview images in folder view.
 previewSize = 128
+
+// Database connection properties:
+environments{
+    development{
+        dataSource {
+            dialect = org.hibernate.dialect.PostgreSQLDialect
+            driverClassName = 'org.postgresql.Driver'
+            username = 'cinnamon'
+            password = 'cinnamon'
+            url = 'jdbc:postgresql://localhost/demo'
+            properties {
+                maxActive = -1
+                minEvictableIdleTimeMillis = 1800000
+                timeBetweenEvictionRunsMillis = 1800000
+                numTestsPerEvictionRun = 3
+                testOnBorrow = true
+                testWhileIdle = true
+                testOnReturn = true
+                validationQuery = "SELECT 1"
+            }
+        }
+    }
+    production{
+        dataSource {
+            dialect = org.hibernate.dialect.PostgreSQLDialect
+            driverClassName = 'org.postgresql.Driver'
+            username = 'cinnamon'
+            password = 'cinnamon'
+            url = 'jdbc:postgresql://localhost/demo'
+            properties {
+                maxActive = -1
+                minEvictableIdleTimeMillis = 1800000
+                timeBetweenEvictionRunsMillis = 1800000
+                numTestsPerEvictionRun = 3
+                testOnBorrow = true
+                testWhileIdle = true
+                testOnReturn = true
+                validationQuery = "SELECT 1"
+            }
+        }
+    }
+    
+}
 
 /*
  This defines a dataSource for the audit-log for lifecycle changes.
