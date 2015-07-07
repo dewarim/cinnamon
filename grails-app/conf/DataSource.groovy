@@ -15,6 +15,7 @@ environments {
             configClass = cinnamon.hibernate.FieldAccessHibernateConfiguration
             dbCreate = "none" // one of 'create', 'create-drop', 'update', 'validate', ''
 //            url = "jdbc:h2:mem:devDb;MVCC=TRUE"
+            url = 'jdbc:postgresql://localhost/demo?user=cinnamon&password=cinnamon'
         }
     }
     test {
