@@ -7,8 +7,6 @@ import cinnamon.index.LuceneResult
 import cinnamon.index.SearchableDomain
 import cinnamon.relation.Relation
 import groovyx.gpars.actor.DynamicDispatchActor
-import humulus.Environment
-import humulus.EnvironmentHolder
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -32,7 +30,6 @@ class TransitionActor extends DynamicDispatchActor{
     
     WorkflowResult executeTransitions(WorkflowCommand cmd, WorkflowResult result) {
         try {
-            EnvironmentHolder.environment = Environment.list().find{it.dbName == cmd.repositoryName}
             ObjectSystemData.withTransaction {
                 def mainContext = new ObjectSystemData().domainClass.grailsApplication.mainContext
                 def luceneService = mainContext.getBean('luceneService')

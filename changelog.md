@@ -1,5 +1,16 @@
 # Changelog for Cinnamon 3
 
+## unreleased
+
+* Upgrade to Grails 2.4.4
+* Removed support for multiple repositories in one instance of Cinnamon. Reason: was too complex to maintain properly
+  over upgrade and customers did not need this feature. You should use one VM or server for one repository.
+* Removed spock plugin.
+* Upgrade to Java 8
+* /folderType/saveXml Parameter: String name, String (XML) config, create FolderType via Post request. Default for config
+  parameter is "<meta />"
+  
+
 ## 3.0.2.1
 
 * Code cleanup

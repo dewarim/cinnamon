@@ -5,7 +5,6 @@ import cinnamon.global.ConfThreadLocal
 import cinnamon.exceptions.CinnamonException
 import cinnamon.global.Conf
 import grails.plugin.springsecurity.userdetails.GrailsUser
-import humulus.EnvironmentHolder
 import cinnamon.i18n.UiLanguage
 
 /**
@@ -15,6 +14,7 @@ class UserService {
 
     def springSecurityService
     def healthService
+    def infoService
 
     Boolean isSuperuser(UserAccount user) {
         def auth = springSecurityService.authentication
@@ -247,7 +247,7 @@ class UserService {
                 userAccount.language = uiLanguage
                 userAccount.save()
             }
-            session = new Session(EnvironmentHolder.environment.dbName, userAccount, 'localhost', uiLanguage)
+            session = new Session(infoService.repositoryName, userAccount, 'localhost', uiLanguage)
             session.save()
         }
         return session.ticket

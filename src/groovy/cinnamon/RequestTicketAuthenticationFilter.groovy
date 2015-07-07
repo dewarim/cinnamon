@@ -4,8 +4,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.util.Assert
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedCredentialsNotFoundException
-import humulus.Environment
-import humulus.EnvironmentHolder
 import javax.servlet.http.HttpServletResponse
 import org.springframework.security.core.Authentication
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken
@@ -69,15 +67,6 @@ InitializingBean, ApplicationEventPublisherAware {
                 return null
             }
             logger.debug("Request contains ticket: $ticket")
-            def repositoryName = ticket.trim().split('@')[1]
-
-            def env = Environment.list().find {it.dbName == repositoryName}
-            if (!env) {
-                throw new PreAuthenticatedCredentialsNotFoundException("Could not find environment '${repositoryName}'")
-            }
-
-            //test connection
-            EnvironmentHolder.setEnvironment(env)
             Session.withTransaction {
                 def cmnSession = Session.findByTicket(ticket)
                 if (!cmnSession) {

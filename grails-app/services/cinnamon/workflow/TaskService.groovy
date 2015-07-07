@@ -15,7 +15,6 @@ import cinnamon.relation.RelationType
 import cinnamon.workflow.actions.CinnamonNotification
 import cinnamon.workflow.actions.WorkflowMail
 import groovy.text.SimpleTemplateEngine
-import humulus.EnvironmentHolder
 import org.slf4j.LoggerFactory
 import org.w3c.dom.Document
 

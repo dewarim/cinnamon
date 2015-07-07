@@ -17,11 +17,7 @@
  */
 package cinnamon.index
 
-import cinnamon.Folder
-import cinnamon.ObjectSystemData
 import groovyx.gpars.actor.DefaultActor
-import humulus.Environment
-import humulus.EnvironmentHolder
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 

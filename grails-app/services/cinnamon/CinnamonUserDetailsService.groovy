@@ -8,11 +8,9 @@ import org.springframework.security.core.authority.GrantedAuthorityImpl
 
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.core.userdetails.UserDetails
-import grails.plugin.springsecurity.web.SecurityRequestHolder as SRH
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import humulus.EnvironmentHolder
 
 /*
  This class is based upon UserDetailsService from the Grails security plugin. 
@@ -54,9 +52,6 @@ class CinnamonUserDetailsService implements GrailsUserDetailsService {
     }
 
     protected UserDetails loadUser(String username, boolean loadRoles) {
-//        HttpServletRequest  request = SecurityRequestHolder.getRequest()
-//        def params = request.parameterMap
-
         def user = loadUser(username)
         Collection<GrantedAuthority> authorities = loadAuthorities(user, loadRoles)
         createUserDetails user, authorities
@@ -82,14 +77,6 @@ class CinnamonUserDetailsService implements GrailsUserDetailsService {
         log.debug("create user details")
         String username = user.name
         String password = user.pwd
-
-        // create a client which accesses Cinnamon over the official API.
-        def env = EnvironmentHolder.getEnvironment()
-
-        // gain access to unencrypted password which we need to login remotely to the server:
-//        def params = SecurityRequestHolder.request.parameterMap
-//        Client client = new Client(url, username, (String) params.get('j_password')[0], repositoryName)
-//        repositoryService.addClient(client)
 
         boolean enabled = user.activated
         boolean accountExpired = user.accountExpired

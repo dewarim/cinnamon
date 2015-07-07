@@ -8,7 +8,6 @@ import cinnamon.exceptions.CinnamonException
 import cinnamon.utils.ParamParser
 import cinnamon.relation.Relation
 import cinnamon.relation.RelationType
-import humulus.EnvironmentHolder
 import cinnamon.global.PermissionName
 import cinnamon.global.Constants
 import org.springframework.web.multipart.MultipartFile
@@ -21,6 +20,7 @@ class OsdService {
     def imageService
     def metasetService
     def cinnamonTikaService
+    def infoService
 
     /**
      * Turn a collection of data objects into an XML document. Any exceptions encountered during
@@ -73,7 +73,7 @@ class OsdService {
     }
 
     void copyContent(ObjectSystemData source, ObjectSystemData copy) {
-        copyContent(EnvironmentHolder.getEnvironment().dbName, source, copy)
+        copyContent(infoService.repositoryName, source, copy)
     }
 
     void copyContent(String repositoryName, ObjectSystemData source, ObjectSystemData copy) {
@@ -616,7 +616,7 @@ class OsdService {
         def previews = [:]
         osds.each { osd ->
             if (osd.format?.contenttype?.startsWith('image')) {
-                def thumbnail = imageService.fetchThumbnail(osd, EnvironmentHolder.environment.dbName, previewSize, true)
+                def thumbnail = imageService.fetchThumbnail(osd, infoService.repositoryName, previewSize, true)
                 previews.put(osd, thumbnail)
             }
         }

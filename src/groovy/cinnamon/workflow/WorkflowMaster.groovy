@@ -4,8 +4,6 @@ import cinnamon.ObjectType
 import cinnamon.global.Constants
 import cinnamon.relation.RelationType
 import groovyx.gpars.actor.DefaultActor
-import humulus.Environment
-import humulus.EnvironmentHolder
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -48,8 +46,6 @@ class WorkflowMaster extends DefaultActor {
                 transitionActor = new TransitionActor()
                 transitionActor.start()
             }
-            Map currentEnvironment = EnvironmentHolder.environment
-            EnvironmentHolder.environment = Environment.list().find{it.dbName == command.repositoryName}
             WorkflowCommand cmd = new WorkflowCommand(type: WorkflowCommandType.DO_TRANSITION,
                     repositoryName: command.repositoryName,
                     taskObjectType: ObjectType.findByName(Constants.OBJTYPE_TASK),
@@ -59,7 +55,6 @@ class WorkflowMaster extends DefaultActor {
             )
             cmd.initializeQueryStrings()
             runTransitions(cmd)
-            EnvironmentHolder.environment = currentEnvironment
         }
         catch (Exception e) {
             log.warn("startTicking failed.", e)

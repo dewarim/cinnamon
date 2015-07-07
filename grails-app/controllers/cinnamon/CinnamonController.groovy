@@ -3,13 +3,10 @@ package cinnamon
 import grails.plugin.springsecurity.annotation.Secured
 
 import cinnamon.exceptions.CinnamonException
-import org.dom4j.Element
 import org.dom4j.Node
 import cinnamon.global.Constants
 import cinnamon.global.ConfThreadLocal
 import cinnamon.global.Conf
-import humulus.EnvironmentHolder
-import humulus.Environment
 import humulus.HashMaker
 import cinnamon.i18n.UiLanguage
 
@@ -103,6 +100,7 @@ class CinnamonController extends BaseController {
         }
     }
 
+    @Secured(['IS_AUTHENTICATED_ANONYMOUSLY'])
     def connect() {
         try {
             def username = params.user
@@ -117,16 +115,6 @@ class CinnamonController extends BaseController {
                 }
             }
 
-            def env = Environment.list().find { it.dbName == repository }
-            if (!env) {
-                log.debug("could not find environment for repository ${repository}")
-                throw new RuntimeException("error.no.environment")
-            }
-            EnvironmentHolder.setEnvironment(env)
-//            log.debug("${grailsApplication.mainContext.getBean('demoDataSource')}")
-//            def ds = grailsApplication.getMainContext().getBean('dataSource') //getBean("${repository}DataSource")
-            def ds = grailsApplication.getMainContext().dataSource
-            ds.getConnection()
             def user = UserAccount.findByName(username)
             if (!user) {
                 log.debug("user $username not found")
@@ -168,8 +156,10 @@ class CinnamonController extends BaseController {
         }
     }
 
+    @Secured(['IS_AUTHENTICATED_ANONYMOUSLY'])
     def legacy() {
         try {
+            log.debug("params for legacy: ${params}")
             def myAction = params.command
             if (!myAction) {
                 myAction = 'index'

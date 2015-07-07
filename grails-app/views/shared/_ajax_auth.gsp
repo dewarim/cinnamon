@@ -66,7 +66,6 @@
 <div id='ajaxLogin'>
 	<div class='inner'>
 		<form action='${request.contextPath}/j_spring_security_check' method='POST' id='ajaxLoginForm' name='ajaxLoginForm' class='cssform'>
-			<input type="hidden" name="environment" value="${environment}"/>
 			<input type="hidden" name="submitForm" value="1"/>
 			<p>
 				<label for='username'><g:message code="login.username"/></label>

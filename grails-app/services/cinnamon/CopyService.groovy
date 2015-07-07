@@ -3,15 +3,16 @@ package cinnamon
 import cinnamon.exceptions.CinnamonException
 
 import java.util.concurrent.ConcurrentLinkedQueue
-import humulus.EnvironmentHolder
 
 class CopyService {
 
     /*
      * moved from a Java class to Groovy, because Grails 2.1.1 did not find the GORM methods when 
      * using this plugin in another project.
+     * TODO: move from Java-code style to Groovy.
      */
     
+    def infoService
     def osdService
     def folderService
     def luceneService
@@ -209,7 +210,7 @@ class CopyService {
                     }
 
                     // recursively delete the broken object tree.
-                    osdService.delete(brokenCopy.getRoot(), true, true, EnvironmentHolder.environment.dbName);
+                    osdService.delete(brokenCopy.getRoot(), true, true, infoService.repositoryName);
                 }
 
                 CopyService.log.debug("cleanup complete.");

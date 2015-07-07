@@ -5,8 +5,6 @@ import org.springframework.security.core.authority.GrantedAuthoritiesContainer
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
 import javax.servlet.http.HttpServletRequest
-import humulus.Environment
-import humulus.EnvironmentHolder
 import org.springframework.security.core.authority.GrantedAuthorityImpl
 
 /**
@@ -30,17 +28,6 @@ class CinnamonAuthenticationDetailsSource extends WebAuthenticationDetailsSource
         if (!ticket) {
             return
         }
-        def repositoryName = ticket.split('@')[1]
-
-        def env = Environment.list().find {it.dbName == repositoryName}
-        if (!env) {
-            return
-        }
-
-        //test connection
-        EnvironmentHolder.setEnvironment(env)
-        def ds = grailsApplication.getMainContext().dataSource
-        ds.getConnection()
         def cmnSession = Session.findByTicket(ticket)
         if (!cmnSession) {
             return            

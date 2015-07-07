@@ -26,8 +26,6 @@ class BootStrap {
             log.warn("*** dataSource for lifecycleLogging is probably not configured correctly.", e)
         }
 
-        SpringSecurityUtils.clientRegisterFilter('repositoryLoginFilter',
-                SecurityFilterPosition.PRE_AUTH_FILTER.getOrder() + 20)
         SpringSecurityUtils.clientRegisterFilter('requestTicketAuthenticationFilter',
                 SecurityFilterPosition.PRE_AUTH_FILTER.getOrder() + 15)
 

@@ -14,13 +14,12 @@ import cinnamon.interfaces.Transition
 import cinnamon.relation.Relation
 import cinnamon.relation.RelationType
 import cinnamon.utils.ParamParser
-import humulus.Environment
-import humulus.EnvironmentHolder
 import org.dom4j.Document
 import org.dom4j.Element
 
 class WorkflowService {
 
+    def infoService
     def userService
     def folderService
     def osdService
@@ -158,7 +157,7 @@ class WorkflowService {
         List<ObjectSystemData> newTasks;
         try {
             Transition transition = (Transition) Class.forName(transitionClass).newInstance();
-            newTasks = transition.execute(task, transitionNode, EnvironmentHolder.environment.dbName);
+            newTasks = transition.execute(task, transitionNode, infoService.repositoryName);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         } catch (InstantiationException e) {
@@ -191,7 +190,7 @@ class WorkflowService {
                 workflow.setProcstate(Constants.PROCSTATE_WORKFLOW_FINISHED);
             }
         }
-       
+
     }
 
     List<ObjectSystemData> findOpenTasksByUserAndWorkflow(
@@ -211,25 +210,20 @@ class WorkflowService {
     def workflowMasters = [:]
 
     void initializeWorkflowMasters() {
-        def currentEnv = EnvironmentHolder.environment
-        Environment.list().each { repo ->
-            def name = repo.dbName
-            log.debug("create workflow master object for ${name}")
-            try {
-                EnvironmentHolder.environment = repo
-                def master = new WorkflowMaster()
-                master.start()
-                master.sendAndContinue(new WorkflowCommand(type: WorkflowCommandType.RUN_WORKFLOW,
-                        repositoryName: name)) { WorkflowResult workflowResult ->
-                    log.debug("Received workflowResult: ${workflowResult}, status: ${ workflowResult.failed ? 'failed' : 'ok'}")
-                }
-                workflowMasters.put(name, master)
-            } catch (Exception e) {
-                log.debug("failed to initialize workflow master actor for repository $name", e)
-                throw new RuntimeException("Failed to initialize workflow master actor for repository $name.", e);
+        def name = infoService.repositoryName
+        log.debug("create workflow master object for ${name}")
+        try {
+            def master = new WorkflowMaster()
+            master.start()
+            master.sendAndContinue(new WorkflowCommand(type: WorkflowCommandType.RUN_WORKFLOW,
+                    repositoryName: name)) { WorkflowResult workflowResult ->
+                log.debug("Received workflowResult: ${workflowResult}, status: ${workflowResult.failed ? 'failed' : 'ok'}")
             }
+            workflowMasters.put(name, master)
+        } catch (Exception e) {
+            log.debug("failed to initialize workflow master actor for repository $name", e)
+            throw new RuntimeException("Failed to initialize workflow master actor for repository $name.", e);
         }
-        EnvironmentHolder.environment = currentEnv
     }
 
     void stopWorkflowMasters() {
@@ -246,7 +240,7 @@ class WorkflowService {
     }
 
 
-    void publishStacktrace(ObjectSystemData task, Exception e, String metasetName, String procstate){
+    void publishStacktrace(ObjectSystemData task, Exception e, String metasetName, String procstate) {
         StringBuilder trace = new StringBuilder()
         Throwable cause = e
         while (cause != null) {

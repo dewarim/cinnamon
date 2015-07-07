@@ -2,7 +2,6 @@ package cinnamon
 
 import cinnamon.references.Link
 import cinnamon.references.LinkType
-import humulus.EnvironmentHolder
 
 import grails.plugin.springsecurity.annotation.Secured
 import cinnamon.global.PermissionName
@@ -55,7 +54,6 @@ class FolderController extends BaseController {
                     children: childFolders,
                     triggerSet: triggerSet,
                     triggerFolder: params.folder,
-                    envId: EnvironmentHolder.getEnvironment()?.get('id'),
                     msgList: flash.msgList,
                     folderConfigs: folderConfigs,
             ]

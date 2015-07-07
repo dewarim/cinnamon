@@ -163,7 +163,7 @@ abstract class BaseController {
     }
     
     protected String getRepositoryName(){
-        def name = session.repositoryName 
+        def name = grailsApplication.config.repositoryName 
         if (! name){
             def ticketSplit = request.getHeader('ticket')?.trim()?.split('@')
             if (ticketSplit?.size() == 2){

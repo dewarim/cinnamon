@@ -42,8 +42,6 @@ import org.apache.lucene.xmlparser.ParserException
 import cinnamon.index.queryBuilder.WildcardQueryBuilder
 import cinnamon.index.queryBuilder.RegexQueryBuilder
 import cinnamon.exceptions.CinnamonException
-import humulus.Environment
-import humulus.EnvironmentHolder
 
 import org.apache.lucene.analysis.Analyzer
 import org.apache.lucene.analysis.LimitTokenCountAnalyzer
@@ -63,9 +61,7 @@ class LuceneActor extends DynamicDispatchActor {
     void onMessage(IndexCommand command) {
         LuceneResult result = new LuceneResult()
         try {
-            def env = Environment.list().find { it.dbName == command.repository }
             log.debug("onMessage: receveived indexCommand ${command.dump()}")
-            EnvironmentHolder.setEnvironment(env)
             switch (command.type) {
                 case CommandType.REMOVE_FROM_INDEX: removeFromIndex(command); break
                 case CommandType.UPDATE_INDEX: result = updateIndex(command); break
@@ -89,8 +85,6 @@ class LuceneActor extends DynamicDispatchActor {
     LuceneResult updateIndex(IndexCommand command) {
         def repository = command.repository
         log.debug("Update repository: ${repository.name}")
-        def env = Environment.list().find { it.dbName == repository.name }
-        EnvironmentHolder.setEnvironment(env)
         def osdJobs = []
         def seen = new HashSet<Long>(100)
         IndexJob.withTransaction{
@@ -138,8 +132,6 @@ class LuceneActor extends DynamicDispatchActor {
     def doIndexJobNow(IndexCommand command){
         def repository = command.repository
         log.debug("Update repository: ${repository.name}")
-        def env = Environment.list().find { it.dbName == repository.name }
-        EnvironmentHolder.setEnvironment(env)
         IndexJob.withNewTransaction {
             def reloadedIndexable = command.indexable.reload()         
             doIndexJob(reloadedIndexable, null, repository, command.removeFirst)

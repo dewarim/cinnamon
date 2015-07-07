@@ -9,7 +9,6 @@ import org.springframework.security.authentication.LockedException
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
-import humulus.Environment
 
 class LoginController {
 
@@ -65,7 +64,6 @@ class LoginController {
                 logo:logo,
                 localAppName:localAppName,
 		        rememberMeParameter: config.rememberMe.parameter,
-                repositories: Environment.list()
         ]
 	}
 

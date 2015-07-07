@@ -1,7 +1,6 @@
 package cinnamon
 
 import cinnamon.index.LuceneMaster
-import humulus.EnvironmentHolder
 import org.apache.lucene.analysis.Analyzer
 import org.apache.lucene.analysis.standard.StandardAnalyzer
 import org.apache.lucene.util.Version
@@ -16,7 +15,6 @@ import cinnamon.index.Indexable
 import cinnamon.index.IndexCommand
 import cinnamon.index.CommandType
 import cinnamon.index.LuceneResult
-import humulus.Environment
 import cinnamon.index.SearchableDomain
 
 import java.text.DecimalFormat
@@ -25,6 +23,7 @@ class LuceneService {
 
     def grailsApplication
     def itemService
+    def infoService
 
     static transactional = false
 
@@ -44,9 +43,8 @@ class LuceneService {
     
     void initialize() {
         Analyzer standardAnalyzer = new StandardAnalyzer(Version.LUCENE_36)
-
-        Environment.list().each {repo ->
-            def name = repo.dbName
+        
+        [infoService.repositoryName].each{name ->
             log.debug("create repository object for ${name}")
             try {
                 Analyzer analyzer = new LimitTokenCountAnalyzer(standardAnalyzer, Integer.MAX_VALUE)
@@ -75,19 +73,19 @@ class LuceneService {
     }
 
     void addToIndex(Indexable indexable) {
-        String repository = EnvironmentHolder.getEnvironment().dbName        
+        String repository = infoService.repositoryName        
         def cmd = new IndexCommand(indexable: indexable, repository: repositories.get(repository), type: CommandType.ADD_TO_INDEX_NOW)
         lucene.sendAndWait(cmd)
     }
   
     void updateIndex(Indexable indexable) {
-        String repository = EnvironmentHolder.getEnvironment().dbName
+        String repository = infoService.repositoryName
         def cmd = new IndexCommand(indexable: indexable, repository: repositories.get(repository), type: CommandType.UPDATE_INDEX_NOW)
         lucene.sendAndWait(cmd)
     }
     
     void removeFromIndex(Indexable indexable) {
-        String repository = EnvironmentHolder.getEnvironment().dbName
+        String repository = infoService.repositoryName
         def cmd = new IndexCommand(indexable: indexable, repository: repositories.get(repository), type: CommandType.REMOVE_FROM_INDEX_NOW)        
         lucene.sendAndWait(cmd)
     }

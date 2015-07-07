@@ -188,7 +188,7 @@ var s4 = '#' + id + ': ' + name + '</a></div>';
 <p>
     <sec:ifLoggedIn>
         <g:link controller="logout" class="logout-link" action="index">
-            <g:message code="logout.link" args="[session.repositoryName]"/>
+            <g:message code="logout.link" args="[grailsApplication.config.repositoryName]"/>
         </g:link>
     </sec:ifLoggedIn>
     <sec:ifNotLoggedIn>
