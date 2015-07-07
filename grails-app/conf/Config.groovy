@@ -114,7 +114,6 @@ log4j = {
     info 'grails.plugins.twitterbootstrap.BootstrapResources'
     info 'cinnamon.RequestTicketAuthenticationFilter'
     debug 'cinnamon.debug.ProviderManager'
-    debug 'humulus.RepositoryLoginFilter'
     debug 'cinnamon.CinnamonUserDetailsService'
     info 'grails.app.filters.cinnamon.filters.PageFilters'
     debug 'grails.app.filters.cinnamon.filters.TriggerFilters'
