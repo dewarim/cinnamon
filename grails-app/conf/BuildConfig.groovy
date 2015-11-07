@@ -57,8 +57,8 @@ grails.project.dependency.resolution = {
     }
 
     plugins {
-        runtime (":hibernate:3.6.10.19") {
-//        runtime (":hibernate4:4.3.5.5"){
+//        runtime (":hibernate:3.6.10.19") {
+        runtime (":hibernate4:4.3.8.1"){
             export = false
         }
         compile (":release:3.1.1"){
@@ -73,7 +73,7 @@ grails.project.dependency.resolution = {
         compile(':spring-security-core:2.0-RC5')
         compile ":rest-client-builder:2.1.1"
         compile (":twitter-bootstrap:3.2.0.2"){excludes 'svn'}
-        compile ":cinnamon-db:3.1.3"
+        compile ":cinnamon-db:3.1.14"
         runtime ':tika-parser:1.3.0.1'
         compile ":remote-pagination:0.3"
         compile ":geb:${gebPluginVersion}"
