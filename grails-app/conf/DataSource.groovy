@@ -1,6 +1,5 @@
 dataSource {
     pooled = true
-    configClass = cinnamon.hibernate.FieldAccessHibernateConfiguration
 }
 
 hibernate {
@@ -12,7 +11,6 @@ hibernate {
 environments {
     development {
         dataSource {
-            configClass = cinnamon.hibernate.FieldAccessHibernateConfiguration
             dbCreate = "none" // one of 'create', 'create-drop', 'update', 'validate', ''
 //            url = "jdbc:h2:mem:devDb;MVCC=TRUE"
             url = 'jdbc:postgresql://localhost/demo?user=cinnamon&password=cinnamon'
@@ -29,7 +27,6 @@ environments {
     }
     production {
         dataSource {
-            configClass = cinnamon.hibernate.FieldAccessHibernateConfiguration
             dbCreate = "none"
             pooled = true
             properties {
