@@ -1,11 +1,13 @@
 package cinnamon
 
 import cinnamon.global.ConfThreadLocal
+import grails.transaction.Transactional
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.userdetails.AuthenticationUserDetailsService
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedCredentialsNotFoundException
 
+@Transactional
 class CinnamonPreAuthUserDetailsService implements AuthenticationUserDetailsService{
     
     def grailsApplication
