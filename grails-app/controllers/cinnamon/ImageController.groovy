@@ -1,7 +1,5 @@
 package cinnamon
 
-import cinnamon.global.Conf
-import cinnamon.global.ConfThreadLocal
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 
