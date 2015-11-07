@@ -400,7 +400,7 @@ class FolderController extends BaseController {
                 ObjectSystemData osd = new ObjectSystemData(filename, user, targetFolder);
                 osd.setType(objectType);
                 if (params.object_meta) {
-                    osd.setMetadata(params.object_meta)
+                    osd.storeMetadata(params.object_meta)
                 }
                 try {
                     String contentPath = ContentStore.copyToContentStore(zipFile.getAbsolutePath(), repositoryName);

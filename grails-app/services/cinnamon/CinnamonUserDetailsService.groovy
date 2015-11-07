@@ -1,8 +1,10 @@
 package cinnamon
 
+import cinnamon.global.ConfThreadLocal
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.userdetails.GrailsUser
 import grails.plugin.springsecurity.userdetails.GrailsUserDetailsService
+import grails.transaction.Transactional
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.GrantedAuthorityImpl
 
@@ -15,6 +17,7 @@ import org.slf4j.LoggerFactory
 /*
  This class is based upon UserDetailsService from the Grails security plugin. 
  */
+@Transactional
 class CinnamonUserDetailsService implements GrailsUserDetailsService {
 
     /*
@@ -69,7 +72,9 @@ class CinnamonUserDetailsService implements GrailsUserDetailsService {
         else {
             log.debug("found user : $user")
         }
-
+        
+        // store user in ThreadLocal so we can access the current user when doing contentChanged/metadataChanged checks.
+        ConfThreadLocal.conf.currentUser = user
         return user
     }
 

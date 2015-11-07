@@ -171,6 +171,7 @@ class CinnamonController extends BaseController {
             log.debug("user: $user")
             if (user) {
                 log.debug("user is logged in")
+                ConfThreadLocal.conf.currentUser = user
             }
             else if (myAction == 'connect') {
                 return forward(action: 'connect') // special case.

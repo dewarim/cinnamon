@@ -20,3 +20,9 @@ You must also update all user accounts who require changeTracking, for example b
 
 Alternatively, just set change_tracking to true for everyone except the admin accounts.
    
+
+#### Remove deprecated OSD.metadata
+ 
+    alter table objects drop column metadata;
+
+    

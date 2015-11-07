@@ -163,8 +163,8 @@ class TranslationService {
      */
     void copyContentAndMetadata(ObjectSystemData source, ObjectSystemData target) {
         osdService.copyContent(source, target);
-        // TODO: copyMetasets instead of setMetadata
-        target.setMetadata(source.metadata);
+        // TODO: copyMetasets instead of storeMetadata
+        target.storeMetadata(source.metadata);
     }
 
     /**
@@ -194,7 +194,7 @@ class TranslationService {
         targetNode.addElement("relation_type_id").addText(String.valueOf(objectRelationType.getId()));
         targetNode.addElement("attribute_value").addText(attributeValue);
         log.debug("about to set metadata:" + meta.asXML());
-        target.setMetadata(meta.asXML());
+        target.storeMetadata(meta.asXML());
     }
 
 
@@ -248,7 +248,7 @@ class TranslationService {
                     log.warn("An empty leaf node was generated!");
                     throw new CinnamonException("error.translation.internal");
                 }
-                leaf.setMetadata(metaNode);
+                leaf.storeMetadata(metaNode);
                 newObjects.add(leaf);
                 emptyCopies.put(osd, leaf);
             }
@@ -282,7 +282,7 @@ class TranslationService {
             log.debug("create empty copy of: " + osd.getId());
             ObjectSystemData emptyCopy = objectTreeCopier.createEmptyCopy(osd);
             log.debug(String.format("Empty copy of %d is %d", osd.getId(), emptyCopy.getId()));
-            emptyCopy.setMetadata(metaNode);
+            emptyCopy.storeMetadata(metaNode);
             
             objectTreeCopier.getCopyCache().put(osd, emptyCopy);
             newTree.add(emptyCopy);

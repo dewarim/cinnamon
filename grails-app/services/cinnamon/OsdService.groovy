@@ -99,7 +99,7 @@ class OsdService {
 
     void copyMetadata(ObjectSystemData source, ObjectSystemData copy) {
         def meta = source.getMetadata()
-        copy.setMetadata(meta)
+        copy.storeMetadata(meta)
         copy.save()
     }
 

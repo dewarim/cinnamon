@@ -36,7 +36,7 @@ class OsdController extends BaseController {
         try {
             ObjectSystemData osd = fetchAndFilterOsd(params.osd)
             if (!osd.metadata.equals(params.metadata)) {
-                osd.metadata = params.metadata
+                osd.storeMetadata(params.metadata)
             }
             render(template: mapTemplate('/osd/objectDetails'), model: [osd: osd, permissions: loadUserPermissions(osd.acl)])
         }
@@ -502,14 +502,17 @@ class OsdController extends BaseController {
             def user = userService.user
             ObjectSystemData osd = new ObjectSystemData(params, user, false)
             (new Validator(user)).validateCreate(osd.parent)
-            osd.save(flush: true)
+            osd.save()
+            log.debug("osd after save: "+osd)
+
             if(params.metadata){
-                osd.setMetadata(params.metadata)
+                osd.storeMetadata(params.metadata)
             }
+            
             if(params.preid){
                 // TODO: should probably not copy all metadata...
                 // but that is currently the legacy behaviour.
-                osd.metadata = osd.predecessor.metadata
+                osd.storeMetadata(osd.predecessor.metadata)
             }
             log.debug("osd created: " + osd)
 
@@ -661,7 +664,8 @@ class OsdController extends BaseController {
             copy.setModifier(user)
             copy.setCreator(user)
             copy.setLocker(null)
-            copy.save()
+            copy.save(flush:true)
+            
             copy.fixLatestHeadAndBranch([])
             osdService.copyRelations(osd, copy)
             // execute the new LifeCycleState if necessary.
@@ -1046,7 +1050,7 @@ class OsdController extends BaseController {
                 osdService.saveFileUpload(request, osd, user, myFormat.id, repositoryName, false)
             }
             if (metadata) {
-                osd.metadata = metadata
+                osd.storeMetadata(metadata)
             }
             log.debug("new osd: ${osd.toXML().asXML()}")
             log.debug("version of new osd: ${osd.cmnVersion}")
@@ -1088,7 +1092,7 @@ class OsdController extends BaseController {
             (new Validator(user)).validateSetMeta(osd)
             metadata = metadata == null ? "<meta />" : metadata.trim();
             WritePolicy policy = WritePolicy.valueOf(write_policy ?: 'BRANCH')
-            osd.setMetadata(metadata, policy);
+            osd.storeMetadata(metadata, policy);
             osd.updateAccess(user);
             render(contentType: 'application/xml') {
                 cinnamon{

@@ -86,7 +86,7 @@ class RenderServerController extends BaseController {
             }
             osd.setType(renderTaskType);
             osd.save(flush:true)
-            osd.metadata = metaset.asXML()
+            osd.storeMetadata(metaset.asXML())
             
             // create response
             render(contentType: 'application/xml') {
