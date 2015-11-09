@@ -24,5 +24,6 @@ Alternatively, just set change_tracking to true for everyone except the admin ac
 #### Remove deprecated OSD.metadata
  
     alter table objects drop column metadata;
+    alter table folders drop column metadata;
 
     
