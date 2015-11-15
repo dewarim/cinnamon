@@ -24,14 +24,15 @@ class UserAccountController extends BaseController {
         if (CmnGroup.findAllWhere(parent: group).size() > 0) {
             hasSubGroups = true
             log.debug("group has subgroups")
-        } else {
+        }
+        else {
             log.debug("group has no subgroups")
         }
 
-        [userList: groupUsers.collect { it.userAccount },
-                addList: addList,
-                hasSubGroups: hasSubGroups,
-                group: group]
+        [userList    : groupUsers.collect { it.userAccount },
+         addList     : addList,
+         hasSubGroups: hasSubGroups,
+         group       : group]
     }
 
     /**
@@ -41,8 +42,8 @@ class UserAccountController extends BaseController {
      */
     @Secured(["hasRole('_superusers')"])
     def replaceUser() {
-        [userList: UserAccount.list(),
-                forbidden: !userService.transferAssetsAllowed(repositoryName)
+        [userList : UserAccount.list(),
+         forbidden: !userService.transferAssetsAllowed(repositoryName)
         ]
     }
 
@@ -115,8 +116,8 @@ class UserAccountController extends BaseController {
         }
 
         // HTML form checkboxes: if checked, browser sends sudoer=true, if unchecked, browser sends nothing.
-        def checkFields = ['sudoable', 'sudoer', 'activated']
-        checkFields.each {field ->
+        def checkFields = ['sudoable', 'sudoer', 'activated', 'changeTracking']
+        checkFields.each { field ->
             user."$field" = params.containsKey(field)
         }
 
@@ -140,11 +141,11 @@ class UserAccountController extends BaseController {
         if (!user.name.equals(params.name)) {
             String groupName = "_${user.id}_${user.name}"
             CmnGroup group = CmnGroup.findByName(groupName)
-            if(group == null){
+            if (group == null) {
                 // create user-group:
                 group = groupService.createUserGroup(user)
                 userService.addUserToUsersGroup(user)
-                
+
             }
             group.name = "_${user.id}_${params.name}"
             group.save()
@@ -157,7 +158,7 @@ class UserAccountController extends BaseController {
             // set separately to prevent an empty/null pwd from being set.
             log.debug("setting password of user ${user.name}")
             def minPasswordLength = grailsApplication.config.minimalPasswordLength ?: 4
-            if(params.pwd.length() < minPasswordLength ){
+            if (params.pwd.length() < minPasswordLength) {
                 flash.message = message(code: 'error.password.too.short')
                 redirect(action: 'edit', params: [id: user.id])
                 return
@@ -176,9 +177,9 @@ class UserAccountController extends BaseController {
 
     @Secured(["hasRole('_superusers')"])
     def deleteAsk() {
-        [userList: UserAccount.list(),
-                forbidden: !userService.deleteUserAllowed(repositoryName),
-                showTransferLink: params.showTransferLink
+        [userList        : UserAccount.list(),
+         forbidden       : !userService.deleteUserAllowed(repositoryName),
+         showTransferLink: params.showTransferLink
         ]
     }
 
@@ -199,7 +200,7 @@ class UserAccountController extends BaseController {
                 throw new RuntimeException(message(code: 'user.has.dependencies'))
             }
             // check that the source user is not an admin
-            if(userService.deleteUserAllowed(repositoryName)){
+            if (userService.deleteUserAllowed(repositoryName)) {
                 user.delete()
             }
             flash.message = message(code: 'user.delete.success', args: [user.name.encodeAsHTML()])
@@ -248,18 +249,14 @@ class UserAccountController extends BaseController {
      */
     @Secured(["hasRole('_superusers')"])
     def save() {
-//        setHibernateSessionEm(session)
         def user = null
         try {
             user = new UserAccount(params.name, params.pwd, params.fullname, params.description)
             user.email = params.email
             user.language = UiLanguage.findByIsoCode('und')
-            if (params.containsKey('sudoable')) {
-                user.sudoable = true
-            }
-            if (params.containsKey('sudoer')) {
-                user.sudoer = true
-            }
+            user.sudoable = params.containsKey('sudoable')
+            user.sudoer = params.containsKey('sudoer')
+            user.changeTracking = params.containsKey('changeTracking')
             user.save(flush: true)
         }
         catch (Exception e) {
@@ -344,7 +341,7 @@ class UserAccountController extends BaseController {
     def listXml() {
         Document doc = DocumentHelper.createDocument()
         Element root = doc.addElement("users");
-        UserAccount.list().each {user ->
+        UserAccount.list().each { user ->
             root.add(UserAccount.asElement("user", user));
         }
         render(contentType: 'application/xml', text: doc.asXML())
@@ -357,5 +354,5 @@ class UserAccountController extends BaseController {
         root.add(UserAccount.asElement("user", user));
         render(contentType: 'application/xml', text: doc.asXML())
     }
-    
+
 }

@@ -60,7 +60,8 @@
                     </td>
                     <td class="value ${hasErrors(bean: user, field: 'description', 'errors')}">
                         <!-- <input type="text" name="description" id="description" value="${fieldValue(bean: user, field: 'description')}" /> -->
-                        <g:descriptionTextArea name="description" value="${fieldValue(bean:user,field:'description')}"/>
+                        <g:descriptionTextArea name="description"
+                                               value="${fieldValue(bean: user, field: 'description')}"/>
                     </td>
                 </tr>
 
@@ -92,6 +93,16 @@
                     </td>
                     <td class="value ${hasErrors(bean: user, field: 'pwd', 'errors')}">
                         <input type="text" name="pwd" id="pwd" value="${fieldValue(bean: user, field: 'pwd')}"/>
+                    </td>
+                </tr>
+                <tr class="prop">
+                    <td class="name">
+                        <label for="changeTracking"><g:message code="user.changeTracking"/></label>
+                        <p><g:message code="user.changeTracking.help"/> </p>
+                    </td>
+                    <td class="value ${hasErrors(bean: user, field: 'changeTracking', 'errors')}">
+                        <input type="checkbox" name="changeTracking" id="changeTracking" value="${fieldValue(bean:
+                                user, field: 'changeTracking')}"/>
                     </td>
                 </tr>
 

@@ -109,6 +109,17 @@
 					</td>
 				</tr>
 
+				<tr class="prop">
+					<td class="name">
+						<label for="changeTracking"><g:message code="user.changeTracking"/></label>
+						<p><g:message code="user.changeTracking.help"/> </p>
+					</td>
+					<td class="value ${hasErrors(bean: user, field: 'changeTracking', 'errors')}">
+						<input type="checkbox" name="changeTracking" id="changeTracking" <g:if test="${fieldValue(bean:
+								user, field: 'changeTracking')}">checked</g:if>
+					</td>
+				</tr>
+
 				<!-- link to the list of group -->
 				<tr class="prop">
 					<td colspan="2" class="name left">
