@@ -1,6 +1,14 @@
 # Changelog for Cinnamon 3
 
-## unreleased
+## 3.6.0
+
+* Upgrade to Grails 2.5.2
+* Upgrade to Hibernate 4
+* Merged cinnamon-humulus module into cinnamon-db code-base 
+* UserAccount.changeTracking (default:true) flag added
+* Deprecated OSD.metadata field removed
+* Folder.metadata field removed
+* Folder and OSD objects have now metadataChanged (and, for OSD: contentChanged) flags that are updated on changes.
 
 * Upgrade to Grails 2.4.4
 * Removed support for multiple repositories in one instance of Cinnamon. Reason: was too complex to maintain properly
