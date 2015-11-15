@@ -381,9 +381,14 @@ class CinnamonController extends BaseController {
         }
     }
 
-    @Secured(["hasRole('_superusers')"])
+    @Secured(["isAuthenticated()"])
     def setChangedStatus(String type, Long id, Boolean contentChanged, Boolean metadataChanged) {
         try {
+            def user = userService.user
+            if(user.changeTracking){
+                renderExceptionXml("Only users without changeTracking are allowed to use setChangedStatus.")
+                return
+            }
             if(type?.equals('object')) {
                 def osd = fetchAndFilterOsd(id, [PermissionName.WRITE_OBJECT_SYS_METADATA])
                 boolean changed = false
@@ -397,6 +402,7 @@ class CinnamonController extends BaseController {
                 }
                 if(!changed){
                     renderExceptionXml("Failed to set changed flags: missing parameter(s)")
+                    return
                 }
             }
             if(type?.equals('folder')){
