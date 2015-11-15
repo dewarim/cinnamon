@@ -1,5 +1,6 @@
 package cinnamon
 
+import cinnamon.global.PermissionName
 import grails.plugin.springsecurity.annotation.Secured
 
 import cinnamon.exceptions.CinnamonException
@@ -379,4 +380,45 @@ class CinnamonController extends BaseController {
             renderErrorXml(e.message)
         }
     }
+
+    @Secured(["hasRole('_superusers')"])
+    def setChangedStatus(String type, Long id, Boolean contentChanged, Boolean metadataChanged) {
+        try {
+            if(type?.equals('object')) {
+                def osd = fetchAndFilterOsd(id, [PermissionName.WRITE_OBJECT_SYS_METADATA])
+                boolean changed = false
+                if(params.containsKey('contentChanged') && contentChanged != null) {
+                    osd.contentChanged = contentChanged
+                    changed=true
+                }
+                if(params.containsKey('metadataChanged') && metadataChanged != null){
+                    osd.metadataChanged = metadataChanged
+                    changed=true
+                }
+                if(!changed){
+                    renderExceptionXml("Failed to set changed flags: missing parameter(s)")
+                }
+            }
+            if(type?.equals('folder')){
+                def folder = fetchAndFilterFolder(id, [PermissionName.EDIT_FOLDER])
+                if(params.containsKey('metadataChanged') && metadataChanged != null) {
+                    folder.metadataChanged = metadataChanged
+                }
+                else{
+                    renderExceptionXml("Failed to set metadataChanged flag: missing parameter metadataChanged")
+                    return
+                }
+            }
+
+            render(contentType: 'application/xml') {
+                success('success.set.changedStatus')
+            }
+        }
+        catch (Exception e) {
+            renderExceptionXml('Failed to change content/metadata flags', e)
+        }
+
+
+    }
+    
 }
