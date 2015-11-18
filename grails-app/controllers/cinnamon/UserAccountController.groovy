@@ -80,7 +80,7 @@ class UserAccountController extends BaseController {
 
     @Secured(["hasRole('_superusers')"])
     def create() {
-
+        [user: new UserAccount()]
     }
 
     @Secured(["hasRole('_superusers')"])
@@ -152,7 +152,9 @@ class UserAccountController extends BaseController {
         }
 
         bindData(user, params, [include: ['name', 'fullname', 'description', 'email']])
-
+        if(user.description == null){
+            user.description = '';
+        }
         user.language = UiLanguage.get(params.'language.id')
         if (params.pwd) {
             // set separately to prevent an empty/null pwd from being set.
@@ -251,7 +253,7 @@ class UserAccountController extends BaseController {
     def save() {
         def user = null
         try {
-            user = new UserAccount(params.name, params.pwd, params.fullname, params.description)
+            user = new UserAccount(params.name, params.pwd, params.fullname, params.description ?: '')
             user.email = params.email
             user.language = UiLanguage.findByIsoCode('und')
             user.sudoable = params.containsKey('sudoable')

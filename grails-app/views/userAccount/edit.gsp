@@ -115,8 +115,8 @@
 						<p><g:message code="user.changeTracking.help"/> </p>
 					</td>
 					<td class="value ${hasErrors(bean: user, field: 'changeTracking', 'errors')}">
-						<input type="checkbox" name="changeTracking" id="changeTracking" <g:if test="${fieldValue(bean:
-								user, field: 'changeTracking')}">checked</g:if>
+						<input type="checkbox" name="changeTracking" id="changeTracking"  autocomplete="off" <g:if 
+                                test="${user.changeTracking}">checked="checked"</g:if>>
 					</td>
 				</tr>
 

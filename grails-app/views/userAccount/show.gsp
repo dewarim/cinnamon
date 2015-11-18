@@ -94,9 +94,9 @@
     </div>
 
     <div class="buttons">
-        <g:form>
+        <g:form controller="userAccount" action="edit">
             <input type="hidden" name="id" value="${user?.id}"/>
-            <span class="button"><g:actionSubmit action="edit" class="edit" value="${message(code: 'edit')}"/></span>
+            <span class="button"><input type="submit" value="${message(code: 'edit')}"/></span>
 
         </g:form>
     </div>
