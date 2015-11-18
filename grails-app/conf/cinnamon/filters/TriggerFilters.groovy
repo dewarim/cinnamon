@@ -10,10 +10,10 @@ class TriggerFilters {
     def filters = {
         changeTriggers(controller: '*', action: '*') {
             before = {
-                if (!session.repositoryName) {
-                    // do not bother filtering requests for non-logged in users at this stage
-                    return true
-                }
+//                if (!session.repositoryName) {
+//                    // do not bother filtering requests for non-logged in users at this stage
+//                    return true
+//                }
                 log.debug("controllerName: ${controllerName} / action: ${actionName}")
                 
                 def triggers = ChangeTrigger.findAll("""from ChangeTrigger ct where 
@@ -27,7 +27,8 @@ class TriggerFilters {
                 log.debug("found ${triggers.size()} changeTriggers")
                
                 
-                PoBox poBox = new PoBox(userService.user, session.repositoryName, params, controllerName, actionName, grailsApplication);
+                PoBox poBox = new PoBox(request, response, userService.user, session.repositoryName, params, null,
+                        controllerName, actionName, grailsApplication) 
 
                 triggers.each { changeTrigger ->                    
                     if (poBox.endProcessing) {
@@ -58,7 +59,8 @@ class TriggerFilters {
                     order by ct.ranking
 """.replaceAll('\n', ' '), [controller: controllerName, action: actionName])
 
-                PoBox poBox = new PoBox(response, userService.user, session.repositoryName, params, model, controllerName, actionName, grailsApplication);
+                PoBox poBox = new PoBox(request, response, userService.user, session.repositoryName, params, model, 
+                        controllerName, actionName, grailsApplication);
                 triggers.each { changeTrigger ->
                     if (poBox.endProcessing) {
                         return

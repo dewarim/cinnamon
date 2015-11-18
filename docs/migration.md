@@ -26,4 +26,12 @@ Alternatively, just set change_tracking to true for everyone except the admin ac
     alter table objects drop column metadata;
     alter table folders drop column metadata;
 
+#### ChangeTriggers
     
+    insert into change_trigger_types values( (select max(id)+1 from change_trigger_types),
+    'MicroserviceChangeTriggerType', 0, 'cinnamon.trigger.impl.MicroserviceChangeTrigger');
+
+    insert into change_triggers values( (select max(id)+1 from change_triggers), true, 0, 100, (select id from 
+    change_trigger_types where name='MicroserviceChangeTriggerType'), 'echo', true, false, 
+    '<config><remoteServer>http://localhost:8080/cinnamon/test/microserviceChangeTriggerPreRequestTest</remoteServer></config>', 'test');
+
