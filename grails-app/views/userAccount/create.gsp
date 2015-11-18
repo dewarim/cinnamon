@@ -65,9 +65,6 @@
                     </td>
                 </tr>
 
-
-
-
                 <tr class="prop">
                     <td class="name">
                         <label for="email"><g:message code="user.email"/></label>
@@ -101,8 +98,9 @@
                         <p><g:message code="user.changeTracking.help"/> </p>
                     </td>
                     <td class="value ${hasErrors(bean: user, field: 'changeTracking', 'errors')}">
-                        <input type="checkbox" name="changeTracking" id="changeTracking" value="${fieldValue(bean:
-                                user, field: 'changeTracking')}"/>
+                        <input type="checkbox" name="changeTracking" id="changeTracking"
+                               <g:if test="${fieldValue(bean:
+                                       user, field: 'changeTracking')}">checked</g:if>>
                     </td>
                 </tr>
 
