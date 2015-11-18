@@ -54,6 +54,8 @@ grails.project.dependency.resolution = {
             exclude 'xml-apis'
         }
         test "org.seleniumhq.selenium:selenium-support:${seleniumVersion}"
+
+        runtime 'org.apache.httpcomponents:httpclient:4.5.1'
     }
 
     plugins {
@@ -73,7 +75,7 @@ grails.project.dependency.resolution = {
         compile(':spring-security-core:2.0-RC5')
         compile ":rest-client-builder:2.1.1"
         compile (":twitter-bootstrap:3.2.0.2"){excludes 'svn'}
-        compile ":cinnamon-db:3.6.0"
+        compile ":cinnamon-db:3.6.5"
         runtime ':tika-parser:1.3.0.1'
         compile ":remote-pagination:0.3"
         compile ":geb:${gebPluginVersion}"
