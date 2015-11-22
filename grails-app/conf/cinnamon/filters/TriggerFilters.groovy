@@ -10,10 +10,6 @@ class TriggerFilters {
     def filters = {
         changeTriggers(controller: '*', action: '*') {
             before = {
-//                if (!session.repositoryName) {
-//                    // do not bother filtering requests for non-logged in users at this stage
-//                    return true
-//                }
                 log.debug("controllerName: ${controllerName} / action: ${actionName}")
                 
                 def triggers = ChangeTrigger.findAll("""from ChangeTrigger ct where 
@@ -36,7 +32,7 @@ class TriggerFilters {
                     }
                     log.debug("executing trigger: " + changeTrigger.getTriggerType().getName());
                     def trigger = changeTrigger.triggerType.triggerClass.newInstance();
-                    poBox = trigger.executePreCommand(poBox, changeTrigger.config)
+                    poBox = trigger.executePreCommand(poBox, changeTrigger)
                 }
                 if (poBox.endProcessing) {
                     return false
@@ -45,11 +41,11 @@ class TriggerFilters {
                 return true
             }
 
-            after = { Map model ->
-                if (!session.repositoryName) {
-                    // do not bother filtering requests for non-logged in users at this stage
-                    return
-                }
+//            afterView = { (Exception exception ->
+//            if(exception != null){
+//                return true // do not apply any filters on exceptions.
+//            }
+            after = { Map model -> 
 
                 def triggers = ChangeTrigger.findAll("""from ChangeTrigger ct where 
                     ct.controller=:controller and
@@ -58,7 +54,9 @@ class TriggerFilters {
                     ct.active=true
                     order by ct.ranking
 """.replaceAll('\n', ' '), [controller: controllerName, action: actionName])
-
+                
+                log.debug("model: "+model)
+                
                 PoBox poBox = new PoBox(request, response, userService.user, session.repositoryName, params, model, 
                         controllerName, actionName, grailsApplication);
                 triggers.each { changeTrigger ->
@@ -67,7 +65,7 @@ class TriggerFilters {
                     }
                     log.debug("executing trigger: " + changeTrigger.getTriggerType().getName());
                     def trigger = changeTrigger.triggerType.triggerClass.newInstance();
-                    poBox = trigger.executePostCommand(poBox, changeTrigger.config)
+                    poBox = trigger.executePostCommand(poBox, changeTrigger)
                 }
                 if (poBox.endProcessing) {
                     return false

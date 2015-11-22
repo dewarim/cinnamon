@@ -1,5 +1,6 @@
 package cinnamon.trigger.impl
 
+import cinnamon.trigger.ChangeTrigger
 import org.dom4j.Document;
 import org.dom4j.Node;
 import org.slf4j.Logger;
@@ -98,7 +99,7 @@ public class LifecycleStateAuditTrigger implements ITrigger {
     Logger log = LoggerFactory.getLogger(this.getClass());
 
     @Override
-    public PoBox executePreCommand(PoBox poBox, String config) {
+    public PoBox executePreCommand(PoBox poBox, ChangeTrigger changeTrigger) {
         log.debug("preCommand of LifecycleStateAuditTrigger");
 
         if(poBox.action.equals("changestate")){
@@ -117,7 +118,7 @@ public class LifecycleStateAuditTrigger implements ITrigger {
     }
 
     @Override
-    public PoBox executePostCommand(PoBox poBox, String config) {
+    public PoBox executePostCommand(PoBox poBox, ChangeTrigger changeTrigger) {
         log.debug("postCommand of LifecycleStateAuditTrigger");
         Map<String, Object> params = poBox.params;
         String command = poBox.action;
@@ -160,7 +161,7 @@ public class LifecycleStateAuditTrigger implements ITrigger {
                 lifecycleId = state.getLifeCycle().getId();
             }
 
-            if(filterLogMessage(config,lifecycleId, oldId, newId )){
+            if(filterLogMessage(changeTrigger.config,lifecycleId, oldId, newId )){
                 log.debug("filter log message.");
                 return poBox;
             }
