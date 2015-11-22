@@ -30,7 +30,7 @@ class TriggerFilters {
                     if (poBox.endProcessing) {
                         return
                     }
-                    log.debug("executing trigger: " + changeTrigger.getTriggerType().getName());
+                    log.debug("executing pre trigger: " + changeTrigger.getTriggerType().getName());
                     def trigger = changeTrigger.triggerType.triggerClass.newInstance();
                     poBox = trigger.executePreCommand(poBox, changeTrigger)
                 }
@@ -41,11 +41,14 @@ class TriggerFilters {
                 return true
             }
 
-//            afterView = { (Exception exception ->
-//            if(exception != null){
-//                return true // do not apply any filters on exceptions.
-//            }
-            after = { Map model -> 
+            afterView = { Exception exception ->
+
+                log.debug("afterView: controllerName: ${controllerName} / action: ${actionName}")
+
+                if(exception != null){
+                return true // do not apply any filters on exceptions.
+            }
+//            after = { Map model -> 
 
                 def triggers = ChangeTrigger.findAll("""from ChangeTrigger ct where 
                     ct.controller=:controller and
@@ -55,15 +58,15 @@ class TriggerFilters {
                     order by ct.ranking
 """.replaceAll('\n', ' '), [controller: controllerName, action: actionName])
                 
-                log.debug("model: "+model)
+//                log.debug("model: "+model)
                 
-                PoBox poBox = new PoBox(request, response, userService.user, session.repositoryName, params, model, 
+                PoBox poBox = new PoBox(request, response, userService.user, session.repositoryName, params, null, 
                         controllerName, actionName, grailsApplication);
                 triggers.each { changeTrigger ->
                     if (poBox.endProcessing) {
                         return
                     }
-                    log.debug("executing trigger: " + changeTrigger.getTriggerType().getName());
+                    log.debug("executing post trigger: " + changeTrigger.getTriggerType().getName());
                     def trigger = changeTrigger.triggerType.triggerClass.newInstance();
                     poBox = trigger.executePostCommand(poBox, changeTrigger)
                 }
@@ -73,9 +76,9 @@ class TriggerFilters {
                 }
                 return true
             }
-            afterView = { Exception e ->
-
-            }
+//            afterView = { Exception e ->
+//
+//            }
         }
     }
 }

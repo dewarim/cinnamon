@@ -131,7 +131,8 @@ log4j = {
             'cinnamon.cinnamon.filters.TriggerFilters',
             'cinnamon.index.indexer.ParentFolderPathIndexer',
             'org.springframework.security.authentication',
-            'cinnamon.PreAuthenticatedAuthenticationProvider'
+            'cinnamon.PreAuthenticatedAuthenticationProvider',
+            'cinnamon.servlet.ResponseFilter'
 
     debug 'grails.app.domain.cinnamon.index'
     debug 'grails.app.controllers.cinnamon.FolderController'

@@ -27,18 +27,18 @@ class TestController {
         if (!msg) {
             msg = ""
         }
-        return [msg: msg]
+        return [msg: msg, foo:'bar']
     }
 
     def microserviceChangeTriggerPreRequestTest(String msg) {
         log.info("microserviceChangeTriggerPreRequestTest received: " + (msg?.encodeAsHTML()))
         log.debug("Params: " + params)
         response.setHeader("microservice-pre-test", "ok")
-        response.flushBuffer()
+        render(text:"")
     }
 
     def microserviceChangeTriggerPostRequestTest(String msg) {
-        log.info("microserviceChangeTriggerPreRequestTest received: " + (msg?.encodeAsHTML()))
+        log.info("microserviceChangeTriggerPostRequestTest received: " + (msg?.encodeAsHTML()))
         log.debug("Params: " + params)
         response.setHeader("microservice-post-test", "ok")
         render(text: "<xml>Just a trigger result</xml>")
