@@ -289,7 +289,7 @@ class LuceneActor extends DynamicDispatchActor {
     void doIndex(Indexable indexable, content, repository, doc) {
         ContentContainer metadata = new ContentContainer(indexable, indexable.getMetadata().getBytes());
         log.debug("store systemMetadata");
-        String sysMeta = indexable.getSystemMetadata(true)
+        String sysMeta = indexable.getSystemMetadata(true, true)
         ContentContainer systemMetadata = new ContentContainer(indexable, sysMeta.getBytes());
         log.debug("got sysMetadata, start indexObject loop");
 

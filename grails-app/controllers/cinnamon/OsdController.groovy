@@ -419,7 +419,7 @@ class OsdController extends BaseController {
     // commands used by the desktop client:
     //-----------------------------------------------------------------
 
-    def fetchObjects() {
+    def fetchObjects(Boolean include_summary) {
         try {
             def folder = folderService.fetchFolder(params.parentid)
             if (!folder) {
@@ -429,7 +429,7 @@ class OsdController extends BaseController {
             List<ObjectSystemData> results = folderService.getObjects(user, folder, repositoryName, params.versions)
             Validator val = new Validator(user);
             results = val.filterUnbrowsableObjects(results);
-            Document doc = osdService.generateQueryObjectResultDocument(results);
+            Document doc = osdService.generateQueryObjectResultDocument(results, include_summary);
             addLinksToObjectQuery(params.parentid, doc, val, false)
 
             log.debug("objects for folder ${folder.id} / ${folder.name}:\n ${doc.asXML()}")
@@ -491,6 +491,7 @@ class OsdController extends BaseController {
      *   <li>[format OR format_id] = Id or name of format (optional)</li>
      *   <li>[acl_id] = optional Id of ACL - if not specified, will use ACL of parent folder</li>
      *   <li>[language_id]=optional id of language, will use default language "und" for undetermined if not specified.</li>
+     *   <li>[summary]= optional XML summary of object content or other meta information</li>
      *  </ul>
      * @return a Response which contains:
      *         <pre>
@@ -539,7 +540,7 @@ class OsdController extends BaseController {
      * @return XML-Response:
      *         XML serialized object or xml-error-doc
      */
-    def fetchObject(Long id) {
+    def fetchObject(Long id, Boolean include_summary) {
         try {
             Document doc = DocumentHelper.createDocument()
             Element root = doc.addElement("objects");
@@ -549,7 +550,11 @@ class OsdController extends BaseController {
             }
             else {
                 (new Validator(userService.user)).checkBrowsePermission(osd);
-                root.add(osd.toXML().getRootElement());
+                def osdElement = osd.toXML()
+                if(include_summary){
+                    osdElement.addElement('summary').addText(osd.summary)
+                }
+                root.add(osdElement.rootElement);
             }
             render(contentType: 'application/xml', text: doc.asXML())
         }
@@ -612,6 +617,34 @@ class OsdController extends BaseController {
         }
         catch (Exception e) {
             log.debug("Failed to unlock #$id.", e)
+            renderExceptionXml(e.message)
+        }
+    } 
+
+    /**
+     * Set summary on an OSD.
+     * @param content the XML summary string, defaults to empty summary element.
+     * @param id id of the object
+     * @return XML-Response
+     *      * {@code
+     *         <success>success.set.summary</success>
+     *}
+     * or an error message if something went wrong.
+     * 
+     */
+    def setSummaryXml(Long id, String content) {
+        try {
+            def user = userService.user
+            ObjectSystemData osd = ObjectSystemData.get(id)
+            (new Validator(user)).validateSetSysMeta(osd)
+            osd.summary = content ?: '<summary />'
+            log.debug("set summary - done")
+            render(contentType: 'application/xml') {
+                success('success.set.summary')
+            }
+        }
+        catch (Exception e) {
+            log.debug("Failed to set summary on osd #$id.", e)
             renderExceptionXml(e.message)
         }
     }
@@ -802,7 +835,7 @@ class OsdController extends BaseController {
      * @return XML-Response:
      *         List of XML serialized objects.
      */
-    def getObjectsById(String ids) {
+    def getObjectsById(String ids, Boolean include_summary) {
         try {
             if (!ids) {
                 throw new CinnamonException('error.invalid.params')
@@ -819,7 +852,11 @@ class OsdController extends BaseController {
                     Long id = Long.parseLong(n.getText())
                     ObjectSystemData osd = ObjectSystemData.get(id);
                     validator.checkBrowsePermission(osd, browsePermission);
-                    root.add(osd.toXML().getRootElement());
+                    def xml = osd.toXML()
+                    if(include_summary){
+                        xml.addElement("summary").addText(osd.summary)
+                    }
+                    root.add(xml.rootElement);
                 } catch (Exception e) {
                     log.debug("failed to add OSD for '" + n.getText() + "': " + e.getMessage());
                 }
@@ -848,7 +885,7 @@ class OsdController extends BaseController {
      * @return XML-Response:
      *         List of object data as XML document.
      */
-    def fetchObjectsWithCustomMetadata(Long parentid) {
+    def fetchObjectsWithCustomMetadata(Long parentid, Boolean include_summary) {
         try {
             def folder = folderService.fetchFolder(parentid)
             if (!folder) {
@@ -858,7 +895,7 @@ class OsdController extends BaseController {
             List<ObjectSystemData> results = folderService.getObjects(user, folder, repositoryName, params.versions)
             Validator val = new Validator(user);
             results = val.filterUnbrowsableObjects(results);
-            Document doc = osdService.generateQueryObjectResultDocument(results, true);
+            Document doc = osdService.generateQueryObjectResultDocument(results, true, include_summary);
             addLinksToObjectQuery(params.parentid, doc, val, true)
             render(contentType: 'application/xml', text: doc.asXML())
         }
@@ -893,6 +930,7 @@ class OsdController extends BaseController {
      *      <li>objtype (name of the object type)</li>
      *      <li>objtype_id </li>
      *      <li>acl_id</li>
+     *      <li>summary</li>
      *           </ul>
      * @return XML-Response: <pre>{@code <sysMetaValue>$value</sysMetaValue>}</pre>
      *         If a null value is retrieved, an xml-error-doc is returned with the message:
@@ -930,6 +968,7 @@ class OsdController extends BaseController {
                 case 'version': value = osd.cmnVersion; break;
                 case 'rootid': value = osd.root?.id; break;
                 case 'language_id': value = osd.language.id; break;
+                case 'summary': value = osd.summary; break;
                 default: throw new CinnamonException("Parameter '$parameter' can not be read on objects.")
             }
 

@@ -482,7 +482,7 @@ class FolderController extends BaseController {
     
     //-----------------------------------------------------------------
     // Methods used by the desktop client (expecting XML responses)
-    def fetchSubFolders() {
+    def fetchSubFolders(Boolean include_summary) {
         def user = userService.user
         Folder folder
         try {
@@ -505,7 +505,7 @@ class FolderController extends BaseController {
             root.addAttribute('folderId', folder.id.toString())
             root.addAttribute('parentId', folder.parent.id.toString())
             folders.each {f ->
-                f.toXmlElement(root)
+                f.toXmlElement(root, include_summary)
             }
 
             log.debug("Looking for links.");
@@ -552,7 +552,7 @@ class FolderController extends BaseController {
      *          }
      *          </pre>
      */
-    def fetchFolderByPath(String path) {
+    def fetchFolderByPath(String path, Boolean include_summary) {
         try {
             Boolean autoCreate = params.autocreate && params.autocreate.equals("true");
             Validator validator = new Validator(userService.user);
@@ -568,7 +568,7 @@ class FolderController extends BaseController {
                     log.debug("", e);
                     return
                 }
-                folder.toXmlElement(root);
+                folder.toXmlElement(root, include_summary);
             }
             log.debug("result of fetchFolderByPath: ${doc.asXML()}")
             render(contentType: 'application/xml', text: doc.asXML())
@@ -585,7 +585,7 @@ class FolderController extends BaseController {
      * @return an XML document in the form /folders/folder, containing the requested folder 
      * as well as its ancestors, if any.
      */
-    def fetchFolderXml(Long id) {
+    def fetchFolderXml(Long id, Boolean include_summary) {
         log.debug("Getfolderbyid: " + id);
         try {            
             Folder folder
@@ -606,7 +606,7 @@ class FolderController extends BaseController {
             def doc = DocumentHelper.createDocument()
             Element root = doc.addElement("folders");
             folderList.each {
-                it.toXmlElement(root)
+                it.toXmlElement(root, include_summary)
             }      
 //            log.debug"fetchFolderXml output:\n${doc.asXML()}"
             render(contentType: 'application/xml', text: doc.asXML())
@@ -652,6 +652,7 @@ class FolderController extends BaseController {
      *            <li>aclid=id of the new folder's acl</li>
      *            <li>ownerid=id of the folder's owner</li>
      *            <li>[typeid]= id of the folderType (if not set, use default_folder_type)</li>
+     *            <li>summary= xml summary of folder or folder content, defaults to empty 'summary' element</li>
      *            </ul>
      * @return XML-Response:
      *         Folder serialized to XML.
@@ -659,7 +660,8 @@ class FolderController extends BaseController {
      *         CREATE_FOLDER
      */
     @Secured(["isAuthenticated()"])
-    def createXml(String name, Long parentid, Long aclid, Long ownerid, Long typeid, String metadata) {
+    def createXml(String name, Long parentid, Long aclid, Long ownerid, Long typeid, String metadata, String summary,
+                  Boolean include_summary) {
         try {
             Folder parentFolder;
             if (parentid == 0L) { // 0 is considered the root folder.
@@ -676,19 +678,18 @@ class FolderController extends BaseController {
             else{
                 folderType = FolderType.findByName(Constants.FOLDER_TYPE_DEFAULT)
             }
-            
             def user = userService.user
             def owner = ownerid ? UserAccount.get(ownerid) : user
             def acl = aclid ? Acl.get(aclid) : parentFolder.acl
             (new Validator(user)).validateCreateFolder(parentFolder);
             Folder folder = new Folder(name: name, owner: owner, parent:parentFolder,
-                                type: folderType, acl: acl
+                                type: folderType, acl: acl, summary: summary ?: '<summary />'
             )
             folder.save()
 
             def doc = DocumentHelper.createDocument()
             Element root = doc.addElement("folders");
-            folder.toXmlElement(root);
+            def folderElement = folder.toXmlElement(root, include_summary);
             render(contentType: 'application/xml', text: doc.asXML())
         }
         catch (Exception e) {
@@ -758,6 +759,7 @@ class FolderController extends BaseController {
      * @param ownerid optional: id of new owner
      * @param metadata optional: new custom metadata for this folder
      * @param typeid optional: id of new folder type
+     * @param summary: xml summary of folder or folder content
      * @return XML-Response:
      *         {@code
      *         <success>success.update.folder</success>
@@ -766,11 +768,11 @@ class FolderController extends BaseController {
     @Secured(["isAuthenticated()"])
     def updateFolder(Long id, Long parentid, String name,
                      String metadata, Long typeid,
-                     String ownerid, Long aclid) {
+                     String ownerid, Long aclid, String summary) {
         try {
             def fields = [parentid: parentid, name: name,
                     ownerid: ownerid, aclid: aclid,
-                    metadata: metadata, typeid: typeid]
+                    metadata: metadata, typeid: typeid, summary: summary ?: '<summary />']
             def folder = fetchAndFilterFolder(id)
             if (!folder) {
                 throw new RuntimeException('error.folder.not.found')
@@ -783,6 +785,34 @@ class FolderController extends BaseController {
 
         catch (Exception e) {
             renderExceptionXml('Failed to update folder.', e)
+        }
+    }
+
+    /**
+     * Set summary on a folder.
+     * @param content the XML summary string, defaults to empty summary element.
+     * @param id id of the folder
+     * @return XML-Response
+     *      * {@code
+     *         <success>success.set.summary</success>
+     *}
+     * or an error message if something went wrong.
+     *
+     */
+    def setSummaryXml(Long id, String content) {
+        try {
+            def user = userService.user
+            Folder folder  = Folder.get(id)
+            (new Validator(user)).validateUpdateFolder(folder)
+            folder.summary = content ?: '<summary />'
+            log.debug("set summary - done")
+            render(contentType: 'application/xml') {
+                success('success.set.summary')
+            }
+        }
+        catch (Exception e) {
+            log.debug("Failed to set summary on folder #$id.", e)
+            renderExceptionXml(e.message)
         }
     }
 }

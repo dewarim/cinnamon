@@ -359,7 +359,7 @@ class TranslationService {
     ObjectSystemData checkRelation(Relation relation, String attribute, String attributeValue) {
         ObjectSystemData osd = relation.rightOSD;
         ObjectSystemData objectTreeRoot = null;
-        String[] xmlForm = [osd.metadata, osd.getSystemMetadata(true), osd.content]
+        String[] xmlForm = [osd.metadata, osd.getSystemMetadata(true, true), osd.content]
         for (String xml : xmlForm) {
             log.debug("testing: " + attribute + " value: " + attributeValue);
             log.debug("against: " + xml);

@@ -12,7 +12,7 @@ import grails.plugin.springsecurity.annotation.Secured
 @Secured(["isAuthenticated()"])
 class SearchController extends BaseController {
 
-    def searchObjects(Integer page_size, Integer page) {
+    def searchObjects(Integer page_size, Integer page, Boolean include_summary) {
         try {
             Set<XmlConvertable> resultStore;
             resultStore = fetchSearchResults(ObjectSystemData.class);
@@ -21,7 +21,7 @@ class SearchController extends BaseController {
             root.addAttribute("total-results", String.valueOf(resultStore.size()));
 
             if (params.containsKey("page_size")) {
-                addPagedResultsToElement(root, resultStore, page_size, page, null);
+                addPagedResultsToElement(root, resultStore, page_size, page, null, include_summary);
             }
             else {
                 for (XmlConvertable conv : resultStore) {
@@ -29,7 +29,7 @@ class SearchController extends BaseController {
                 }
             }
 
-            addPathFolders(doc);
+            addPathFolders(doc, include_summary);
             log.debug("searchObjects result: \n${doc.asXML()}")
             render(contentType: 'application/xml', text: doc.asXML())
         }
@@ -39,14 +39,14 @@ class SearchController extends BaseController {
         }
     }
     
-    def searchObjectsXml(String query, Integer page_size, Integer page, String metaset_list) {
+    def searchObjectsXml(String query, Integer page_size, Integer page, String metaset_list, Boolean include_summary) {
         try {
             List metasets = []
             if(metaset_list){
                 metasets = metaset_list.split(/,\s*/)
             }
             log.debug("metasets: $metasets")
-            doSearch(query, page_size, page, SearchableDomain.OSD, metasets)                      
+            doSearch(query, page_size, page, SearchableDomain.OSD, metasets, include_summary)                      
         }
         catch (Exception e) {
             log.debug("failed searchObjects: ", e)
@@ -54,7 +54,7 @@ class SearchController extends BaseController {
         }
     }
     
-    protected void doSearch(query, pageSize, page, domain, List metasets){
+    protected void doSearch(query, pageSize, page, domain, List metasets, Boolean include_summary){
         def fields = params.list('field')
         Set<XmlConvertable> resultStore = luceneService.fetchSearchResults(query, repositoryName, userService.user, domain, fields);
         def doc = DocumentHelper.createDocument()
@@ -62,20 +62,21 @@ class SearchController extends BaseController {
         root.addAttribute("total-results", String.valueOf(resultStore.size()));
 
         if (pageSize) {
-            addPagedResultsToElement(root, resultStore, pageSize, page, metasets);
+            addPagedResultsToElement(root, resultStore, pageSize, page, metasets, include_summary);
         }
         else {
             resultStore.each { convertable ->
-                convertable.toXmlElement(root, metasets);
+                convertable.toXmlElement(root, metasets, include_summary);
             }
         }
         // add parent folders of search results to enable display of folder structure without
         // repeated path reloads.
-        addPathFolders(doc);
+        addPathFolders(doc, include_summary);
         render(contentType: 'application/xml', text: doc.asXML())
     }
 
-    protected void addPagedResultsToElement(Element root, Set<XmlConvertable> resultStore, Integer pageSize, Integer currentPage, List metasets) {
+    protected void addPagedResultsToElement(Element root, Set<XmlConvertable> resultStore, Integer pageSize, Integer 
+            currentPage, List metasets, Boolean includeSummary) {
         List<XmlConvertable> itemList = new ArrayList<XmlConvertable>();
         itemList.addAll(resultStore);
 
@@ -98,7 +99,7 @@ class SearchController extends BaseController {
         int start = pageSize * (page - 1);
         int end = pageSize * page;
         for (int x = start; x < end && x < itemList.size(); x++) {
-            itemList[x].toXmlElement(root, metasets)
+            itemList[x].toXmlElement(root, metasets, includeSummary)
         }
     }
 
@@ -109,7 +110,7 @@ class SearchController extends BaseController {
      *
      * @param doc document with serialized Folders and or OSDs.
      */
-    protected void addPathFolders(Document doc) {
+    protected void addPathFolders(Document doc, Boolean includeSummary) {
         List<Node> parentFolders = doc.selectNodes("//folder/parentId|//object/parentId");
         log.debug("# of parentFolderNodes: " + parentFolders.size());
         /*
@@ -140,7 +141,7 @@ class SearchController extends BaseController {
         Element root = doc.getRootElement();
         Element pathFolderNode = root.addElement("parentFolders");
         for (XmlConvertable folder : folders) {
-            folder.toXmlElement(pathFolderNode);
+            folder.toXmlElement(pathFolderNode, includeSummary);
         }
     }
 

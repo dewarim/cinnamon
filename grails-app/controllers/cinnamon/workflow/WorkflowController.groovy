@@ -50,7 +50,7 @@ class WorkflowController extends BaseController {
      *  </objects>
      *}
      */
-    def findOpenTasks(Long workflow_id, Long user_id) {
+    def findOpenTasks(Long workflow_id, Long user_id, Boolean include_summary) {
         try {
             ObjectSystemData workflow;
             ObjectType taskObjectType = ObjectType.findByName(Constants.OBJTYPE_TASK);
@@ -100,7 +100,7 @@ class WorkflowController extends BaseController {
                 tasks = ObjectSystemData.findAllByTypeAndProcstate(taskObjectType, Constants.PROCSTATE_TASK_TODO);
             }
 
-            Document doc = osdService.generateQueryObjectResultDocument(tasks);
+            Document doc = osdService.generateQueryObjectResultDocument(tasks, include_summary);
             render(contentType: 'application/xml', text: doc.asXML())
         }
         catch (Exception e) {

@@ -29,8 +29,8 @@ class OsdService {
      * @param results
      * @return Document
      */
-    Document generateQueryObjectResultDocument(Collection<ObjectSystemData> results) {
-        return generateQueryObjectResultDocument(results, false);
+    Document generateQueryObjectResultDocument(Collection<ObjectSystemData> results, Boolean includeSummary) {
+        return generateQueryObjectResultDocument(results, false, includeSummary);
     }
 
     /**
@@ -42,7 +42,7 @@ class OsdService {
      * @return Document
      */
     Document generateQueryObjectResultDocument(Collection<ObjectSystemData> results,
-                                               Boolean withMetadata) {
+                                               Boolean withMetadata, Boolean includeSummary) {
         Document doc = DocumentHelper.createDocument();
         Element root = doc.addElement("objects");
 
@@ -54,6 +54,9 @@ class OsdService {
                 data = osd.convert2domElement();
                 if (withMetadata) {
                     data.add(ParamParser.parseXml(osd.getMetadata(), null));
+                }
+                if(includeSummary){
+                    data.addElement('summary').addText(osd.summary)
                 }
                 root.add(data);
             } catch (CinnamonException ex) {
