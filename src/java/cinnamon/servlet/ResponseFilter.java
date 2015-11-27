@@ -46,7 +46,7 @@ public class ResponseFilter implements Filter {
             responseCopier.flushBuffer();
         } finally {
             byte[] copy = responseCopier.getCopy();
-            log.debug("response.copy: " + new String(copy, "UTF-8"));
+//            log.debug("response.copy: " + new String(copy, "UTF-8"));
 
             HttpServletResponse httpServletResponse = ((HttpServletResponse) response);
             for (String url : httpServletResponse.getHeaders("microservice")) {

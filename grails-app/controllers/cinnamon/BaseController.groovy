@@ -126,7 +126,7 @@ abstract class BaseController {
     protected void setListParams() {
         params.offset = params.offset ? inputValidationService.checkAndEncodeInteger(params, "offset", "offset") : 0
         params.sort = params.sort ? inputValidationService.checkAndEncodeText(params, "sort", "sort") : 'id'
-        params.max = params.max ? inputValidationService.checkAndEncodeInteger(params, 'max', 'paginate.max') : 10
+        params.max = params.max ? inputValidationService.checkAndEncodeInteger(params, 'max', 'paginate.max') : 100
         params.firstResult = params.firstResult ? inputValidationService.checkAndEncodeInteger(params, 'firstResult', 'paginate.firstResult') : 0
     }
 
