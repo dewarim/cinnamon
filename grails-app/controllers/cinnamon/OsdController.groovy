@@ -636,7 +636,7 @@ class OsdController extends BaseController {
         try {
             def user = userService.user
             ObjectSystemData osd = ObjectSystemData.get(id)
-            (new Validator(user)).validateSetSysMeta(osd)
+            (new Validator(user)).validateSetSummary(osd)
             osd.summary = content ?: '<summary />'
             log.debug("set summary - done")
             render(contentType: 'application/xml') {
