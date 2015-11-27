@@ -128,7 +128,7 @@ class SearchController extends BaseController {
             Folder folder = Folder.get(id);
             folders.add(folder);
             // check if we need to add the folder's parent:
-            if (!ids.contains(folder.getParent().getId())) {
+            if (!ids.contains(folder.parent.id)) {
                 List<Folder> parents = folder.getParentFolders(folder);
                 folders.addAll(parents);
                 for (Folder parent : parents) {
@@ -138,7 +138,7 @@ class SearchController extends BaseController {
         }
 
         // add serialized elements to response document:
-        Element root = doc.getRootElement();
+        Element root = doc.rootElement;
         Element pathFolderNode = root.addElement("parentFolders");
         for (XmlConvertable folder : folders) {
             folder.toXmlElement(pathFolderNode, includeSummary);
@@ -191,13 +191,13 @@ class SearchController extends BaseController {
      *}
      *         </pre>
      */
-    def searchFolders(String query, Integer page_size, Integer page, String metaset_list) {
+    def searchFolders(String query, Integer page_size, Integer page, String metaset_list, Boolean include_summary) {
         try{
             def metasets = []
             if(metaset_list){
                 metasets = metaset_list.split(/,\s*/)
             }
-            doSearch(query, page_size, page, SearchableDomain.FOLDER, metasets)
+            doSearch(query, page_size, page, SearchableDomain.FOLDER, metasets as List, include_summary)
         }
         catch (Exception e){
             renderExceptionXml('Failed to searchFolders',e)
