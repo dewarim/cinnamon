@@ -26,47 +26,53 @@
             <td>${fieldValue(bean: relationType, field: 'name')}</td>
 
             <td class="center"><g:if test="${relationType.leftobjectprotected}">
-                <img src="<g:resource dir='/images' file='ok.png'/>" alt="<g:message code="input.enabled"/>">
+                <asset:image src="ok.png" alt="${message(code:"input.enabled")}"/>
             </g:if>
                 <g:else>
-                    <img src="<g:resource dir='/images' file='no.png'/>" alt="<g:message code="input.disabled"/>">
+                    <asset:image src="no.png" alt="${message(code:"input.disabled")}"/>
                 </g:else>
             </td>
 
             <td class="center">
                 <g:if test="${relationType.rightobjectprotected}">
-                    <img src="<g:resource dir='/images' file='ok.png'/>" alt="<g:message code="input.enabled"/>">
+                    <asset:image src="ok.png" alt="${message(code:"input.enabled")}"/>
                 </g:if>
                 <g:else>
-                    <img src="<g:resource dir='/images' file='no.png'/>" alt="<g:message code="input.disabled"/>">
+                    <asset:image src="no.png" alt="${message(code:"input.disabled")}"/>
                 </g:else>
             </td>
 
             <td class="center">
                 <g:if test="${relationType.cloneOnLeftCopy}">
-                    <img src="<g:resource dir='/images' file='ok.png'/>" alt="<g:message code="input.enabled"/>">
+                    <asset:image src="ok.png" alt="${message(code:"input.enabled")}"/>
                 </g:if>
                 <g:else>
-                    <img src="<g:resource dir='/images' file='no.png'/>" alt="<g:message code="input.disabled"/>">
+                    <asset:image src="no.png" alt="${message(code:"input.disabled")}"/>
+                </g:else>
+
+            </td>
+            <td class="center">
+                <g:if test="${relationType.cloneOnRightCopy}">
+                    <asset:image src="ok.png" alt="${message(code:"input.enabled")}"/>
+                </g:if>
+                <g:else>
+                    <asset:image src="no.png" alt="${message(code:"input.disabled")}"/>
                 </g:else>
             </td>
             <td class="center">
-                <g:imageYesNo ok="${relationType.cloneOnRightCopy}"/>                             
-            </td>
-            <td class="center">
                 <g:if test="${relationType.cloneOnLeftVersion}">
-                    <img src="<g:resource dir='/images' file='ok.png'/>" alt="<g:message code="input.enabled"/>">
+                    <asset:image src="ok.png" alt="${message(code:"input.enabled")}"/>
                 </g:if>
                 <g:else>
-                    <img src="<g:resource dir='/images' file='no.png'/>" alt="<g:message code="input.disabled"/>">
+                    <asset:image src="no.png" alt="${message(code:"input.disabled")}"/>
                 </g:else>
             </td>
             <td class="center">
                 <g:if test="${relationType.cloneOnRightVersion}">
-                    <img src="<g:resource dir='/images' file='ok.png'/>" alt="<g:message code="input.enabled"/>">
+                    <asset:image src="ok.png" alt="${message(code:"input.enabled")}"/>
                 </g:if>
                 <g:else>
-                    <img src="<g:resource dir='/images' file='no.png'/>" alt="<g:message code="input.disabled"/>">
+                    <asset:image src="no.png" alt="${message(code:"input.disabled")}"/>
                 </g:else>
             </td>
             <td>${relationType.leftResolver.name}</td>
@@ -79,5 +85,5 @@
 
 <div class="paginateButtons">
     <util:remotePaginate controller="relationType" action="updateList" total="${RelationType.count()}"
-                         update="relationTypeList" max="10" pageSizes="[10, 20, 50, 100, 250, 500, 1000]"/>
+                         update="relationTypeList" max="100" pageSizes="[100, 250, 500, 1000]"/>
 </div>
