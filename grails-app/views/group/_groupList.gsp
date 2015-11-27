@@ -28,5 +28,5 @@
 
 <div class="paginateButtons">
     <util:remotePaginate controller="group" action="updateList" total="${CmnGroup.count()}"
-                         update="groupList" max="10" pageSizes="[10, 20, 50, 100, 250, 500, 1000]"/>
+                         update="groupList" max="100" pageSizes="[100, 250, 500, 1000]"/>
 </div>

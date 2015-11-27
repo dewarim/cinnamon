@@ -24,5 +24,5 @@
 
 <div class="paginateButtons">
       <util:remotePaginate controller="uiLanguage" action="updateList" total="${UiLanguage.count()}"
-                         update="uiLanguageList" max="10" pageSizes="[10, 20, 50, 100, 250, 500, 1000]"/>
+                         update="uiLanguageList" max="100" pageSizes="[100, 250, 500, 1000]"/>
 </div>

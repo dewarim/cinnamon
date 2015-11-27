@@ -16,5 +16,5 @@
 
 <div class="paginateButtons">
     <util:remotePaginate controller="message" action="updateList" total="${messageCount}"
-                         update="messageList" max="10" pageSizes="[10, 20, 50, 100, 250, 500, 1000]"/>
+                         update="messageList" max="100" pageSizes="[100, 250, 500, 1000]"/>
 </div>

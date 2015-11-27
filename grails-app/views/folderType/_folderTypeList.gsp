@@ -24,5 +24,5 @@
 
 <div class="paginateButtons">
      <util:remotePaginate controller="folderType" action="updateList" total="${FolderType.count()}"
-                         update="folderTypeList" max="10" pageSizes="[10, 20, 50, 100, 250, 500, 1000]"/>
+                         update="folderTypeList" max="100" pageSizes="[100, 250, 500, 1000]"/>
 </div>

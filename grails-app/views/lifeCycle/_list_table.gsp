@@ -19,5 +19,5 @@
 </table>
 <div class="paginateButtons">
     <util:remotePaginate controller="lifeCycle" action="updateList" total="${LifeCycle.count()}"
-                         update="lifeCycleTable" max="10" pageSizes="[10, 20, 50, 100, 250, 500, 1000]"/>
+                         update="lifeCycleTable" max="100" pageSizes="[100, 250, 500, 1000]"/>
 </div>

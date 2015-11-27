@@ -33,5 +33,5 @@
 
 <div class="paginateButtons">
     <util:remotePaginate controller="format" action="updateList" total="${Format.count()}"
-                         update="formatList" max="10" pageSizes="[10, 20, 50, 100, 250, 500, 1000]"/>
+                         update="formatList" max="100" pageSizes="[100, 250, 500, 1000]"/>
 </div>

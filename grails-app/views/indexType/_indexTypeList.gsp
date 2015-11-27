@@ -37,5 +37,5 @@
 
 <div class="paginateButtons">
     <util:remotePaginate controller="indexType" action="updateList" total="${IndexType.count()}"
-                         update="indexTypeList" max="10" pageSizes="[10, 20, 50, 100, 250, 500, 1000]"/>
+                         update="indexTypeList" max="100" pageSizes="[100, 250, 500, 1000]"/>
 </div>
