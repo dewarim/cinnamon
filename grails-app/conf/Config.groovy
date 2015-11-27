@@ -195,3 +195,7 @@ grails {
     }
 }
 remove this line */
+
+grails.assets.minifyJs = false
+grails.resources.adhoc.patterns = ['/images/*', '/css/*', '/js/*', '/plugins/*']
+grails.resources.adhoc.includes = ['/images/**', '/css/**', '/js/**', '/plugins/**']

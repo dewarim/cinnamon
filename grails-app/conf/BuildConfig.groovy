@@ -71,7 +71,7 @@ grails.project.dependency.resolution = {
         }
         
         runtime ":jquery:1.11.1"
-//        runtime ":resources:1.2.RC2"
+        runtime ":resources:1.2.14"
         compile(':spring-security-core:2.0-RC5')
         compile ":rest-client-builder:2.1.1"
         compile (":twitter-bootstrap:3.2.0.2"){excludes 'svn'}
@@ -79,6 +79,6 @@ grails.project.dependency.resolution = {
         runtime ':tika-parser:1.3.0.1'
         compile ":remote-pagination:0.3"
         compile ":geb:${gebPluginVersion}"
-        compile ":asset-pipeline:1.9.9"
+        compile ":asset-pipeline:2.6.7"
     }
 }
