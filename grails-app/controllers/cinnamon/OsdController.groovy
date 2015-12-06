@@ -430,7 +430,7 @@ class OsdController extends BaseController {
             Validator val = new Validator(user);
             results = val.filterUnbrowsableObjects(results);
             Document doc = osdService.generateQueryObjectResultDocument(results, include_summary);
-            addLinksToObjectQuery(params.parentid, doc, val, false)
+            addLinksToObjectQuery(params.parentid, doc, val, false, include_summary)
 
             log.debug("objects for folder ${folder.id} / ${folder.name}:\n ${doc.asXML()}")
             render(contentType: 'application/xml', text: doc.asXML())
@@ -441,7 +441,8 @@ class OsdController extends BaseController {
         }
     }
 
-    protected void addLinksToObjectQuery(String parentId, Document doc, Validator val, Boolean withMetadata) {
+    protected void addLinksToObjectQuery(String parentId, Document doc, Validator val, Boolean withMetadata, Boolean 
+            includeSummary) {
         Folder parent = Folder.get(parentId);
         Element root = doc.getRootElement();
         Collection<Link> links = linkService.findLinksIn(parent, LinkType.OBJECT);
@@ -457,7 +458,7 @@ class OsdController extends BaseController {
                 log.debug("", e);
                 continue;
             }
-            Element osdNode = link.getOsd().toXmlElement(root);
+            Element osdNode = link.getOsd().toXmlElement(root, includeSummary);
             if (withMetadata) {
                 osdNode.add(ParamParser.parseXml(link.getOsd().getMetadata(), null));
             }
@@ -896,7 +897,7 @@ class OsdController extends BaseController {
             Validator val = new Validator(user);
             results = val.filterUnbrowsableObjects(results);
             Document doc = osdService.generateQueryObjectResultDocument(results, true, include_summary);
-            addLinksToObjectQuery(params.parentid, doc, val, true)
+            addLinksToObjectQuery(params.parentid, doc, val, true, include_summary)
             render(contentType: 'application/xml', text: doc.asXML())
         }
         catch (Exception e) {

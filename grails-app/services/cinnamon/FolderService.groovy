@@ -68,6 +68,7 @@ class FolderService {
      * @param results
      * @return Document
      */
+    // TODO: is this needed anywhere?
     Document generateQueryFolderResultDocument(Collection<Folder> results){
         Document doc = DocumentHelper.createDocument();
         Element root = doc.addElement("folders");
@@ -76,7 +77,7 @@ class FolderService {
             Long id= folder.getId();
             log.debug("working on object: "+id);
             try {
-                folder.toXmlElement(root);
+                folder.toXmlElement(root);// FIXME: include_summary needed.
             }
             catch(CinnamonException ex) {
                 log.error("Error serializing folder: " + id + " - " + ex.getMessage());

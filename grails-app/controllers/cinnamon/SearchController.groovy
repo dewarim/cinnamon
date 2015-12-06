@@ -25,7 +25,7 @@ class SearchController extends BaseController {
             }
             else {
                 for (XmlConvertable conv : resultStore) {
-                    conv.toXmlElement(root);
+                    conv.toXmlElement(root, include_summary);
                 }
             }
 

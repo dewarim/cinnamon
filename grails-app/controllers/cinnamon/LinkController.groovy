@@ -67,7 +67,7 @@ class LinkController extends BaseController {
      *}
      *         </pre>
      */
-    def createLink() {
+    def createLink(Boolean include_summary) {
         try {
 
             if (params.id == null) {
@@ -107,7 +107,7 @@ class LinkController extends BaseController {
             }
 
             def doc = DocumentHelper.createDocument()
-            doc = linkService.renderLinkWithinTarget(link, doc);
+            doc = linkService.renderLinkWithinTarget(link, doc, include_summary);
             log.debug("result of createLink:\n" + doc.asXML());
             render(contentType: 'application/xml', text: doc.asXML())
         }
@@ -174,7 +174,7 @@ class LinkController extends BaseController {
      *         </pre>
      *         <p/>
      */
-    def updateLink() {
+    def updateLink(Boolean include_summary) {
         try {
             Long linkId = ParamParser.parseLong(params.link_id, "error.param.link_id");
             Link link = Link.get(linkId)
@@ -191,7 +191,7 @@ class LinkController extends BaseController {
             link = linkService.updateLink(link, params);
 
             def doc = DocumentHelper.createDocument()
-            doc = linkService.renderLinkWithinTarget(link, doc)
+            doc = linkService.renderLinkWithinTarget(link, doc, include_summary)
             log.debug("result of updateLink:\n" + doc.asXML());
             render(contentType: 'application/xml', text: doc.asXML())
         }
@@ -251,7 +251,7 @@ class LinkController extends BaseController {
      *         </pre>
      *         <p/>
      */
-    def getLink() {
+    def getLink(Boolean include_summary) {
         try {
             Long linkId = ParamParser.parseLong(params.link_id, "error.param.link_id")
             Link link = Link.get(linkId);
@@ -269,7 +269,7 @@ class LinkController extends BaseController {
             }
 
             def doc = DocumentHelper.createDocument()
-            doc = linkService.renderLinkWithinTarget(link, doc)
+            doc = linkService.renderLinkWithinTarget(link, doc, include_summary)
             log.debug("result of updateLink:\n" + doc.asXML())
             render(contentType: 'application/xml', text: doc.asXML())
         }

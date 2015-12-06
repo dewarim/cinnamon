@@ -76,16 +76,16 @@ public class LinkService {
      * @param doc
      * @return
      */
-    public Document renderLinkWithinTarget(Link link, Document doc) {
+    public Document renderLinkWithinTarget(Link link, Document doc, Boolean includeSummary) {
         Element root = doc.addElement("link");
         Element linkParent;
 
-        if (link.getType() == LinkType.FOLDER) {
-            link.getFolder().toXmlElement(root);
+        if (link.type == LinkType.FOLDER) {
+            link.folder.toXmlElement(root, includeSummary);
             linkParent = (Element) root.selectSingleNode("folder");
         }
         else {
-            link.getOsd().toXmlElement(root);
+            link.osd.toXmlElement(root, includeSummary);
             linkParent = (Element) root.selectSingleNode("object");
         }
         addLinkToElement(link, linkParent);

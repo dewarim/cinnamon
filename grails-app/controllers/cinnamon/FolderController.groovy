@@ -520,7 +520,7 @@ class FolderController extends BaseController {
                     log.debug("",e);
                     continue;
                 }
-                Element folderNode = link.getFolder().toXmlElement(root);
+                Element folderNode = link.folder.toXmlElement(root, include_summary);
                 linkService.addLinkToElement(link, folderNode);
             }
             log.debug("fetchSubFolders.result:\n${doc.asXML()}")
