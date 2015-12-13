@@ -1,9 +1,9 @@
-# Grails application: Cinnamon CMS
+# Cinnamon CMS
 
-Cinnamon is used to create technical documentation with DITA and XML.
+With Cinnamon you can create complex and modular technical documentation with structured Word documents, DITA and XML.
 It can be used as a highly customizable content repository.
 
-This repository contains the server code for the Cinnamon CMS, version 3.
+This repository contains the code for the Cinnamon CMS server, version 3.
  
 ## License
  
@@ -11,7 +11,15 @@ License is LGPL 2.1 or later - if you require other license conditions, please c
 
 ## Documentation
 
-Please ee [Project Homepage](http://cinnamon-cms.de) and [docs folder](docs)
+Please see [Project Homepage](http://cinnamon-cms.de) and [docs folder](docs)
+
+## Technology
+
+The Cinnamon server is a Grails 2.5 application, written in Groovy and Java.
+
+The Cinnamon client is a .NET application. 
+
+For more details, see [dwarves and giants](docs/dwarves_and_giants.md)
 
 ### Known Bugs
 
