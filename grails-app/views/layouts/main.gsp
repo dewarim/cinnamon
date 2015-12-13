@@ -7,6 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
     %{--<asset:javascript src="jquery-2.1.1.js"/>--}%
+    <asset:javascript src="application.js"/>
     <asset:javascript src="cinnamon.js"/>
     %{--<asset:javascript src="jquery-ui-1.11.1/jquery-ui.js"/>--}%
     
@@ -160,13 +161,14 @@ var s4 = '#' + id + ': ' + name + '</a></div>';
 <header>
     <div id="header">
         <a href="${resource(dir: 'folder', file: 'index')}">
-            <asset:image src="illicium_100.jpg" alt="${message(code: 'app.illicium')}" border="0"/>
+            %{--<asset:image src="illicium_100.jpg" alt="${message(code: 'app.illicium')}" border="0"/>--}%
+            <img src="/cinnamon/images/illicium_100.jpg" alt="${message(code: 'app.illicium')}" border="0"/>
         </a>
 
         <h1 id="TITLE"><g:message code="${ headline ?: grailsApplication.config.appName}"/></h1>
 
         <div class="searchForm">
-            <g:form onsubmit="\$('#searchFormSubmit').click();return false;" name="simpleSearchForm"
+            <g:form onsubmit="\$(\'#searchFormSubmit\').click();return false;" name="simpleSearchForm"
                     id="simpleSearchForm">
                 <label for="simpleSearch" style="display:none;"><g:message code="search.label"/></label>
                 <input name="query" placeholder="<g:message code="search.placeholder"/>" id="simpleSearch">

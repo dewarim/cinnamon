@@ -161,6 +161,7 @@ grails.plugin.springsecurity.logout.afterLogoutUrl = '/login/auth'
 grails.plugin.springsecurity.controllerAnnotations.staticRules = [
         '/assets/**'              : ['permitAll'],
         '/cinnamon/cinnamon/index': ['permitAll'],
+        '/cinnamon/assets/**'     : ['permitAll'],
         '/error/**'               : ['permitAll'],
 ]
 grails.logging.jul.usebridge = false
