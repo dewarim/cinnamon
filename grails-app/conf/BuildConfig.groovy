@@ -76,9 +76,9 @@ grails.project.dependency.resolution = {
         compile ":rest-client-builder:2.1.1"
         compile (":twitter-bootstrap:3.2.0.2"){excludes 'svn'}
         compile ":cinnamon-db:3.6.22"
-        runtime ':tika-parser:1.3.0.1'
+        runtime ':tika-parser:1.9.0.1'
         compile ":remote-pagination:0.3"
         compile ":geb:${gebPluginVersion}"
-        compile ":asset-pipeline:2.6.7"
+        compile ":asset-pipeline:2.6.10"
     }
 }
