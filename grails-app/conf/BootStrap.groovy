@@ -35,7 +35,7 @@ class BootStrap {
         }
 
         luceneService.initialize()
-        workflowService.initializeWorkflowMasters()
+//        workflowService.initializeWorkflowMasters()
 
     }
 
