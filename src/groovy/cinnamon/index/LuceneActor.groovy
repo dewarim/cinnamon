@@ -19,8 +19,6 @@ package cinnamon.index
 
 import cinnamon.Folder
 import cinnamon.ObjectSystemData
-import cinnamon.workflow.WorkflowCommand
-import cinnamon.workflow.WorkflowResult
 import groovy.util.logging.Log4j
 import groovyx.gpars.actor.DynamicDispatchActor
 import org.apache.lucene.analysis.standard.StandardAnalyzer
@@ -34,8 +32,6 @@ import org.apache.lucene.search.Query
 import org.apache.lucene.search.TermQuery
 import org.apache.lucene.search.TopDocs
 import org.apache.lucene.util.Version
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 
 import org.apache.lucene.xmlparser.CoreParser
 import org.apache.lucene.xmlparser.ParserException
@@ -65,7 +61,7 @@ class LuceneActor extends DynamicDispatchActor {
             switch (command.type) {
                 case CommandType.REMOVE_FROM_INDEX: removeFromIndex(command); break
                 case CommandType.UPDATE_INDEX: result = updateIndex(command); break
-                case CommandType.ADD_TO_INDEX_NOW: command.removeFirst=false; doIndexJobNow(command); break
+                case CommandType.ADD_TO_INDEX_NOW: command.removeFirst = false; doIndexJobNow(command); break
                 case CommandType.REMOVE_FROM_INDEX_NOW: removeFromIndex(command); break
                 case CommandType.UPDATE_INDEX_NOW: doIndexJobNow(command); break
                 case CommandType.SEARCH: result = search(command); break;
@@ -87,15 +83,15 @@ class LuceneActor extends DynamicDispatchActor {
         log.debug("Update repository: ${repository.name}")
         def osdJobs = []
         def seen = new HashSet<Long>(100)
-        IndexJob.withTransaction{
+        IndexJob.withTransaction {
             osdJobs = IndexJob.findAll("from IndexJob i where i.indexableClass=:indexableClass and i.failed = false",
-                   [indexableClass:ObjectSystemData.class], [max:100])
+                    [indexableClass: ObjectSystemData.class], [max: 100])
         }
         log.debug("Found ${osdJobs.size()} objects watiting for indexing in ${repository.name}.")
-        osdJobs.each { IndexJob job ->            
+        osdJobs.each { IndexJob job ->
             ObjectSystemData.withTransaction {
                 Long id = job.indexableId
-                if(seen.contains(id)){
+                if (seen.contains(id)) {
                     // remove duplicate jobs in the current transaction
                     job.delete()
                     return
@@ -108,14 +104,14 @@ class LuceneActor extends DynamicDispatchActor {
         def folderJobs = []
         def seenFolders = new HashSet<Long>(100)
         IndexJob.withTransaction {
-            folderJobs = IndexJob.findAll("from IndexJob i where i.indexableClass=:indexableClass and i.failed=false", 
-                    [indexableClass: Folder.class], [ max: 100])
+            folderJobs = IndexJob.findAll("from IndexJob i where i.indexableClass=:indexableClass and i.failed=false",
+                    [indexableClass: Folder.class], [max: 100])
         }
         log.debug("Found ${folderJobs.size()} folders waiting for indexing in ${repository.name}.")
         folderJobs.each { IndexJob job ->
             IndexJob.withTransaction {
                 Long id = job.indexableId
-                if(seenFolders.contains(id)){
+                if (seenFolders.contains(id)) {
                     job.delete()
                     return
                 }
@@ -128,37 +124,37 @@ class LuceneActor extends DynamicDispatchActor {
         def luceneResult = new LuceneResult(resultMessages: resultMessages)
         return luceneResult
     }
-    
-    def doIndexJobNow(IndexCommand command){
+
+    def doIndexJobNow(IndexCommand command) {
         def repository = command.repository
         log.debug("Update repository: ${repository.name}")
         IndexJob.withNewTransaction {
-            def reloadedIndexable = command.indexable.reload()         
+            def reloadedIndexable = command.indexable.reload()
             doIndexJob(reloadedIndexable, null, repository, command.removeFirst)
         }
     }
-    
-    def doIndexJob(Indexable indexable, job, Repository repository, Boolean removeFirst){
-        if(indexable){
-            try{
-                if(removeFirst){
+
+    def doIndexJob(Indexable indexable, job, Repository repository, Boolean removeFirst) {
+        if (indexable) {
+            try {
+                if (removeFirst) {
                     deleteIndexableFromIndex(indexable, repository)
                 }
                 addToIndex(indexable, repository)
-                if(job){
+                if (job) {
                     job.delete()
                 }
             }
-            catch(Exception e){
-                log.warn("Index job for ${indexable.toString()} failed with:",e)
+            catch (Exception e) {
+                log.warn("Index job for ${indexable.toString()} failed with:", e)
                 job.failed = true
             }
         }
-        else{
+        else {
             job.delete()
         }
     }
-    
+
     void deleteIndexableFromIndex(Indexable indexable, Repository repository) {
         def uniqueId = indexable.uniqueId()
         log.debug("remove from Index: $uniqueId")
@@ -182,7 +178,7 @@ class LuceneActor extends DynamicDispatchActor {
             QueryParser queryParser = new QueryParser(Version.LUCENE_36, "content", new StandardAnalyzer(Version.LUCENE_36))
             query = queryParser.parse(command.query);
         }
-        
+
         IndexSearcher searcher = repository.indexSearcher
         ResultCollector collector = new ResultCollector(reader: repository.indexReader,
                 searcher: repository.indexSearcher, domain: command.domain)
