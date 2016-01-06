@@ -33,6 +33,9 @@ class TestController {
     def microserviceChangeTriggerPreRequestTest(String msg) {
         log.info("microserviceChangeTriggerPreRequestTest received: " + (msg?.encodeAsHTML()))
         log.debug("Params: " + params)
+        if (!msg) {
+            throw new RuntimeException("parameter 'msg' is not set!")
+        }
         response.setHeader("microservice-pre-test", "ok")
         render(text:"")
     }
