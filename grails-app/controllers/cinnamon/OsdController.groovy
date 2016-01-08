@@ -551,11 +551,7 @@ class OsdController extends BaseController {
             }
             else {
                 (new Validator(userService.user)).checkBrowsePermission(osd);
-                def osdElement = osd.toXML()
-                if(include_summary){
-                    osdElement.addElement('summary').addText(osd.summary)
-                }
-                root.add(osdElement.rootElement);
+                osd.toXmlElement(root, include_summary)
             }
             render(contentType: 'application/xml', text: doc.asXML())
         }
