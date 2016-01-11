@@ -1,4 +1,4 @@
-grails.servlet.version = "3.0" 
+grails.servlet.version = "3.0"
 grails.project.class.dir = "target/classes"
 grails.project.test.class.dir = "target/test-classes"
 grails.project.test.reports.dir = "target/test-reports"
@@ -34,7 +34,7 @@ grails.project.dependency.resolution = {
         runtime('org.apache.lucene:lucene-queries:3.6.2')
         runtime 'postgresql:postgresql:9.1-901.jdbc4'
         runtime 'xml-apis:xml-apis:1.4.01'
-        runtime('dom4j:dom4j:1.6.1'){
+        runtime('dom4j:dom4j:1.6.1') {
             exclude 'xml-apis'
         }
         runtime 'jaxen:jaxen:1.1.4'
@@ -42,15 +42,15 @@ grails.project.dependency.resolution = {
 //        runtime 'org.grails.plugins:cinnamon-humulus:0.3'
         runtime 'commons-net:commons-net:3.2'
         compile 'javax.mail:mail:1.4.7'
-        test "org.gebish:geb-spock:${gebPluginVersion}" 
-        
+        test "org.gebish:geb-spock:${gebPluginVersion}"
+
         /*
          * Note: run test like -Dgeb.env=firefox test-app -functional RelationController
          * because htmlunit-driver seems to be broken at the moment.
          */
         test "org.seleniumhq.selenium:selenium-firefox-driver:${seleniumVersion}"
-        test "org.seleniumhq.selenium:selenium-chrome-driver:${seleniumVersion}"       
-        test ("org.seleniumhq.selenium:selenium-htmlunit-driver:${seleniumVersion}"){
+        test "org.seleniumhq.selenium:selenium-chrome-driver:${seleniumVersion}"
+        test("org.seleniumhq.selenium:selenium-htmlunit-driver:${seleniumVersion}") {
             exclude 'xml-apis'
         }
         test "org.seleniumhq.selenium:selenium-support:${seleniumVersion}"
@@ -60,25 +60,35 @@ grails.project.dependency.resolution = {
 
     plugins {
 //        runtime (":hibernate:3.6.10.19") {
-        runtime (":hibernate4:4.3.8.1"){
+        runtime(":hibernate4:4.3.8.1") {
             export = false
         }
-        compile (":release:3.1.1"){
+        compile(":release:3.1.1") {
             export = false
         }
-        build (":tomcat:8.0.15"){
+        build(":tomcat:8.0.15") {
             export = false
         }
-        
+
         runtime ":jquery:1.11.1"
         runtime ":resources:1.2.14"
         compile(':spring-security-core:2.0-RC5')
         compile ":rest-client-builder:2.1.1"
-        compile (":twitter-bootstrap:3.2.0.2"){excludes 'svn'}
-        compile ":cinnamon-db:3.6.32"
+        compile(":twitter-bootstrap:3.2.0.2") { excludes 'svn' }
+        compile ":cinnamon-db:3.6.36"
         runtime ':tika-parser:1.11'
         compile ":remote-pagination:0.3"
         compile ":geb:${gebPluginVersion}"
         compile ":asset-pipeline:2.6.10"
     }
 }
+
+grails.project.fork = [
+        test   : [maxMemory: 4096, minMemory: 2048, debug: false, maxPerm: 256, daemon: true], // configure settings for 
+        // the 
+        // test-app JVM
+        run    : [maxMemory: 4096, minMemory: 2048, debug: false, maxPerm: 256], // configure settings for the run-app JVM
+        war    : [maxMemory: 4096, minMemory: 2048, debug: false, maxPerm: 256], // configure settings for the run-war JVM
+        console: [maxMemory: 768, minMemory: 2048, debug: false, maxPerm: 256]// configure settings for the Console UI
+        // JVM
+]

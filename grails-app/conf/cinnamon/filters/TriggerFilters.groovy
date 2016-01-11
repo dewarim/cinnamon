@@ -11,7 +11,7 @@ class TriggerFilters {
         changeTriggers(controller: '*', action: '*') {
             before = {
                 log.debug("controllerName: ${controllerName} / action: ${actionName}")
-                
+
                 def triggers = ChangeTrigger.findAll("""from ChangeTrigger ct where 
                     ct.controller=:controller and
                     ct.action=:action and 
@@ -21,12 +21,12 @@ class TriggerFilters {
 """.replaceAll('\n', ' '), [controller: controllerName, action: actionName])
 
                 log.debug("found ${triggers.size()} changeTriggers")
-               
-                
-                PoBox poBox = new PoBox(request, response, userService.user, session.repositoryName, params, null,
-                        controllerName, actionName, grailsApplication) 
 
-                triggers.each { changeTrigger ->                    
+
+                PoBox poBox = new PoBox(request, response, userService.user, session.repositoryName, params, null,
+                        controllerName, actionName, grailsApplication)
+
+                triggers.each { changeTrigger ->
                     if (poBox.endProcessing) {
                         return
                     }
@@ -43,12 +43,15 @@ class TriggerFilters {
 
             afterView = { Exception exception ->
 
-                log.debug("afterView: controllerName: ${controllerName} / action: ${actionName}")
-
-                if(exception != null){
-                return true // do not apply any filters on exceptions.
-            }
-//            after = { Map model -> 
+                log.debug("afterView: controllerName: ${controllerName} / action: ${actionName} \n params: ${params}")
+                if(flash["__post_triggers_are_done__"]){
+                    log.debug("afterView filters for this request were already run.")
+                    flash["__post_triggers_are_done__"] = false
+                    return true
+                }
+                if (exception != null) {
+                    return true // do not apply any filters on exceptions.
+                }
 
                 def triggers = ChangeTrigger.findAll("""from ChangeTrigger ct where 
                     ct.controller=:controller and
@@ -57,18 +60,17 @@ class TriggerFilters {
                     ct.active=true
                     order by ct.ranking
 """.replaceAll('\n', ' '), [controller: controllerName, action: actionName])
-                
-//                log.debug("model: "+model)
-                
-                PoBox poBox = new PoBox(request, response, userService.user, session.repositoryName, params, null, 
+
+                PoBox poBox = new PoBox(request, response, userService.user, session.repositoryName, params, null,
                         controllerName, actionName, grailsApplication);
                 triggers.each { changeTrigger ->
                     if (poBox.endProcessing) {
-                        return
+                        return false
                     }
-                    log.debug("executing post trigger: " + changeTrigger.getTriggerType().getName());
+                    log.debug("executing post trigger: " + changeTrigger.triggerType.name);
                     def trigger = changeTrigger.triggerType.triggerClass.newInstance();
                     poBox = trigger.executePostCommand(poBox, changeTrigger)
+                    flash["__post_triggers_are_done__"] = true
                 }
                 if (poBox.endProcessing) {
                     return false
@@ -76,9 +78,6 @@ class TriggerFilters {
                 }
                 return true
             }
-//            afterView = { Exception e ->
-//
-//            }
         }
     }
 }
