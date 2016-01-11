@@ -43,7 +43,7 @@ class TriggerFilters {
 
             afterView = { Exception exception ->
 
-                log.debug("afterView: controllerName: ${controllerName} / action: ${actionName} \n params: ${params}")
+                log.debug("afterView: controllerName: ${controllerName} / action: ${actionName})")// \n params: " + "${params}")
                 if(flash["__post_triggers_are_done__"]){
                     log.debug("afterView filters for this request were already run.")
                     flash["__post_triggers_are_done__"] = false

@@ -1,9 +1,6 @@
 package cinnamon.servlet;
 
 
-import cinnamon.global.ConfThreadLocal;
-import cinnamon.trigger.impl.MicroserviceChangeTrigger;
-import org.apache.http.HeaderElement;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.RequestBuilder;
@@ -15,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Map;
@@ -26,6 +22,7 @@ import java.util.Map;
 public class ResponseFilter implements Filter {
 
     Logger log = LoggerFactory.getLogger(ResponseFilter.class);
+    public static ThreadLocal<HttpServletResponseCopier> localResponseCopier = new ThreadLocal<HttpServletResponseCopier>();
 
 
     @Override
@@ -40,7 +37,8 @@ public class ResponseFilter implements Filter {
         }
 
         HttpServletResponseCopier responseCopier = new HttpServletResponseCopier((HttpServletResponse) response);
-
+        localResponseCopier.set(responseCopier);
+        
         try {
             chain.doFilter(request, responseCopier);
             responseCopier.flushBuffer();
