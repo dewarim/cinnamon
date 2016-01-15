@@ -47,6 +47,10 @@ public class MicroserviceChangeTrigger implements ITrigger {
                 }
                 requestCopy.setHeader(headerName, request.getHeader(headerName))
             }
+
+            // content_len must not be set according to RequestContent.process 
+            requestCopy.removeHeaders(HTTP.CONTENT_LEN)
+            
             for (Map.Entry entry : poBox.params) {
                 requestCopy.addParameter(entry.key.toString(), entry.value.toString())
             }
