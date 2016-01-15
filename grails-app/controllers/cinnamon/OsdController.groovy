@@ -1273,11 +1273,8 @@ class OsdController extends BaseController {
                 throw new RuntimeException('error.content.not.found')
             }
             def attachmentName = resultfile ?: "${osd.name.encodeAsURL()}${osd.determineExtension()}"
-            response.setHeader("Content-disposition", "attachment; filename=${attachmentName}");
-            response.setContentType(osd.format.contenttype)
-            response.outputStream << data.newInputStream()
-            response.outputStream.flush()
-            return null
+            render file:data, contentType: osd.format.contenttype, filename: attachmentName
+            
         }
         catch (Exception e) {
             LocalRepository.cleanUp()
