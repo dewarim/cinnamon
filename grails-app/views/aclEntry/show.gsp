@@ -67,7 +67,6 @@
         <tr>
             <th><g:message code="permission.activated"/></th>
             <th><g:message code="permission.name"/></th>
-            <th><g:message code="permission.description"/></th>
         </tr>
         </thead>
         <tbody>
@@ -79,8 +78,6 @@
                     </g:link></td>
                 <td><g:link action="togglePermission"
                             params="[permissionId: perm.id, id: aclEntry.id]">${fieldValue(bean: perm, field: 'name')}</g:link></td>
-                <td><g:link action="togglePermission"
-                            params="[permissionId: perm.id, id: aclEntry.id]">${fieldValue(bean: perm, field: 'description')}</g:link></td>
             </tr>
         </g:each>
 
