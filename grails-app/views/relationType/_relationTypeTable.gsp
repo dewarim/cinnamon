@@ -20,14 +20,7 @@
         <td class="name"><g:message code="relationType.leftobjectprotected"/></td>
 
         <td class="value">
-            <g:if test="${relationType.leftobjectprotected}">
-                <img src="<g:resource dir='/images' file='ok.png'/>"
-                     alt="<g:message code="input.disabled"/>">
-            </g:if>
-            <g:else>
-                <img src="<g:resource dir='/images' file='no.png'/>"
-                     alt="<g:message code="input.enabled"/>">
-            </g:else>
+            <g:enabledDisabledIcon test="${relationType.leftobjectprotected}"/>
         </td>
 
     </tr>
@@ -36,14 +29,7 @@
         <td class="name"><g:message code="relationType.rightobjectprotected"/></td>
 
         <td class="value">
-            <g:if test="${relationType.rightobjectprotected}">
-                <img src="<g:resource dir='/images' file='ok.png'/>"
-                     alt="<g:message code="input.disabled"/>">
-            </g:if>
-            <g:else>
-                <img src="<g:resource dir='/images' file='no.png'/>"
-                     alt="<g:message code="input.enabled"/>">
-            </g:else>
+            <g:enabledDisabledIcon test="${relationType.rightobjectprotected}"/>
         </td>
     </tr>
 
@@ -51,14 +37,7 @@
         <td class="name"><g:message code="relationType.cloneOnLeftCopy"/></td>
 
         <td class="value">
-            <g:if test="${relationType.cloneOnLeftCopy}">
-                <img src="<g:resource dir='/images' file='ok.png'/>"
-                     alt="<g:message code="input.disabled"/>">
-            </g:if>
-            <g:else>
-                <img src="<g:resource dir='/images' file='no.png'/>"
-                     alt="<g:message code="input.enabled"/>">
-            </g:else>
+            <g:enabledDisabledIcon test="${relationType.cloneOnLeftCopy}"/>
         </td>
     </tr>
 
@@ -66,28 +45,14 @@
         <td class="name"><g:message code="relationType.cloneOnRightCopy"/></td>
 
         <td class="value">
-            <g:if test="${relationType.cloneOnRightCopy}">
-                <img src="<g:resource dir='/images' file='ok.png'/>"
-                     alt="<g:message code="input.disabled"/>">
-            </g:if>
-            <g:else>
-                <img src="<g:resource dir='/images' file='no.png'/>"
-                     alt="<g:message code="input.enabled"/>">
-            </g:else>
+            <g:enabledDisabledIcon test="${relationType.cloneOnRightCopy}"/>
         </td>
     </tr>
     <tr class="prop">
         <td class="name"><g:message code="relationType.cloneOnLeftVersion"/></td>
 
         <td class="value">
-            <g:if test="${relationType.cloneOnLeftVersion}">
-                <img src="<g:resource dir='/images' file='ok.png'/>"
-                     alt="<g:message code="input.disabled"/>">
-            </g:if>
-            <g:else>
-                <img src="<g:resource dir='/images' file='no.png'/>"
-                     alt="<g:message code="input.enabled"/>">
-            </g:else>
+            <g:enabledDisabledIcon test="${relationType.cloneOnLeftVersion}"/>
         </td>
     </tr>
 
@@ -95,14 +60,7 @@
         <td class="name"><g:message code="relationType.cloneOnRightVersion"/></td>
 
         <td class="value">
-            <g:if test="${relationType.cloneOnRightVersion}">
-                <img src="<g:resource dir='/images' file='ok.png'/>"
-                     alt="<g:message code="input.disabled"/>">
-            </g:if>
-            <g:else>
-                <img src="<g:resource dir='/images' file='no.png'/>"
-                     alt="<g:message code="input.enabled"/>">
-            </g:else>
+            <g:enabledDisabledIcon test="${relationType.cloneOnRightVersion}"/>
         </td>
     </tr>
 

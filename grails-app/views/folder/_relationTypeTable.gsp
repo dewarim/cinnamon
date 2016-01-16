@@ -27,12 +27,7 @@
 		<td class="name"><g:message code="relationType.leftobjectprotected"/></td>
 
 		<td class="value">
-			<g:if test="${relationType.leftobjectprotected}">
-				<r:img uri="/images/ok.png" alt="${message(code: "input.disabled")}"/>
-			</g:if>
-			<g:else>
-                <r:img uri="/images/no.png" alt="${message(code: "input.enabled")}"/>
-			</g:else>
+			<g:enabledDisabledIcon test="${relationType.leftobjectprotected}"/>
 		</td>
 
 	</tr>
@@ -41,12 +36,7 @@
 		<td class="name"><g:message code="relationType.rightobjectprotected"/></td>
 
 		<td class="value">
-			<g:if test="${relationType.rightobjectprotected}">
-                <r:img uri="/images/ok.png" alt="${message(code: "input.disabled")}"/>
-            </g:if>
-            <g:else>
-                <r:img uri="/images/no.png" alt="${message(code: "input.enabled")}"/>
-			</g:else>
+			<g:enabledDisabledIcon test="${relationType.rightobjectprotected}"/>
 		</td>
 	</tr>
 		<tr class="prop">

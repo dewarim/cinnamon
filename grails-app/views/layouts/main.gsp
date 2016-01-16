@@ -98,7 +98,7 @@
     }
  
     function showSpinner(id) {
-        $("#" + id).prepend('<img src="<g:createLink uri="/assets/images/spinner.gif"/>" alt="<g:message code="message.loading"/>" id="' + id + '_spinner">');
+        $("#" + id).prepend('<img src="<g:spinnerGifAsString/>" alt="<g:message code="message.loading"/>" id="' + id + '_spinner">');
     }
 
     function hideSpinner(id) {
@@ -109,7 +109,7 @@
         var msg = $("#message");
 
         msg.append('<a class="close_button" href="#" onclick="hideClearButton();return false;">' +
-'<asset:image border="0" src="no.png" alt="${message(code:"message.clear").encodeAsJavaScript()}"/>' +
+'<img border="0" src="${g.nokImageDataAsString()}" alt="${message(code:"message.clear").encodeAsJavaScript()}">' +
 '</a> ');
         msg.addClass('error_message');
 

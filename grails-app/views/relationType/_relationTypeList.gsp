@@ -25,55 +25,25 @@
 
             <td>${fieldValue(bean: relationType, field: 'name')}</td>
 
-            <td class="center"><g:if test="${relationType.leftobjectprotected}">
-                <asset:image src="ok.png" alt="${message(code:"input.enabled")}"/>
-            </g:if>
-                <g:else>
-                    <asset:image src="no.png" alt="${message(code:"input.disabled")}"/>
-                </g:else>
+            <td class="center">
+                <g:enabledDisabledIcon test="${relationType.leftobjectprotected}"/>
             </td>
 
             <td class="center">
-                <g:if test="${relationType.rightobjectprotected}">
-                    <asset:image src="ok.png" alt="${message(code:"input.enabled")}"/>
-                </g:if>
-                <g:else>
-                    <asset:image src="no.png" alt="${message(code:"input.disabled")}"/>
-                </g:else>
+                <g:enabledDisabledIcon test="${relationType.rightobjectprotected}"/>
             </td>
 
             <td class="center">
-                <g:if test="${relationType.cloneOnLeftCopy}">
-                    <asset:image src="ok.png" alt="${message(code:"input.enabled")}"/>
-                </g:if>
-                <g:else>
-                    <asset:image src="no.png" alt="${message(code:"input.disabled")}"/>
-                </g:else>
-
+                <g:enabledDisabledIcon test="${relationType.cloneOnLeftCopy}"/>
             </td>
             <td class="center">
-                <g:if test="${relationType.cloneOnRightCopy}">
-                    <asset:image src="ok.png" alt="${message(code:"input.enabled")}"/>
-                </g:if>
-                <g:else>
-                    <asset:image src="no.png" alt="${message(code:"input.disabled")}"/>
-                </g:else>
+                <g:enabledDisabledIcon test="${relationType.cloneOnRightCopy}"/>
             </td>
             <td class="center">
-                <g:if test="${relationType.cloneOnLeftVersion}">
-                    <asset:image src="ok.png" alt="${message(code:"input.enabled")}"/>
-                </g:if>
-                <g:else>
-                    <asset:image src="no.png" alt="${message(code:"input.disabled")}"/>
-                </g:else>
+                <g:enabledDisabledIcon test="${relationType.cloneOnLeftVersion}"/>
             </td>
             <td class="center">
-                <g:if test="${relationType.cloneOnRightVersion}">
-                    <asset:image src="ok.png" alt="${message(code:"input.enabled")}"/>
-                </g:if>
-                <g:else>
-                    <asset:image src="no.png" alt="${message(code:"input.disabled")}"/>
-                </g:else>
+                <g:enabledDisabledIcon test="${relationType.cloneOnRightVersion}"/>
             </td>
             <td>${relationType.leftResolver.name}</td>
             <td>${relationType.rightResolver.name}</td>

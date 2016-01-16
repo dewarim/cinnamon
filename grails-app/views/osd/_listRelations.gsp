@@ -34,9 +34,7 @@
                 </td>
                 <td>
                     <button class="btn delete-relation item-delete-button left-relations" data-id='${relation.id}'>
-                        <r:img uri="/images/no.png"
-                               title="${message(code:'relation.delete')}"
-                               alt="${message(code:'icon.no')}"/>
+                        <g:yesNoIcon ok="false" alt="icon.no" title="relation.delete"/>
                     </button>
                 </td>
             </tr>
@@ -80,9 +78,8 @@
                 </td>
                 <td>
                     <button class="btn delete-relation item-delete-button right-relations" data-id='${relation.id}'>
-                        <r:img uri="/images/no.png"
-                               title="${message(code:'relation.delete')}"
-                               alt="${message(code:'icon.no')}"/></button>
+                        <g:yesNoIcon ok="false" alt="icon.no" title="relation.delete"/>
+                     </button>
                 </td>
             </tr>
         </g:each>

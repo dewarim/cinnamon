@@ -5,7 +5,7 @@
 <div class="clear">&nbsp;</div>
 
 <div id="uploaded-files-${folderType}">
-    <ul style="list-style-image: url('<g:resource dir="images" file="ok.png"/>');"></ul>
+    <ul style="list-style-image: url('<g:okImageDataAsString/>');"></ul>
 </div>
 <ul id="content-folder-files-${folderType}" style="list-style-type: none;">
     <li><g:render template="/folder/folderUp" 

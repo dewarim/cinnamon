@@ -75,12 +75,7 @@
             <tr class="${(i % 2) == 0 ? 'odd' : 'even'}">
                 <td>
                     <g:link action="togglePermission" params="[permissionId: perm.id, id: aclEntry.id]">
-                        <g:if test="${aclEntry.findPermission(perm)}">
-                            <img src="${resource(dir: 'images', file: 'ok.png')}" alt="active" class="noborder">
-                        </g:if>
-                        <g:else>
-                            <img src="${resource(dir: 'images', file: 'no.png')}" alt="inactive" class="noborder">
-                        </g:else>
+                        <g:enabledDisabledIcon test="${aclEntry.findPermission(perm)}" class="noborder"/>
                     </g:link></td>
                 <td><g:link action="togglePermission"
                             params="[permissionId: perm.id, id: aclEntry.id]">${fieldValue(bean: perm, field: 'name')}</g:link></td>

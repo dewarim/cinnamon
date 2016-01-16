@@ -35,7 +35,7 @@
                         </g:link>
                     </g:if>
                     <g:else>
-                        <img src="${g.resource(dir: '/images', file: 'ok.png')}" alt="${g.message(code: 'status.ok')}"/>
+                        <g:yesNoIcon ok="true" alt="status.ok"/>
                     </g:else>
                 </td>
             </tr>
@@ -49,7 +49,7 @@
                         </g:link>
                     </g:if>
                     <g:else>
-                        <img src="${g.resource(dir: '/images', file: 'ok.png')}" alt="${g.message(code: 'status.ok')}"/>
+                        <g:yesNoIcon ok="true" alt="status.ok"/>
                     </g:else>
                 </td>
             </tr>
