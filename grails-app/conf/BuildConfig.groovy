@@ -44,17 +44,6 @@ grails.project.dependency.resolution = {
         compile 'javax.mail:mail:1.4.7'
         test "org.gebish:geb-spock:${gebPluginVersion}"
 
-        /*
-         * Note: run test like -Dgeb.env=firefox test-app -functional RelationController
-         * because htmlunit-driver seems to be broken at the moment.
-         */
-        test "org.seleniumhq.selenium:selenium-firefox-driver:${seleniumVersion}"
-        test "org.seleniumhq.selenium:selenium-chrome-driver:${seleniumVersion}"
-        test("org.seleniumhq.selenium:selenium-htmlunit-driver:${seleniumVersion}") {
-            exclude 'xml-apis'
-        }
-        test "org.seleniumhq.selenium:selenium-support:${seleniumVersion}"
-
         runtime 'org.apache.httpcomponents:httpclient:4.5.1'
     }
 
