@@ -188,7 +188,7 @@ class FolderService {
             }
         }
         // delete metasets
-        folder.setMetadata("<meta />")
+        folder.storeMetadata("<meta />")
         
         // delete links/references
         def links = Link.findAllByFolder(folder)
