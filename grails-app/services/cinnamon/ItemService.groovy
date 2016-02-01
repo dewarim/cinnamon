@@ -104,6 +104,7 @@ class ItemService {
             log.debug("domainClass: $domainClass")
             def idSet = itemIdMap.get(domainClass)
             if (idSet?.size() > 0) {
+                idSet = reduceSet(idSet)
                 log.debug("found idSet")
                 def itemList = fetchItemsFromIdList(domainClass, idSet)
                 def itemSet = itemMap.get(domainClass)
@@ -129,9 +130,10 @@ class ItemService {
         }
         keySet.each {domainClass ->
             log.debug("domainClass: $domainClass")
-            def idSet = itemIdMap.get(domainClass)
+            Set idSet = itemIdMap.get(domainClass)
             if (idSet?.size() > 0) {
                 log.debug("found idSet")
+                idSet = reduceSet(idSet)
                 def itemList = fetchItemsFromIdList(domainClass, idSet)
                 if (validator){
                     Permission browsePermission = Permission.findByName(domain.browsePermission)
@@ -152,6 +154,20 @@ class ItemService {
             }
         }
         return itemSet
+    }
+    
+    /*
+     * PostgreSQL driver will only accept 2^15 elements in a parameter list.
+     * So we limit results to this amount - future versions may use batch queries to
+     * really return all items found or filter the ids according to page/page_size
+     */
+    Set reduceSet(Set idSet){
+        if(idSet.size() > 32767){
+            def reducedSet = new HashSet()
+            reducedSet.addAll(idSet.asList().subList(0,32767))
+            idSet = reducedSet
+        }
+        return idSet
     }
 
 }
