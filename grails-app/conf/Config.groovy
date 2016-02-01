@@ -116,7 +116,7 @@ log4j = {
     debug 'cinnamon.debug.ProviderManager'
     debug 'cinnamon.CinnamonUserDetailsService'
     info 'grails.app.filters.cinnamon.filters.PageFilters'
-    debug 'grails.app.filters.cinnamon.filters.TriggerFilters'
+//    debug 'grails.app.filters.cinnamon.filters.TriggerFilters'
     debug 'cinnamon.data'
     debug 'cinnamon.OsdController'
     info 'cinnamon.index.LuceneActor'
@@ -128,16 +128,21 @@ log4j = {
     debug 'humulus',
             'cinnamon.UserAccountController',
             'cinnamon.FolderController',
-            'cinnamon.cinnamon.filters.TriggerFilters',
             'cinnamon.index.indexer.ParentFolderPathIndexer',
             'org.springframework.security.authentication',
             'cinnamon.PreAuthenticatedAuthenticationProvider',
             'cinnamon.servlet.ResponseFilter'
-
     debug 'grails.app.domain.cinnamon.index'
     debug 'grails.app.controllers.cinnamon.FolderController'
     info 'org.springframework'
     debug 'grails.plugin.springsecurity.web'
+    info 'org.springframework.security'
+    info 'cinnamon.CinnamonUserDetailsService'
+    info 'grails.app.filters.cinnamon.filters'
+    info 'grails.app.services.cinnamon.UserService'
+    info 'grails.plugin.springsecurity.web.filter.GrailsRememberMeAuthenticationFilter'
+    info 'grails.plugin.springsecurity.web.filter.GrailsAnonymousAuthenticationFilter'
+    info 'grails.plugin.springsecurity.web.access.intercept.AnnotationFilterInvocationDefinition'
     root {
         debug 'stdout'
     }

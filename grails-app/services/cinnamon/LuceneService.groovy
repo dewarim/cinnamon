@@ -182,6 +182,7 @@ class LuceneService {
     Set fetchSearchResults(String query,String repositoryName, 
             UserAccount user, SearchableDomain domain, List<String> fields) {
         LuceneResult results = searchXml(query, repositoryName, domain, fields)
+        log.debug("results before filter: "+results.itemIdMap.size())
         def validator = new Validator(user)
         results.filterResultToSet(domain, itemService, validator)
     }

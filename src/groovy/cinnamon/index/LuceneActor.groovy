@@ -163,6 +163,7 @@ class LuceneActor extends DynamicDispatchActor {
 
     LuceneResult search(IndexCommand command) {
         def repository = command.repository
+        log.debug("search command for repository: "+repository)
         Query query
 
         if (command.xmlQuery) {

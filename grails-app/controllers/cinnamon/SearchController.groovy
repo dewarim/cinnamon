@@ -60,7 +60,7 @@ class SearchController extends BaseController {
         def doc = DocumentHelper.createDocument()
         Element root = doc.addElement(domain.xmlRoot);
         root.addAttribute("total-results", String.valueOf(resultStore.size()));
-
+        log.debug("search, total-results: "+resultStore.size())
         if (pageSize) {
             addPagedResultsToElement(root, resultStore, pageSize, page, metasets, include_summary);
         }
