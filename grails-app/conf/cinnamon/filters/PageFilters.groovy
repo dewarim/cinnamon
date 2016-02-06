@@ -6,14 +6,20 @@ import groovy.util.slurpersupport.GPathResult
 
 class PageFilters {
     
-    protected GPathResult fetchLogoConfig(session) {        
-        if (!session.logoConfigXml) {
-            def logoConfig = ConfigEntry.findByName('login.screen.config')?.config
-            if (logoConfig) {
-                session.logoConfigXml = new XmlSlurper().parseText(logoConfig)
+    protected GPathResult fetchLogoConfig(session) {
+        try {
+            if (!session.logoConfigXml) {
+                def logoConfig = ConfigEntry.findByName('login.screen.config')?.config
+                if (logoConfig) {
+                    session.logoConfigXml = new XmlSlurper().parseText(logoConfig)
+                }
             }
+            return session.logoConfigXml
         }
-        return session.logoConfigXml
+        catch (IllegalStateException e ){
+            // if session is invalid
+            return null
+        }
     }
 
     protected ObjectSystemData fetchLogo(session) {
