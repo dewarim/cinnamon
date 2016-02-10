@@ -56,7 +56,7 @@ class OsdService {
                     data.add(ParamParser.parseXml(osd.getMetadata(), null));
                 }
                 if(includeSummary){
-                    data.addElement('summary').addText(osd.summary)
+                    data.add(ParamParser.parseXml(osd.summary, null))
                 }
                 root.add(data);
             } catch (CinnamonException ex) {
