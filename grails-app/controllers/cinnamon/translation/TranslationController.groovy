@@ -135,12 +135,12 @@ class TranslationController extends BaseController {
      *         it already has an translation relation to the source object.
      */
     def checkTranslation(String attribute, String attribute_value, Long source_id,
-                         Long object_relation_type_id, Long root_relation_Type_id, Long target_folder_id
+                         Long object_relation_type_id, Long root_relation_type_id, Long target_folder_id
     ) {
         try {
             ObjectSystemData source = translationService.getSource(source_id)
             RelationType objectRelationType = translationService.getObjectRelationType(object_relation_type_id)
-            RelationType rootRelationType = translationService.getRootRelationType(root_relation_Type_id)
+            RelationType rootRelationType = translationService.getRootRelationType(root_relation_type_id)
 
             def doc = DocumentHelper.createDocument()
             Element root = doc.addElement("translation");
