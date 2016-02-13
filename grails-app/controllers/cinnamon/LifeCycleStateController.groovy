@@ -329,7 +329,7 @@ class LifeCycleStateController extends BaseController{
                 throw new CinnamonException("error.object.not.found");
             }
             render(contentType: 'application/xml') {
-                succees('success.detach_lifecycle')
+                success('success.detach_lifecycle')
             }
         }
         catch (Exception e) {
