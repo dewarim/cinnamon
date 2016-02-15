@@ -12,7 +12,7 @@ class TranslationResult {
     ObjectSystemData targetNode
     HashSet<ObjectSystemData> newObjects = []
     
-    String toXml(){
+    String toXml(Boolean includeSummary){
         def doc = DocumentHelper.createDocument()
         Element root = doc.addElement("createTranslation")
         Element translationId = root.addElement("translationId")
@@ -20,7 +20,7 @@ class TranslationResult {
         newObjects.add(targetNode)
         Element objectsNode = root.addElement("objects")
         for (ObjectSystemData object : newObjects) {
-            object.toXmlElement(objectsNode)
+            object.toXmlElement(objectsNode, includeSummary ?: false)
         }
         return doc.asXML()
     }
