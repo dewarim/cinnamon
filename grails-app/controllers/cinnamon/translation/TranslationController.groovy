@@ -87,12 +87,12 @@ class TranslationController extends BaseController {
      * </pre>
      */
     def createTranslation(String attribute, String attribute_value, Long source_id,
-                          Long object_relation_type_id, Long root_relation_Type_id, Long target_folder_id
+                          Long object_relation_type_id, Long root_relation_type_id, Long target_folder_id
     ) {
         try {
             TranslationResult translationResult = translationService.createTranslation(
                     attribute, attribute_value, source_id, object_relation_type_id,
-                    root_relation_Type_id, target_folder_id
+                    root_relation_type_id, target_folder_id
             )
             render(contentType: 'application/xml', text: translationResult.toXml())
 
