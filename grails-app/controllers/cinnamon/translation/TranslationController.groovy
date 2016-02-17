@@ -5,6 +5,7 @@ import cinnamon.ObjectSystemData
 import cinnamon.relation.Relation
 import cinnamon.relation.RelationType
 import grails.plugin.springsecurity.annotation.Secured
+import org.apache.commons.lang.exception.ExceptionUtils
 import org.dom4j.DocumentHelper
 import org.dom4j.Element
 
@@ -87,9 +88,9 @@ class TranslationController extends BaseController {
      * </pre>
      */
     def createTranslation(String attribute, String attribute_value, Long source_id,
-                          Long object_relation_type_id, Long 
+                          Long object_relation_type_id, Long
                                   root_relation_type_id, Long target_folder_id,
-            Boolean include_summary
+                          Boolean include_summary
     ) {
         try {
             TranslationResult translationResult = translationService.createTranslation(
@@ -101,7 +102,8 @@ class TranslationController extends BaseController {
 
         } catch (Exception e) {
             log.debug("failed to create translation:", e);
-            renderExceptionXml(e.message)
+            String fullMessage = ExceptionUtils.getFullStackTrace(e);
+            renderExceptionXml(fullMessage)
         }
     }
 
@@ -182,7 +184,9 @@ class TranslationController extends BaseController {
             render(contentType: 'application/xml', text: doc.asXML())
         }
         catch (Exception e) {
-            renderExceptionXml(e.message)
+            log.debug("checkTranslation failed with:",e)
+            String fullMessage = ExceptionUtils.getFullStackTrace(e);
+            renderExceptionXml(fullMessage)
         }
     }
 
