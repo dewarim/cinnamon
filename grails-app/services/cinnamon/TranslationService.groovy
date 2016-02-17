@@ -271,6 +271,10 @@ class TranslationService {
                                     RelationType rootRelationType,
                                     String metaNode, Folder targetFolder, Set<ObjectSystemData> newObjects) {
         List<ObjectSystemData> allVersions = ObjectSystemData.findAllByRoot(source);
+        if(allVersions.empty){
+            throw new CinnamonException("Could not find any version of the " +
+                    "specified source "+source)
+        }
         List<ObjectSystemData> newTree = new ArrayList<ObjectSystemData>();
 
         // create copies of all versions:
@@ -279,16 +283,20 @@ class TranslationService {
         setAclForTranslations(objectTreeCopier);
         log.debug("create empty copies of all versions");
         for (ObjectSystemData osd : allVersions) {
-            log.debug("create empty copy of: " + osd.getId());
+            log.debug("create empty copy of: " + osd.id);
             ObjectSystemData emptyCopy = objectTreeCopier.createEmptyCopy(osd);
-            log.debug(String.format("Empty copy of %d is %d", osd.getId(), emptyCopy.getId()));
+            log.debug(String.format("Empty copy of %d is %d", osd.id, 
+                    emptyCopy.id))
             emptyCopy.storeMetadata(metaNode);
-            
-            objectTreeCopier.getCopyCache().put(osd, emptyCopy);
+
+            objectTreeCopier.copyCache[osd] = emptyCopy;
             newTree.add(emptyCopy);
             newObjects.add(emptyCopy);
         }
-        ObjectSystemData treeRoot = newTree.get(0).getRoot();
+        ObjectSystemData treeRoot = newTree.get(0)?.root;
+        if(treeRoot == null){
+            throw new CinnamonException("New object tree has no root.")
+        }
         log.debug("treeRoot of objectTree: " + treeRoot.getId());
         log.debug("metadata of treeRoot:" + treeRoot.getMetadata());
         // create root_object_relation:
