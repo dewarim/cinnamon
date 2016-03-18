@@ -17,11 +17,11 @@ class TranslationService {
     def relationService
 
     TranslationResult createTranslation(String attribute, String attribute_value, Long source_id,
-                           Long object_relation_type_id, Long root_relation_Type_id, Long target_folder_id){
-        
-        
+                                        Long object_relation_type_id, Long root_relation_Type_id, Long target_folder_id) {
+
+
         TranslationResult translationResult = new TranslationResult()
-        
+
         ObjectSystemData source = getSource(source_id);
         RelationType objectRelationType = getObjectRelationType(object_relation_type_id);
         RelationType rootRelationType = getRootRelationType(root_relation_Type_id);
@@ -32,8 +32,9 @@ class TranslationService {
             if (targetFolder == null) {
                 throw new CinnamonException("error.target_folder.not_found");
             }
-        } else {
-            targetFolder = source.getParent();
+        }
+        else {
+            targetFolder = source.parent;
         }
 
         // initialize objectTreeCopier:
@@ -53,7 +54,8 @@ class TranslationService {
         if (objectTreeRoot == null) {
             log.debug("no existing targetObjectTree was found - will grow one.");
             objectTreeRoot = growObjectTree(source, rootRelationType, metaNode, targetFolder, newObjects);
-        } else {
+        }
+        else {
             log.debug("Found existing targetObjectTree.");
         }
         log.debug("targetObjectTree (now) exists as: " + objectTreeRoot.getId());
@@ -73,8 +75,8 @@ class TranslationService {
         if (Relation.findAllByLeftOSDAndRightOSDAndType(source, targetNode, objectRelationType).size() == 0) {
             log.debug("copy content and metadata for object " + targetNode.getName() + " v" + targetNode.getVersion());
             copyContentAndMetadata(source, targetNode);
-            log.debug("Source "+source.getId()+" has metadata: "+source.getMetadata());
-            log.debug("Target "+targetNode.getId()+" has metadata: "+targetNode.getMetadata());
+            log.debug("Source " + source.getId() + " has metadata: " + source.getMetadata());
+            log.debug("Target " + targetNode.getId() + " has metadata: " + targetNode.getMetadata());
             osdService.copyRelations(source, targetNode);
             addTranslationMetadata(targetNode, objectRelationType, attribute_value);
             relationService.findOrCreateRelation(objectRelationType, source, targetNode, "");
@@ -93,28 +95,31 @@ class TranslationService {
                                 predecessor.getLatestHead().toString(),
                                 predecessor.getLatestBranch().toString()));
             }
-        } else {
+        }
+        else {
             throw new CinnamonException("error.translation_exists");
         }
         translationResult.targetNode = targetNode
         translationResult.newObjects = newObjects
         return translationResult
     }
-    
+
     void setAclForTranslations(ObjectTreeCopier otc) {
         try {
             def configEntry = ConfigEntry.findByName("translation.config");
             if (configEntry == null) {
                 log.debug("Could not find configEntry 'translation.config'.");
 
-            } else {
+            }
+            else {
                 org.dom4j.Node node = configEntry.parseConfig().selectSingleNode("aclForTranslatedObjects");
                 if (node != null) {
                     String aclName = node.getText();
                     Acl acl = Acl.findByName(aclName);
                     otc.setAclForCopies(acl);
                     log.debug("setAclForCopies: " + aclName);
-                } else {
+                }
+                else {
                     log.debug("node for aclForTranslatedObjects is null");
                 }
             }
@@ -129,10 +134,10 @@ class TranslationService {
      * fulfills the conditions defined in the parameters <em>attribute</em> and
      * <em>attribute_value</em>.
      *
-     * @param source           the source object
+     * @param source the source object
      * @param rootRelationType the relation type by which a translation node may be linked to the source object.
-     * @param attribute        the attribute which is used to select the discriminating attribute value
-     * @param attribute_value  the value by which the client differentiates the translated objects. For example,
+     * @param attribute the attribute which is used to select the discriminating attribute value
+     * @param attribute_value the value by which the client differentiates the translated objects. For example,
      *                         if your source document is of language en-US and the target object is de-DE, you should set
      *                         the attribute value to de-DE.
      * @return the target object tree or null.
@@ -171,9 +176,9 @@ class TranslationService {
      * Add the translation-metadata node to target object. If the node exists,
      * this just adds the new "target"-node.
      *
-     * @param target             the source language object
+     * @param target the source language object
      * @param objectRelationType the RelationType for this type
-     * @param attributeValue     the value by which the client differentiates the translated objects. For example,
+     * @param attributeValue the value by which the client differentiates the translated objects. For example,
      *                           if your source document is of language en-US and the target object is de-DE, you should set
      *                           the attribute value to de-DE.
      */
@@ -187,7 +192,8 @@ class TranslationService {
             log.debug("no translation node exists - we create one.");
             translation = meta.getRootElement().addElement("metaset");
             translation.addAttribute("type", "translation_extension");
-        } else {
+        }
+        else {
             translation = (Element) translationNode;
         }
         Element targetNode = translation.addElement("target");
@@ -197,7 +203,6 @@ class TranslationService {
         target.storeMetadata(meta.asXML());
     }
 
-
     /**
      * Find the target node corresponding to the source. For example, if the client needs
      * a copy of version 4, this code looks if the target object tree already has a translated
@@ -205,7 +210,7 @@ class TranslationService {
      * result is null.
      *
      * @param treeRoot the tree on which the target leaf node may exist.
-     * @param source   the source object from which we take the version number that we need
+     * @param source the source object from which we take the version number that we need
      *                 to determine if there is an already translated leaf node.
      * @return the target OSD node from the object tree, or null if the node was not found
      */
@@ -219,10 +224,10 @@ class TranslationService {
     /**
      * Create all missing leaves on target object tree and return the requested node.
      *
-     * @param treeRoot   the root of the target object tree
-     * @param source     the source object which will be copied
+     * @param treeRoot the root of the target object tree
+     * @param source the source object which will be copied
      * @param newObjects set in which any new objects will be stored.
-     * @param metaNode   the metadata which will be added to all translation objects on this tree.
+     * @param metaNode the metadata which will be added to all translation objects on this tree.
      * @return the OSD with the same version as the source object
      */
     ObjectSystemData growTargetNode(ObjectSystemData treeRoot, ObjectSystemData source, String metaNode,
@@ -260,20 +265,25 @@ class TranslationService {
      * Copy a root object and all of its descendants.
      * Creates a relation between the root of the original and the copy.
      *
-     * @param source           the source object
+     * @param source the source object
      * @param rootRelationType type of the relation between the root object of the source and the copy.
-     * @param metaNode         all copies in the tree get this as metadata.
-     * @param targetFolder     the folder in which the copy will be created.
-     * @param newObjects       set in which any new objects will be stored.
+     * @param metaNode all copies in the tree get this as metadata.
+     * @param targetFolder the folder in which the copy will be created.
+     * @param newObjects set in which any new objects will be stored.
      * @return the root object of the new objectTree
      */
     ObjectSystemData growObjectTree(ObjectSystemData source,
                                     RelationType rootRelationType,
                                     String metaNode, Folder targetFolder, Set<ObjectSystemData> newObjects) {
-        List<ObjectSystemData> allVersions = ObjectSystemData.findAllByRoot(source);
-        if(allVersions.empty){
+        if (source == null) {
+            throw new CinnamonException("Invalid 'null' source object.")
+        }
+        List<ObjectSystemData> allVersions = ObjectSystemData.executeQuery(
+                "select o from ObjectSystemData o where o.root.id=:id",
+                [id: source.root?.id])
+        if (allVersions.empty) {
             throw new CinnamonException("Could not find any version of the " +
-                    "specified source "+source)
+                    "specified source " + source.root)
         }
         List<ObjectSystemData> newTree = new ArrayList<ObjectSystemData>();
 
@@ -285,7 +295,7 @@ class TranslationService {
         for (ObjectSystemData osd : allVersions) {
             log.debug("create empty copy of: " + osd.id);
             ObjectSystemData emptyCopy = objectTreeCopier.createEmptyCopy(osd);
-            log.debug(String.format("Empty copy of %d is %d", osd.id, 
+            log.debug(String.format("Empty copy of %d is %d", osd.id,
                     emptyCopy.id))
             emptyCopy.storeMetadata(metaNode);
 
@@ -294,7 +304,7 @@ class TranslationService {
             newObjects.add(emptyCopy);
         }
         ObjectSystemData treeRoot = newTree.get(0)?.root;
-        if(treeRoot == null){
+        if (treeRoot == null) {
             throw new CinnamonException("New object tree has no root.")
         }
         log.debug("treeRoot of objectTree: " + treeRoot.getId());
@@ -302,11 +312,10 @@ class TranslationService {
         // create root_object_relation:
 
         log.debug(String.format("create root relation between: %d and %d of type %d",
-                source.getRoot().getId(), treeRoot.getId(), rootRelationType.getId()));
-        relationService.findOrCreateRelation(rootRelationType, source, treeRoot, '')     
+                source.root.id, treeRoot.id, rootRelationType.id))
+        relationService.findOrCreateRelation(rootRelationType, source, treeRoot, '')
         return treeRoot;
     }
-
 
     /**
      * Load the source object for a create/checkTranslation. Throws an Exception if
@@ -318,7 +327,7 @@ class TranslationService {
     ObjectSystemData getSource(Long sourceId) {
         ObjectSystemData source = ObjectSystemData.get(sourceId);
         if (source == null) {
-            throw new CinnamonException("error.object.not.found");
+            throw new CinnamonException("error.no.osd.found.for.source_id");
         }
         return source;
     }
@@ -359,8 +368,8 @@ class TranslationService {
      * The XPath expression is tested against the metadata, the system metadata and the content.
      * The three content categories are the same as those of the Lucene index server.
      *
-     * @param relation       the Relation to test
-     * @param attribute      the attribute on which to test
+     * @param relation the Relation to test
+     * @param attribute the attribute on which to test
      * @param attributeValue the required value
      * @return the object linked to by the matching Relation - or null.
      */
@@ -372,11 +381,11 @@ class TranslationService {
             log.debug("testing: " + attribute + " value: " + attributeValue);
             log.debug("against: " + xml);
             Document doc;
-            try{
+            try {
                 doc = ParamParser.parseXmlToDocument(xml, null);
             }
-            catch (Exception e){
-                log.debug("Failed to parse xml [will ignore non-xml content]: "+e.getMessage());
+            catch (Exception e) {
+                log.debug("Failed to parse xml [will ignore non-xml content]: " + e.getMessage());
                 continue;
             }
             try {
