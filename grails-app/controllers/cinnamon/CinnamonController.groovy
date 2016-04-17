@@ -109,20 +109,26 @@ class CinnamonController extends BaseController {
             def pwd = params.pwd
             def machine = params.machine ?: 'unknown'
             def language = params.language
-
+            def failed = ""
             ['user', 'repository', 'pwd'].each {
                 if (!params."${it}") {
-                    throw new RuntimeException("Request parameter ${it} is not set.")
+                    failed += "Request parameter ${it} is not set.\n"
                 }
+            }
+            if(failed.length() > 0){
+                renderErrorXml(failed)
+                return
             }
 
             def user = UserAccount.findByName(username)
             if (!user) {
                 log.debug("user $username not found")
-                throw new RuntimeException("error.user.not.found")
+                renderErrorXml("error.user.not.found")
+                return
             }
             if (!HashMaker.compareWithHash(pwd, user.pwd)) {
-                throw new RuntimeException("error.wrong.password")
+                renderErrorXml("error.wrong.password")
+                return
             }
 
             def uiLanguage = user.language
