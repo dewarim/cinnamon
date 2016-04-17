@@ -153,6 +153,7 @@ class CinnamonController extends BaseController {
         }
     }
 
+    @Secured(['IS_AUTHENTICATED_ANONYMOUSLY'])
     def disconnect(String ticket) {
         if (ticket) {
             Session.findByTicket(ticket)?.delete();
