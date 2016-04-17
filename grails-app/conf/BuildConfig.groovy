@@ -69,6 +69,7 @@ grails.project.dependency.resolution = {
         compile ":remote-pagination:0.3"
         compile ":geb:${gebPluginVersion}"
         compile ":asset-pipeline:2.6.10"
+        runtime "org.grails.plugins:cors:1.1.8"
     }
 }
 
