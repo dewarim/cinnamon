@@ -5,6 +5,7 @@ import cinnamon.ObjectSystemData
 import cinnamon.utils.ParamParser
 import org.apache.tika.config.TikaConfig
 import org.apache.tika.metadata.Metadata
+import org.apache.tools.ant.util.StringUtils
 import org.dom4j.Document
 import org.dom4j.DocumentHelper
 import org.dom4j.Element
@@ -13,7 +14,7 @@ class CinnamonTikaService {
 
     def tikaService
     
-    public void parse(ObjectSystemData osd, String repository){
+    public void parse(ObjectSystemData osd){
         if(osd == null){
             log.debug("received null osd.");
             return;
@@ -32,6 +33,7 @@ class CinnamonTikaService {
             log.debug("Object format "+extension+" is not suitable for tika - will be ignored.");
             return;
         }
+        def metaset = osd.fetchMetaset('tika', true)
         try {
             File content = new File(osd.getFullContentPath());
             TikaConfig tikaConfig = new TikaConfig();
@@ -41,21 +43,20 @@ class CinnamonTikaService {
             log.debug("xhtml from tika:\n"+xhtml)
             xhtml = xhtml.replaceAll("xmlns=\"http://www\\.w3\\.org/1999/xhtml\"", "");
             org.dom4j.Node resultNode = ParamParser.parseXml(xhtml, "Failed to parse tika-generated xml");
-            def metaset = osd.fetchMetaset('tika', true)
+
             Document meta = ParamParser.parseXmlToDocument(metaset.content)
-            Element tikaMetaset = meta.getRootElement().addElement("metaset");
+            Element tikaMetaset = meta.rootElement.addElement("metaset");
             tikaMetaset.addAttribute("type","tika");
             tikaMetaset.add(resultNode);
             metaset.content = meta.asXML()
         }
         catch (Exception e) {
             log.warn("Failed to extract data with tika.", e);
-            def tikaMs = osd.fetchMetaset('tika', true)
             def errorDoc = DocumentHelper.createDocument()
-            Element tikaMetaset = errorDoc.getRootElement().addElement("metaset");
+            Element tikaMetaset = errorDoc.rootElement.addElement("metaset");
             tikaMetaset.addAttribute("type","tika");
-            tikaMetaset.addElement("error").addText(e.getLocalizedMessage());
-            tikaMs.content = errorDoc.asXML()
+            tikaMetaset.addElement("error").addText(StringUtils.getStackTrace(e));
+            metaset.content = errorDoc.asXML()
         }
     }
 

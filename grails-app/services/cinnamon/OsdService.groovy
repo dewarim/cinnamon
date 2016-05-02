@@ -91,7 +91,7 @@ class OsdService {
                 log.debug("targetPath = " + targetPath);
                 if (targetPath.length() > 0) {
                     copy.setContentPath(targetPath, repositoryName);
-                    cinnamonTikaService.parse(copy, repositoryName)
+                    cinnamonTikaService.parse(copy)
                 }
                 copy.setFormat(source.getFormat());
             } catch (IOException ex) {
@@ -302,10 +302,10 @@ class OsdService {
 
         def uploadedFile = new UploadedFile(file.absolutePath, UUID.randomUUID().toString(), osd.name, contentType, file.length())
         def contentPath = ContentStore.upload(uploadedFile, repositoryName);
-        cinnamonTikaService.parse(osd, repositoryName)
+        cinnamonTikaService.parse(osd)
         osd.setContentPathAndFormat(contentPath, format, repositoryName);
-        if (osd.getContentPath() != null &&
-                osd.getContentPath().length() == 0) {
+        if (osd.contentPath != null &&
+                osd.contentPath.length() == 0) {
             throw new CinnamonException("error.storing.upload");
         }
     }
@@ -428,7 +428,7 @@ class OsdService {
         osd.save(flush: true)
         log.debug("created object with id: ${osd.id}")
         log.debug("repo: ${repositoryName}")
-        cinnamonTikaService.parse(osd, repositoryName)
+        cinnamonTikaService.parse(osd)
         return osd
     }
 
@@ -451,7 +451,7 @@ class OsdService {
             storeContent(osd, file.contentType, formatId, tempFile, repositoryName)
             osd.updateAccess(user)
             osd.save()
-            cinnamonTikaService.parse(osd, repositoryName)
+            cinnamonTikaService.parse(osd)
         }
     }
 
@@ -502,7 +502,7 @@ class OsdService {
                     osd.getContentPath().length() == 0) {
                 throw new CinnamonException("error.storing.upload");
             }
-            cinnamonTikaService.parse(osd, repositoryName)
+            cinnamonTikaService.parse(osd)
         }
         osd.type = objectType
         osd.setCmnVersion('1')
@@ -570,7 +570,7 @@ class OsdService {
         osd.save(flush: true)
         log.debug("created object with id: ${osd.id}")
         log.debug("repo: ${repositoryName}")
-        cinnamonTikaService.parse(osd, repositoryName)
+        cinnamonTikaService.parse(osd)
         return osd
     }
 
