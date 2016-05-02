@@ -131,14 +131,15 @@ class ImageService {
             metasetRoot = ParamParser.parseXmlToDocument(metaset.content)
         }
         else {
-            metaset = new Metaset(null, MetasetType.findByName(Constants.METASET_THUMBNAIL))
+            def imageMetasetType = MetasetType.findOrSaveByName(Constants.METASET_THUMBNAIL)
+            metaset = new Metaset(null, imageMetasetType)
             metasetRoot = ParamParser.parseXmlToDocument("<metaset />")
             addMetasetToOsd = true
         }
         Element thumbnail = metasetRoot.rootElement.addElement('thumbnail')
         thumbnail.addAttribute('longestSide', longestSide.toString())
         thumbnail.addText(imageData)
-        metaset.setContent(metasetRoot.asXML())
+        metaset.content = metasetRoot.asXML()
         metaset.save()
         if (addMetasetToOsd) {
             osd.addMetaset(metaset)
