@@ -35,28 +35,12 @@ class ImageService {
     def fetchThumbnail(ObjectSystemData osd, String repositoryName, Integer longestSide, Boolean storeInMetaset) {
         // load thumbnail metaset
         def metaset = osd.fetchMetaset(Constants.METASET_THUMBNAIL)
-        def imageData
-        if (!metaset) {
-            // create thumbnail
-            log.debug("Thumbnail for ${osd.id} does not exist yet.")
-            def image = loadImage(repositoryName, osd.contentPath)
-
-            if (GraphicsUtilities.needsThumbnail(image, longestSide)) {
-                def baseImage = imageToBase64(GraphicsUtilities.createThumbnail(image, longestSide))
-                if (storeInMetaset) {
-                    addToMetaset(osd, baseImage, longestSide)
-                }
-                return baseImage
-            }
-            else {
-                // image is already small enough: return image
-                return imageToBase64(image)
-            }
-        }
-        else {
+        if (metaset) {
+            log.debug("Found thumbnail metaset.")
             def xml = ParamParser.parseXmlToDocument(metaset.content)
-            def thumbnailNode = xml.selectSingleNode("thumbnail[@longestSide='${longestSide}']")
+            def thumbnailNode = xml.selectSingleNode("//thumbnail[@longestSide='${longestSide}']")
             if (thumbnailNode == null) {
+                log.debug("thumbnail metaset did not contain a thumbnail node.")
                 def image = loadImage(repositoryName, osd.contentPath)
                 def baseImage
                 if (GraphicsUtilities.needsThumbnail(image, longestSide)){
@@ -72,6 +56,23 @@ class ImageService {
             }
             else {
                 return thumbnailNode.text
+            }
+        }
+        else {
+            // create thumbnail
+            log.debug("Thumbnail for ${osd.id} does not exist yet.")
+            def image = loadImage(repositoryName, osd.contentPath)
+
+            if (GraphicsUtilities.needsThumbnail(image, longestSide)) {
+                def baseImage = imageToBase64(GraphicsUtilities.createThumbnail(image, longestSide))
+                if (storeInMetaset) {
+                    addToMetaset(osd, baseImage, longestSide)
+                }
+                return baseImage
+            }
+            else {
+                // image is already small enough: return image
+                return imageToBase64(image)
             }
         }
     }
