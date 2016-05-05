@@ -34,12 +34,13 @@ class CinnamonTikaService {
             return;
         }
         def metaset = osd.fetchMetaset('tika', true)
+        String xhtml = ""
         try {
             File content = new File(osd.getFullContentPath());
             TikaConfig tikaConfig = new TikaConfig();
             Metadata tikaMeta = new Metadata();
 
-            String xhtml = tikaService.parseFile(content, tikaConfig, tikaMeta);
+            xhtml = tikaService.parseFile(content, tikaConfig, tikaMeta);
             log.debug("xhtml from tika:\n"+xhtml)
             xhtml = xhtml.replaceAll("xmlns=\"http://www\\.w3\\.org/1999/xhtml\"", "");
             org.dom4j.Node resultNode = ParamParser.parseXml(xhtml, "Failed to parse tika-generated xml");
@@ -56,6 +57,7 @@ class CinnamonTikaService {
             Element tikaMetaset = errorDoc.addElement("metaset");
             tikaMetaset.addAttribute("type","tika");
             tikaMetaset.addElement("error").addText(StringUtils.getStackTrace(e));
+            tikaMetaset.addElement("tika-output").addText(xhtml)
             metaset.content = errorDoc.asXML()
         }
     }
