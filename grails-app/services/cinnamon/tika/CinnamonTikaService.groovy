@@ -53,7 +53,7 @@ class CinnamonTikaService {
         catch (Exception e) {
             log.warn("Failed to extract data with tika.", e);
             def errorDoc = DocumentHelper.createDocument()
-            Element tikaMetaset = errorDoc.rootElement.addElement("metaset");
+            Element tikaMetaset = errorDoc.addElement("metaset");
             tikaMetaset.addAttribute("type","tika");
             tikaMetaset.addElement("error").addText(StringUtils.getStackTrace(e));
             metaset.content = errorDoc.asXML()
