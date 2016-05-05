@@ -64,7 +64,7 @@ grails.project.dependency.resolution = {
         compile(':spring-security-core:2.0-RC5')
         compile ":rest-client-builder:2.1.1"
         compile(":twitter-bootstrap:3.2.0.2") { excludes 'svn' }
-        compile ":cinnamon-db:3.6.37"
+        compile ":cinnamon-db:3.6.38"
         runtime ':tika-parser:1.12'
         compile ":remote-pagination:0.3"
         compile ":geb:${gebPluginVersion}"
