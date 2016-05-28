@@ -265,23 +265,25 @@ class AclController extends BaseController {
             Set<Permission> permissions = new HashSet<Permission>();
 
             Set<Acl> acls = new HashSet<Acl>();
-            for (CmnGroup group : groups) {
+            groups.each{group ->
                 /*
                  * If there are many groups whose AclEntries point to the
                  * same Acls, it could be better to first collect the
                  * entries before adding their Acls.
                  * (or get acls / entries by a HQL-Query)
                  */
-                for (AclEntry ae : group.getAclEntries()) {
-                    log.debug("working on AclEntry for Acl:" + ae.getAcl().getName());
-                    if (ae.acl.equals(acl))
+                group.aclEntries.each {ae ->
+                    log.debug("working on AclEntry for Acl:" + ae.acl.name);
+                    if (ae.acl.equals(acl)) {
                         log.debug("found acl");
-                    Set<AclEntryPermission> aepSet = ae.getAePermissions();
-                    for (AclEntryPermission aep : aepSet) {
-                        permissions.add(aep.getPermission());
+                        Set<AclEntryPermission> aepSet = ae.aePermissions;
+                        for (AclEntryPermission aep : aepSet) {
+                            permissions.add(aep.permission);
+                        }
                     }
                 }
             }
+                
             log.debug("number of permissions for this user: " + permissions.size());
             def doc = DocumentHelper.createDocument()
             def root = doc.addElement('permissions')
