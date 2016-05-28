@@ -264,7 +264,6 @@ class AclController extends BaseController {
             Acl acl = Acl.get(aclId)
             Set<Permission> permissions = new HashSet<Permission>();
 
-            Set<Acl> acls = new HashSet<Acl>();
             groups.each{group ->
                 /*
                  * If there are many groups whose AclEntries point to the
