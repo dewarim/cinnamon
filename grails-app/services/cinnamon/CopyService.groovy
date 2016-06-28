@@ -16,6 +16,7 @@ class CopyService {
     def osdService
     def folderService
     def luceneService
+    def metasetService
 
     /**
      * Copy a root object and all of its descendants.
@@ -123,7 +124,7 @@ class CopyService {
         copy.owner = user;
         copy.parent = target;
         copy.save(flush: true)
-        copy.metadata = source.metadata
+        metasetService.copyMetasets(source,copy, null)
         if(fixName){
             // copy only has an id after save.
             copy.name = "${source.name}_${copy.id}"

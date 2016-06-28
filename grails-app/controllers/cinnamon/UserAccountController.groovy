@@ -273,13 +273,12 @@ class UserAccountController extends BaseController {
 
         def defaultAcl = Acl.findByName(Constants.ACL_DEFAULT)
         def defaultType = FolderType.findByName(Constants.FOLDER_TYPE_DEFAULT)
-
-        def userFolder = new Folder(user.name, '', defaultAcl, folderPath[-1], findAdminUser(), defaultType)
+        def userFolder = new Folder(user.name, defaultAcl, folderPath[-1], findAdminUser(), defaultType)
         userFolder.save(flush: true)
         log.debug "created user folder '${userFolder.dump()}'"
 
         ['home', 'searches', 'carts', 'config'].each {
-            def folder = new Folder(it, '', defaultAcl, userFolder, user, defaultType)
+            def folder = new Folder(it, defaultAcl, userFolder, user, defaultType)
             folder.save()
             log.debug "created folder '${folder.dump()}'"
         }
