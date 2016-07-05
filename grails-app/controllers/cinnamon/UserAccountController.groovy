@@ -355,5 +355,23 @@ class UserAccountController extends BaseController {
         root.add(UserAccount.asElement("user", user));
         render(contentType: 'application/xml', text: doc.asXML())
     }
+    
+    def changePassword(String password){
+        def user = userService.user
+        if(!user){
+            renderErrorXml("invalid user")
+            return
+        }
+        def minPasswordLength = grailsApplication.config.minimalPasswordLength ?: 4
+        if (password?.length() < minPasswordLength) {
+            renderErrorXml('error.password.too.short')
+            return
+        }
+        user.pwd = password
+        render(contentType: 'application/xml') {
+            success('success.change.password')
+        }
+
+    }
 
 }
