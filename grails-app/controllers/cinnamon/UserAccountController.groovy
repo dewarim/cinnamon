@@ -369,9 +369,8 @@ class UserAccountController extends BaseController {
         }
         user.pwd = password
         render(contentType: 'application/xml') {
-            success('success.change.password')
+            success('success.set.password')
         }
-
     }
 
 }

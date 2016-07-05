@@ -257,7 +257,7 @@ class CinnamonController extends BaseController {
                 case 'setcontent': forward(controller: 'osd', action: 'saveContentXml'); break                
                 case 'setmeta': forward(controller: 'osd', action: 'saveMetadataXml'); break
                 case 'setmetaset': forward(controller: 'metaset', action: 'saveMetaset'); break
-                case 'setpwd': forward(controller: 'userAccount', action: 'changePassword'); break
+                case 'setpassword': forward(controller: 'userAccount', action: 'changePassword'); break
                 case 'setsummary': if(params.type?.equals('osd')){forward(controller: 'osd', action: 'setSummaryXml')}
                     else{forward(controller: 'folder', action: 'setSummaryXml')};
                     break
