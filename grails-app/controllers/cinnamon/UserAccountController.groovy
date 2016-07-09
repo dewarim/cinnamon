@@ -96,7 +96,12 @@ class UserAccountController extends BaseController {
 
     @Secured(["hasRole('_superusers')"])
     def edit() {
-        [user: UserAccount.get(params.id)]
+        if(flash.user){
+            [user: flash.user]
+        }
+        else {
+            [user: UserAccount.get(params.id)]
+        }
     }
 
     @Secured(["hasRole('_superusers')"])
@@ -167,12 +172,12 @@ class UserAccountController extends BaseController {
             }
             user.pwd = params.pwd
         }
-        if (user.save(flush: true)) {
+        if (user.validate() && user.save(flush: true)) {
             flash.message = message(code: "user.update.success")
             redirect(action: 'show', params: [id: user.id])
         }
         else {
-            flash.message = message(code: "user.update.fail", args: [user.errors])
+            flash.user  = user
             redirect(action: 'edit', params: [id: user.id])
         }
     }
