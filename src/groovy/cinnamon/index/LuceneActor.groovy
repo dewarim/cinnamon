@@ -141,18 +141,14 @@ class LuceneActor extends DynamicDispatchActor {
                     deleteIndexableFromIndex(indexable, repository)
                 }
                 addToIndex(indexable, repository)
-                if (job) {
-                    job.delete()
-                }
             }
             catch (Exception e) {
                 log.warn("Index job for ${indexable.toString()} failed with:", e)
-                job.failed = true
+                job?.failed = true
+                return
             }
         }
-        else {
-            job.delete()
-        }
+        job?.delete()
     }
 
     void deleteIndexableFromIndex(Indexable indexable, Repository repository) {
@@ -163,7 +159,7 @@ class LuceneActor extends DynamicDispatchActor {
 
     LuceneResult search(IndexCommand command) {
         def repository = command.repository
-        log.debug("search command for repository: "+repository)
+        log.debug("search command for repository: " + repository)
         Query query
 
         if (command.xmlQuery) {
@@ -231,14 +227,14 @@ class LuceneActor extends DynamicDispatchActor {
         try {
             indexWriter.deleteDocuments(term);
         } catch (Exception e) {
-            log.debug("delete document failed:", e);
+            log.warn("delete document failed:", e);
             if (retries != null && retries > 0) {
-                log.debug("retry-delete document");
+                log.info("retry-delete document");
                 deleteDocument(repository, term, --retries);
             }
             throw new RuntimeException('delete document from index failed', e)
         } catch (OutOfMemoryError e) {
-            log.warn("OOM-error during indexing:", e);
+            log.error("OOM-error during indexing:", e);
             throw new RuntimeException('delete document from index failed', e)
         } finally {
             indexWriter.close(true)
