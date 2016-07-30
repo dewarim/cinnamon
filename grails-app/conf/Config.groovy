@@ -143,6 +143,8 @@ log4j = {
     info 'grails.plugin.springsecurity.web.filter.GrailsRememberMeAuthenticationFilter'
     info 'grails.plugin.springsecurity.web.filter.GrailsAnonymousAuthenticationFilter'
     info 'grails.plugin.springsecurity.web.access.intercept.AnnotationFilterInvocationDefinition'
+    info 'cinnamon.tika.CinnamonTikaService'
+    
     root {
         debug 'stdout'
     }
