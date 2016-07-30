@@ -31,6 +31,7 @@ import org.apache.lucene.search.IndexSearcher
 import org.apache.lucene.search.Query
 import org.apache.lucene.search.TermQuery
 import org.apache.lucene.search.TopDocs
+import org.apache.lucene.store.AlreadyClosedException
 import org.apache.lucene.util.Version
 
 import org.apache.lucene.xmlparser.CoreParser
@@ -225,7 +226,14 @@ class LuceneActor extends DynamicDispatchActor {
     void deleteDocument(Repository repository, Term term, Integer retries) throws IOException {
         def indexWriter = repository.indexWriter
         try {
-            indexWriter.deleteDocuments(term);
+            try {
+                indexWriter.deleteDocuments(term);
+            }
+            catch (AlreadyClosedException e) {
+                indexWriter = repository.createWriter()
+                indexWriter.deleteDocuments(term)
+            }
+
         } catch (Exception e) {
             log.warn("delete document failed:", e);
             if (retries != null && retries > 0) {

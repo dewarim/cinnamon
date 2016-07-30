@@ -23,6 +23,7 @@ import org.apache.lucene.index.IndexReader
 import org.apache.lucene.index.IndexWriter
 import org.apache.lucene.index.IndexWriterConfig
 import org.apache.lucene.search.IndexSearcher
+import org.apache.lucene.store.AlreadyClosedException
 import org.apache.lucene.store.Directory
 import org.apache.lucene.util.Version
 import org.slf4j.Logger
@@ -43,49 +44,50 @@ class Repository {
     Analyzer analyzer
     IndexReader indexReader
     IndexSearcher indexSearcher
+    final Object indexReaderLock = new Object()
 
     IndexWriter createWriter() {
-        IndexWriterConfig writerConfig = new IndexWriterConfig(Version.LUCENE_34, analyzer);
-
-
-        try{
-            removeLock()
-            /*
+        synchronized (indexReaderLock) {
+            IndexWriterConfig writerConfig = new IndexWriterConfig(Version.LUCENE_34, analyzer);
+            try {
+                removeLock()
+                /*
             * Set timeout for write-locks.
             */
-            Long timeout = 10000;
-            writerConfig.setWriteLockTimeout(timeout);
-            writerConfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
-            indexWriter = new IndexWriter(indexDir, writerConfig);
-            indexWriter.commit() // to create empty index if necessary
+                Long timeout = 10000;
+                writerConfig.setWriteLockTimeout(timeout);
+                writerConfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+                indexWriter = new IndexWriter(indexDir, writerConfig);
+                indexWriter.commit() // to create empty index if necessary
 
-            if(indexReader){
-                indexReader.close()
+                if (indexReader) {
+                    indexReader.close()
+                }
+                if (indexSearcher) {
+                    indexSearcher.close()
+                }
+
+                indexReader = IndexReader.open(indexDir)
+                indexSearcher = new IndexSearcher(indexReader)
+
+
+            } catch (IOException e) {
+                throw new RuntimeException("error.lucene.IO", e);
             }
-            if (indexSearcher){
-                indexSearcher.close()
-            }
-
-            indexReader = IndexReader.open(indexDir)
-            indexSearcher = new IndexSearcher(indexReader)
-
-
-        } catch (IOException e) {
-            throw new RuntimeException("error.lucene.IO", e);
         }
         return indexWriter;
     }
 
-    void removeLock(){
+    private void removeLock() {
         File indexLock = new File(indexFolder, "write.lock");
-        if(indexLock.exists()){
+        if (indexLock.exists()) {
             log.debug("lock exists: trying to delete")
             // low level cleanup
             Boolean deleteResult = indexLock.delete();
-            if(!deleteResult){
-                log.warn("It is possible that the indexLock ("+indexLock.getAbsolutePath()+") has not been deleted.");
+            if (!deleteResult) {
+                log.warn("It is possible that the indexLock (" + indexLock.getAbsolutePath() + ") has not been deleted.");
             }
-            if (indexLock.exists()){
+            if (indexLock.exists()) {
                 log.warn("lock still exists.")
             }
         }
@@ -107,7 +109,7 @@ class Repository {
                 log.error("Lucene Index has been corrupted!", e);
                 throw new RuntimeException("error.lucene.IO: $indexDir", e);
             } catch (IOException e) {
-                log.debug("IOException in unlockIfNecessary",e)
+                log.debug("IOException in unlockIfNecessary", e)
                 throw new RuntimeException("error.lucene.IO: $indexDir", e);
             } finally {
                 log.debug("Unlocking indexDir.")
@@ -116,6 +118,28 @@ class Repository {
                 createWriter();
                 log.debug("beyond new writer")
             }
+        }
+    }
+
+    IndexSearcher getIndexSearcher() {
+        synchronized (indexReaderLock) {
+            def indexReaderIsHealthy = true
+            try {
+                // If tryIncRef returns false, the indexReader is no longer usable.
+                indexReaderIsHealthy = indexReader.tryIncRef() && indexReader.current
+            }
+            catch (AlreadyClosedException e){
+                indexReaderIsHealthy = false
+            }
+            finally {
+                indexReader.decRef()
+            }
+            if (!indexReaderIsHealthy) {
+                // If the reader is unusable or no longer current, try to open a new one.
+                indexReader = IndexReader.open(indexDir)
+                indexSearcher = new IndexSearcher(indexReader)
+            }
+            return indexSearcher
         }
     }
 }
