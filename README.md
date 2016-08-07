@@ -38,11 +38,11 @@ Please read [docs/bugfix/readme.md](docs/bugfix/readme.md) for known problems wh
 
 ## Download
 
-* Server VM: http://cinnamon.dewarim.com/Cinnamon-Server-3.6.zip
+* Server VM: http://cinnamon.dewarim.com/Cinnamon-Server-3.6.1.zip
     
-        md5sum: afb64a4b4e307f6346a27cc3263c371b
-        sha512sum: 9e4d9cd51d1a2ec85c4e5f091fb3fd91e2d475c3392d1 \
-        2606527af2f4f18d52502dc9648da2b2cca740a11fb37dde53228cd56ebd609c997ccfed23d1a0381cc
+        md5sum: f4c4de6d9ac5bfd21639fe3e01873840
+        sha512sum: 945f55294c3cafd0f8b32241a0967e0d05b0d70ce2cf6ee \
+        4e2b8768bb18db9f66055025b6e4df66ad02ed279833e6fd8cb26f87628c7d73230a4da239ce09b50
     
 * Windows Desktop Client: http://cinnamon.dewarim.com/Cinnamon-Client-3.6.zip
 
