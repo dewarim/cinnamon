@@ -59,10 +59,10 @@ class LuceneService {
 
                 def master = new LuceneMaster()
                 master.start()
-                def indexStartCommand = new IndexCommand(repository: repository, type: CommandType.START_INDEXING)
-                master.sendAndContinue(indexStartCommand){LuceneResult result ->
-                    log.debug("result of starting LuceneMaster for $name: ${result.failed ? 'failed' : 'ok'} on $name ")
-                }
+//                def indexStartCommand = new IndexCommand(repository: repository, type: CommandType.START_INDEXING)
+//                master.sendAndContinue(indexStartCommand){LuceneResult result ->
+//                    log.debug("result of starting LuceneMaster for $name: ${result.failed ? 'failed' : 'ok'} on $name ")
+//                }
                 luceneMasters.put(name, master)
                 
             } catch (IOException e) {

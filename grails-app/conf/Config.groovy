@@ -109,7 +109,9 @@ log4j = {
     info 'org.codehaus.groovy.grails.context',
             'org.codehaus.groovy.grails.io',
             'org.codehaus.groovy.grails.web',
-            'cinnamon.global.ConfThreadLocal'
+            'cinnamon.global.ConfThreadLocal',
+            'org.quartz.core.QuartzSchedulerThread',
+            'grails.plugins.quartz.listeners.SessionBinderJobListener'
 
     info 'grails.plugins.twitterbootstrap.BootstrapResources'
     info 'cinnamon.RequestTicketAuthenticationFilter'

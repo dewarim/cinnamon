@@ -35,12 +35,12 @@ class BootStrap {
         }
 
         luceneService.initialize()
-//        workflowService.initializeWorkflowMasters()
 
     }
 
     def destroy = {
-        workflowService.stopWorkflowMasters()
+        luceneService.closeIndexes()
         luceneService.stopLuceneMasters()
+        
     }
 }

@@ -70,6 +70,7 @@ grails.project.dependency.resolution = {
         compile ":geb:${gebPluginVersion}"
         compile ":asset-pipeline:2.6.10"
         runtime "org.grails.plugins:cors:1.1.8"
+        compile "org.grails.plugins:quartz:1.0.2"
     }
 }
 
