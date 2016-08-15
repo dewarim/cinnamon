@@ -71,6 +71,7 @@ class LuceneJob {
                 if (osd == null) {
                     String uniqueId = "${job.indexableClass}@${job.indexableId}"
                     deleteDocument(repository, new Term("uniqueId", uniqueId), 2);
+                    job.delete()
                 }
                 else {
                     doIndexJob(osd, job, repository, true)
@@ -95,7 +96,14 @@ class LuceneJob {
                     return
                 }
                 Folder reloadedFolder = Folder.get(id)
-                doIndexJob(reloadedFolder, job, repository, true)
+                if(reloadedFolder == null){
+                    String uniqueId = "${job.indexableClass}@${job.indexableId}"
+                    deleteDocument(repository, new Term("uniqueId", uniqueId), 2);
+                    job.delete()
+                }
+                else {
+                    doIndexJob(reloadedFolder, job, repository, true)
+                }
                 seenFolders.add(id)
             }
         }
