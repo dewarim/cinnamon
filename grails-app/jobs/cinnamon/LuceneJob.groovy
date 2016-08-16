@@ -38,11 +38,10 @@ class LuceneJob {
     }
 
     def grailsApplication
-    static def repository
+    static Repository repository
     static final def LOCK_OBJECT = new Object()
 
     def execute() {
-
         if (repository == null) {
             def repositoryName = grailsApplication.config.default_repository
             initializeRepository(repositoryName)
@@ -55,30 +54,42 @@ class LuceneJob {
             osdJobs = IndexJob.findAll("from IndexJob i where i.indexableClass=:indexableClass and i.failed = false",
                     [indexableClass: ObjectSystemData.class], [max: 100])
         }
-        if(osdJobs.size() > 0){
-            log.debug("Found ${osdJobs.size()} objects watiting for indexing in ${repository.name}.")            
+        if (osdJobs.size() > 0) {
+            log.debug("Found ${osdJobs.size()} objects watiting for indexing in ${repository.name}.")
         }
 
-        osdJobs.each { IndexJob job ->
-            ObjectSystemData.withTransaction {
-                Long id = job.indexableId
-                if (seen.contains(id)) {
-                    // remove duplicate jobs in the current transaction
-                    job.delete()
-                    return
+        try {
+
+            osdJobs.each { IndexJob job ->
+                ObjectSystemData.withTransaction {
+                    Long id = job.indexableId
+                    if (seen.contains(id)) {
+                        // remove duplicate jobs in the current transaction
+                        job.delete()
+                        return
+                    }
+                    def osd = ObjectSystemData.get(id)
+                    if (osd == null) {
+                        String uniqueId = "${job.indexableClass}@${job.indexableId}"
+                        deleteDocument(repository, new Term("uniqueId", uniqueId), 2);
+                        job.delete()
+                    }
+                    else {
+                        doIndexJob(osd, job, repository, true)
+                    }
+                    seen.add(id)
                 }
-                def osd = ObjectSystemData.get(id)
-                if (osd == null) {
-                    String uniqueId = "${job.indexableClass}@${job.indexableId}"
-                    deleteDocument(repository, new Term("uniqueId", uniqueId), 2);
-                    job.delete()
-                }
-                else {
-                    doIndexJob(osd, job, repository, true)
-                }
-                seen.add(id)
             }
         }
+        catch (Exception e) {
+            log.error("Failed to index OSDs because of:", e)
+        }
+        finally {
+            if (osdJobs.size() > 0) {
+                repository.indexWriter.commit()
+            }
+        }
+
         def folderJobs = []
         def seenFolders = new HashSet<Long>(100)
         IndexJob.withTransaction {
@@ -88,27 +99,37 @@ class LuceneJob {
         if (folderJobs.size() > 0) {
             log.debug("Found ${folderJobs.size()} folders waiting for indexing in ${repository.name}.")
         }
-        folderJobs.each { IndexJob job ->
-            IndexJob.withTransaction {
-                Long id = job.indexableId
-                if (seenFolders.contains(id)) {
-                    job.delete()
-                    return
+
+        try {
+            folderJobs.each { IndexJob job ->
+                IndexJob.withTransaction {
+                    Long id = job.indexableId
+                    if (seenFolders.contains(id)) {
+                        job.delete()
+                        return
+                    }
+                    Folder reloadedFolder = Folder.get(id)
+                    if (reloadedFolder == null) {
+                        String uniqueId = "${job.indexableClass}@${job.indexableId}"
+                        deleteDocument(repository, new Term("uniqueId", uniqueId), 2);
+                        job.delete()
+                    }
+                    else {
+                        doIndexJob(reloadedFolder, job, repository, true)
+                    }
+                    seenFolders.add(id)
                 }
-                Folder reloadedFolder = Folder.get(id)
-                if(reloadedFolder == null){
-                    String uniqueId = "${job.indexableClass}@${job.indexableId}"
-                    deleteDocument(repository, new Term("uniqueId", uniqueId), 2);
-                    job.delete()
-                }
-                else {
-                    doIndexJob(reloadedFolder, job, repository, true)
-                }
-                seenFolders.add(id)
             }
         }
-//        def resultMessages = ["Updated osds: ${seen.size()}", "Updated folders. ${seenFolders.size()}"]
-//        log.debug(resultMessages.dump())
+        catch (Exception e) {
+            log.error("Failed to index Folders because of:", e)
+        }
+        finally {
+            if (folderJobs.size() > 0) {
+                repository.indexWriter.commit()
+            }
+        }
+
     }
 
     def initializeRepository(String name) {
@@ -210,10 +231,7 @@ class LuceneJob {
         } catch (OutOfMemoryError e) {
             log.error("OOM-error during indexing:", e);
             throw new RuntimeException('delete document from index failed', e)
-        } finally {
-            indexWriter.close(true)
-            repository.createWriter()
-        }
+        } 
     }
 
     void addToIndex(Indexable indexable, Repository repository) {
@@ -248,10 +266,6 @@ class LuceneJob {
         }
         catch (Exception e) {
             log.warn("addToIndex: ", e)
-        }
-        finally {
-            repository.indexWriter.close(true)
-            repository.createWriter()
         }
     }
 

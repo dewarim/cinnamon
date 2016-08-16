@@ -19,9 +19,12 @@ package cinnamon.index
 
 import org.apache.lucene.analysis.Analyzer
 import org.apache.lucene.index.CorruptIndexException
+import org.apache.lucene.index.IndexCommit
 import org.apache.lucene.index.IndexReader
 import org.apache.lucene.index.IndexWriter
 import org.apache.lucene.index.IndexWriterConfig
+import org.apache.lucene.index.MergePolicy
+import org.apache.lucene.index.MergeScheduler
 import org.apache.lucene.search.IndexSearcher
 import org.apache.lucene.store.AlreadyClosedException
 import org.apache.lucene.store.Directory
@@ -50,13 +53,24 @@ class Repository {
         synchronized (indexReaderLock) {
             IndexWriterConfig writerConfig = new IndexWriterConfig(Version.LUCENE_34, analyzer);
             try {
-                removeLock()
                 /*
             * Set timeout for write-locks.
             */
                 Long timeout = 10000;
                 writerConfig.setWriteLockTimeout(timeout);
                 writerConfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+                try {
+                    if (indexWriter) {
+
+                        indexWriter.close()
+                    }
+                    removeLock()
+                }
+                finally {
+                    if (IndexWriter.isLocked(indexDir)) {
+                        IndexWriter.unlock(indexDir);
+                    }
+                }
                 indexWriter = new IndexWriter(indexDir, writerConfig);
                 indexWriter.commit() // to create empty index if necessary
 
@@ -74,6 +88,7 @@ class Repository {
             } catch (IOException e) {
                 throw new RuntimeException("error.lucene.IO", e);
             }
+
         }
         return indexWriter;
     }
@@ -128,7 +143,7 @@ class Repository {
                 // If tryIncRef returns false, the indexReader is no longer usable.
                 indexReaderIsHealthy = indexReader.tryIncRef() && indexReader.current
             }
-            catch (AlreadyClosedException e){
+            catch (AlreadyClosedException e) {
                 indexReaderIsHealthy = false
             }
             finally {
