@@ -81,4 +81,16 @@ class LuceneResult {
     Set filterResultToSet(SearchableDomain domain, ItemService itemService, Validator validator) {
         return itemService.filterItemsToSet(itemIdMap, domain, validator)
     }
+
+
+    @Override
+    public String toString() {
+        return "LuceneResult{" +
+                "resultMessages=" + resultMessages +
+                ", failed=" + failed +
+                ", errorMessage='" + errorMessage + '\'' +
+                ", itemIdMap=" + itemIdMap +
+                ", idFieldMap=" + idFieldMap +
+                '}';
+    }
 }

@@ -20,22 +20,25 @@ package cinnamon.index
 import cinnamon.index.queryBuilder.RegexQueryBuilder
 import cinnamon.index.queryBuilder.WildcardQueryBuilder
 import org.apache.lucene.analysis.Analyzer
-import org.apache.lucene.analysis.LimitTokenCountAnalyzer
 import org.apache.lucene.analysis.standard.StandardAnalyzer
-import org.apache.lucene.index.IndexReader
+import org.apache.lucene.index.DirectoryReader
 import org.apache.lucene.index.IndexWriter
 import org.apache.lucene.index.IndexWriterConfig
-import org.apache.lucene.queryParser.QueryParser
+import org.apache.lucene.index.Term
+import org.apache.lucene.queryparser.classic.QueryParser
 import org.apache.lucene.search.IndexSearcher
 import org.apache.lucene.search.Query
-import org.apache.lucene.store.AlreadyClosedException
+import org.apache.lucene.search.TermQuery
+import org.apache.lucene.search.TopDocs
 import org.apache.lucene.store.Directory
-import org.apache.lucene.store.SimpleFSDirectory
+import org.apache.lucene.store.FSDirectory
 import org.apache.lucene.store.SingleInstanceLockFactory
-import org.apache.lucene.util.Version
-import org.apache.lucene.xmlparser.CoreParser
+import org.apache.lucene.queryparser.xml.CoreParser
+
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+
+import java.nio.file.Paths
 
 /**
  *
@@ -50,45 +53,32 @@ class Repository {
     IndexWriter indexWriter
     Directory indexDir
     Analyzer analyzer
-    IndexReader indexReader
+    DirectoryReader indexReader
     IndexSearcher indexSearcher
     final Object repositoryLock = new Object()
-//    Long ageInMillis = System.currentTimeMillis();
 
     IndexWriter createWriter() {
         synchronized (repositoryLock) {
-            IndexWriterConfig writerConfig = new IndexWriterConfig(Version.LUCENE_34, analyzer);
             try {
-
-                Long timeout = 10000;
-                writerConfig.setWriteLockTimeout(timeout);
-                writerConfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
-                try {
-                    if (indexWriter) {
-                        indexWriter.close(true)
-                    }
-                    removeLock()
-                }
-                finally {
-                    if (IndexWriter.isLocked(indexDir)) {
-                        IndexWriter.unlock(indexDir);
-                    }
+                
+                if (indexWriter) {
+                    indexWriter.commit()
+                    indexWriter.close()
                 }
 
                 if (indexReader) {
                     indexReader.close()
                 }
-                if (indexSearcher) {
-                    indexSearcher.close()
-                }
                 if (indexDir) {
                     indexDir.close()
                 }
-
-                indexDir = new SimpleFSDirectory(indexFolder, new SingleInstanceLockFactory())
+                indexDir = FSDirectory.open(Paths.get(indexFolder.absolutePath), new SingleInstanceLockFactory())
+                IndexWriterConfig writerConfig = new IndexWriterConfig(analyzer);
+                writerConfig.openMode = IndexWriterConfig.OpenMode.CREATE_OR_APPEND;
+                writerConfig.commitOnClose = true
                 indexWriter = new IndexWriter(indexDir, writerConfig);
                 indexWriter.commit() // to create empty index if necessary
-                indexReader = IndexReader.open(indexDir)
+                indexReader = DirectoryReader.open(indexDir)
                 indexSearcher = new IndexSearcher(indexReader)
 
 
@@ -100,54 +90,18 @@ class Repository {
         return indexWriter;
     }
 
-    private void removeLock() {
-        File indexLock = new File(indexFolder, "write.lock");
-        if (indexLock.exists()) {
-            log.debug("lock exists: trying to delete")
-            // low level cleanup
-            Boolean deleteResult = indexLock.delete();
-            if (!deleteResult) {
-                log.warn("It is possible that the indexLock (" + indexLock.getAbsolutePath() + ") has not been deleted.");
-            }
-            if (indexLock.exists()) {
-                log.warn("lock still exists.")
-            }
-        }
-        // cleanup; after server restart there could still be a lock lying around.
-        if (IndexWriter.isLocked(indexDir)) {
-            log.debug("IndexDir " + indexDir.toString() + " is locked - unlocking.");
-            IndexWriter.unlock(indexDir);
-        }
-    }
-
-    IndexSearcher getIndexSearcher() {
+    boolean termExists(Term t){
         synchronized (repositoryLock) {
-            def indexReaderIsHealthy = true
-            try {
-                // If tryIncRef returns false, the indexReader is no longer usable.
-                indexReaderIsHealthy = indexReader.tryIncRef() && indexReader.current
-            }
-            catch (AlreadyClosedException e) {
-                indexReaderIsHealthy = false
-            }
-            finally {
-                indexReader.decRef()
-            }
-            if (!indexReaderIsHealthy) {
-                // If the reader is unusable or no longer current, try to open a new one.
-                createWriter()
-            }
-            return indexSearcher
+            Query query = new TermQuery(t)
+            TopDocs docs = indexSearcher.search(query, 1)
+            return docs.totalHits > 0
         }
-    }
+    }    
 
-
-    LuceneResult doSearch(IndexCommand command){
+    LuceneResult doSearch(IndexCommand command) {
         synchronized (repositoryLock) {
             Query query
             if (command.xmlQuery) {
-                Analyzer standardAnalyzer = new StandardAnalyzer(Version.LUCENE_36);
-                def analyzer = new LimitTokenCountAnalyzer(standardAnalyzer, Integer.MAX_VALUE);
                 InputStream bais = new ByteArrayInputStream(command.query.getBytes("UTF-8"));
                 CoreParser coreParser = new CoreParser("content", analyzer);
                 coreParser.addQueryBuilder("WildcardQuery", new WildcardQueryBuilder());
@@ -155,14 +109,17 @@ class Repository {
                 query = coreParser.parse(bais);
             }
             else {
-                QueryParser queryParser = new QueryParser(Version.LUCENE_36, "content", new StandardAnalyzer(Version.LUCENE_36))
+                QueryParser queryParser = new QueryParser("content", new StandardAnalyzer())
                 query = queryParser.parse(command.query);
             }
 
-            IndexSearcher searcher = getIndexSearcher()
-            ResultCollector collector = new ResultCollector(reader: indexReader,
-                    searcher: searcher, domain: command.domain)
+            log.debug("query: " + query.toString())
+
+            IndexSearcher searcher = indexSearcher
+            ResultCollector collector = new ResultCollector(searcher, command.domain)
             searcher.search(query, collector)
+            TopDocs docs = searcher.search(query, Integer.MAX_VALUE)
+            log.debug("docs: "+docs)
             log.debug("Found: ${collector.documents.size()} documents.")
             def luceneResult = new LuceneResult(itemIdMap: collector.itemIdMap)
             if (command.fields.size() > 0) {
@@ -172,4 +129,13 @@ class Repository {
         }
     }
 
+    
+    def closeIndex(){
+        synchronized (repositoryLock){
+            indexWriter?.commit()
+            indexWriter?.close()
+            indexReader?.close()
+            indexDir?.close()
+        }
+    }
 }

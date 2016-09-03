@@ -19,123 +19,134 @@ package cinnamon.index
 
 import org.apache.lucene.document.Document
 import org.apache.lucene.index.IndexReader
+import org.apache.lucene.index.LeafReaderContext
 import org.apache.lucene.search.Collector
 import org.apache.lucene.search.IndexSearcher
+import org.apache.lucene.search.LeafCollector
 import org.apache.lucene.search.Scorer
+import org.apache.lucene.search.TotalHitCountCollector
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 /**
- * // code partially copied from project cinnamon (cinnamon-cms.de, LGPL)
  */
-class ResultCollector extends Collector {
+class ResultCollector implements Collector {
 
     transient Logger log = LoggerFactory.getLogger(this.class)
 
     SearchableDomain domain
 
     Set<Document> documents = new HashSet<Document>();
-    IndexSearcher searcher;
-    IndexReader reader;
-    Integer docBase;
+    final IndexSearcher searcher;
+//    Integer docBase;
     LinkedHashSet<Integer> hits = new LinkedHashSet<Integer>();
 
-    public ResultCollector(IndexSearcher searcher){
-        this.searcher = searcher;
-    }
-
-    public ResultCollector(){
-
+    public ResultCollector(IndexSearcher searcher, SearchableDomain domain) {
+        this.searcher = searcher
+        this.domain = domain
     }
 
     @Override
-    public void collect(int doc) {
-        hits.add(doc);
-        try{
-            Document d = searcher.doc(doc+docBase);
-            documents.add(d);
+    LeafCollector getLeafCollector(LeafReaderContext leafReaderContext) throws IOException {
+
+        final int docBase = leafReaderContext.docBase;
+        return new LeafCollector() {
+
+            // ignore scorer
+            public void setScorer(Scorer scorer) throws IOException {
+            }
+
+            public void collect(int doc) throws IOException {
+                log.debug("adding leaf hit for doc id " + doc)
+                hits.add(doc+docBase)
+                Document d = searcher.doc(doc + docBase);
+                documents.add(d)
+            }
+
         }
-        catch (IOException e) {
-            log.warn("ResultCollector.collect encountered an IOException:",e);
-        }
     }
+
+//    @Override
+//    public void collect(int doc) {
+//        log.debug("adding hit for doc id " + doc)
+//        hits.add(doc);
+//        try {
+//            Document d = searcher.doc(doc + docBase);
+//            documents.add(d);
+//        }
+//        catch (IOException e) {
+//            log.warn("ResultCollector.collect encountered an IOException:", e);
+//        }
+//    }
+
+//    @Override
+//    public void setScorer(Scorer scorer) throws IOException {
+//        // ignore scorer
+//    }
 
     @Override
-    public boolean acceptsDocsOutOfOrder() {
-        return true;
+    boolean needsScores() {
+        return false;
     }
-
-    @Override
-    public void setNextReader(IndexReader reader, int docBase)
-    throws IOException {
-        this.reader = reader; // ignore findBugs.warning: this field is included for possible future use.
-        this.docBase = docBase;
-    }
-
-    @Override
-    public void setScorer(Scorer scorer) throws IOException {
-        // ignore scorer
-    }
-
-    /**
-     * Turns the search result into a map of [itemClass,set of itemId] which can be fed to itemService.<br/>
-     * Note: we cannot keep the resultCollector around, because its reader may become invalid once
-     * the actor is finished with the current request.<br/>
-     * Note2: this method currently ignores document scores.<br/>
-     * This method uses the domain field (if not null) to filter results not belonging to the selected domain.
-     *
-     * @return a map of [itemClass,set[itemId]]
-     */
-    Map getItemIdMap(){
+/**
+ * Turns the search result into a map of [itemClass,set of itemId] which can be fed to itemService.<br/>
+ * Note: we cannot keep the resultCollector around, because its reader may become invalid once
+ * the actor is finished with the current request.<br/>
+ * Note2: this method currently ignores document scores.<br/>
+ * This method uses the domain field (if not null) to filter results not belonging to the selected domain.
+ *
+ * @return a map of [itemClass,set[itemId]]
+ */
+    Map getItemIdMap() {
         Map<String, Set<Long>> itemIdMap = new HashMap<String, Set<Long>>()
-        documents.each{doc ->
-            String domainClass = doc.getFieldable("javaClass").stringValue()
-            if(domain && domain.name != domainClass){
+        documents.each { doc ->
+            String domainClass = doc.getField("javaClass").stringValue()
+            if (domain && domain.name != domainClass) {
                 log.debug("filter result from wrong domain $domainClass")
                 return
             }
-            Long id = Long.parseLong(doc.getFieldable("hibernateId").stringValue())
-            def idSet = itemIdMap.get(domainClass)
-            if(idSet){
+            Long id = Long.parseLong(doc.getField("hibernateId").stringValue())
+            def idSet = itemIdMap[domainClass]
+            if (idSet) {
                 idSet.add(id)
             }
-            else{
+            else {
                 idSet = new HashSet<Long>()
                 idSet.add(id)
-                itemIdMap.put(domainClass, idSet)
+                itemIdMap[domainClass] = idSet
             }
         }
         return itemIdMap
-    } 
+    }
 
     /**
      * Given a specific SearchableDomain-class, this method will search all documents found for
      * their stored field values of the supplied fields list.
-     * 
+     *
      * @param myDomain the SearchableDomain upon which the results are based. If null, use SearchableDomain.OSD
      * @param fields List of fields for which the content should be stored.
      * @return a map, build as: Map(id,Map(fieldName,fieldValue)) 
      */
-    Map getIdFieldMap(SearchableDomain myDomain, List<String> fields){        
+    Map getIdFieldMap(SearchableDomain myDomain, List<String> fields) {
         domain == myDomain ?: SearchableDomain.OSD
         Map<Long, Map<String, String>> idFieldMap = new HashMap()
-        documents.each{doc ->
+        documents.each { doc ->
             String domainClass = doc.getFieldable("javaClass").stringValue()
-            if(domain.name != domainClass){
+            if (domain.name != domainClass) {
                 return
             }
-            
-            Long id = Long.parseLong(doc.getFieldable("hibernateId").stringValue())            
+
+            Long id = Long.parseLong(doc.getFieldable("hibernateId").stringValue())
             def fieldMap = [:]
-            fields.each{fieldName ->
+            fields.each { fieldName ->
                 def field = doc.getFieldable(fieldName)
-                if (field && field.stored){
+                if (field && field.stored) {
                     fieldMap.put(fieldName, field.stringValue())
                 }
             }
-            idFieldMap.put(id,fieldMap)
+            idFieldMap.put(id, fieldMap)
         }
         return idFieldMap
     }
-    
+
 }
