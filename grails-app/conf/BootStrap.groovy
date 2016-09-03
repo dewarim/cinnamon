@@ -8,7 +8,6 @@ class BootStrap {
 
     def grailsApplication
     def luceneService
-    def workflowService
 
     def init = { servletContext ->
 
@@ -41,7 +40,7 @@ class BootStrap {
 
     def destroy = {
         luceneService.closeIndexes()
-        luceneService.stopLuceneMasters()
+//        luceneService.stopLuceneMasters()
         LuceneJob.repository?.indexWriter?.close(true)
         
     }

@@ -17,18 +17,23 @@
  */
 package cinnamon.index
 
+import cinnamon.index.queryBuilder.RegexQueryBuilder
+import cinnamon.index.queryBuilder.WildcardQueryBuilder
 import org.apache.lucene.analysis.Analyzer
-import org.apache.lucene.index.CorruptIndexException
-import org.apache.lucene.index.IndexCommit
+import org.apache.lucene.analysis.LimitTokenCountAnalyzer
+import org.apache.lucene.analysis.standard.StandardAnalyzer
 import org.apache.lucene.index.IndexReader
 import org.apache.lucene.index.IndexWriter
 import org.apache.lucene.index.IndexWriterConfig
-import org.apache.lucene.index.MergePolicy
-import org.apache.lucene.index.MergeScheduler
+import org.apache.lucene.queryParser.QueryParser
 import org.apache.lucene.search.IndexSearcher
+import org.apache.lucene.search.Query
 import org.apache.lucene.store.AlreadyClosedException
 import org.apache.lucene.store.Directory
+import org.apache.lucene.store.SimpleFSDirectory
+import org.apache.lucene.store.SingleInstanceLockFactory
 import org.apache.lucene.util.Version
+import org.apache.lucene.xmlparser.CoreParser
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -47,22 +52,20 @@ class Repository {
     Analyzer analyzer
     IndexReader indexReader
     IndexSearcher indexSearcher
-    final Object indexReaderLock = new Object()
+    final Object repositoryLock = new Object()
+//    Long ageInMillis = System.currentTimeMillis();
 
     IndexWriter createWriter() {
-        synchronized (indexReaderLock) {
+        synchronized (repositoryLock) {
             IndexWriterConfig writerConfig = new IndexWriterConfig(Version.LUCENE_34, analyzer);
             try {
-                /*
-            * Set timeout for write-locks.
-            */
+
                 Long timeout = 10000;
                 writerConfig.setWriteLockTimeout(timeout);
                 writerConfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
                 try {
                     if (indexWriter) {
-
-                        indexWriter.close()
+                        indexWriter.close(true)
                     }
                     removeLock()
                 }
@@ -71,8 +74,6 @@ class Repository {
                         IndexWriter.unlock(indexDir);
                     }
                 }
-                indexWriter = new IndexWriter(indexDir, writerConfig);
-                indexWriter.commit() // to create empty index if necessary
 
                 if (indexReader) {
                     indexReader.close()
@@ -80,7 +81,13 @@ class Repository {
                 if (indexSearcher) {
                     indexSearcher.close()
                 }
+                if (indexDir) {
+                    indexDir.close()
+                }
 
+                indexDir = new SimpleFSDirectory(indexFolder, new SingleInstanceLockFactory())
+                indexWriter = new IndexWriter(indexDir, writerConfig);
+                indexWriter.commit() // to create empty index if necessary
                 indexReader = IndexReader.open(indexDir)
                 indexSearcher = new IndexSearcher(indexReader)
 
@@ -113,31 +120,8 @@ class Repository {
         }
     }
 
-    void unlockIfNecessary() throws IOException {
-        if (IndexWriter.isLocked(indexDir)) {
-            def indexDir = indexDir
-            // we failed to commit or close the IndexWriter.
-            try {
-                log.debug("close IndexWriter")
-                indexWriter.close();
-            } catch (CorruptIndexException e) {
-                log.error("Lucene Index has been corrupted!", e);
-                throw new RuntimeException("error.lucene.IO: $indexDir", e);
-            } catch (IOException e) {
-                log.debug("IOException in unlockIfNecessary", e)
-                throw new RuntimeException("error.lucene.IO: $indexDir", e);
-            } finally {
-                log.debug("Unlocking indexDir.")
-                IndexWriter.unlock(indexDir);
-                log.debug("create new writer")
-                createWriter();
-                log.debug("beyond new writer")
-            }
-        }
-    }
-
     IndexSearcher getIndexSearcher() {
-        synchronized (indexReaderLock) {
+        synchronized (repositoryLock) {
             def indexReaderIsHealthy = true
             try {
                 // If tryIncRef returns false, the indexReader is no longer usable.
@@ -151,10 +135,41 @@ class Repository {
             }
             if (!indexReaderIsHealthy) {
                 // If the reader is unusable or no longer current, try to open a new one.
-                indexReader = IndexReader.open(indexDir)
-                indexSearcher = new IndexSearcher(indexReader)
+                createWriter()
             }
             return indexSearcher
         }
     }
+
+
+    LuceneResult doSearch(IndexCommand command){
+        synchronized (repositoryLock) {
+            Query query
+            if (command.xmlQuery) {
+                Analyzer standardAnalyzer = new StandardAnalyzer(Version.LUCENE_36);
+                def analyzer = new LimitTokenCountAnalyzer(standardAnalyzer, Integer.MAX_VALUE);
+                InputStream bais = new ByteArrayInputStream(command.query.getBytes("UTF-8"));
+                CoreParser coreParser = new CoreParser("content", analyzer);
+                coreParser.addQueryBuilder("WildcardQuery", new WildcardQueryBuilder());
+                coreParser.addQueryBuilder("RegexQuery", new RegexQueryBuilder());
+                query = coreParser.parse(bais);
+            }
+            else {
+                QueryParser queryParser = new QueryParser(Version.LUCENE_36, "content", new StandardAnalyzer(Version.LUCENE_36))
+                query = queryParser.parse(command.query);
+            }
+
+            IndexSearcher searcher = getIndexSearcher()
+            ResultCollector collector = new ResultCollector(reader: indexReader,
+                    searcher: searcher, domain: command.domain)
+            searcher.search(query, collector)
+            log.debug("Found: ${collector.documents.size()} documents.")
+            def luceneResult = new LuceneResult(itemIdMap: collector.itemIdMap)
+            if (command.fields.size() > 0) {
+                luceneResult.idFieldMap = collector.getIdFieldMap(command.domain, command.fields)
+            }
+            return luceneResult
+        }
+    }
+
 }

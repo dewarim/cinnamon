@@ -38,6 +38,7 @@ class LuceneJob {
     }
 
     def grailsApplication
+
     static Repository repository
     static final def LOCK_OBJECT = new Object()
 
@@ -84,11 +85,7 @@ class LuceneJob {
         catch (Exception e) {
             log.error("Failed to index OSDs because of:", e)
         }
-        finally {
-            if (osdJobs.size() > 0) {
-                repository.indexWriter.commit()
-            }
-        }
+
 
         def folderJobs = []
         def seenFolders = new HashSet<Long>(100)
@@ -124,12 +121,10 @@ class LuceneJob {
         catch (Exception e) {
             log.error("Failed to index Folders because of:", e)
         }
-        finally {
-            if (folderJobs.size() > 0) {
-                repository.indexWriter.commit()
-            }
-        }
 
+        def l = System.currentTimeMillis()
+        repository.createWriter() // close & commit, then create new writer to prevent file leaks
+        log.debug("create writer took: "+ (System.currentTimeMillis() - l))
     }
 
     def initializeRepository(String name) {
@@ -231,7 +226,7 @@ class LuceneJob {
         } catch (OutOfMemoryError e) {
             log.error("OOM-error during indexing:", e);
             throw new RuntimeException('delete document from index failed', e)
-        } 
+        }
     }
 
     void addToIndex(Indexable indexable, Repository repository) {
