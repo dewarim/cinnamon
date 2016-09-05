@@ -38,6 +38,7 @@ class LuceneJob {
     }
 
     def grailsApplication
+    def luceneService
 
     static Repository repository
     static final def LOCK_OBJECT = new Object()
@@ -45,7 +46,7 @@ class LuceneJob {
     def execute() {
         if (repository == null) {
             def repositoryName = grailsApplication.config.default_repository
-            initializeRepository(repositoryName)
+            repository = luceneService.repositories[repositoryName]
         }
 
 //        log.debug("Update repository: ${repository.name}")
