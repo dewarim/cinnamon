@@ -1,11 +1,20 @@
 package cinnamon
 
+import cinnamon.index.SearchableDomain
 import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(['IS_AUTHENTICATED_ANONYMOUSLY'])
 class TestController {
 
-
+    def luceneService
+    
+    def search(){
+        def q = "<BooleanQuery><Clause occurs='must'><TermQuery fieldName='name'>test</TermQuery></Clause></BooleanQuery>"
+        def result = luceneService.search(q, "demo", SearchableDomain.OSD)
+        log.debug(result)
+        render(text:result.toString())
+    }
+    
     def echo(String msg) {
         log.info("TestController received msg: " + (msg?.encodeAsHTML()))
         log.info("Params: " + params)

@@ -3,9 +3,9 @@ package cinnamon.index.queryBuilder;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.WildcardQuery;
-import org.apache.lucene.xmlparser.DOMUtils;
-import org.apache.lucene.xmlparser.ParserException;
-import org.apache.lucene.xmlparser.QueryBuilder;
+import org.apache.lucene.queryparser.xml.DOMUtils;
+import org.apache.lucene.queryparser.xml.ParserException;
+import org.apache.lucene.queryparser.xml.QueryBuilder;
 import org.w3c.dom.Element;
 
 /**

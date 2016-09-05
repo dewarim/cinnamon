@@ -29,9 +29,12 @@ grails.project.dependency.resolution = {
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
 
-        runtime('org.apache.lucene:lucene-core:3.6.2')
-        runtime('org.apache.lucene:lucene-xml-query-parser:3.6.2')
-        runtime('org.apache.lucene:lucene-queries:3.6.2')
+        runtime('org.apache.lucene:lucene-core:6.2.0')
+//        runtime('org.apache.lucene:lucene-xml-query-parser:3.6.2')
+        runtime('org.apache.lucene:lucene-queries:6.2.0')
+        runtime('org.apache.lucene:lucene-misc:6.2.0')
+        runtime('org.apache.lucene:lucene-analyzers-common:6.2.0')
+        runtime('org.apache.lucene:lucene-queryparser:6.2.0')
         runtime 'postgresql:postgresql:9.1-901.jdbc4'
         runtime 'xml-apis:xml-apis:1.4.01'
         runtime('dom4j:dom4j:1.6.1') {
@@ -64,7 +67,7 @@ grails.project.dependency.resolution = {
         compile(':spring-security-core:2.0-RC5')
         compile ":rest-client-builder:2.1.1"
         compile(":twitter-bootstrap:3.2.0.2") { excludes 'svn' }
-        compile ":cinnamon-db:3.6.43"
+        compile ":cinnamon-db:3.7.5"
         runtime ':tika-parser:1.13'
         compile ":remote-pagination:0.3"
         compile ":geb:${gebPluginVersion}"

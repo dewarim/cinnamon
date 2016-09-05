@@ -1,4 +1,5 @@
 import cinnamon.LuceneJob
+import cinnamon.index.SearchableDomain
 import grails.plugin.springsecurity.SecurityFilterPosition
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.util.Environment
@@ -37,11 +38,8 @@ class BootStrap {
         luceneService.initialize()
 
     }
-
+    
     def destroy = {
-        luceneService.closeIndexes()
-//        luceneService.stopLuceneMasters()
-        LuceneJob.repository?.indexWriter?.close(true)
-        
+//        luceneService.closeIndexes()
     }
 }

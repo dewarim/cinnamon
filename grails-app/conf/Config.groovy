@@ -121,12 +121,15 @@ log4j = {
 //    debug 'grails.app.filters.cinnamon.filters.TriggerFilters'
     debug 'cinnamon.data'
     debug 'cinnamon.OsdController'
-    info 'cinnamon.index.LuceneActor'
-    info 'cinnamon.index.LuceneMaster'
-    info 'cinnamon.index.LuceneService'
+    debug 'cinnamon.index.LuceneService'
     info 'cinnamon.workflow.TransitionActor'
     info 'cinnamon.workflow'
-    info 'cinnamon.index'
+    debug 'cinnamon.index'
+    debug 'cinnamon.index.ResultCollector'
+    info 'cinnamon.index.indexer.DefaultIndexer'
+    info 'cinnamon.index.indexer'
+    info 'cinnamon.index.IndexItem'
+    info 'org.quartz.core.JobRunShell'
     debug 'humulus',
             'cinnamon.UserAccountController',
             'cinnamon.FolderController',
@@ -134,7 +137,8 @@ log4j = {
             'org.springframework.security.authentication',
             'cinnamon.PreAuthenticatedAuthenticationProvider',
             'cinnamon.servlet.ResponseFilter'
-    debug 'grails.app.domain.cinnamon.index'
+    info 'grails.app.domain.cinnamon.index'
+    warn 'grails.app.domain.cinnamon.index.IndexItem'
     debug 'grails.app.controllers.cinnamon.FolderController'
     info 'org.springframework'
     debug 'grails.plugin.springsecurity.web'

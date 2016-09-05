@@ -2,10 +2,11 @@ package cinnamon.index.queryBuilder;
 
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.regex.RegexQuery;
-import org.apache.lucene.xmlparser.DOMUtils;
-import org.apache.lucene.xmlparser.ParserException;
-import org.apache.lucene.xmlparser.QueryBuilder;
+import org.apache.lucene.search.RegexpQuery;
+
+import org.apache.lucene.queryparser.xml.DOMUtils;
+import org.apache.lucene.queryparser.xml.ParserException;
+import org.apache.lucene.queryparser.xml.QueryBuilder;
 import org.w3c.dom.Element;
 
 /**
@@ -19,7 +20,7 @@ public class RegexQueryBuilder implements QueryBuilder {
 	public Query getQuery(Element e) throws ParserException {
 	    String field= DOMUtils.getAttributeWithInheritanceOrFail(e, "fieldName");
  		String value= DOMUtils.getNonBlankTextOrFail(e);
-  		return new RegexQuery(new Term(field, value));
+  		return new RegexpQuery(new Term(field, value));
 	}
 
 }
