@@ -166,7 +166,7 @@ class UserAccountController extends BaseController {
             log.debug("setting password of user ${user.name}")
             def minPasswordLength = grailsApplication.config.minimalPasswordLength ?: 4
             if (params.pwd.length() < minPasswordLength) {
-                flash.message = message(code: 'error.password.too.short')
+                flash.message = message(code: 'error.password.too.short', args: [minPasswordLength])
                 redirect(action: 'edit', params: [id: user.id])
                 return
             }
