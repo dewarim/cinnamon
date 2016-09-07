@@ -112,6 +112,13 @@
                         </tr>
                     
                         <tr class="prop">
+                            <td class="name"><abbr title="${message(code: 'indexItem.storeField.description')}"><g:message code="indexItem.storeField.label" default="Store content" /></abbr></td>
+                            
+                            <td class="value"><g:checkBox name="storeField" disabled="true" value="${indexItemInstance?.storeField}" /></td>
+                            
+                        </tr>
+                    
+                        <tr class="prop">
                             <td class="name"><g:message code="indexItem.vaProviderParams.label" default="Va Provider Params" /></td>
                             
                             <td class="value">${fieldValue(bean: indexItemInstance, field: "vaProviderParams")}</td>

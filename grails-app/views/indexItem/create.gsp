@@ -153,6 +153,15 @@
                         <g:checkBox name="systemic" value="${indexItemInstance?.systemic}"/>
                     </td>
                 </tr>
+                
+                <tr class="prop">
+                    <td class="name">
+                        <label for="store"><g:message code="indexItem.storeField.label" default="Store content"/></label>
+                    </td>
+                    <td class="value ${hasErrors(bean: indexItemInstance, field: 'storeField', 'errors')}">
+                        <g:checkBox name="storeField" value="${indexItemInstance?.storeField}"/>
+                    </td>
+                </tr>
 
                 <tr class="prop">
                     <td class="name">

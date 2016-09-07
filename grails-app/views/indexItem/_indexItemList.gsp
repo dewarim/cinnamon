@@ -18,6 +18,9 @@
 
         <g:sortableColumn property="forSysMeta"
                           title="${message(code: 'indexItem.forSysMeta.label', default: 'For Sys Meta')}"/>
+        
+        <g:sortableColumn property="storeField"
+                          title="${message(code: 'indexItem.storeField.label', default: 'Store content')}"/>
 
         <th><g:message code="indexItem.indexGroup.label" default="Index Group"/></th>
 
@@ -39,6 +42,8 @@
             <td><g:checkBox name="forMetadata" disabled="true" value="${indexItemInstance.forMetadata}"/></td>
 
             <td><g:checkBox name="forSysMeta" disabled="true" value="${indexItemInstance.forSysMeta}"/></td>
+            
+            <td><g:checkBox name="storeField" disabled="true" value="${indexItemInstance.storeField}"/></td>
 
             <td>${indexItemInstance.indexGroup?.name}</td>
 
