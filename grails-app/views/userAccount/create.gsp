@@ -59,7 +59,6 @@
                         <label for="description"><g:message code="user.description"/></label>
                     </td>
                     <td class="value ${hasErrors(bean: user, field: 'description', 'errors')}">
-                        <!-- <input type="text" name="description" id="description" value="${fieldValue(bean: user, field: 'description')}" /> -->
                         <g:descriptionTextArea name="description"
                                                value="${fieldValue(bean: user, field: 'description')}"/>
                     </td>

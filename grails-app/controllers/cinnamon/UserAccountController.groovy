@@ -80,7 +80,7 @@ class UserAccountController extends BaseController {
 
     @Secured(["hasRole('_superusers')"])
     def create() {
-        [user: new UserAccount()]
+        [user: flash.user ?: new UserAccount()]
     }
 
     @Secured(["hasRole('_superusers')"])
@@ -96,7 +96,7 @@ class UserAccountController extends BaseController {
 
     @Secured(["hasRole('_superusers')"])
     def edit() {
-        if(flash.user){
+        if (flash.user) {
             [user: flash.user]
         }
         else {
@@ -157,7 +157,7 @@ class UserAccountController extends BaseController {
         }
 
         bindData(user, params, [include: ['name', 'fullname', 'description', 'email']])
-        if(user.description == null){
+        if (user.description == null) {
             user.description = '';
         }
         user.language = UiLanguage.get(params.'language.id')
@@ -177,7 +177,7 @@ class UserAccountController extends BaseController {
             redirect(action: 'show', params: [id: user.id])
         }
         else {
-            flash.user  = user
+            flash.user = user
             redirect(action: 'edit', params: [id: user.id])
         }
     }
@@ -256,7 +256,7 @@ class UserAccountController extends BaseController {
      */
     @Secured(["hasRole('_superusers')"])
     def save() {
-        def user = null
+        UserAccount user = null
         try {
             user = new UserAccount(params.name, params.pwd, params.fullname, params.description ?: '')
             user.email = params.email
@@ -264,11 +264,15 @@ class UserAccountController extends BaseController {
             user.sudoable = params.containsKey('sudoable')
             user.sudoer = params.containsKey('sudoer')
             user.changeTracking = params.containsKey('changeTracking')
+            if (!user.validate()) {
+                flash.user = user
+                return redirect(action: 'create')
+            }
             user.save(flush: true)
         }
         catch (Exception e) {
             log.debug("failed to save user:", e)
-            flash.message = e.getLocalizedMessage()
+            flash.user = user
             return redirect(action: 'create')
         }
 
@@ -360,10 +364,10 @@ class UserAccountController extends BaseController {
         root.add(UserAccount.asElement("user", user));
         render(contentType: 'application/xml', text: doc.asXML())
     }
-    
-    def changePassword(String password){
+
+    def changePassword(String password) {
         def user = userService.user
-        if(!user){
+        if (!user) {
             renderErrorXml("invalid user")
             return
         }
