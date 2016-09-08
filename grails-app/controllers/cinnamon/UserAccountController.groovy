@@ -6,6 +6,8 @@ import org.dom4j.DocumentHelper
 import grails.plugin.springsecurity.annotation.Secured
 import cinnamon.global.Constants
 import cinnamon.i18n.UiLanguage
+import org.springframework.validation.FieldError
+import org.springframework.validation.ObjectError
 
 @Secured(["isAuthenticated()"])
 class UserAccountController extends BaseController {
@@ -156,22 +158,11 @@ class UserAccountController extends BaseController {
             group.save()
         }
 
-        bindData(user, params, [include: ['name', 'fullname', 'description', 'email']])
+        bindData(user, params, [include: ['name', 'fullname', 'description', 'email', 'pwd']])
         if (user.description == null) {
             user.description = '';
         }
         user.language = UiLanguage.get(params.'language.id')
-        if (params.pwd) {
-            // set separately to prevent an empty/null pwd from being set.
-            log.debug("setting password of user ${user.name}")
-            def minPasswordLength = grailsApplication.config.minimalPasswordLength ?: 4
-            if (params.pwd.length() < minPasswordLength) {
-                flash.message = message(code: 'error.password.too.short', args: [minPasswordLength])
-                redirect(action: 'edit', params: [id: user.id])
-                return
-            }
-            user.pwd = params.pwd
-        }
         if (user.validate() && user.save(flush: true)) {
             flash.message = message(code: "user.update.success")
             redirect(action: 'show', params: [id: user.id])
@@ -371,8 +362,7 @@ class UserAccountController extends BaseController {
             renderErrorXml("invalid user")
             return
         }
-        def minPasswordLength = grailsApplication.config.minimalPasswordLength ?: 4
-        if (password?.length() < minPasswordLength) {
+        if (password?.length() < Constants.MINIMUM_PASSWORD_LENGTH) {
             renderErrorXml('error.password.too.short')
             return
         }
