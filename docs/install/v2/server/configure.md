@@ -29,7 +29,7 @@ Every time a user requests a link to reset his or her password or verify an emai
 
 ### minimalPasswordLength
 
-The minimal length which is required of a user's password. The default is 4 (for historic reasons). Change this to improve password safety.
+The minimal length which is required of a user's password. Note: this cannot be configured any longer. Use a password with at least 8 characters. 
 
 ### passwordRounds
 
