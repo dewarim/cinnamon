@@ -9,7 +9,6 @@
     Some settings are duplicated here.
    -->
 
-  <minimalPasswordLength>4</minimalPasswordLength>
   <encryptPasswords>true</encryptPasswords>
     
   <!-- optional passwordSalt: (default is 0xCHICKENSOUPx0 as defined in utils.security.HashMaker) -->   

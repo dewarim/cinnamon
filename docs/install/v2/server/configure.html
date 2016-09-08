@@ -48,6 +48,7 @@
 <p>Every time a user requests a link to reset his or her password or verify an email address, a unique token is generated. The maxTokensPerDay setting defines how often a user may call one of those API methods. The default is 3 times per day. This limit exists so that a malicious person cannot request thousands of &quot;reset your password&quot;-emails.</p>
 <h3 id="minimalpasswordlength"><a href="#TOC">minimalPasswordLength</a></h3>
 <p>The minimal length which is required of a user's password. The default is 4 (for historic reasons). Change this to improve password safety.</p>
+<p>Note: in Cinnamon 3, the minimum password length is 8 and no longer configurable.</p>
 <h3 id="passwordrounds"><a href="#TOC">passwordRounds</a></h3>
 <p>The number of rounds used to generate the bcrypt salt. Valid values are from 4..31, the default is 12. Password hashing takes exponentially longer the higher this number is. The passwordRounds parameter is only useful if you encrypt passwords.</p>
 <h3 id="server-url"><a href="#TOC">server-url</a></h3>
