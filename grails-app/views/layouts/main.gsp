@@ -6,14 +6,12 @@
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-    %{--<asset:javascript src="jquery-2.1.1.js"/>--}%
     <asset:javascript src="application.js"/>
     <asset:javascript src="cinnamon.js"/>
-    %{--<asset:javascript src="jquery-ui-1.11.1/jquery-ui.js"/>--}%
     
     <asset:javascript src="codemirror/lib/codemirror.js"/>
-    <asset:javascript src="codemirror/mode/xml.js"/>
-    <asset:javascript src="codemirror/mode/hmlmixed.js"/>
+    <asset:javascript src="codemirror/mode/xml/xml.js"/>
+    <asset:javascript src="codemirror/mode/htmlmixed/htmlmixed.js"/>
     <asset:javascript src="codemirror-ui/js/codemirror-ui.js"/>
     <asset:stylesheet src="codemirror/lib/codemirror.css"/>
     <asset:stylesheet src="codemirror-ui/css/codemirror-ui.css"/>
