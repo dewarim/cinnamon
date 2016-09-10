@@ -7,7 +7,7 @@ import org.springframework.dao.DataIntegrityViolationException
 import cinnamon.utils.ParamParser
 
 @Secured(["hasRole('_superusers')"])
-class MetasetTypeController {
+class MetasetTypeController extends BaseController{
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
@@ -125,6 +125,11 @@ class MetasetTypeController {
 			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'metasetType.label', default: 'MetasetType'), params.id])
             redirect(action: "show", id: params.id)
         }
+    }
+
+    def updateList () {
+        setListParams()
+        render(template: 'metasetTypeList', model:[metasetTypeInstanceList: MetasetType.list(params)])
     }
 
     //---------------------------------------------------
