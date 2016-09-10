@@ -64,14 +64,14 @@ grails.project.dependency.resolution = {
 
         runtime ":jquery:1.11.1"
         runtime ":resources:1.2.14"
-        compile(':spring-security-core:2.0-RC5')
+        compile(':spring-security-core:2.0.0')
         compile ":rest-client-builder:2.1.1"
         compile(":twitter-bootstrap:3.2.0.2") { excludes 'svn' }
         compile ":cinnamon-db:3.7.8"
-        runtime ':tika-parser:1.13'
+        runtime ':tika-parser:1.13.1'
         compile ":remote-pagination:0.3"
         compile ":geb:${gebPluginVersion}"
-        compile ":asset-pipeline:2.6.10"
+        compile ":asset-pipeline:2.11.0"
         runtime "org.grails.plugins:cors:1.1.8"
         compile "org.grails.plugins:quartz:1.0.2"
     }
