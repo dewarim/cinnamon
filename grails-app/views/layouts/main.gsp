@@ -2,13 +2,13 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title><g:layoutTitle default="Grails"/></title>
+    <title><g:layoutTitle default="Grails"/></title>
 
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
     <asset:javascript src="application.js"/>
     <asset:javascript src="cinnamon.js"/>
-    
+
     <asset:javascript src="codemirror/lib/codemirror.js"/>
     <asset:javascript src="codemirror/mode/xml/xml.js"/>
     <asset:javascript src="codemirror/mode/htmlmixed/htmlmixed.js"/>
@@ -18,9 +18,16 @@
     <asset:stylesheet src="jquery-ui-1.11.1/jquery-ui.css"/>
     <asset:stylesheet src="main.css"/>
     <asset:link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
+
+    <g:render template="/shared/variables"/>
+    <g:layoutHead/>
+
+    <script type="text/javascript">
+
+
+    $.ajaxSetup({type:'POST'});
     
-<script type="text/javascript">
- 
+    
     function showInfoMessage(info){
         var infoElement = $('#infoMessage');
         infoElement.text(info);
@@ -35,14 +42,19 @@
         });
     }
 
-</script>
-
-<g:layoutHead/>
-
-<asset:script>
-    $.ajaxSetup({
-        type:'POST'
-    });
+        var codeMirrorEditor;
+        
+        function createEditor(id, readOnly) {
+            var uiOptions = { path:'<g:createLink uri="/assets/codemirror-ui/js"/>/', searchMode:'popup' };
+        var cmOptions = {
+            mode:'application/xml',
+            lineNumbers:true,
+            readOnly: readOnly === undefined ? false : readOnly 
+        };
+        codeMirrorEditor = new CodeMirrorUI(id, uiOptions, cmOptions);
+        codeMirrorEditor.mirror.refresh();
+    }
+        
     var addAll = false;
 
     function replaceAIfExistsB(a, replacement, b) {
@@ -70,31 +82,7 @@
         }
     }
 
-</asset:script>
-
-<g:render template="/shared/variables"/>
-    
-    <asset:script type="text/javascript">
-
-  
-
-    $.ajaxSetup({
-        type:'POST'
-    });
-
-    var codeMirrorEditor;
-    
-    function createEditor(id, readOnly) {
-        var uiOptions = { path:'<g:createLink uri="/assets/codemirror-ui/js" />/', searchMode:'popup' };
-        var cmOptions = {
-            mode:'application/xml',
-            lineNumbers:true,
-            readOnly: readOnly === undefined ? false : readOnly 
-        };
-        codeMirrorEditor = new CodeMirrorUI(id, uiOptions, cmOptions);
-        codeMirrorEditor.mirror.refresh();
-    }
- 
+        
     function showSpinner(id) {
         $("#" + id).prepend('<img src="<g:spinnerGifAsString/>" alt="<g:message code="message.loading"/>" id="' + id + '_spinner">');
     }
@@ -150,11 +138,10 @@ var s4 = '#' + id + ': ' + name + '</a></div>';
         $('#objectSelection').show();
     }
 
-
-</asset:script>
-    <asset:deferredScripts/>
+    </script>
 
 </head>
+
 <body>
 <header>
     <div id="header">
@@ -163,7 +150,7 @@ var s4 = '#' + id + ': ' + name + '</a></div>';
             <img src="/cinnamon/images/illicium_100.jpg" alt="${message(code: 'app.illicium')}" border="0"/>
         </a>
 
-        <h1 id="TITLE"><g:message code="${ headline ?: grailsApplication.config.appName}"/></h1>
+        <h1 id="TITLE"><g:message code="${headline ?: grailsApplication.config.appName}"/></h1>
 
         <div class="searchForm">
             <g:form onsubmit="\$(\'#searchFormSubmit\').click();return false;" name="simpleSearchForm"
@@ -171,10 +158,10 @@ var s4 = '#' + id + ': ' + name + '</a></div>';
                 <label for="simpleSearch" style="display:none;"><g:message code="search.label"/></label>
                 <input name="query" placeholder="<g:message code="search.placeholder"/>" id="simpleSearch">
                 <g:submitToRemote id="searchFormSubmit"
-                                  update="[success:'searchResults', failure:'message']"
-                                  url="[controller:'folder', action:'searchSimple']"
+                                  update="[success: 'searchResults', failure: 'message']"
+                                  url="[controller: 'folder', action: 'searchSimple']"
                                   onLoading="\$('#message').html('');"
-                                  value="${message(code:'search.submit')}"/></g:form>
+                                  value="${message(code: 'search.submit')}"/></g:form>
         </div>
 
     </div>
@@ -184,17 +171,18 @@ var s4 = '#' + id + ': ' + name + '</a></div>';
 <g:layoutBody/>
 
 <footer>
-<hr class="bottom_line">
-<p>
-    <sec:ifLoggedIn>
-        <g:link controller="logout" class="logout-link" action="index">
-            <g:message code="logout.link" args="[grailsApplication.config.repositoryName]"/>
-        </g:link>
-    </sec:ifLoggedIn>
-    <sec:ifNotLoggedIn>
-        <g:link controller="login" action="auth"><g:message code="login.link"/></g:link>
-    </sec:ifNotLoggedIn>
-</p>
+    <hr class="bottom_line">
+
+    <p>
+        <sec:ifLoggedIn>
+            <g:link controller="logout" class="logout-link" action="index">
+                <g:message code="logout.link" args="[grailsApplication.config.repositoryName]"/>
+            </g:link>
+        </sec:ifLoggedIn>
+        <sec:ifNotLoggedIn>
+            <g:link controller="login" action="auth"><g:message code="login.link"/></g:link>
+        </sec:ifNotLoggedIn>
+    </p>
 </footer>
 </body>
 </html>
