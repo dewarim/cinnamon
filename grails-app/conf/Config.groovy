@@ -150,7 +150,7 @@ log4j = {
     info 'grails.plugin.springsecurity.web.filter.GrailsAnonymousAuthenticationFilter'
     info 'grails.plugin.springsecurity.web.access.intercept.AnnotationFilterInvocationDefinition'
     info 'cinnamon.tika.CinnamonTikaService'
-    
+
     root {
         debug 'stdout'
     }
@@ -211,6 +211,9 @@ grails {
 remove this line */
 
 grails.assets.minifyJs = false
+grails.assets.minifyCss = false
+grails.assets.bundle = false
+grails.assets.skipNonDigests = false
 grails.resources.adhoc.patterns = ['/images/*', '/css/*', '/js/*', '/plugins/*']
 grails.resources.adhoc.includes = ['/images/**', '/css/**', '/js/**', '/plugins/**']
 
