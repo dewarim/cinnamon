@@ -69,7 +69,7 @@ grails.project.dependency.resolution = {
         compile(":twitter-bootstrap:3.2.0.2") { excludes 'svn' }
         compile ":cinnamon-db:3.7.8"
         runtime ':tika-parser:1.13.1'
-        compile ":remote-pagination:0.3"
+        compile ":remote-pagination:0.4.8"
         compile ":geb:${gebPluginVersion}"
         compile ":asset-pipeline:2.11.0"
         runtime "org.grails.plugins:cors:1.1.8"
