@@ -44,8 +44,7 @@ class TranslationService {
         Set<ObjectSystemData> newObjects = new HashSet<ObjectSystemData>();
 
         // 1. check if the target object tree already exists.
-        ObjectSystemData objectTreeRoot = checkRootRelation(source, rootRelationType,
-                attribute, attribute_value);
+        ObjectSystemData objectTreeRoot = checkRootRelation(source, rootRelationType, attribute, attribute_value);
 
         String metaNode = String.format("<meta><metaset type='translation_extension'><target><relation_type_id>%d</relation_type_id>"
                 + "<attribute_value>%s</attribute_value></target></metaset></meta>",
@@ -145,16 +144,22 @@ class TranslationService {
     ObjectSystemData checkRootRelation(ObjectSystemData source,
                                        RelationType rootRelationType, String attribute, String attribute_value) {
 
-        List<Relation> relationList = Relation.findAllByLeftOSDAndType(source.getRoot(), rootRelationType);
+//        log.debug("source osd: " + source)
+//        log.debug("source root: " + source.root)
+//        log.debug("rootRelationType: " + rootRelationType)
+        List<Relation> relationList = Relation.findAll("from Relation r where r.leftOSD=:root and r.type=:type",
+                [root: source.root, type: rootRelationType]);
+//        log.info("relations found: " + relationList.dump())
 
         // 1. check root relations for attribute and attribute_value
         ObjectSystemData objectTreeRoot = null;
-        for (Relation rootRelation : relationList) {
-            log.debug("testing relation: " + rootRelation.getId());
-            objectTreeRoot = checkRelation(rootRelation, attribute, attribute_value);
-            if (objectTreeRoot != null) {
-                log.debug("Found root relation");
-                break;
+        relationList.each { Relation rootRelation ->
+            if (objectTreeRoot == null) {
+                log.debug("testing relation: " + rootRelation.id)
+                objectTreeRoot = checkRelation(rootRelation, attribute, attribute_value)
+                if (objectTreeRoot != null) {
+                    log.debug("Found root relation: " + objectTreeRoot)
+                }
             }
         }
         return objectTreeRoot;
@@ -232,33 +237,40 @@ class TranslationService {
      */
     ObjectSystemData growTargetNode(ObjectSystemData treeRoot, ObjectSystemData source, String metaNode,
                                     Set<ObjectSystemData> newObjects) {
-        List<ObjectSystemData> allVersions = ObjectSystemData.findAllByRoot(source);
+        List<ObjectSystemData> allVersions = ObjectSystemData.findAllByRoot(source.root);
         // find and store existing copies:
-        ObjectTreeCopier otc = new ObjectTreeCopier()
-        Map<ObjectSystemData, ObjectSystemData> emptyCopies = otc.getCopyCache();
+        ObjectTreeCopier otc = new ObjectTreeCopier(userService.user, treeRoot.parent)
+        Map<Long, ObjectSystemData> emptyCopies = [:]
         for (ObjectSystemData osd : allVersions) {
             ObjectSystemData newLeaf = ObjectSystemData.findByRootAndCmnVersion(treeRoot, osd.cmnVersion);
             log.debug(String.format("OSD: %d / newLeaf: %d",
-                    osd.getId(), newLeaf != null ? newLeaf.getId() : null));
-            emptyCopies.put(osd, newLeaf);
+                    osd.id, newLeaf != null ? newLeaf.id : null));
+            emptyCopies[osd.id] = newLeaf;
+            otc.copyCache[osd] = newLeaf
         }
 
         // create missing leaves:
-        for (ObjectSystemData osd : otc.getCopyCache().keySet()) {
-            if (emptyCopies.get(osd) == null) {
+        for (ObjectSystemData osd : otc.copyCache.keySet()) {
+            if (emptyCopies[osd.id] == null) {
                 ObjectSystemData leaf = otc.createEmptyCopy(osd);
                 log.debug(String.format("EmptyCopy of %d is %d",
-                        osd.getId(), leaf != null ? leaf.getId() : null));
+                        osd.id, leaf != null ? leaf.id : null));
                 if (leaf == null) {
-                    log.warn("An empty leaf node was generated!");
-                    throw new CinnamonException("error.translation.internal");
+                    log.warn("An empty leaf node was generated!")
+                    throw new CinnamonException("error.translation.internal")
                 }
                 leaf.storeMetadata(metaNode);
                 newObjects.add(leaf);
-                emptyCopies.put(osd, leaf);
+                emptyCopies[osd.id] = leaf;
+                otc.copyCache[osd] = leaf
             }
         }
-        return emptyCopies.get(source);
+        def copy = emptyCopies[source.id]
+        if (copy == null) {
+            throw new RuntimeException("growTargetNode failed to create new OSD target node.")
+        }
+        return copy
+
     }
 
     /**
@@ -313,7 +325,7 @@ class TranslationService {
 
         log.debug(String.format("create root relation between: %d and %d of type %d",
                 source.root.id, treeRoot.id, rootRelationType.id))
-        relationService.findOrCreateRelation(rootRelationType, source, treeRoot, '')
+        relationService.findOrCreateRelation(rootRelationType, source.root, treeRoot, '')
         return treeRoot;
     }
 
