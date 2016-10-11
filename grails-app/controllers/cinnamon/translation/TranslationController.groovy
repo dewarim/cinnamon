@@ -96,6 +96,9 @@ class TranslationController extends BaseController {
                     attribute, attribute_value, source_id, object_relation_type_id,
                     root_relation_type_id, target_folder_id
             )
+            luceneService.waitForIndexer()
+            // unless we wait, a direct subsequent call to searchObjects may fail to find the new translation.
+            
             render(contentType: 'application/xml', text: translationResult
                     .toXml(include_summary))
 

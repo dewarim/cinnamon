@@ -1,5 +1,6 @@
 package cinnamon
 
+import cinnamon.index.IndexJob
 import org.apache.lucene.analysis.Analyzer
 import org.apache.lucene.analysis.standard.StandardAnalyzer
 import org.apache.lucene.analysis.miscellaneous.LimitTokenCountAnalyzer
@@ -141,5 +142,12 @@ class LuceneService {
         results.filterResultToSet(domain, itemService, validator)
     }
 
-
+    void waitForIndexer(){
+        def jobCount = IndexJob.countByFailed(false)
+        while(jobCount > 0){
+            log.info("Waiting for indexer to finish indexing. Current active index tasks: "+jobCount)
+            Thread.sleep(2000)
+            jobCount = IndexJob.countByFailed(false)
+        }
+    }
 }
