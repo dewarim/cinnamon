@@ -88,9 +88,8 @@ class TranslationController extends BaseController {
      * </pre>
      */
     def createTranslation(String attribute, String attribute_value, Long source_id,
-                          Long object_relation_type_id, Long
-                                  root_relation_type_id, Long target_folder_id,
-                          Boolean include_summary
+                          Long object_relation_type_id, Long root_relation_type_id, 
+                          Long target_folder_id,  Boolean include_summary
     ) {
         try {
             TranslationResult translationResult = translationService.createTranslation(
@@ -140,7 +139,7 @@ class TranslationController extends BaseController {
      *         it already has an translation relation to the source object.
      */
     def checkTranslation(String attribute, String attribute_value, Long source_id,
-                         Long object_relation_type_id, Long root_relation_type_id, Long target_folder_id
+                         Long object_relation_type_id, Long root_relation_type_id
     ) {
         try {
             ObjectSystemData source = translationService.getSource(source_id)
@@ -184,7 +183,7 @@ class TranslationController extends BaseController {
             render(contentType: 'application/xml', text: doc.asXML())
         }
         catch (Exception e) {
-            log.debug("checkTranslation failed with:",e)
+            log.debug("checkTranslation failed with:", e)
             String fullMessage = ExceptionUtils.getFullStackTrace(e);
             renderExceptionXml(fullMessage)
         }
