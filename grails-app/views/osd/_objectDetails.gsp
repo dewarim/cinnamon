@@ -156,24 +156,22 @@ return false;" title="${message(code: 'table.hide')}">
                 <g:message code="folder.render.preview"/>
             </g:remoteLink>
         </span>
+        <g:if test="${osd.contentSize > 0}">
+            &nbsp;|&nbsp;
+            <g:link controller="osd" action="getContent" params="[osd: osd.id]"
+                    class="getContentLink">
+                <g:message code="osd.getContent.link"/>
+            </g:link>
+        </g:if>
     </g:if>
     <g:else>
         <g:message code="osd.no.content"/>
     </g:else>
 </div>
 
-<p>
-    <g:link controller="osd" action="setContent" params="[osd: osd.id]" class="setContentLink">
-        <g:message code="osd.setContent.link"/>
-    </g:link>
-    <g:if test="${osd.contentSize > 0}">
-        &nbsp;|&nbsp;
-        <g:link controller="osd" action="getContent" params="[osd: osd.id]"
-                class="getContentLink">
-            <g:message code="osd.getContent.link"/>
-        </g:link>
-    </g:if>
-</p>
+<div>
+    <g:render template="editContent" model="[osd: osd]"/>
+</div>
 
 <div class="metadata">
     <h2><g:message code="osd.metadata"/></h2>

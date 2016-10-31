@@ -18,7 +18,14 @@
     <asset:stylesheet src="jquery-ui-1.11.1/jquery-ui.css"/>
     <asset:stylesheet src="main.css"/>
     <asset:link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
-
+    
+    
+    <!-- ajax upload from: https://github.com/blueimp/jQuery-File-Upload/wiki/Basic-plugin -->
+    <asset:javascript src="jquery.ui.widget.js"/>
+    <asset:javascript src="jquery.iframe-transport.js"/>
+    <asset:javascript src="jquery.fileupload.js"/>
+    
+    
     <g:render template="/shared/variables"/>
     <g:layoutHead/>
 

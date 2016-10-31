@@ -72,10 +72,6 @@ class OsdController extends BaseController {
         }
     }
 
-    def editContent() {
-
-    }
-
     def listRelations() {
         try {
             ObjectSystemData osd = fetchAndFilterOsd(params.osd)
@@ -225,6 +221,16 @@ class OsdController extends BaseController {
             renderException(e.message)
         }
     }
+    
+    def editContent(Long osd){
+        try{
+            def obj = fetchAndFilterOsd(osd)
+            render(template: mapTemplate('/osd/editContent'), model: [osd: obj])
+        }
+        catch (Exception e){
+            renderException(e.message)
+        }
+    }
 
     static List<String> allowedFields = ['name', 'format', 'acl', 'objtype', 'language', 'owner']
 
@@ -287,7 +293,7 @@ class OsdController extends BaseController {
             return redirect(controller: 'osd', action: 'create', params: [folder: folder.id])
         }
     }
-
+    
     def saveContent(Long formatId) {
         ObjectSystemData osd = null
         try {
@@ -308,6 +314,31 @@ class OsdController extends BaseController {
                 return redirect(controller: 'folder', action: 'index')
             }
             redirect(controller: 'osd', action: 'setContent', params: [folder: params.folder, osd: params.osd])
+        }
+    }
+    
+    def saveContentJson(Long formatId) {
+        ObjectSystemData osd = null
+        try {
+            UserAccount user = userService.user
+            osd = fetchAndFilterOsd(params.osd, [PermissionName.WRITE_OBJECT_CONTENT])
+            def folder = fetchAndFilterFolder(osd.parent.id)
+//            osdService.saveFileUpload(request, osd, user, formatId, repositoryName)
+            osdService.saveFileUpload(request, osd, user, osd.format?.id, repositoryName)
+
+            log.debug("set content on object #${osd.id}")
+            // TODO: i18n "ok"
+            render(contentType: "application/json"){
+                result(msg:message(code: "upload.success"))
+            }
+        }
+        catch (RuntimeException e) {
+            LocalRepository.cleanUp()
+            log.debug("Failed to set content on object ${osd?.id}: ", e)
+            flash.message = message(code: e.message)
+            render(contentType: "application/json"){
+                result(msg:e.message)
+            }
         }
     }
 
