@@ -1,5 +1,5 @@
 <%@ page import="cinnamon.Format; cinnamon.ObjectType" %>
-<g:form controller="osd" action=" $ nextAction" method="POST" enctype="multipart/form-data" name=" $ nextAction">
+<g:form controller="osd" action="$nextAction" method="POST" enctype="multipart/form-data" name="$nextAction">
     <input type="hidden" name="folder" value="${folder.id}">
     <g:if test="${osd}">
         <input type="hidden" name="osd" value="${osd.id}">
