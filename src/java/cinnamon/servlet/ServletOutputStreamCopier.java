@@ -22,7 +22,10 @@ public class ServletOutputStreamCopier extends ServletOutputStream {
     @Override
     public void write(int b) throws IOException {
         outputStream.write(b);
-        copy.write(b);
+        // do not copy responses larger than 10 MByte.
+        if(copy.size() > 10_000_000){
+            copy.write(b);
+        }
     }
 
     public byte[] getCopy() {
