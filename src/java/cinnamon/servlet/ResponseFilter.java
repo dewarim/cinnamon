@@ -5,7 +5,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,43 +35,50 @@ public class ResponseFilter implements Filter {
             response.setCharacterEncoding("UTF-8"); // Or whatever default. UTF-8 is good for World Domination.
         }
 
-        HttpServletResponseCopier responseCopier = new HttpServletResponseCopier((HttpServletResponse) response);
-        localResponseCopier.set(responseCopier);
-        
-        try {
+        byte[] copy;
+
+        if (response.getContentType() != null && response.getContentType().equals("application/octet-stream")) {
+            log.debug("Not using responseCopier on binary output.");
+            chain.doFilter(request, response);
+            copy = "filtered: binary response".getBytes("UTF-8");
+            copyHeaders(request, response, copy);
+        }
+        else {
+            log.debug("non-binary response: using responseCopier");
+            HttpServletResponseCopier responseCopier = new HttpServletResponseCopier((HttpServletResponse) response);
+            localResponseCopier.set(responseCopier);
             chain.doFilter(request, responseCopier);
             responseCopier.flushBuffer();
-        } finally {
-            byte[] copy = responseCopier.getCopy();
-//            log.debug("response.copy: " + new String(copy, "UTF-8"));
+            copy = responseCopier.getCopy();
+            copyHeaders(request, responseCopier, copy);
+        }
 
-            HttpServletResponse httpServletResponse = ((HttpServletResponse) response);
-            for (String url : httpServletResponse.getHeaders("microservice")) {
-//                new MicroserviceChangeTrigger().executePostCommand()
-                HttpClient httpClient = HttpClientBuilder.create().build();
-                RequestBuilder requestCopy = RequestBuilder.create("POST");
-                requestCopy.setUri(url);
-                HttpServletRequest httpServletRequest = ((HttpServletRequest) request);
-                Enumeration<String> headerNames = httpServletRequest.getHeaderNames();
-                while (headerNames.hasMoreElements()) {
-                    String headerName = headerNames.nextElement();
-                    if (headerName.equals("microservice")) {
-                        continue;
-                    }
-                    requestCopy.setHeader(headerName, httpServletRequest.getHeader(headerName));
-                }
-                for (Map.Entry<String, String[]> entry : httpServletRequest.getParameterMap().entrySet()) {
-                    for (String paramVal : entry.getValue()) {
-                        requestCopy.addParameter(entry.getKey(), paramVal);
-                    }
-                }
+    }
 
-                requestCopy.addParameter("cinnamonResponse", new String(copy, "UTF-8"));
-                HttpResponse httpResponse = httpClient.execute(requestCopy.build());
-                log.debug("Microservice response status:" + httpResponse.getStatusLine());
-                log.debug("Microservice response content:" + EntityUtils.toString(httpResponse.getEntity()));
+    private void copyHeaders(ServletRequest request, ServletResponse response, byte[] copy) throws IOException {
+        HttpServletResponse httpServletResponse = ((HttpServletResponse) response);
+        for (String url : httpServletResponse.getHeaders("microservice")) {
+            HttpClient httpClient = HttpClientBuilder.create().build();
+            RequestBuilder requestCopy = RequestBuilder.create("POST");
+            requestCopy.setUri(url);
+            HttpServletRequest httpServletRequest = ((HttpServletRequest) request);
+            Enumeration<String> headerNames = httpServletRequest.getHeaderNames();
+            while (headerNames.hasMoreElements()) {
+                String headerName = headerNames.nextElement();
+                if (headerName.equals("microservice")) {
+                    continue;
+                }
+                requestCopy.setHeader(headerName, httpServletRequest.getHeader(headerName));
+            }
+            for (Map.Entry<String, String[]> entry : httpServletRequest.getParameterMap().entrySet()) {
+                for (String paramVal : entry.getValue()) {
+                    requestCopy.addParameter(entry.getKey(), paramVal);
+                }
             }
 
+            requestCopy.addParameter("cinnamonResponse", new String(copy, "UTF-8"));
+            HttpResponse httpResponse = httpClient.execute(requestCopy.build());
+            log.debug("Microservice response status:" + httpResponse.getStatusLine());
         }
     }
 
