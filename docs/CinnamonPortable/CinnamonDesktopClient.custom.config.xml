@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cinnamon_client>
+  <global_settings>
+    <culture_name>en-EN</culture_name>
+    <!-- optional - if unspecified, default culture is used -->
+    <local_root_path type="mydocuments">cinnamon</local_root_path>
+    <!-- valid types: absolute, mydocuments (or can be left out = absolute)-->
+    <show_tips_on_startup value="false"/>
+    <clear_checkout_folder_on_close action="always"/>
+    <summary include_summary="true" />
+    <log value="false"/>
+  </global_settings>
+
+  <classes>
+    <command_line_extensions>
+      <command_line_extension name="child_selector" assembly="Praties" type="ChildSelectorClExtension"/>
+    </command_line_extensions>
+
+    <session_extensions>
+    </session_extensions>
+
+    <control_window assembly="Praties" type="ControlWindow">
+    </control_window>
+
+    <session_window assembly="Praties" type="RepositoryNavigationWindow">
+      <session_window_custom>
+        <repository_navigation_window_tree_node assembly="Praties" type="TreeGenericFolderBrowser">
+          <tree_node_custom>
+            <node_root_path type="absolute"/>
+            <!-- absolute, user; content of element is either absolute path, or path inside user folder-->
+            <root_icon>repository</root_icon>
+            <root_type>repository</root_type>
+          </tree_node_custom>
+        </repository_navigation_window_tree_node>
+        <repository_navigation_window_tree_node assembly="Praties" type="TreeGenericFolderBrowser">
+          <tree_node_custom>
+            <node_root_path type="user">home</node_root_path>
+            <root_icon>home</root_icon>
+            <root_type>home</root_type>
+          </tree_node_custom>
+        </repository_navigation_window_tree_node>
+        <repository_navigation_window_tree_node assembly="Praties" type="TreeGenericFolderBrowser">
+          <tree_node_custom>
+            <node_root_path type="user">searches</node_root_path>
+            <root_icon>search_folder</root_icon>
+            <root_type>searches</root_type>
+          </tree_node_custom>
+        </repository_navigation_window_tree_node>
+        <repository_navigation_window_tree_node assembly="Praties" type="TreeGenericFolderBrowser">
+          <tree_node_custom>
+            <node_root_path type="user">carts</node_root_path>
+            <root_icon>cart_folder</root_icon>
+            <root_type>carts</root_type>
+          </tree_node_custom>
+        </repository_navigation_window_tree_node>
+        <repository_navigation_window_tree_node assembly="Praties" type="TreeGenericView">
+          <tree_node_custom>
+            <root_icon>document_locked_self</root_icon>
+            <root_type>my_locks</root_type>
+          </tree_node_custom>
+        </repository_navigation_window_tree_node>
+        <repository_navigation_window_tree_node assembly="Praties" type="TreeGenericView">
+          <tree_node_custom>
+            <root_icon>rendering</root_icon>
+            <root_type>my_render_tasks</root_type>
+          </tree_node_custom>
+        </repository_navigation_window_tree_node>
+        <repository_navigation_window_tree_node assembly="Praties" type="TreeGenericView">
+          <tree_node_custom>
+            <root_icon>translate</root_icon>
+            <root_type>my_translation_tasks</root_type>
+          </tree_node_custom>
+        </repository_navigation_window_tree_node>
+        <repository_navigation_window_tree_node assembly="Praties" type="TreeGenericView">
+          <tree_node_custom>
+            <root_icon>wf_inbox</root_icon>
+            <root_type>my_workflow_tasks</root_type>
+          </tree_node_custom>
+        </repository_navigation_window_tree_node>
+        <repository_navigation_window_tree_node assembly="Praties" type="TreeResultListDisplay"/>
+        <key_event key="V" selection_filter="folder" ctrl="True" shift="False" alt="False" assembly="Praties" type="PasteFolderFunction" event_type="execute_method"/>
+        <key_event key="X" selection_filter="folder" ctrl="True" shift="False" alt="False" assembly="Praties" type="CutFolderFolderFunction" event_type="execute_method"/>
+        <key_event key="C" selection_filter="folder" ctrl="True" shift="False" alt="False" assembly="Praties" type="CopyFolderFolderFunction" event_type="execute_method"/>
+        <key_event key="Delete" selection_filter="folder" ctrl="False" shift="False" alt="False" assembly="Praties" type="DeleteListFunction" event_type="execute_method"/>
+        <key_event key="F5" selection_filter="folder" ctrl="False" shift="False" alt="False" event_type="refresh"/>
+        <key_event key="F5" selection_filter="object" ctrl="False" shift="False" alt="False" event_type="refresh"/>
+        <key_event key="F5" selection_filter="list" ctrl="False" shift="False" alt="False" event_type="refresh"/>
+        <key_event key="F5" selection_filter="nothing" ctrl="False" shift="False" alt="False" event_type="refresh"/>
+        
+        <quick_search_config>
+          <fieldname>name</fieldname>
+          <fieldname>content</fieldname>
+          <fieldname>dita.content</fieldname>
+          <fieldname>dita.title</fieldname>
+        </quick_search_config>
+      
+      </session_window_custom>
+    </session_window>
+
+
+    <tab_controls>
+      <tab_control assembly="Praties" type="PropertiesObjectControl" display="list">
+        <tab_control_custom>
+          <lifecycle_selector level="advanced"/>
+        </tab_control_custom>
+      </tab_control>
+      <tab_control assembly="Praties" type="RelationsObjectControl" display="list">
+        <custom>
+          <columns>
+            <!-- currently supported: name, id, version, relationtype -->
+            <list_view_column type="name" width="200"/>
+            <list_view_column type="version" width="80"/>
+            <list_view_column type="id" width="80"/>
+            <list_view_column type="type" width="150"/>
+            <list_view_column type="path" width="150"/>
+          </columns>
+        </custom>
+      </tab_control>
+      <tab_control assembly="Praties" type="DependencyViewerObjectControl" display="list">
+        <tab_control_custom>
+          <!-- the depth influences the processing speed - deeper = slower -->
+          <parents depth="2"/>
+          <children depth="3"/>
+        </tab_control_custom>
+      </tab_control>
+      <tab_control assembly="Praties" type="PermissionsObjectControl" display="list"/>
+      <tab_control assembly="Praties" type="EditSearchObjectControl" display="list">
+        <tab_control_custom>
+          <!-- mapping index_types.name to assembly / type of ISearchTermControl) -->
+          <search_term_control index_type_name="xpath.boolean_indexer" value_assistance="false" assembly="Praties" type="BooleanTermControl" />
+          <search_term_control index_type_name="xpath.date_indexer" value_assistance="false" assembly="Praties" type="DateTermControl" />
+          <search_term_control index_type_name="xpath.integer_indexer" value_assistance="false" assembly="Praties" type="IntegerTermControl" />
+          <search_term_control index_type_name="xpath.integer_indexer" value_assistance="true" assembly="Praties" type="IntegerValueAssistTermControl" />
+          <search_term_control index_type_name="xpath.string_indexer" value_assistance="false" assembly="Praties" type="TextTermControl" />
+          <search_term_control index_type_name="xpath.decimal_indexer" value_assistance="false" assembly="Praties" type="DecimalTermControl" />
+          <search_term_control index_type_name="xpath.time_indexer" value_assistance="false" assembly="Praties" type="TimeTermControl" />
+          <search_term_control index_type_name="xpath.complete_string_indexer" value_assistance="false" assembly="Praties" type="StringTermControl" />
+          <search_term_control index_type_name="xpath.complete_string_indexer" value_assistance="true" assembly="Praties" type="StringValueAssistTermControl" />
+          <search_term_control index_type_name="xpath.folder_path_indexer" value_assistance="false" assembly="Praties" type="FolderTermControl" />
+          <search_term_control index_type_name="xpath.countIndexerType" value_assistance="false" assembly="Praties" type="IntegerTermControl" />
+          <search_term_control index_type_name="xpath.descending_string_indexer" value_assistance="false" assembly="Praties" type="TextTermControl" />
+          <search_term_control index_type_name="xpath.descending_complete_string_indexer" value_assistance="false" assembly="Praties" type="StringTermControl" />
+          <search_term_control index_type_name="xpath.descending_reverse_string_indexer" value_assistance="false" assembly="Praties" type="TextTermControl" />
+          <search_term_control index_type_name="xpath.descending_reverse_complete_string_indexer" value_assistance="false" assembly="Praties" type="StringTermControl" />
+        </tab_control_custom>
+      </tab_control>
+      <tab_control assembly="Praties" type="GeneralMetadataObjectControl" display="list"/>
+      <tab_control assembly="Praties" type="AdvancedEditMetadataObjectControl" display="list"/>
+      <tab_control assembly="Praties" type="TranslationTaskObjectControl" display="list">
+        <tab_control_custom>
+          <translation_customization assembly="Praties" type="TranslationDefaultCustomizing">
+            <approved_states>
+              <approved_state>released.lcs</approved_state>
+            </approved_states>
+            <target_lifecycle>review.lc</target_lifecycle>
+          </translation_customization>
+        </tab_control_custom>
+      </tab_control>
+      <!-- This is one option, to configure the custom control here - another one is customization by a config object in the repo -->
+      <tab_control assembly="Praties" type="ContentsListControl" display="tree">
+        <!-- tab_control may have the values for display: tree, list, all -->
+        <custom>
+          <columns>
+            <!-- currently supported: name, id, format, type, size, owner, locked, lifecycle, path -->
+            <list_view_column type="name" width="200" sort="ascending"/>
+            <!-- name  must always be first column -->
+            <list_view_column type="version" width="50"/>
+            <list_view_column type="format" width="50"/>
+            <list_view_column type="type" width="120"/>
+            <list_view_column type="size" width="50"/>
+            <list_view_column type="owner" width="100"/>
+            <list_view_column type="locked" width="100"/>
+            <list_view_column type="lifecycle" width="100"/>
+            <list_view_column type="id" width="50"/>
+            <!-- <list_view_column type="path" width="120"/> -->
+          </columns>
+
+          <events>
+            <key_event key="V" selection_filter="folder" ctrl="True" shift="False" alt="False" assembly="Praties" type="PasteFolderFunction" event_type="execute_method"/>
+            <key_event key="X" selection_filter="folder" ctrl="True" shift="False" alt="False" assembly="Praties" type="CutFolderFolderFunction" event_type="execute_method"/>
+            <key_event key="C" selection_filter="folder" ctrl="True" shift="False" alt="False" assembly="Praties" type="CopyFolderFolderFunction" event_type="execute_method"/>
+            <key_event key="Delete" selection_filter="folder" ctrl="False" shift="False" alt="False" assembly="Praties" type="DeleteFolderFolderFunction" event_type="execute_method"/>
+            <key_event key="F5" selection_filter="folder" ctrl="False" shift="False" alt="False" event_type="refresh"/>
+            <key_event key="F5" selection_filter="object" ctrl="False" shift="False" alt="False" event_type="refresh"/>
+            <key_event key="F5" selection_filter="list" ctrl="False" shift="False" alt="False" event_type="refresh"/>
+            <key_event key="F5" selection_filter="nothing" ctrl="False" shift="False" alt="False" event_type="refresh"/>
+            <key_event key="X" selection_filter="object" ctrl="True" shift="False" alt="False" assembly="Praties" type="CutObjectFunction" event_type="execute_method"/>
+            <key_event key="C" selection_filter="object" ctrl="True" shift="False" alt="False" assembly="Praties" type="CopyObjectFunction" event_type="execute_method"/>
+            <key_event key="Delete" selection_filter="object" ctrl="False" shift="False" assembly="Praties" type="DeleteObjectFunction" event_type="execute_method"/>
+            <key_event key="Enter" selection_filter="object" ctrl="False" shift="False" assembly="Praties" type="ViewObjectFunction" event_type="execute_method"/>
+            <key_event key="A" selection_filter="folder" ctrl="True" shift="False" alt="False" event_type="select_all"/>
+            <key_event key="A" selection_filter="object" ctrl="True" shift="False" alt="False" event_type="select_all"/>
+            <key_event key="A" selection_filter="list" ctrl="True" shift="False" alt="False" event_type="select_all"/>
+            <key_event key="A" selection_filter="nothing" ctrl="True" shift="False" alt="False" event_type="select_all"/>
+            <key_event key="X" selection_filter="list" ctrl="True" shift="False" alt="False" assembly="Praties" type="CutListFunction" event_type="execute_method"/>
+            <key_event key="Delete" selection_filter="list" ctrl="False" shift="False" alt="False" assembly="Praties" type="DeleteListFunction" event_type="execute_method"/>
+            <drop_event selection_filter="folder" ctrl="false" shift="false" alt="false" mouse_button="left" event_type="execute_method" assembly="Praties" type="CutFolderFolderFunction"/>
+            <drop_event selection_filter="object" ctrl="false" shift="false" alt="false" mouse_button="left" event_type="execute_method" assembly="Praties" type="CutObjectFunction"/>
+            <drop_event selection_filter="list" ctrl="false" shift="false" alt="false" mouse_button="left" event_type="execute_method" assembly="Praties" type="CutListFunction"/>
+            <drag_event selection_filter="object" ctrl="false" shift="false" alt="false" mouse_button="left" event_type="execute_method" assembly="Praties" type="CutObjectFunction"/>
+            <drag_event selection_filter="folder" ctrl="false" shift="false" alt="false" mouse_button="left" event_type="execute_method" assembly="Praties" type="CutFolderFolderFunction"/>
+            <drag_event selection_filter="list" ctrl="false" shift="false" alt="false" mouse_button="left" event_type="execute_method" assembly="Praties" type="CutListFunction"/>
+            <drag_event selection_filter="object" ctrl="true" shift="false" alt="false" mouse_button="left" event_type="execute_method" assembly="Praties" type="CopyObjectFunction"/>
+            <drag_event selection_filter="folder" ctrl="true" shift="false" alt="false" mouse_button="left" event_type="execute_method" assembly="Praties" type="CopyFolderFolderFunction"/>
+            <drag_event selection_filter="object" ctrl="false" shift="false" alt="false" mouse_button="right" event_type="execute_method" assembly="Praties" type="CopyOrMoveObjectFunction"/>
+            <drag_event selection_filter="folder" ctrl="false" shift="false" alt="false" mouse_button="right" event_type="execute_method" assembly="Praties" type="CopyOrMoveFolderFunction"/>
+            <drag_event selection_filter="list" ctrl="false" shift="false" alt="false" mouse_button="right" event_type="execute_method" assembly="Praties" type="CopyOrMoveListFunction"/>
+          </events>
+        </custom>
+      </tab_control>
+      <tab_control assembly="Praties" type="ContentsFolderControl" display="tree">
+        <!-- tab_control may have the values for display: tree, list, all -->
+
+        <custom>
+          <version_behavior value="head" />
+          <columns>
+            <!-- currently supported: name, id, format, type, size, owner, locked, lifecycle, path -->
+            <list_view_column type="name" width="200" sort="ascending"/>
+            <!-- name  must always be first column -->
+            <list_view_column type="version" width="50"/>
+            <list_view_column type="format" width="50"/>
+            <list_view_column type="type" width="120"/>
+            <list_view_column type="size" width="50"/>
+            <list_view_column type="owner" width="100"/>
+            <list_view_column type="locked" width="100"/>
+            <list_view_column type="lifecycle" width="100"/>
+            <list_view_column type="id" width="50"/>
+            <!-- <list_view_column type="path" width="120"/> -->
+          </columns>
+
+          <events>
+            <key_event key="V" selection_filter="folder" ctrl="True" shift="False" alt="False" assembly="Praties" type="PasteFolderFunction" event_type="execute_method"/>
+            <key_event key="X" selection_filter="folder" ctrl="True" shift="False" alt="False" assembly="Praties" type="CutFolderFolderFunction" event_type="execute_method"/>
+            <key_event key="C" selection_filter="folder" ctrl="True" shift="False" alt="False" assembly="Praties" type="CopyFolderFolderFunction" event_type="execute_method"/>
+            <key_event key="Delete" selection_filter="folder" ctrl="False" shift="False" alt="False" assembly="Praties" type="DeleteFolderFolderFunction" event_type="execute_method"/>
+            <key_event key="F5" selection_filter="folder" ctrl="False" shift="False" alt="False" event_type="refresh"/>
+            <key_event key="F5" selection_filter="object" ctrl="False" shift="False" alt="False" event_type="refresh"/>
+            <key_event key="F5" selection_filter="list" ctrl="False" shift="False" alt="False" event_type="refresh"/>
+            <key_event key="F5" selection_filter="nothing" ctrl="False" shift="False" alt="False" event_type="refresh"/>
+            <key_event key="X" selection_filter="object" ctrl="True" shift="False" alt="False" assembly="Praties" type="CutObjectFunction" event_type="execute_method"/>
+            <key_event key="C" selection_filter="object" ctrl="True" shift="False" alt="False" assembly="Praties" type="CopyObjectFunction" event_type="execute_method"/>
+            <key_event key="Delete" selection_filter="object" ctrl="False" shift="False" assembly="Praties" type="DeleteObjectFunction" event_type="execute_method"/>
+            <key_event key="Enter" selection_filter="object" ctrl="False" shift="False" assembly="Praties" type="ViewObjectFunction" event_type="execute_method"/>
+            <key_event key="A" selection_filter="folder" ctrl="True" shift="False" alt="False" event_type="select_all"/>
+            <key_event key="A" selection_filter="object" ctrl="True" shift="False" alt="False" event_type="select_all"/>
+            <key_event key="A" selection_filter="list" ctrl="True" shift="False" alt="False" event_type="select_all"/>
+            <key_event key="A" selection_filter="nothing" ctrl="True" shift="False" alt="False" event_type="select_all"/>
+            <key_event key="X" selection_filter="list" ctrl="True" shift="False" alt="False" assembly="Praties" type="CutListFunction" event_type="execute_method"/>
+            <key_event key="Delete" selection_filter="list" ctrl="False" shift="False" alt="False" assembly="Praties" type="DeleteListFunction" event_type="execute_method"/>
+            <drop_event selection_filter="folder" ctrl="false" shift="false" alt="false" mouse_button="left" event_type="execute_method" assembly="Praties" type="CutFolderFolderFunction"/>
+            <drop_event selection_filter="object" ctrl="false" shift="false" alt="false" mouse_button="left" event_type="execute_method" assembly="Praties" type="CutObjectFunction"/>
+            <drop_event selection_filter="list" ctrl="false" shift="false" alt="false" mouse_button="left" event_type="execute_method" assembly="Praties" type="CutListFunction"/>
+            <drag_event selection_filter="object" ctrl="false" shift="false" alt="false" mouse_button="left" event_type="execute_method" assembly="Praties" type="CutObjectFunction"/>
+            <drag_event selection_filter="folder" ctrl="false" shift="false" alt="false" mouse_button="left" event_type="execute_method" assembly="Praties" type="CutFolderFolderFunction"/>
+            <drag_event selection_filter="list" ctrl="false" shift="false" alt="false" mouse_button="left" event_type="execute_method" assembly="Praties" type="CutListFunction"/>
+            <drag_event selection_filter="object" ctrl="true" shift="false" alt="false" mouse_button="left" event_type="execute_method" assembly="Praties" type="CopyObjectFunction"/>
+            <drag_event selection_filter="folder" ctrl="true" shift="false" alt="false" mouse_button="left" event_type="execute_method" assembly="Praties" type="CopyFolderFolderFunction"/>
+            <drag_event selection_filter="object" ctrl="false" shift="false" alt="false" mouse_button="right" event_type="execute_method" assembly="Praties" type="CopyOrMoveObjectFunction"/>
+            <drag_event selection_filter="folder" ctrl="false" shift="false" alt="false" mouse_button="right" event_type="execute_method" assembly="Praties" type="CopyOrMoveFolderFunction"/>
+            <drag_event selection_filter="list" ctrl="false" shift="false" alt="false" mouse_button="right" event_type="execute_method" assembly="Praties" type="CopyOrMoveListFunction"/>
+          </events>
+        </custom>
+      </tab_control>
+      <tab_control assembly="Praties" type="PropertiesFolderControl" display="list"/>
+      <tab_control assembly="Praties" type="PermissionFolderControl" display="list"/>
+      <tab_control assembly="Praties" type="LanguageFolderControl" display="list"/>
+      <tab_control assembly="Praties" type="ContentsSessionControl" display="tree">
+        <!-- tab_control may have the values for display: tree, list, all -->
+
+        <custom>
+
+          <columns>
+            <!-- currently supported: name, id, format, type, size, owner, locked, lifecycle, path -->
+            <list_view_column type="name" width="200" sort="ascending"/>
+            <!-- name  must always be first column -->
+            <list_view_column type="type" width="120"/>
+            <list_view_column type="owner" width="100"/>
+            <list_view_column type="id" width="50"/>
+          </columns>
+
+          <events>
+            <key_event key="V" selection_filter="folder" ctrl="True" shift="False" alt="False" assembly="Praties" type="PasteFolderFunction" event_type="execute_method"/>
+            <key_event key="X" selection_filter="folder" ctrl="True" shift="False" alt="False" assembly="Praties" type="CutFolderFolderFunction" event_type="execute_method"/>
+            <key_event key="C" selection_filter="folder" ctrl="True" shift="False" alt="False" assembly="Praties" type="CopyFolderFolderFunction" event_type="execute_method"/>
+            <key_event key="Delete" selection_filter="folder" ctrl="False" shift="False" alt="False" assembly="Praties" type="DeleteFolderFolderFunction" event_type="execute_method"/>
+            <key_event key="F5" selection_filter="folder" ctrl="False" shift="False" alt="False" event_type="refresh"/>
+            <key_event key="F5" selection_filter="object" ctrl="False" shift="False" alt="False" event_type="refresh"/>
+            <key_event key="F5" selection_filter="list" ctrl="False" shift="False" alt="False" event_type="refresh"/>
+            <key_event key="F5" selection_filter="nothing" ctrl="False" shift="False" alt="False" event_type="refresh"/>
+            <key_event key="X" selection_filter="object" ctrl="True" shift="False" alt="False" assembly="Praties" type="CutObjectFunction" event_type="execute_method"/>
+            <key_event key="C" selection_filter="object" ctrl="True" shift="False" alt="False" assembly="Praties" type="CopyObjectFunction" event_type="execute_method"/>
+            <key_event key="Delete" selection_filter="object" ctrl="False" shift="False" assembly="Praties" type="DeleteObjectFunction" event_type="execute_method"/>
+            <key_event key="Enter" selection_filter="object" ctrl="False" shift="False" assembly="Praties" type="ViewObjectFunction" event_type="execute_method"/>
+            <key_event key="A" selection_filter="folder" ctrl="True" shift="False" alt="False" event_type="select_all"/>
+            <key_event key="A" selection_filter="object" ctrl="True" shift="False" alt="False" event_type="select_all"/>
+            <key_event key="A" selection_filter="list" ctrl="True" shift="False" alt="False" event_type="select_all"/>
+            <key_event key="A" selection_filter="nothing" ctrl="True" shift="False" alt="False" event_type="select_all"/>
+            <key_event key="X" selection_filter="list" ctrl="True" shift="False" alt="False" assembly="Praties" type="CutListFunction" event_type="execute_method"/>
+            <key_event key="Delete" selection_filter="list" ctrl="False" shift="False" alt="False" assembly="Praties" type="DeleteListFunction" event_type="execute_method"/>
+            <drop_event selection_filter="folder" ctrl="false" shift="false" alt="false" mouse_button="left" event_type="execute_method" assembly="Praties" type="CutFolderFolderFunction"/>
+            <drop_event selection_filter="object" ctrl="false" shift="false" alt="false" mouse_button="left" event_type="execute_method" assembly="Praties" type="CutObjectFunction"/>
+            <drop_event selection_filter="list" ctrl="false" shift="false" alt="false" mouse_button="left" event_type="execute_method" assembly="Praties" type="CutListFunction"/>
+            <drag_event selection_filter="object" ctrl="false" shift="false" alt="false" mouse_button="left" event_type="execute_method" assembly="Praties" type="CutObjectFunction"/>
+            <drag_event selection_filter="folder" ctrl="false" shift="false" alt="false" mouse_button="left" event_type="execute_method" assembly="Praties" type="CutFolderFolderFunction"/>
+            <drag_event selection_filter="list" ctrl="false" shift="false" alt="false" mouse_button="left" event_type="execute_method" assembly="Praties" type="CutListFunction"/>
+            <drag_event selection_filter="object" ctrl="true" shift="false" alt="false" mouse_button="left" event_type="execute_method" assembly="Praties" type="CopyObjectFunction"/>
+            <drag_event selection_filter="folder" ctrl="true" shift="false" alt="false" mouse_button="left" event_type="execute_method" assembly="Praties" type="CopyFolderFolderFunction"/>
+            <drag_event selection_filter="object" ctrl="false" shift="false" alt="false" mouse_button="right" event_type="execute_method" assembly="Praties" type="CopyOrMoveObjectFunction"/>
+            <drag_event selection_filter="folder" ctrl="false" shift="false" alt="false" mouse_button="right" event_type="execute_method" assembly="Praties" type="CopyOrMoveFolderFunction"/>
+            <drag_event selection_filter="list" ctrl="false" shift="false" alt="false" mouse_button="right" event_type="execute_method" assembly="Praties" type="CopyOrMoveListFunction"/>
+          </events>
+        </custom>
+      </tab_control>
+    </tab_controls>
+
+    <object_functions>
+      <object_function assembly="Praties" type="CheckoutObjectFunction" display="contextmenu"/>
+      <object_function assembly="Praties" type="CheckinObjectFunction" display="contextmenu"/>
+      <object_function assembly="Praties" type="CancelCheckoutObjectFunction" display="contextmenu"/>
+      <object_function assembly="Praties" type="OpenObjectFunction" display="contextmenu"/>
+      <object_function assembly="Praties" type="AppendContentObjectFunction" display="contextmenu"/>
+      <object_function assembly="Praties" type="ExportObjectFunction" display="contextmenu"/>
+      <object_function assembly="Praties" type="ViewObjectFunction" display="contextmenu" default="true"/>
+      <object_function assembly="Praties" type="DeleteObjectFunction" display="contextmenu"/>
+      <object_function assembly="Praties" type="DeleteObjectLinkFunction" display="contextmenu"/>
+      <object_function assembly="Praties" type="CopyObjectFunction" display="contextmenu"/>
+      <object_function assembly="Praties" type="CutObjectFunction" display="contextmenu"/>
+      <object_function assembly="Praties" type="RenameObjectFunction" display="contextmenu"/>
+      <object_function assembly="Praties" type="ExecuteSearchObjectFunction" display="contextmenu"/>
+      <object_function assembly="Praties" type="CopyNameToClipboardObjectFunction" display="contextmenu"/>
+      <object_function assembly="Praties" type="ShowCartContentsObjectFunction" display="contextmenu"/>
+      <object_function assembly="Praties" type="ImportRenditionObjectFunction" display="contextmenu"/>
+      <object_function assembly="Praties" type="OpenObjectInNewWindowObjectFunction" display="contextmenu"/>
+      <object_function assembly="Praties" type="AttachLifecycleObjectFunction" display="contextmenu"/>
+      <object_function assembly="Praties" type="DetachLifecycleObjectFunction" display="contextmenu"/>
+      <object_function assembly="Praties" type="ChangeLifecycleStateObjectFunction" display="contextmenu"/>
+      <object_function assembly="Praties" type="CreateTranslationTaskObjectFunction" display="contextmenu"/>
+      <object_function assembly="Praties" type="LinkToFolderObjectFunction" display="contextmenu"/>
+      <object_function assembly="Praties" type="SelectObjectLinkVersionFunction" display="contextmenu"/>
+      <!-- object_function may have the values for display: contextmenu, all -->
+    </object_functions>
+
+    <folder_functions>
+      <folder_function assembly="Praties" type="CreateObjectWithoutContentFolderFunction" display="contextmenu"/>
+      <folder_function assembly="Praties" type="ImportObjectFromFileFolderFunction" display="contextmenu"/>
+      <folder_function assembly="Praties" type="AdvancedImportFolderFunction" display="contextmenu"/>
+      <folder_function assembly="Praties" type="NewFolderFolderFunction" display="contextmenu"/>
+      <folder_function assembly="Praties" type="RenameFolderFolderFunction" display="contextmenu"/>
+      <folder_function assembly="Praties" type="DeleteFolderFolderFunction" display="contextmenu"/>
+      <folder_function assembly="Praties" type="DeleteFolderLinkFolderFunction" display="contextmenu"/>
+      <folder_function assembly="Praties" type="PasteFolderFunction" display="contextmenu"/>
+      <folder_function assembly="Praties" type="CopyFolderFolderFunction" display="contextmenu"/>
+      <folder_function assembly="Praties" type="CutFolderFolderFunction" display="contextmenu"/>
+      <folder_function assembly="Praties" type="OpenFolderInNewWindowFolderFunction" display="contextmenu"/>
+      <folder_function assembly="Praties" type="LinkToFolderFolderFunction" display="contextmenu"/>
+    </folder_functions>
+
+    <list_functions>
+      <list_function assembly="Praties" type="CutListFunction" display="contextmenu"/>
+      <list_function assembly="Praties" type="DeleteListFunction" display="contextmenu"/>
+      <list_function assembly="Praties" type="CancelCheckoutListFunction" display="contextmenu"/>
+      <list_function assembly="Praties" type="ExportListFunction" display="contextmenu"/>
+      <list_function assembly="Praties" type="CreateTranslationTaskListFunction" display="contextmenu"/>
+    </list_functions>
+
+    <session_functions>
+      <session_function assembly="Praties" type="NewFolderSessionFunction" display="contextmenu"/>
+      <session_function assembly="Praties" type="CopyTicketSessionFunction" display="contextmenu"/>
+    </session_functions>
+  </classes>
+
+  <content>
+    <content_adaptor_engine assembly="CmnContent" type="XmlContentAdaptorEngine" ext="xml;dita;ditamap"/>
+    <content_adaptor_engine assembly="CmnContent" type="SgmlContentAdaptorEngine" ext="sgml"/>
+    <content_adaptor_engine assembly="CmnContent" type="DefaultContentAdaptorEngine" ext="*"/>
+    <!-- Should be specified last -->
+  </content>
+
+  <!-- TODO: support multiple levels with container nodes -->
+  <menu>
+    <object_context_menu>
+      <menu_item assembly="Praties" type="CheckoutObjectFunction" display="contextmenu"/>
+      <menu_item assembly="Praties" type="CheckinObjectFunction" display="contextmenu"/>
+      <menu_item assembly="Praties" type="CancelCheckoutObjectFunction" display="contextmenu"/>
+      <menu_item assembly="Praties" type="OpenObjectFunction" display="contextmenu"/>
+      <menu_item assembly="Praties" type="AppendContentObjectFunction" display="contextmenu"/>
+      <menu_item assembly="Praties" type="ImportRenditionObjectFunction" display="contextmenu"/>
+      <menu_item assembly="Praties" type="CopyNameToClipboardObjectFunction" display="contextmenu"/>
+      <separator/>
+      <menu_item assembly="Praties" type="AttachLifecycleObjectFunction" display="contextmenu"/>
+      <menu_item assembly="Praties" type="DetachLifecycleObjectFunction" display="contextmenu"/>
+      <menu_item assembly="Praties" type="ChangeLifecycleStateObjectFunction" display="contextmenu"/>
+      <separator/>
+      <menu_item assembly="Praties" type="ExportObjectFunction" display="contextmenu"/>
+      <menu_item assembly="Praties" type="ViewObjectFunction" display="contextmenu"/>
+      <separator/>
+      <menu_item assembly="Praties" type="CopyObjectFunction" display="contextmenu"/>
+      <menu_item assembly="Praties" type="CutObjectFunction" display="contextmenu"/>
+      <menu_item assembly="Praties" type="LinkToFolderObjectFunction" display="contextmenu"/>
+      <menu_item assembly="Praties" type="SelectObjectLinkVersionFunction" display="contextmenu"/>
+      <separator/>
+      <menu_item assembly="Praties" type="DeleteObjectFunction" display="contextmenu"/>
+      <menu_item assembly="Praties" type="DeleteObjectLinkFunction" display="contextmenu"/>
+      <separator/>
+      <menu_item assembly="Praties" type="RenameObjectFunction" display="contextmenu"/>
+      <separator/>
+      <menu_item assembly="Praties" type="ExecuteSearchObjectFunction" display="contextmenu"/>
+      <menu_item assembly="Praties" type="ShowCartContentsObjectFunction" display="contextmenu"/>
+      <menu_item assembly="Praties" type="CreateTranslationTaskObjectFunction" display="contextmenu"/>
+      <separator/>
+      <menu_item assembly="Praties" type="OpenObjectInNewWindowObjectFunction" display="contextmenu"/>
+    </object_context_menu>
+
+    <folder_context_menu>
+      <menu_item assembly="Praties" type="CreateObjectWithoutContentFolderFunction" display="contextmenu"/>
+      <menu_item assembly="Praties" type="ImportObjectFromFileFolderFunction" display="contextmenu"/>
+      <menu_item assembly="Praties" type="AdvancedImportFolderFunction" display="contextmenu"/>
+      <menu_item assembly="Praties" type="NewFolderFolderFunction" display="contextmenu"/>
+      <separator/>
+      <menu_item assembly="Praties" type="CopyFolderFolderFunction" display="contextmenu"/>
+      <menu_item assembly="Praties" type="CutFolderFolderFunction" display="contextmenu"/>
+      <menu_item assembly="Praties" type="LinkToFolderFolderFunction" display="contextmenu"/>
+      <separator/>
+      <menu_item assembly="Praties" type="DeleteFolderFolderFunction" display="contextmenu"/>
+      <menu_item assembly="Praties" type="DeleteFolderLinkFolderFunction" display="contextmenu"/>
+      <separator/>
+      <menu_item assembly="Praties" type="PasteFolderFunction" display="contextmenu"/>
+      <separator/>
+      <menu_item assembly="Praties" type="RenameFolderFolderFunction" display="contextmenu"/>
+      <separator/>
+      <menu_item assembly="Praties" type="OpenFolderInNewWindowFolderFunction" display="contextmenu"/>
+    </folder_context_menu>
+
+    <list_context_menu>
+      <menu_item assembly="Praties" type="CancelCheckoutListFunction" display="contextmenu"/>
+      <menu_item assembly="Praties" type="ExportListFunction" display="contextmenu"/>
+      <menu_item assembly="Praties" type="CreateTranslationTaskListFunction" display="contextmenu"/>
+      <separator/>
+      <menu_item assembly="Praties" type="CutListFunction" display="contextmenu"/>
+      <separator/>
+      <menu_item assembly="Praties" type="DeleteListFunction" display="contextmenu"/>
+    </list_context_menu>
+
+    <session_context_menu>
+      <menu_item assembly="Praties" type="NewFolderSessionFunction" display="contextmenu"/>
+    </session_context_menu>
+  </menu>
+
+  <servers>  
+    <server name="Server @ Localhost">http://localhost:8080/cinnamon/cinnamon/legacy</server>
+  </servers>
+</cinnamon_client>

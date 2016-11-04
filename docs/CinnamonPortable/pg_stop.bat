@@ -1,0 +1,1 @@
+postgres9\bin\pg_ctl.exe -D postgres9\data stop
