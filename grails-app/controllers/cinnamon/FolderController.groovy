@@ -385,8 +385,7 @@ class FolderController extends BaseController {
             def repositoryName = repositoryName
             def user = userService.user
             def validator = new Validator(user)
-            ZippedFolder zf = folder.createZippedFolder(latestHead, latestBranch, validator, repositoryName);
-            File zipFile = zf.getZipFile();
+            File zipFile = folderService.createZippedFolder(folder, latestHead, latestBranch, validator);
             if (params.target_folder_id) {
                 // create an OSD and store zip file.
                 Folder targetFolder = fetchAndFilterFolder(params.target_folder_id, [PermissionName.CREATE_OBJECT])
@@ -415,8 +414,8 @@ class FolderController extends BaseController {
                 osd.save()
             }
             else {
-                response.setHeader("Content-disposition", "attachment; filename=${zipFile.getName().encodeAsURL()}.zip");
-                response.setContentType('application/zip')
+                response.setHeader("Content-disposition", "attachment; filename=${zipFile.name.encodeAsURL()}.zip");
+                response.contentType = 'application/zip'
                 response.outputStream << zipFile.newInputStream()
                 response.outputStream.flush()
                 return null

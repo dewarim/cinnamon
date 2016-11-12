@@ -272,7 +272,6 @@ class FolderService {
      * - it requires UTF8 as encoding, as far as I can tell.<br/>
      * see: http://commons.apache.org/compress/zip.html#encoding<br/>
      * to manually test this, use: https://github.com/dewarim/GrailsBasedTesting
-     * @param folderDao data access object for Folder objects
      * @param latestHead if set to true, only add objects with latestHead=true, if set to false include only
      *                   objects with latestHead=false, if set to null: include everything regardless of
      *                   latestHead status.
@@ -284,10 +283,9 @@ class FolderService {
      *                  will be filtered before it is added to the archive.
      * @return the zip archive of the given folder
      */
-    public File createZippedFolder(session, Folder folder, Boolean latestHead, Boolean latestBranch,
+    public File createZippedFolder(Folder folder, Boolean latestHead, Boolean latestBranch,
                                    Validator validator) {
 
-        String repositoryName = session.repositoryName;
         final File sysTempDir = new File(System.getProperty("java.io.tmpdir"));
         File tempFolder = new File(sysTempDir, UUID.randomUUID().toString());
         if (!tempFolder.mkdirs()) {
@@ -324,7 +322,8 @@ class FolderService {
                 List<ObjectSystemData> osds = validator.filterUnbrowsableObjects(
                         getFolderContent(aFolder, false, latestHead, latestBranch));
                 for (ObjectSystemData osd : osds) {
-                    if (osd.getContentSize() == null) {
+                    if (osd.contentSize == null) {
+                        log.debug("osd ${osd.id} ${osd.name} is empty - skip.")
                         continue;
                     }
                     File outFile = osd.createFilenameFromName(currentFolder);
