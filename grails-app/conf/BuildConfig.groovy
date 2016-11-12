@@ -19,7 +19,6 @@ grails.project.dependency.resolution = {
     checksums true // Whether to verify checksums on resolve
 
     def gebPluginVersion = '0.9.0-RC-1'
-    def seleniumVersion = "2.31.0"
 
     repositories {
         mavenLocal()
@@ -29,12 +28,11 @@ grails.project.dependency.resolution = {
     dependencies {
         // specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
 
-        runtime('org.apache.lucene:lucene-core:6.2.0')
-//        runtime('org.apache.lucene:lucene-xml-query-parser:3.6.2')
-        runtime('org.apache.lucene:lucene-queries:6.2.0')
-        runtime('org.apache.lucene:lucene-misc:6.2.0')
-        runtime('org.apache.lucene:lucene-analyzers-common:6.2.0')
-        runtime('org.apache.lucene:lucene-queryparser:6.2.0')
+        runtime('org.apache.lucene:lucene-core:6.3.0')
+        runtime('org.apache.lucene:lucene-queries:6.3.0')
+        runtime('org.apache.lucene:lucene-misc:6.3.0')
+        runtime('org.apache.lucene:lucene-analyzers-common:6.3.0')
+        runtime('org.apache.lucene:lucene-queryparser:6.3.0')
         runtime 'postgresql:postgresql:9.1-901.jdbc4'
         runtime 'xml-apis:xml-apis:1.4.01'
         runtime('dom4j:dom4j:1.6.1') {
