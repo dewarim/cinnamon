@@ -7,7 +7,6 @@ import grails.plugin.springsecurity.annotation.Secured
 import cinnamon.global.PermissionName
 import cinnamon.exceptions.CinnamonException
 import cinnamon.global.Constants
-import cinnamon.utils.ZippedFolder
 import cinnamon.relation.RelationType
 import org.dom4j.DocumentHelper
 import org.dom4j.Element
