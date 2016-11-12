@@ -770,8 +770,9 @@ class FolderController extends BaseController {
         try {
             def fields = [parentid: parentid, name: name,
                     ownerid: ownerid, aclid: aclid,
-                    metadata: metadata, typeid: typeid, summary: summary ?: '<summary />']
-            def folder = fetchAndFilterFolder(id)
+                    metadata: metadata, typeid: typeid, summary: summary]
+            Folder folder = fetchAndFilterFolder(id)
+            (new Validator(userService.user)).validateUpdateFolder(fields, folder)
             if (!folder) {
                 throw new RuntimeException('error.folder.not.found')
             }

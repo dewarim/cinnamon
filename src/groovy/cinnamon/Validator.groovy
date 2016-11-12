@@ -436,7 +436,7 @@ class Validator implements ResultValidator {
         return found;
     }
 
-    public void validateUpdateFolder(Map<String, String> cmd, Folder folder) {
+    public void validateUpdateFolder(Map cmd, Folder folder) {
         if (user.verifySuperuserStatus()) {
             return;    // superusers are not subject to permissions
         }
