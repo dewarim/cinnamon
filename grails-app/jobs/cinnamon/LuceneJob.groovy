@@ -43,9 +43,6 @@ class LuceneJob {
             osdJobs = IndexJob.findAll("from IndexJob i where i.indexableClass=:indexableClass and i.failed = false",
                     [indexableClass: ObjectSystemData.class], [max: 100])
         }
-        if (osdJobs.size() > 0) {
-            log.debug("Found ${osdJobs.size()} objects watiting for indexing in ${repository.name}.")
-        }
 
         try {
 
@@ -81,9 +78,6 @@ class LuceneJob {
             folderJobs = IndexJob.findAll("from IndexJob i where i.indexableClass=:indexableClass and i.failed=false",
                     [indexableClass: Folder.class], [max: 100])
         }
-        if (folderJobs.size() > 0) {
-            log.debug("Found ${folderJobs.size()} folders waiting for indexing in ${repository.name}.")
-        }
 
         try {
             folderJobs.each { IndexJob job ->
@@ -110,9 +104,7 @@ class LuceneJob {
             log.error("Failed to index Folders because of:", e)
         }
 
-        def l = System.currentTimeMillis()
         repository.createWriter() // close & commit, then create new writer to prevent file leaks
-//        log.debug("create writer took: " + (System.currentTimeMillis() - l))
     }
 
     def doIndexJob(Indexable indexable, job, Repository repository, Boolean removeFirst) {
@@ -172,13 +164,11 @@ class LuceneJob {
     }
 
     void addToIndex(Indexable indexable, Repository repository) {
-        log.debug("store standard fields")
         try {
             // check that the document does not already exist - otherwise, remove it.
             String uniqueId = "${indexable.class.name}@${indexable.id}"
             Term uniqueTerm = new Term("uniqueId", uniqueId)
             if (repository.termExists(uniqueTerm)) {
-                log.debug("delete old version")
                 deleteDocument(repository, uniqueTerm, 2)
             }
 
@@ -205,13 +195,9 @@ class LuceneJob {
 
     void doIndex(Indexable indexable, ContentContainer content, Repository repository, Document doc) {
         ContentContainer metadata = new ContentContainer(indexable, indexable.metadata.bytes);
-        log.debug("store systemMetadata");
         String sysMeta = indexable.getSystemMetadata(true, true)
         ContentContainer systemMetadata = new ContentContainer(indexable, sysMeta.bytes);
-        log.debug("got sysMetadata, start indexObject loop");
-
         for (IndexItem item : IndexItem.list()) {
-            log.debug("indexItem: $item.name")
             /*
             * At the moment, the OSDs and Folders do not cache
             * their responses to getSystemMetadata or getContent.
@@ -219,8 +205,6 @@ class LuceneJob {
             * quite some strain on the server's resources.
             */
             try {
-//							log.debug("indexObject for field '"+item.fieldname+"' with content: "+content);
-                log.debug("item.indexType: ${item.indexType}")
                 item.indexObject(content, metadata, systemMetadata, doc);
             } catch (Exception e) {
                 log.debug("*** failed *** to execute IndexItem " + item.name, e);

@@ -105,13 +105,6 @@ class LuceneService {
         return cmd.repository.doSearch(cmd) // TODO: beautify
     }
 
-    void closeIndexes() {
-        repositories.each { name, repository ->
-            log.debug("close indexWriter of repository $name")
-            repository.closeIndex()
-        }
-    }
-
     private static final DecimalFormat formatter =
             new DecimalFormat("00000000000000000000");
 
