@@ -187,14 +187,6 @@ class Validator implements ResultValidator {
         validateFolderAgainstAcl(folder, browseFolder);
     }
 
-    public void validateGetObjects(cinnamon.Folder folder) {
-        // currently everybody may get objects, but validation 
-        // per object can suppress those without browse permission
-        Permission browseFolder = fetchPermission(PermissionName.BROWSE_FOLDER);
-//		validateFolderAgainstAcl(cmd.get("parentid")), browseFolder);
-        validateFolderAgainstAcl(folder, browseFolder);
-    }
-
     public void validateSetObjectAcl(ObjectSystemData osd) {
         Permission writeObject = fetchPermission(PermissionName.SET_ACL);
         validateAgainstAcl(osd, writeObject);
@@ -229,12 +221,6 @@ class Validator implements ResultValidator {
             throw new CinnamonException("Object " +
                     osd.getId() + " must be locked by session user for setting content.")
         }
-    }
-
-    public void validateSetContent(ObjectSystemData osd) {
-        Permission writeObject = fetchPermission(PermissionName.WRITE_OBJECT_CONTENT);
-        validateAgainstAcl(osd, writeObject);
-        checkLockStatus(osd);
     }
 
     public void validateSetMeta(ObjectSystemData osd) {
@@ -285,14 +271,6 @@ class Validator implements ResultValidator {
                             osd.getId(), lockOwner.getName())
             );
         }
-    }
-
-    public void validateVersion(ObjectSystemData osd) {
-        Permission versionObject = fetchPermission(PermissionName.VERSION_OBJECT);
-        validateAgainstAcl(osd, versionObject);
-        if (osd.locker != null) throw new CinnamonException("Object " +
-                osd.getId() + " must be unlocked for versioning.");
-
     }
 
     /**
@@ -449,7 +427,8 @@ class Validator implements ResultValidator {
     Boolean containsOneOf(Map cmd, Object... alternatives) {
         Boolean found = false;
         for (Object test : alternatives) {
-            if (cmd.containsKey(test)) {
+            // must contain the key and a non-null value
+            if (cmd.containsKey(test) && cmd[test]) {
                 found = true;
                 break;
             }
@@ -457,7 +436,7 @@ class Validator implements ResultValidator {
         return found;
     }
 
-    public void validateUpdateFolder(Map<String, String> cmd, cinnamon.Folder folder) {
+    public void validateUpdateFolder(Map<String, String> cmd, Folder folder) {
         if (user.verifySuperuserStatus()) {
             return;    // superusers are not subject to permissions
         }
@@ -465,7 +444,7 @@ class Validator implements ResultValidator {
         if (cmd.containsKey("parentid")) {
             Permission p = fetchPermission(PermissionName.MOVE);
             validateFolderAgainstAcl(folder, p);
-            cinnamon.Folder parentFolder = Folder.get(cmd.get("parentid"));
+            Folder parentFolder = Folder.get(cmd.get("parentid"));
             if (parentFolder == null) {
                 // TODO: parametrize correctly
                 throw new CinnamonException("error.parent_folder.not_found");
