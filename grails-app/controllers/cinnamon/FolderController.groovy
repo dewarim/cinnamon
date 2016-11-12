@@ -801,7 +801,7 @@ class FolderController extends BaseController {
         try {
             def user = userService.user
             Folder folder  = Folder.get(id)
-            (new Validator(user)).validateUpdateFolder(folder)
+            (new Validator(user)).validateUpdateFolder([summary:content], folder)
             folder.summary = content ?: '<summary />'
             log.debug("set summary - done")
             render(contentType: 'application/xml') {
