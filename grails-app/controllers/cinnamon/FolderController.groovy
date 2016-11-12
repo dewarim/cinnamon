@@ -587,7 +587,7 @@ class FolderController extends BaseController {
         log.debug("Getfolderbyid: " + id);
         try {            
             Folder folder
-            if(id == 0){
+            if(id == 0L){
                 folder = folderService.findRootFolder()
             }
             else{

@@ -154,7 +154,7 @@ class OsdController extends BaseController {
                 throw new RuntimeException('error.file.not.found')
             }
 
-            if (osd.contentSize == null || osd.contentSize == 0) {
+            if (osd.contentSize == null || osd.contentSize == 0L) {
                 throw new RuntimeException('error.content.not.found')
             }
             def attachmentName = resultfile ?: "${osd.name.encodeAsURL()}${osd.determineExtension()}"
@@ -1300,7 +1300,7 @@ class OsdController extends BaseController {
                 throw new RuntimeException('error.file.not.found')
             }
 
-            if (osd.contentSize == null || osd.contentSize == 0) {
+            if (osd.contentSize == null || osd.contentSize == 0L) {
                 throw new RuntimeException('error.content.not.found')
             }
             def attachmentName = resultfile ?: "${osd.name.encodeAsURL()}${osd.determineExtension()}"
