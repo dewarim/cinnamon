@@ -1,5 +1,6 @@
 package cinnamon
 
+import cinnamon.global.PermissionName
 import grails.test.mixin.Mock
 import grails.test.mixin.TestMixin
 import grails.test.mixin.domain.DomainClassUnitTestMixin
@@ -8,7 +9,7 @@ import spock.lang.Specification
 /**
  * Unit tests for Validator
  */
-@Mock([Acl, AclEntry, UserAccount, CmnGroup, ObjectSystemData, CmnGroupUser])
+@Mock([Acl, AclEntry, UserAccount, CmnGroup, ObjectSystemData, CmnGroupUser, AclEntryPermission, Permission])
 @TestMixin(DomainClassUnitTestMixin)
 class ValidatorSpec extends Specification {
 
@@ -24,6 +25,7 @@ class ValidatorSpec extends Specification {
     def everyoneAclEntry
     def ownerAclEntry
     def otherGroupAclEntry
+    def browsePermission
     
     def setupSpec(){
         
@@ -48,6 +50,11 @@ class ValidatorSpec extends Specification {
         otherGroupAclEntry.save()
         osd.acl = acl
         osd.owner = owner
+        
+        browsePermission = new Permission([name:PermissionName.BROWSE_OBJECT])
+        browsePermission.save()
+        def aclEntryPermission = new AclEntryPermission(ownerAclEntry, browsePermission)
+        aclEntryPermission.save()
     }
 
 
@@ -67,7 +74,6 @@ class ValidatorSpec extends Specification {
         aclEntries.find { it.group.name == CmnGroup.ALIAS_EVERYONE }
         !aclEntries.find { it.group.name == CmnGroup.ALIAS_OWNER }
         aclEntries.size() == 1
-
     }
 
     def 'for owner user, aclEntries should contain everyone and owner entry'() {
@@ -78,7 +84,18 @@ class ValidatorSpec extends Specification {
         aclEntries.find { it.group.name == CmnGroup.ALIAS_EVERYONE }
         aclEntries.find { it.group.name == CmnGroup.ALIAS_OWNER }
         aclEntries.size() == 2
-
     }
 
+    def 'browse permissions on "owner" aclEntry are validated when checking permissions'(){
+        setup:
+        def ownedValidator = new Validator(owner)
+        
+        when:
+        def browseAllowed = ownedValidator.check_acl_entries(acl, browsePermission ,osd)
+        
+        then:
+        browseAllowed
+    }
+    
+    
 }
