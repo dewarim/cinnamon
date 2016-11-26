@@ -239,7 +239,7 @@ class Validator implements ResultValidator {
         Permission writeObject = fetchPermission(PermissionName.WRITE_OBJECT_SYS_METADATA);
         validateAgainstAcl(osd, writeObject);
     }
-    
+
     /**
      * Note: this is the one Permission that does currently not depend on an ACL.
      * The logic is thus:
@@ -281,10 +281,10 @@ class Validator implements ResultValidator {
      */
     public void validateAgainstAcl(ObjectSystemData osd, Permission permission) {
         if (osd == null) {
-            throw new CinnamonException("error.object.not.found");
+            throw new CinnamonException("error.object.not.found")
         }
-        log.debug("looking up acl");
-        cinnamon.Acl acl = osd.getAcl();
+        log.debug("looking up acl")
+        Acl acl = osd.acl
         if (acl == null) {
             throw new CinnamonException("error.acl.invalid");
         }
@@ -330,7 +330,7 @@ class Validator implements ResultValidator {
     public boolean check_acl_entries(cinnamon.Acl acl, Permission permission, Ownable ownable) {
         if (user.verifySuperuserStatus()) {
             log.debug("Superusers may do anything.");
-            return true; // Superuses are exempt from all Permission checks.
+            return true; // Superusers are exempt from all Permission checks.
         }
         log.debug("Looking up AclEntries");
         // create Union of Sets: user.groups and acl.groups => iterate over each group for permitlevel.
@@ -363,49 +363,42 @@ class Validator implements ResultValidator {
         return acl.getUserEntries(user)
     }
 
-    Set<AclEntry> findAliasEntries(cinnamon.Acl acl, UserAccount user, Ownable ownable) {
-        Set<AclEntry> aliasEntries = new HashSet<AclEntry>();
-
-        /*
-           * If the ACL has an AclEntry for "everyone", add its AE to the
-           * set of AEs for permission checking.
-           */
-        for (AclEntry ae : acl.getAclEntries()) {
-            CmnGroup g = ae.getGroup();
-            if (g.getName().equals(CmnGroup.ALIAS_EVERYONE)) {
-                aliasEntries.add(ae);
-                log.debug("Found Everyone-CmnGroup");
-            }
-            else {
-                log.debug("ACL does not have an EVERYONE-AclEntry.");
-            }
+    /**
+     * AliasEntries: there exist two special groups that can be bound to an ACL:
+     * _owner and _everyone. The permissions granted by those groups are resolved
+     * dynamically for each object (for example, if the user is the owner of an object, he
+     * will receive the permissions from the owner group.)
+     * The _everyone group exists so that we can define default permissions for all users,
+     * regardless of which individual group they may be in (for example, everyone should
+     * be able to _read_ a global configuration object, but we do not want to add the
+     * authors, editors and reviewers groups to the configuration object's ACL to define
+     * the same browse permission for all of them in individual AclEntry objects).
+     * @param acl
+     * @param user
+     * @param ownable
+     * @return
+     */
+    Set<AclEntry> findAliasEntries(Acl acl, UserAccount user, Ownable ownable) {
+        Set<AclEntry> aliasEntries = new HashSet<AclEntry>()
+        if (ownable == null) { // case 1: ownable is null
+            return aliasEntries
         }
 
-        if (ownable == null) {
-            /* Without a valid object, the user cannot be its owner.
-                */
-            log.debug("object is not ownable");
-            return aliasEntries;
+        /*
+         * case 2: add "everyone" aclEntry if it exists    
+         */
+        def everyoneAclEntry = acl.aclEntries.find { it.group.name == CmnGroup.ALIAS_EVERYONE }
+        if (everyoneAclEntry) {
+            aliasEntries.add(everyoneAclEntry)
         }
 
-        // check Alias::Owner:
         /*
-           * If the Acl has an AclEntry fron the "owner"-CmnGroup and the user
-           * _is_ the owner of the object, the AE is added to the set of AEs. 
-           */
-        log.debug("checking owner");
-        if (user.equals(ownable.getOwner())) {
-            log.debug("user == owner");
-            for (AclEntry ae : acl.getAclEntries()) {
-                CmnGroup g = ae.getGroup();
-                log.debug("group-name:" + g.getName());
-                if (g.getName().equals(CmnGroup.ALIAS_OWNER)) {
-                    aliasEntries.add(ae);
-                    log.debug("UserAccount is the owner.");
-                }
-                else {
-                    log.debug("UserAccount is not the owner");
-                }
+         * case 3: add "owner" aclEntry if user owns the object and the entry exists. 
+         */
+        if (user == ownable.owner) {
+            def ownerAclEntry = acl.aclEntries.find{ it.group.name == CmnGroup.ALIAS_OWNER}
+            if(ownerAclEntry){
+                aliasEntries.add(ownerAclEntry)
             }
         }
 

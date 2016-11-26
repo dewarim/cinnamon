@@ -78,7 +78,7 @@ log4j = {
     //
     appenders {
         'null' name: 'stacktrace'
-        console name: 'stdout', layout: pattern(conversionPattern: '%d{ISO8601} %t %c %m%n')
+        console name: 'stdout', layout: pattern(conversionPattern: '%d{ISO8601} %p %t %c %m%n')
     }
 
     error 'net.sf.ehcache.hibernate',
@@ -103,8 +103,10 @@ log4j = {
             'org.grails.plugin.resource',
             'org.codehaus.groovy.grails.io',
             'org.codehaus.groovy.grails.io.support',
-            'org.codehaus.groovy.grails.context.support.PluginAwareResourceBundleMessageSource'
-
+            'org.codehaus.groovy.grails.context.support.PluginAwareResourceBundleMessageSource',
+            'org.codehaus.groovy.grails.domain.GrailsDomainClassCleaner',
+            'asset.pipeline.fs.FileSystemAssetResolver',
+            'grails.plugin.springsecurity.web.access.intercept.AnnotationFilterInvocationDefinition'
 
     info 'org.codehaus.groovy.grails.context',
             'org.codehaus.groovy.grails.io',
@@ -118,30 +120,22 @@ log4j = {
     debug 'cinnamon.debug.ProviderManager'
     debug 'cinnamon.CinnamonUserDetailsService'
     info 'grails.app.filters.cinnamon.filters.PageFilters'
-//    debug 'grails.app.filters.cinnamon.filters.TriggerFilters'
     debug 'cinnamon.data'
     debug 'cinnamon.OsdController'
     debug 'cinnamon.index.LuceneService'
     info 'cinnamon.workflow.TransitionActor'
     info 'cinnamon.workflow'
-    debug 'cinnamon.index'
-    debug 'cinnamon.index.ResultCollector'
+    info 'cinnamon.index'
+    info 'cinnamon.index.ResultCollector'
     info 'cinnamon.index.indexer.DefaultIndexer'
     info 'cinnamon.index.indexer'
     info 'cinnamon.index.IndexItem'
     info 'org.quartz.core.JobRunShell'
-    debug 'humulus',
-            'cinnamon.UserAccountController',
-            'cinnamon.FolderController',
-            'cinnamon.index.indexer.ParentFolderPathIndexer',
-            'org.springframework.security.authentication',
-            'cinnamon.PreAuthenticatedAuthenticationProvider',
-            'cinnamon.servlet.ResponseFilter'
+    debug    'cinnamon.index.indexer.ParentFolderPathIndexer',
+            'cinnamon.PreAuthenticatedAuthenticationProvider'
     info 'grails.app.domain.cinnamon.index'
     warn 'grails.app.domain.cinnamon.index.IndexItem'
-    debug 'grails.app.controllers.cinnamon.FolderController'
     info 'org.springframework'
-    debug 'grails.plugin.springsecurity.web'
     info 'org.springframework.security'
     info 'cinnamon.CinnamonUserDetailsService'
     info 'grails.app.filters.cinnamon.filters'
@@ -150,9 +144,15 @@ log4j = {
     info 'grails.plugin.springsecurity.web.filter.GrailsAnonymousAuthenticationFilter'
     info 'grails.plugin.springsecurity.web.access.intercept.AnnotationFilterInvocationDefinition'
     info 'cinnamon.tika.CinnamonTikaService'
+    info 'cinnamon.Validator',
+            'cinnamon.servlet.ResponseFilter',
+            'grails.app.services.cinnamon.FolderService',
+            'grails.app.controllers.cinnamon',
+            'grails.app.services.cinnamon'
+            'grails.app.domain.cinnamon'
 
     root {
-        debug 'stdout'
+        info 'stdout'
     }
 }
 
