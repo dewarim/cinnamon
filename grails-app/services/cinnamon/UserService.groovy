@@ -46,8 +46,6 @@ class UserService {
             usersGroup = healthService.createGroup(Constants.GROUP_USERS)
         }
         CmnGroupUser gu = new CmnGroupUser(usersGroup, user)
-        user.addToGroupUsers(gu)
-        usersGroup.addToGroupUsers(gu)
         gu.save()
     }
 

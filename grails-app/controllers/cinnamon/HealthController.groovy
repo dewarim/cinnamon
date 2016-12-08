@@ -26,8 +26,6 @@ class HealthController extends BaseController {
             UserAccount.list().each{user ->
                 if(! user.groupUsers.find{it.cmnGroup == userGroup}){
                     CmnGroupUser ug = new CmnGroupUser(userGroup, user)
-                    user.addToGroupUsers(ug)
-                    userGroup.addToGroupUsers(ug)
                     ug.save()
                 }
             }
