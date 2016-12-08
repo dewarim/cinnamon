@@ -122,6 +122,7 @@ class GroupController extends BaseController {
         def acl = Acl.get(params?.id)
         def group = CmnGroup.get(params.groupId)
         def ae = AclEntry.findByAclAndGroup(acl, group)
+        ae.aePermissions.each {it.delete()}
         ae.delete()
 
         redirect(controller: 'acl', action: 'showAclsByGroup', params: [id: group.id])
