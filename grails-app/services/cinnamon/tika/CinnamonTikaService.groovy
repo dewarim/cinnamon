@@ -1,6 +1,7 @@
 package cinnamon.tika
 
 import cinnamon.ConfigEntry
+import cinnamon.Metaset
 import cinnamon.ObjectSystemData
 import cinnamon.utils.ParamParser
 import org.apache.tika.config.TikaConfig
@@ -10,16 +11,18 @@ import org.dom4j.Document
 import org.dom4j.DocumentHelper
 import org.dom4j.Element
 
+import java.nio.file.Path
+
 class CinnamonTikaService {
 
     def tikaService
     
-    public void parse(ObjectSystemData osd){
+    void parse(ObjectSystemData osd){
         if(osd == null){
             log.debug("received null osd.");
             return;
         }
-        if(osd.getFormat() == null || osd.getFormat().getExtension() == null){
+        if(osd.format == null || osd.format.extension == null){
             log.debug("object #${osd.id} has no defined format - will be ignored by Tika.");
             return;
         }
@@ -28,7 +31,7 @@ class CinnamonTikaService {
             return
         }
         String tikaBlacklist = getTikaBlacklist();
-        String extension = osd.getFormat().getExtension().toLowerCase();
+        String extension = osd.format.extension.toLowerCase();
         if (extension.matches(tikaBlacklist)){
             log.debug("Object format "+extension+" is not suitable for tika - will be ignored.");
             return;
@@ -36,20 +39,7 @@ class CinnamonTikaService {
         def metaset = osd.fetchMetaset('tika', true)
         String xhtml = ""
         try {
-            File content = new File(osd.getFullContentPath());
-            TikaConfig tikaConfig = new TikaConfig();
-            Metadata tikaMeta = new Metadata();
-
-            xhtml = tikaService.parseFile(content, tikaConfig, tikaMeta);
-            log.debug("xhtml from tika:\n"+xhtml)
-            xhtml = xhtml.replaceAll("xmlns=\"http://www\\.w3\\.org/1999/xhtml\"", "");
-            org.dom4j.Node resultNode = ParamParser.parseXml(xhtml, "Failed to parse tika-generated xml");
-
-            Document meta = ParamParser.parseXmlToDocument(metaset.content)
-            Element tikaMetaset = meta.rootElement.addElement("metaset");
-            tikaMetaset.addAttribute("type","tika");
-            tikaMetaset.add(resultNode);
-            metaset.content = meta.asXML()
+            metaset = parseFile(new File(osd.contentPath), metaset)
         }
         catch (Exception e) {
             log.warn("Failed to extract data with tika.", e);
@@ -60,6 +50,24 @@ class CinnamonTikaService {
             tikaMetaset.addElement("tika-output").addText(xhtml)
             metaset.content = errorDoc.asXML()
         }
+    }
+    
+    Metaset parseFile(File content, Metaset metaset){
+        TikaConfig tikaConfig = new TikaConfig()
+        Metadata tikaMeta = new Metadata()
+
+        String xhtml = tikaService.parseFile(content, tikaConfig, tikaMeta)
+        log.debug("xhtml from tika:\n"+xhtml)
+        xhtml = xhtml.replaceAll("xmlns=\"http://www\\.w3\\.org/1999/xhtml\"", "")
+        org.dom4j.Node resultNode = ParamParser.parseXml(xhtml, "Failed to parse tika-generated xml")
+
+        Document meta = ParamParser.parseXmlToDocument(metaset.content)
+        Element tikaMetaset = meta.rootElement
+        tikaMetaset.addAttribute("type","tika");
+        tikaMetaset.add(resultNode)
+        tikaMetaset.selectSingleNode('/metaset/@status')?.detach()
+        metaset.content = meta.asXML()
+        return metaset
     }
 
     /**
