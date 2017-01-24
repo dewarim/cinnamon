@@ -475,7 +475,7 @@ class OsdController extends BaseController {
     protected void addLinksToObjectQuery(String parentId, Document doc, Validator val, Boolean withMetadata, Boolean 
             includeSummary) {
         Folder parent = Folder.get(parentId);
-        Element root = doc.getRootElement();
+        Element root = doc.rootElement;
         Collection<Link> links = linkService.findLinksIn(parent, LinkType.OBJECT);
         log.debug("Found " + links.size() + " links.");
         for (Link link : links) {
@@ -489,9 +489,9 @@ class OsdController extends BaseController {
                 log.debug("", e);
                 continue;
             }
-            Element osdNode = link.getOsd().toXmlElement(root, includeSummary);
+            Element osdNode = link.osd.toXmlElement(root, includeSummary);
             if (withMetadata) {
-                osdNode.add(ParamParser.parseXml(link.getOsd().getMetadata(), null));
+                osdNode.add(ParamParser.parseXml(link.osd.metadata, null));
             }
             linkService.addLinkToElement(link, osdNode);
         }

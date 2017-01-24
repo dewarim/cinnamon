@@ -16,11 +16,11 @@ import org.slf4j.LoggerFactory;
  *
  */
 @SuppressWarnings("GroovyAssignabilityCheck")
-public class LinkService {
+class LinkService {
 
     private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
-    public Link createLink(ObjectSystemData osd, Folder parent, Acl acl, UserAccount owner, LinkResolver resolver) {
+    Link createLink(ObjectSystemData osd, Folder parent, Acl acl, UserAccount owner, LinkResolver resolver) {
         def link = Link.findByOsdAndParent(osd, parent)
         if (link == null) {
             link = new Link(LinkType.OBJECT, resolver, owner, parent, null, osd, acl);
@@ -29,7 +29,7 @@ public class LinkService {
         return link
     }
 
-    public Link createLink(Folder folder, Folder parent, Acl acl, UserAccount owner, LinkResolver resolver) {
+    Link createLink(Folder folder, Folder parent, Acl acl, UserAccount owner, LinkResolver resolver) {
         def link = Link.findByFolderAndParent(folder, parent)
         if (link == null) {
             link = new Link(LinkType.FOLDER, resolver, owner, parent, folder, null, acl);
@@ -38,34 +38,34 @@ public class LinkService {
         return link
     }
 
-    public Link updateLink(Link link, params) {
+    Link updateLink(Link link, params) {
         if (params.containsKey("acl_id")) {
             Acl acl = Acl.get(ParamParser.parseLong(params.get("acl_id"), "error.param.acl_id"));
-            link.setAcl(acl);
+            link.acl = acl;
         }
         if (params.containsKey("parent_id")) {
             Folder parent = Folder.get(ParamParser.parseLong(params.get("parent_id"), "error.param.parent_id"));
-            link.setParent(parent);
+            link.parent = parent;
         }
         if (params.containsKey("owner_id")) {
             UserAccount owner = UserAccount.get(ParamParser.parseLong(params.get("owner_id"), "error.param.owner_id"));
-            link.setOwner(owner);
+            link.owner = owner;
         }
         if (params.containsKey("resolver")) {
             LinkResolver resolver = LinkResolver.valueOf(params.get("resolver"));
-            link.setResolver(resolver);
+            link.resolver = resolver;
         }
-        if (params.containsKey("object_id") && link.getType() == LinkType.OBJECT){
+        if (params.containsKey("object_id") && link.type == LinkType.OBJECT){
             ObjectSystemData newOsd = ObjectSystemData.get(params.get("object_id"));
-            if(newOsd == null || newOsd.getRoot() != link.getOsd().getRoot()){
+            if(newOsd == null || newOsd.root != link.osd.root){
                 throw new CinnamonException("error.param.object_id");
             }
-            if(link.getResolver() == LinkResolver.LATEST_HEAD){
+            if(link.resolver == LinkResolver.LATEST_HEAD){
                 // we cannot set an object on a link that is dynamically resolved
                 // to return the latestHead object.
                 throw new CinnamonException("error.cannot.set.latest.head");
             }
-            link.setOsd(newOsd);
+            link.osd = newOsd;
         }
         return link;
     }
@@ -76,7 +76,7 @@ public class LinkService {
      * @param doc
      * @return
      */
-    public Document renderLinkWithinTarget(Link link, Document doc, Boolean includeSummary) {
+    Document renderLinkWithinTarget(Link link, Document doc, Boolean includeSummary) {
         Element root = doc.addElement("link");
         Element linkParent;
 
@@ -92,15 +92,15 @@ public class LinkService {
         return doc
     }
 
-    public Collection<Link> findLinksTo(Folder folder) {
+    Collection<Link> findLinksTo(Folder folder) {
         return null;
     }
 
-    public Collection<Link> findLinksTo(ObjectSystemData osd) {
+    Collection<Link> findLinksTo(ObjectSystemData osd) {
         return null;
     }
 
-    public Collection<Link> findLinksIn(Folder parent, LinkType linkType) {
+    Collection<Link> findLinksIn(Folder parent, LinkType linkType) {
         Collection<Link> links;
         def link
         switch (linkType) {
@@ -118,22 +118,22 @@ public class LinkService {
 
     Collection<Link> updateObjectLinks(Collection<Link> links) {
         for (Link link : links) {
-            if (link.getResolver() == LinkResolver.LATEST_HEAD) {
-                ObjectSystemData osd = link.getOsd();
-                if (!osd.getLatestHead()) {
-                    def latest = ObjectSystemData.findByRootAndLatestHead(osd.getRoot(),true)
+            if (link.resolver == LinkResolver.LATEST_HEAD) {
+                ObjectSystemData osd = link.osd;
+                if (!osd.latestHead) {
+                    def latest = ObjectSystemData.findByRootAndLatestHead(osd.root,true)
                     if (latest == null) {
-                        log.error("Could not find exactly one latestHead object for #" + osd.getId());
+                        log.error("Could not find exactly one latestHead object for #" + osd.id);
                     }
                     // update osd to latestHead:
-                    link.setOsd(latest);
+                    link.osd = latest;
                 }
             }
         }
         return links;
     }
 
-    public void addLinkToElement(Link link, Element element) {
+    void addLinkToElement(Link link, Element element) {
         element.add(Link.asElement("reference", link));
     }
 

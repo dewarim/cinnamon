@@ -85,19 +85,19 @@ class Validator implements ResultValidator {
         return allowedObjects;
     }
 
-    public List<cinnamon.Folder> filterUnbrowsableFolders(Collection<cinnamon.Folder> folders) {
+    List<Folder> filterUnbrowsableFolders(Collection<Folder> folders) {
         if (folders == null || folders.size() == 0) {
             return []
         }
-        List<cinnamon.Folder> allowedFolders = new ArrayList<cinnamon.Folder>();
+        List<Folder> allowedFolders = new ArrayList<Folder>();
         if (user.verifySuperuserStatus()) {
             log.debug("UserAccount is admin - show all folders.");
             allowedFolders.addAll(folders);
             return allowedFolders;
         }
         Permission browseFolder = fetchPermission(PermissionName.BROWSE_FOLDER);
-        for (cinnamon.Folder folder : folders) {
-            if (check_acl_entries(folder.getAcl(), browseFolder, folder)) {
+        for (Folder folder : folders) {
+            if (check_acl_entries(folder.acl, browseFolder, folder)) {
                 allowedFolders.add(folder);
             }
             else {
@@ -327,7 +327,7 @@ class Validator implements ResultValidator {
         throw new CinnamonException("error.missing.permission." + permission.getName());
     }
 
-    public boolean check_acl_entries(cinnamon.Acl acl, Permission permission, Ownable ownable) {
+    boolean check_acl_entries(Acl acl, Permission permission, Ownable ownable) {
         if (user.verifySuperuserStatus()) {
             log.debug("Superusers may do anything.");
             return true; // Superusers are exempt from all Permission checks.
@@ -339,20 +339,20 @@ class Validator implements ResultValidator {
         Set<AclEntry> direct_entries = new HashSet<AclEntry>();
         direct_entries.addAll(getAclEntriesByUser(acl, user));
 
-        Set<AclEntry> aclentries = new HashSet<AclEntry>();
+        Set<AclEntry> aclEntries = new HashSet<AclEntry>();
 
         log.debug("descending into groupMatches2");
-        aclentries.addAll(getGroupMatches2(direct_entries, acl));
-        aclentries.addAll(findAliasEntries(acl, user, ownable));
+        aclEntries.addAll(getGroupMatches2(direct_entries, acl));
+        aclEntries.addAll(findAliasEntries(acl, user, ownable));
 
         log.debug("checking all aclentries for permission");
         // now browse all entries for the first one to permit the intended operation:
-        log.debug("# of aclentries: " + aclentries.size());
-        for (AclEntry entry : aclentries) {
-            log.debug("check aclentry with id " + entry.getId() + " for acl " + entry.getAcl().getName()
-                    + " and group " + entry.getGroup().getName());
+        log.debug("# of aclentries: " + aclEntries.size());
+        for (AclEntry entry : aclEntries) {
+            log.debug("check aclEntry with id " + entry.id + " for acl " + entry.acl.name
+                    + " and group " + entry.group.name);
             if (entry.findPermission(permission)) {
-                log.debug("Found aclentry with required permission. id=" + entry.getId());
+                log.debug("Found aclentry with required permission. id=" + entry.id);
                 return true;
             }
         }
@@ -405,14 +405,14 @@ class Validator implements ResultValidator {
         return aliasEntries;
     }
 
-    public void validatePermission(cinnamon.Acl acl, Permission permission) {
+    void validatePermission(Acl acl, Permission permission) {
         if (!check_acl_entries(acl, permission, null)) {
             throw new CinnamonException("error.missing.permission." + permission.getName());
             // TODO: parameterize correctly
         }
     }
 
-    public void validatePermission(cinnamon.Acl acl, String permissionName) {
+    void validatePermission(Acl acl, String permissionName) {
         Permission permission = fetchPermission(permissionName);
         validatePermission(acl, permission);
     }
