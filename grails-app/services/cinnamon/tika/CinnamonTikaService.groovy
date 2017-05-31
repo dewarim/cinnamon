@@ -39,7 +39,7 @@ class CinnamonTikaService {
         def metaset = osd.fetchMetaset('tika', true)
         String xhtml = ""
         try {
-            metaset = parseFile(new File(osd.contentPath), metaset)
+            metaset = parseFile(new File(osd.fullContentPath), metaset)
         }
         catch (Exception e) {
             log.warn("Failed to extract data with tika.", e);
