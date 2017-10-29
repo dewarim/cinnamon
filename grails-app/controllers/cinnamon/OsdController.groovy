@@ -868,33 +868,30 @@ class OsdController extends BaseController {
             if (!ids) {
                 throw new CinnamonException('error.invalid.params')
             }
-            Document response = DocumentHelper.createDocument()
-            Element root = response.addElement("objects");
 
             org.dom4j.Node rootParamNode = ParamParser.parseXml(ids, "error.param.ids.xml")
             List<org.dom4j.Node> idNodes = rootParamNode.selectNodes("id");
             Validator validator = new Validator(userService.user)
             Permission browsePermission = Permission.findByName(PermissionName.BROWSE_OBJECT);
+            List<ObjectSystemData> osds = []
             for (org.dom4j.Node n : idNodes) {
                 try {
                     Long id = Long.parseLong(n.getText())
                     ObjectSystemData osd = ObjectSystemData.get(id);
                     validator.checkBrowsePermission(osd, browsePermission);
-                    def xml = osd.toXML()
-                    if(include_summary){
-                        xml.add(ParamParser.parseXml(osd.summary, null))
-                    }
-                    root.add(xml.rootElement);
+                    osds.add(osd)
                 } catch (Exception e) {
-                    log.debug("failed to add OSD for '" + n.getText() + "': " + e.getMessage());
+                    log.debug("failed to add OSD for '" + n.getText() + "': " + e.message);
                 }
             }
+            Document response = osdService.generateQueryObjectResultDocument(osds, include_summary)
             render(contentType: 'application/xml', text: response.asXML())
         }
         catch (Exception e) {
             renderExceptionXml('Failed to do getObjectsById', e)
         }
     }
+    
     /**
      * The getobjectswithmetadata command retrieves some or all objects in the folder with the given id
      * and returns their metadata and system metadata.

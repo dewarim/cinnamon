@@ -35,7 +35,7 @@ grails.project.dependency.resolution = {
         runtime('org.apache.lucene:lucene-queryparser:6.3.0')
         runtime 'postgresql:postgresql:9.1-901.jdbc4'
         runtime 'xml-apis:xml-apis:1.4.01'
-        runtime('dom4j:dom4j:1.6.1') {
+        compile('dom4j:dom4j:1.6.1') {
             exclude 'xml-apis'
         }
         runtime 'jaxen:jaxen:1.1.4'
@@ -65,7 +65,7 @@ grails.project.dependency.resolution = {
         compile(':spring-security-core:2.0.0')
         compile ":rest-client-builder:2.1.1"
         compile(":twitter-bootstrap:3.2.0.2") { excludes 'svn' }
-        compile ":cinnamon-db:3.7.19"
+        compile ":cinnamon-db:3.7.20"
         runtime ':tika-parser:1.13.1'
         compile ":remote-pagination:0.4.8"
         compile ":geb:${gebPluginVersion}"
