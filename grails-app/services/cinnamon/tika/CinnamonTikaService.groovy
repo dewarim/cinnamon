@@ -62,6 +62,8 @@ class CinnamonTikaService {
         org.dom4j.Node resultNode = ParamParser.parseXml(xhtml, "Failed to parse tika-generated xml")
 
         Document meta = ParamParser.parseXmlToDocument(metaset.content)
+        // remove previous content:
+        meta.selectSingleNode("/metaset/html")?.detach()
         Element tikaMetaset = meta.rootElement
         tikaMetaset.addAttribute("type","tika");
         tikaMetaset.add(resultNode)
