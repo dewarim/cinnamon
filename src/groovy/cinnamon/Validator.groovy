@@ -429,23 +429,21 @@ class Validator implements ResultValidator {
         return found;
     }
 
-    public void validateUpdateFolder(Map cmd, Folder folder) {
+    void validateUpdateFolder(Map cmd, Folder folder) {
         if (user.verifySuperuserStatus()) {
             return;    // superusers are not subject to permissions
         }
 
-        if (cmd.containsKey("parentid")) {
+        if (cmd.containsKey("parentid") && cmd["parentId"] != null) {
             Permission p = fetchPermission(PermissionName.MOVE);
             validateFolderAgainstAcl(folder, p);
-            Folder parentFolder = Folder.get(cmd.get("parentid"));
+            Folder parentFolder = Folder.get(cmd["parentid"] as Long);
             if (parentFolder == null) {
-                // TODO: parametrize correctly
                 throw new CinnamonException("error.parent_folder.not_found");
-//				throw new CinnamonException( "Parentfolder with id "+value+" was not found.");
             }
             validateCreateFolder(parentFolder);
         }
-        if (cmd.containsKey("aclid")) {
+        if (cmd.containsKey("aclid") && cmd["aclid"] != null) {
             Permission p = fetchPermission(PermissionName.SET_ACL);
             validateFolderAgainstAcl(folder, p);
         }
