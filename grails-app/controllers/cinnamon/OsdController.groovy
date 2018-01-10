@@ -1,5 +1,6 @@
 package cinnamon
 
+import cinnamon.index.IndexAction
 import cinnamon.references.Link
 import cinnamon.references.LinkType
 import cinnamon.utils.ParamParser
@@ -21,6 +22,7 @@ class OsdController extends BaseController {
 
     def metasetService
     def infoService
+    def cinnamonTikaService
 
     def editMetadata() {
         try {
@@ -1308,5 +1310,34 @@ class OsdController extends BaseController {
             LocalRepository.cleanUp()
             renderExceptionXml(e.message)
         }
+    }
+
+    /**
+     * Re-Index an object. Requires superuser status.
+     * @param id id of the Object
+     * @param convert_content_to_metaset if true, ask Tika to create a new metaset before indexing.
+     * @return success-xml
+     */
+    @Secured(["hasRole('_superusers')"])
+    def reindex(Long id, Boolean convert_content_to_metaset){
+        try{
+            ObjectSystemData osd = fetchAndFilterOsd(id?.toString())
+            if(osd){
+                if(convert_content_to_metaset){
+                    cinnamonTikaService.parse(osd)
+
+                }
+                LocalRepository.addIndexable(osd, IndexAction.UPDATE)
+            }
+            render(contentType: 'application/xml') {
+                cinnamon{
+                    success('success.reindex.osd')
+                }
+            }
+        }
+        catch (Exception e){
+            renderExceptionXml(e.message)
+        }
+
     }
 }

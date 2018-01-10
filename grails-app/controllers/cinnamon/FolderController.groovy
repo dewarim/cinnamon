@@ -1,5 +1,6 @@
 package cinnamon
 
+import cinnamon.index.IndexAction
 import cinnamon.references.Link
 import cinnamon.references.LinkType
 
@@ -812,5 +813,29 @@ class FolderController extends BaseController {
             log.debug("Failed to set summary on folder #$id.", e)
             renderExceptionXml(e.message)
         }
+    }
+    
+    /**
+     * Re-Index a folder. Requires superuser status..
+     * @param id id of the folder
+     * @return success-xml
+     */
+    @Secured(["hasRole('_superusers')"])
+    def reindex(Long id){
+        try{
+            Folder folder = fetchAndFilterFolder(id?.toString())
+            if(folder){
+                LocalRepository.addIndexable(folder, IndexAction.UPDATE)
+            }
+            render(contentType: 'application/xml') {
+                cinnamon{
+                    success('success.reindex.folder')
+                }
+            }
+        }
+        catch (Exception e){
+            renderExceptionXml(e.message)
+        }
+
     }
 }

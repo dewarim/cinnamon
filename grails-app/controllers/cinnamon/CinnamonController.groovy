@@ -250,6 +250,13 @@ class CinnamonController extends BaseController {
                 case 'listpermissions': forward(controller: 'permission', action: 'listXml'); break
                 case 'listuilanguages': forward(controller: 'uiLanguage', action: 'listXml'); break
                 case 'lock': forward(controller: 'osd', action: 'lockXml'); break
+                case 'reindex': if (params.type?.equals('osd')) {
+                    forward(controller: 'osd', action: 'reindex')
+                }
+                else {
+                    forward(controller: 'folder', action: 'reindex')
+                }
+                    break
                 case 'searchobjects': forward(controller: 'search', action: 'searchObjectsXml'); break
                 case 'searchfolders': forward(controller: 'search', action: 'searchFolders'); break
                 case 'setchangedstatus': forward(controller: 'cinnamon', action: 'setChangedStatus'); break
