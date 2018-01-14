@@ -481,21 +481,14 @@ class OsdController extends BaseController {
         Collection<Link> links = linkService.findLinksIn(parent, LinkType.OBJECT);
         log.debug("Found " + links.size() + " links.");
         for (Link link : links) {
-            try {
-                val.validatePermission(link.acl, PermissionName.BROWSE_OBJECT);
-                val.validatePermission(link.osd.acl, PermissionName.BROWSE_OBJECT);
+            Optional<Link> validatedLink = linkService.validateLink(link, val, withMetadata)
+            if(validatedLink.present) {
+                Element osdNode = link.osd.toXmlElement(root, includeSummary);
                 if (withMetadata) {
-                    val.validatePermission(link.osd.acl, PermissionName.READ_OBJECT_CUSTOM_METADATA)
+                    osdNode.add(ParamParser.parseXml(link.osd.metadata, null));
                 }
-            } catch (Exception e) {
-                log.debug("", e);
-                continue;
+                linkService.addLinkToElement(link, osdNode);
             }
-            Element osdNode = link.osd.toXmlElement(root, includeSummary);
-            if (withMetadata) {
-                osdNode.add(ParamParser.parseXml(link.osd.metadata, null));
-            }
-            linkService.addLinkToElement(link, osdNode);
         }
     }
 

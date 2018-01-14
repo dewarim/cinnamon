@@ -4,8 +4,10 @@ import cinnamon.Acl
 import cinnamon.Folder
 import cinnamon.ObjectSystemData
 import cinnamon.UserAccount
+import cinnamon.Validator
 import cinnamon.exceptions.CinnamonConfigurationException
 import cinnamon.exceptions.CinnamonException
+import cinnamon.global.PermissionName
 import cinnamon.utils.ParamParser
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -55,12 +57,12 @@ class LinkService {
             LinkResolver resolver = LinkResolver.valueOf(params.get("resolver"));
             link.resolver = resolver;
         }
-        if (params.containsKey("object_id") && link.type == LinkType.OBJECT){
+        if (params.containsKey("object_id") && link.type == LinkType.OBJECT) {
             ObjectSystemData newOsd = ObjectSystemData.get(params.get("object_id"));
-            if(newOsd == null || newOsd.root != link.osd.root){
+            if (newOsd == null || newOsd.root != link.osd.root) {
                 throw new CinnamonException("error.param.object_id");
             }
-            if(link.resolver == LinkResolver.LATEST_HEAD){
+            if (link.resolver == LinkResolver.LATEST_HEAD) {
                 // we cannot set an object on a link that is dynamically resolved
                 // to return the latestHead object.
                 throw new CinnamonException("error.cannot.set.latest.head");
@@ -105,7 +107,7 @@ class LinkService {
         def link
         switch (linkType) {
             case LinkType.OBJECT:
-                links = updateObjectLinks(Link.findAllByParentAndOsdIsNotNull(parent) );
+                links = updateObjectLinks(Link.findAllByParentAndOsdIsNotNull(parent));
                 break;
             case LinkType.FOLDER:
                 links = Link.findAllByParentAndFolderIsNotNull(parent)
@@ -121,7 +123,7 @@ class LinkService {
             if (link.resolver == LinkResolver.LATEST_HEAD) {
                 ObjectSystemData osd = link.osd;
                 if (!osd.latestHead) {
-                    def latest = ObjectSystemData.findByRootAndLatestHead(osd.root,true)
+                    def latest = ObjectSystemData.findByRootAndLatestHead(osd.root, true)
                     if (latest == null) {
                         log.error("Could not find exactly one latestHead object for #" + osd.id);
                     }
@@ -135,6 +137,32 @@ class LinkService {
 
     void addLinkToElement(Link link, Element element) {
         element.add(Link.asElement("reference", link));
+    }
+
+    Optional<Link> validateLink(Link link, Validator validator, Boolean withMetadata) {
+        try {
+            switch (link.type) {
+                case LinkType.FOLDER:
+                    validator.validatePermission(link.acl, PermissionName.BROWSE_FOLDER)
+                    validator.validatePermission(link.folder.acl, PermissionName.BROWSE_FOLDER)
+                    break
+                case LinkType.OBJECT:
+                    validator.validatePermission(link.acl, PermissionName.BROWSE_OBJECT);
+                    validator.validatePermission(link.osd.acl, PermissionName.BROWSE_OBJECT);
+                    if (withMetadata) {
+                        val.validatePermission(link.osd.acl, PermissionName.READ_OBJECT_CUSTOM_METADATA)
+                    }
+                    break
+                default:
+                    throw new CinnamonConfigurationException("unknown LinkType "+link.type)
+            }
+            return Optional.of(link)
+        }
+        catch (Exception e) {
+            log.debug("filter unbrowsable link / linked folder:", e);
+            return Optional.empty()
+        }
+
     }
 
 }

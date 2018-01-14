@@ -511,14 +511,10 @@ class FolderController extends BaseController {
             Collection<Link> links = linkService.findLinksIn(folder, LinkType.FOLDER);
             log.debug("Found "+links.size()+" links.");
             links.each { Link link ->
-                try {
-                    val.validatePermission(link.acl, PermissionName.BROWSE_FOLDER)
-                    val.validatePermission(link.folder.acl, PermissionName.BROWSE_FOLDER)
+                Optional<Link> validatedLink = linkService.validateLink(link, val, false)
+                if (validatedLink.present) {
                     Element folderNode = link.folder.toXmlElement(root, include_summary);
                     linkService.addLinkToElement(link, folderNode);
-                }
-                catch (CinnamonException e) {
-                    log.debug("filter unbrowsable link / linked folder:", e);
                 }
             }
             log.debug("fetchSubFolders.result:\n${doc.asXML()}")
