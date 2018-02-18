@@ -25,7 +25,13 @@ class CinnamonPreAuthUserDetailsService implements AuthenticationUserDetailsServ
         if (!cmnSession) {
             throw new PreAuthenticatedCredentialsNotFoundException("Session not found for ticket '${ticket}'")
         }
-        cmnSession.renewSession(ConfThreadLocal.getConf().getSessionExpirationTime(repositoryName));
+        
+        // check if session is younger than 5 minutes: do not renew (reduce StaleObjectExceptions)
+        if( new Date().time  > cmnSession.expires.time + 300_000 ) {
+            cmnSession = cmnSession.refresh()
+            cmnSession.renewSession(ConfThreadLocal.conf.getSessionExpirationTime(repositoryName))
+            cmnSession.save(flush: true)
+        }
         
         return cinnamonUserDetailsService.loadUser(cmnSession.username, true)
     }
