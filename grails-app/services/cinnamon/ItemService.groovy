@@ -70,12 +70,12 @@ class ItemService {
     }
 
     def fetchItem(String className, id) {
-        if(id == null){
+        if (id == null) {
             return null
         }
         def item = grailsApplication.getDomainClass(className).clazz.find("""from $className a where a.id=:id
          """.replaceAll('\n', ' ')
-                    , [id:Long.valueOf(id)])
+                , [id: Long.valueOf(id)])
         return item
     }
 
@@ -84,23 +84,23 @@ class ItemService {
     }
 
     def fetchItemsFromIdList(String className, Collection<Long> ids) {
-        if(ids == null || ids.isEmpty()){
+        if (ids == null || ids.isEmpty()) {
             return null
         }
         def item = grailsApplication.getDomainClass(className).clazz.findAll("""from $className a where a.id in (:ids)
          """.replaceAll('\n', ' ')
-                    , [ids:ids.asList()])
+                , [ids: ids.asList()])
         return item
     }
 
-    Map filterItemIdMap(itemIdMap, SearchableDomain domain){
+    Map filterItemIdMap(itemIdMap, SearchableDomain domain) {
         def itemMap = new HashMap<String, Set>()
         def keySet = itemIdMap.keySet()
-        if(domain){
+        if (domain) {
             // limit search results to a specific domain:
-            keySet = keySet.findAll{it == domain.name}
+            keySet = keySet.findAll { it == domain.name }
         }
-        keySet.each {domainClass ->
+        keySet.each { domainClass ->
             log.debug("domainClass: $domainClass")
             def idSet = itemIdMap.get(domainClass)
             if (idSet?.size() > 0) {
@@ -108,37 +108,37 @@ class ItemService {
                 log.debug("found idSet")
                 def itemList = fetchItemsFromIdList(domainClass, idSet)
                 def itemSet = itemMap.get(domainClass)
-                if(! itemSet){
+                if (!itemSet) {
                     itemSet = new HashSet()
                     itemMap.put(domainClass, itemSet)
                 }
                 itemSet.addAll(itemList)
             }
-            else{
+            else {
                 log.debug("no idSet for $domainClass")
             }
         }
         return itemMap
-    } 
-    
-    Set filterItemsToSet(itemIdMap, SearchableDomain domain, Validator validator){
+    }
+
+    Set filterItemsToSet(itemIdMap, SearchableDomain domain, Validator validator) {
         def itemSet = new HashSet<XmlConvertable>()
         def keySet = itemIdMap.keySet()
-        if(domain){
+        if (domain) {
             // limit search results to a specific domain:
-            keySet = keySet.findAll{it == domain.name}
+            keySet = keySet.findAll { it == domain.name }
         }
-        keySet.each {domainClass ->
+        keySet.each { domainClass ->
             log.debug("domainClass: $domainClass")
             Set idSet = itemIdMap.get(domainClass)
             if (idSet?.size() > 0) {
                 log.debug("found idSet")
                 idSet = reduceSet(idSet)
                 def itemList = fetchItemsFromIdList(domainClass, idSet)
-                if (validator){
+                if (validator) {
                     Permission browsePermission = Permission.findByName(domain.browsePermission)
-                    itemList = itemList.findAll{item ->
-                        if (item instanceof Accessible){
+                    itemList = itemList.findAll { item ->
+                        if (item instanceof Accessible) {
                             /*
                              * We may someday index objects that do not have an Owner,
                              * which makes ACL-checking impossible.
@@ -149,7 +149,7 @@ class ItemService {
                 }
                 itemSet.addAll(itemList)
             }
-            else{
+            else {
                 log.debug("no idSet for $domainClass")
             }
         }
@@ -161,10 +161,11 @@ class ItemService {
      * So we limit results to this amount - future versions may use batch queries to
      * really return all items found or filter the ids according to page/page_size
      */
-    Set reduceSet(Set idSet){
-        if(idSet.size() > 32767){
+
+    Set reduceSet(Set idSet) {
+        if (idSet.size() > 32767) {
             def reducedSet = new HashSet()
-            reducedSet.addAll(idSet.asList().subList(0,32767))
+            reducedSet.addAll(idSet.asList().subList(0, 32767))
             idSet = reducedSet
         }
         return idSet
