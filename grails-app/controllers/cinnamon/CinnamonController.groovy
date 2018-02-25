@@ -258,6 +258,7 @@ class CinnamonController extends BaseController {
                 }
                     break
                 case 'searchobjects': forward(controller: 'search', action: 'searchObjectsXml'); break
+                case 'searchobjectids': forward(controller: 'search', action: 'searchObjectsXmlIdOnly'); break
                 case 'searchfolders': forward(controller: 'search', action: 'searchFolders'); break
                 case 'setchangedstatus': forward(controller: 'cinnamon', action: 'setChangedStatus'); break
                 case 'setconfigentry': forward(controller: 'configEntry', action: 'setConfigEntryXml'); break

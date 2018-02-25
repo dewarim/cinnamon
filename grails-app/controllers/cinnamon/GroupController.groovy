@@ -19,7 +19,7 @@ class GroupController extends BaseController {
         def user = UserAccount.get(params?.user_list)
         def group = CmnGroup.get(params.id)
         new CmnGroupUser(group, user).save()
-
+        BrowseAcls.reloadUser(user)
         redirect(controller: 'userAccount', action: 'showUsersByGroup', params: [id: group.id])
     }
 
@@ -34,7 +34,7 @@ class GroupController extends BaseController {
         def group = CmnGroup.get(params.groupId)
         def gu = CmnGroupUser.findByUserAccountAndCmnGroup(user, group)
         gu.delete()
-
+        BrowseAcls.reloadUser(user)
         redirect(controller: 'userAccount', action: 'showUsersByGroup', params: [id: group.id])
     }
 
@@ -108,7 +108,7 @@ class GroupController extends BaseController {
         def acl = Acl.get(params?.acl_list)
         def group = CmnGroup.get(params.id)
         new AclEntry(acl: acl, group: group).save()
-
+        BrowseAcls.reload()
         redirect(controller: 'acl', action: 'showAclsByGroup', params: [id: group.id])
     }
 
@@ -124,7 +124,7 @@ class GroupController extends BaseController {
         def ae = AclEntry.findByAclAndGroup(acl, group)
         ae.aePermissions.each {it.delete()}
         ae.delete()
-
+        BrowseAcls.reload()
         redirect(controller: 'acl', action: 'showAclsByGroup', params: [id: group.id])
     }
 

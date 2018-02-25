@@ -63,3 +63,24 @@ but change the following steps:
 * afterwards, do: sudo chown -Rv tomcat:tomcat /opt/tomcat/webapps
 * use sysv-rc-conf to disable tomcat7.
 * reboot
+
+## changes to 3.7
+
+* Stop the server.
+* Delete your Lucene index after applying the following changes.
+* Store value of owner and acl fields in index:
+ 
+    update index_items set store_field=true where fieldname in ('owner','acl');
+
+* Fix a problem where ownerId is indexed as text:
+
+    update index_items set index_type_id=(select it.id from index_types it where it.name='xpath.integer_indexer') where fieldname = 'owner';
+    
+* Apply the database changes shown below
+* Restart the Cinnamon server.
+* Re-Index everything: 
+
+    insert into index_jobs select id,false,'cinnamon.ObjectSystemData',id from objects;
+    insert into index_jobs select id,false,'cinnamon.Folder',id from folders;
+    
+* Test!    

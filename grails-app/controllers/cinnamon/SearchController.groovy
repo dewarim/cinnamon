@@ -12,10 +12,11 @@ import grails.plugin.springsecurity.annotation.Secured
 @Secured(["isAuthenticated()"])
 class SearchController extends BaseController {
 
+    private final List<String> OWNER_AND_ACL = ["owner", "acl"]
+
     def searchObjects(Integer page_size, Integer page, Boolean include_summary) {
         try {
-            Set<XmlConvertable> resultStore;
-            resultStore = fetchSearchResults(ObjectSystemData.class);
+            Set<XmlConvertable> resultStore = fetchSearchResults(ObjectSystemData.class);
             def doc = DocumentHelper.createDocument()
             Element root = doc.addElement("objects");
             root.addAttribute("total-results", String.valueOf(resultStore.size()));
@@ -29,8 +30,7 @@ class SearchController extends BaseController {
                 }
             }
 
-            addPathFolders(doc, include_summary);
-            log.debug("searchObjects result: \n${doc.asXML()}")
+            addPathFolders(doc, include_summary, resultStore);
             render(contentType: 'application/xml', text: doc.asXML())
         }
         catch (Exception e) {
@@ -38,29 +38,53 @@ class SearchController extends BaseController {
             renderExceptionXml(e.message)
         }
     }
-    
+
     def searchObjectsXml(String query, Integer page_size, Integer page, String metaset_list, Boolean include_summary) {
         try {
             List metasets = []
-            if(metaset_list){
+            if (metaset_list) {
                 metasets = metaset_list.split(/,\s*/)
             }
             log.debug("metasets: $metasets")
-            doSearch(query, page_size, page, SearchableDomain.OSD, metasets, include_summary)                      
+            doSearch(query, page_size, page, SearchableDomain.OSD, metasets, include_summary)
         }
         catch (Exception e) {
             log.debug("failed searchObjects: ", e)
             renderExceptionXml(e.message)
         }
     }
-    
-    protected void doSearch(query, pageSize, page, domain, List metasets, Boolean include_summary){
-        def fields = params.list('field')
-        Set<XmlConvertable> resultStore = luceneService.fetchSearchResults(query, repositoryName, userService.user, domain, fields);
+
+    def searchObjectsXmlIdOnly(String query) {
+        try {
+            BrowseAcls browseAcls = BrowseAcls.getInstance(userService.user)
+            Set<Long> results = luceneService.fetchSearchResultIds(query, SearchableDomain.OSD, OWNER_AND_ACL, browseAcls);
+            def doc = DocumentHelper.createDocument()
+            Element root = doc.addElement("objectIds");
+            root.addAttribute("total-results", String.valueOf(results.size()));
+            log.debug("search, total-results: " + results.size())
+            results.each { id ->
+                root.addElement("id").addText(id.toString())
+            }
+            render(contentType: 'application/xml', text: doc.asXML())
+
+        }
+        catch (Exception e) {
+            log.debug("failed searchObjects: ", e)
+            renderExceptionXml(e.message, e)
+        }
+    }
+
+    protected void doSearch(String query, pageSize, page, SearchableDomain domain, List metasets, Boolean include_summary) {
+        List<String> storedFields = new ArrayList<>()
+        if (params.list("field")) {
+            storedFields.addAll(params.list("field"))
+        }
+        storedFields.addAll(OWNER_AND_ACL)
+        Set<XmlConvertable> resultStore = luceneService.fetchSearchResults(query, userService.user, domain, storedFields);
         def doc = DocumentHelper.createDocument()
         Element root = doc.addElement(domain.xmlRoot);
         root.addAttribute("total-results", String.valueOf(resultStore.size()));
-        log.debug("search, total-results: "+resultStore.size())
+        log.debug("search, total-results: " + resultStore.size())
         if (pageSize) {
             addPagedResultsToElement(root, resultStore, pageSize, page, metasets, include_summary);
         }
@@ -71,11 +95,11 @@ class SearchController extends BaseController {
         }
         // add parent folders of search results to enable display of folder structure without
         // repeated path reloads.
-        addPathFolders(doc, include_summary);
+        addPathFolders(doc, include_summary, resultStore);
         render(contentType: 'application/xml', text: doc.asXML())
     }
 
-    protected void addPagedResultsToElement(Element root, Set<XmlConvertable> resultStore, Integer pageSize, Integer 
+    protected void addPagedResultsToElement(Element root, Set<XmlConvertable> resultStore, Integer pageSize, Integer
             currentPage, List metasets, Boolean includeSummary) {
         List<XmlConvertable> itemList = new ArrayList<XmlConvertable>();
         itemList.addAll(resultStore);
@@ -110,29 +134,36 @@ class SearchController extends BaseController {
      *
      * @param doc document with serialized Folders and or OSDs.
      */
-    protected void addPathFolders(Document doc, Boolean includeSummary) {
-        List<Node> parentFolders = doc.selectNodes("//folder/parentId|//object/parentId");
-        log.debug("# of parentFolderNodes: " + parentFolders.size());
+    protected void addPathFolders(Document doc, Boolean includeSummary, Set<XmlConvertable> resultStore) {
+        Set<Long> parentFolderIds = new HashSet<>()
+        resultStore.forEach { obj ->
+            if (obj instanceof ObjectSystemData) {
+                parentFolderIds.add(((ObjectSystemData) obj).parent.myId())
+            }
+            else {
+                parentFolderIds.add(((Folder) obj).parent.myId())
+            }
+        }
+//        List<Node> parentFolders = doc.selectNodes("//folder/parentId|//object/parentId");
+        log.debug("# of parentFolderNodes: " + parentFolderIds.size());
         /*
          * The second set "ids" is used so we do not have to perform full equals() on a potentially
          * large number of Folder objects.
          */
         Set<Long> ids = new HashSet<Long>();
         Set<XmlConvertable> folders = new HashSet<XmlConvertable>();
-        for (Node node : parentFolders) {
-            Long id = Long.parseLong(node.getText());
-            if (ids.contains(id)) {
-                // folder is already in result set.
-                continue;
-            }
-            Folder folder = Folder.get(id);
-            folders.add(folder);
-            // check if we need to add the folder's parent:
-            if (!ids.contains(folder.parent.id)) {
-                List<Folder> parents = folder.getParentFolders(folder);
-                folders.addAll(parents);
-                for (Folder parent : parents) {
-                    ids.add(parent.getId());
+
+        for (Long id : parentFolderIds) {
+            if (!ids.contains(id)) {
+                Folder folder = Folder.get(id);
+                folders.add(folder);
+                // check if we need to add the folder's parent:
+                if (!ids.contains(folder.parent.id)) {
+                    List<Folder> parents = folder.getParentFolders(folder);
+                    folders.addAll(parents);
+                    for (Folder parent : parents) {
+                        ids.add(parent.getId());
+                    }
                 }
             }
         }
@@ -145,15 +176,16 @@ class SearchController extends BaseController {
         }
     }
 
-    // TODO: move to service?
+    // TODO: move to service? 
+    // used only by searchObjects
     protected Set<XmlConvertable> fetchSearchResults(Class<? extends Indexable> indexable) {
         log.debug("start search");
         def result
         if (params.xmlQuery) {
-            result = luceneService.searchXml(params.query, repositoryName, null)
+            result = luceneService.searchXml(params.query, null, OWNER_AND_ACL)
         }
         else {
-            result = luceneService.search(params.query, repositoryName, null)
+            result = luceneService.search(params.query, null, OWNER_AND_ACL)
         }
         def itemMap = result.filterResultToMap(null, itemService)
         log.debug("Received search results, now filtering");
@@ -192,15 +224,15 @@ class SearchController extends BaseController {
      *         </pre>
      */
     def searchFolders(String query, Integer page_size, Integer page, String metaset_list, Boolean include_summary) {
-        try{
+        try {
             def metasets = []
-            if(metaset_list){
+            if (metaset_list) {
                 metasets = metaset_list.split(/,\s*/)
             }
             doSearch(query, page_size, page, SearchableDomain.FOLDER, metasets as List, include_summary)
         }
-        catch (Exception e){
-            renderExceptionXml('Failed to searchFolders',e)
+        catch (Exception e) {
+            renderExceptionXml('Failed to searchFolders', e)
         }
     }
 

@@ -49,26 +49,22 @@ class LuceneService {
     /**
      *
      * @param query a simple query string
-     * @param database the database which stores the object. Must be specified, as this may change per request,
-     *        depending on customer.
      * @param domain currently, the domain class name
      * @return
      */
-    LuceneResult search(String query, String database, SearchableDomain domain) {
-        return searchXml(query, database, domain, [])
+    LuceneResult search(String query, SearchableDomain domain) {
+        return searchXml(query, domain, [])
     }
 
     /**
      *
      * @param query a simple query string
-     * @param database the database which stores the object. Must be specified, as this may change per request,
-     *        depending on customer.
      * @param domain currently, the domain class name
      * @param fields List of fields for which content stored in the Lucene index should be returned.
      *
      * @return
      */
-    LuceneResult search(String query, String database, SearchableDomain domain, List fields) {
+    LuceneResult search(String query, SearchableDomain domain, List fields) {
         def cmd = new IndexCommand(repository: repository, type: CommandType.SEARCH,
                 query: query, domain: domain)
         LuceneResult result = cmd.repository.doSearch(cmd) // TODO: beautify
@@ -81,25 +77,21 @@ class LuceneService {
     /**
      *
      * @param query an XML query string
-     * @param database the database which stores the object. Must be specified, as this may change per request,
-     *        depending on customer.
      * @param domain currently, the domain class name, may be null
      * @return
      */
-    LuceneResult searchXml(String query, String database, SearchableDomain domain) {
-        return searchXml(query, database, domain, [])
+    LuceneResult searchXml(String query, SearchableDomain domain) {
+        return searchXml(query, domain, [])
     }
 
     /**
      *
      * @param query an XML query string
-     * @param database the database which stores the object. Must be specified, as this may change per request,
-     *        depending on customer.
      * @param domain currently, the domain class name, may be null
      * @param fields List of fields for which content stored in the Lucene index should be returned.
      * @return
      */
-    LuceneResult searchXml(String query, String database, SearchableDomain domain, List fields) {
+    LuceneResult searchXml(String query, SearchableDomain domain, List fields) {
         def cmd = new IndexCommand(repository: repository, type: CommandType.SEARCH,
                 query: query, domain: domain, xmlQuery: true, fields: fields)
         return cmd.repository.doSearch(cmd) // TODO: beautify
@@ -127,18 +119,38 @@ class LuceneService {
     }
 
     // TODO: the fields list is currently not returned in the results - needs a new container object
-    Set fetchSearchResults(String query, String repositoryName,
-                           UserAccount user, SearchableDomain domain, List<String> fields) {
-        LuceneResult results = searchXml(query, repositoryName, domain, fields)
+    Set fetchSearchResults(String query, UserAccount user, SearchableDomain domain, List<String> fields) {
+        LuceneResult results = searchXml(query, domain, fields)
         log.debug("results before filter: " + results.itemIdMap.size())
+        
         def validator = new Validator(user)
         results.filterResultToSet(domain, itemService, validator)
+    } 
+    
+    Set fetchSearchResultIds(String query, SearchableDomain domain, List<String> searchFields, BrowseAcls browseAcls) {
+        LuceneResult results = searchXml(query, domain, searchFields)
+        log.debug("results before filter: " + results.itemIdMap.size())
+        Set<Long> browsableIds = new HashSet<>();
+        results.itemIdMap.get(domain.name)?.forEach{id ->
+            Map<String,String>  fields = results.idFieldMap.get(id);
+            // migration control:
+            if(!fields.containsKey("acl") || !fields.containsKey("owner")){
+                throw new IllegalStateException("Search is not configured correctly. Please make acl and owner fields storable. This requires a new index.")
+            }
+            Long objectAclId = Long.parseLong(fields.get("acl"));
+            Long ownerAclId = Long.parseLong(fields.get("owner"));
+            if(browseAcls.hasUserBrowsePermission(objectAclId) || browseAcls.hasOwnerBrowsePermission(ownerAclId)){
+                browsableIds.add(id);
+            }
+        }
+        return browsableIds;
     }
 
-    void waitForIndexer(){
+
+    void waitForIndexer() {
         def jobCount = IndexJob.countByFailed(false)
-        while(jobCount > 0){
-            log.info("Waiting for indexer to finish indexing. Current active index tasks: "+jobCount)
+        while (jobCount > 0) {
+            log.info("Waiting for indexer to finish indexing. Current active index tasks: " + jobCount)
             Thread.sleep(2000)
             jobCount = IndexJob.countByFailed(false)
         }

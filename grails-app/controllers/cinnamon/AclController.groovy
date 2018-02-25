@@ -79,6 +79,7 @@ class AclController extends BaseController {
         try {
             Acl acl = new Acl(name: name)
             acl.save(flush: true)
+            BrowseAcls.reload()
             redirect(action: 'show', params: [id: acl.id.toString()])
         }
         catch (Exception e) {
@@ -136,7 +137,7 @@ class AclController extends BaseController {
 
         flash.message = message(code: 'acl.delete.success', args: [acl.name])
         acl.delete()
-
+        BrowseAcls.reload()
         redirect(action: 'list')
     }
 
@@ -153,6 +154,7 @@ class AclController extends BaseController {
             }
             AclEntry ae = new AclEntry(acl, group);
             ae.save()
+            BrowseAcls.reload()
             render(template: 'aclEntryManagement', model: [acl: acl, freeGroups: aclEntryService.fetchFreeGroups(acl)])
         }
         catch (Exception e) {
@@ -170,7 +172,7 @@ class AclController extends BaseController {
                 throw new RuntimeException('error.invalid.object')
             }
             aclEntryService.fullDelete(aclEntry)
-
+            BrowseAcls.reload()
             render(template: 'aclEntryManagement', model: [acl: acl, freeGroups: aclEntryService.fetchFreeGroups(acl)])
         }
         catch (Exception e) {
