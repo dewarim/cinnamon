@@ -119,8 +119,8 @@ class Repository {
             ResultCollector collector = new ResultCollector(searcher, command.domain)
             searcher.search(query, collector)
             TopDocs docs = searcher.search(query, Integer.MAX_VALUE)
-            log.debug("docs: "+docs)
             log.debug("Found: ${collector.documents.size()} documents.")
+            log.debug("fields: "+command.fields)
             def luceneResult = new LuceneResult(itemIdMap: collector.itemIdMap)
             if (command.fields.size() > 0) {
                 luceneResult.idFieldMap = collector.getIdFieldMap(command.domain, command.fields)
