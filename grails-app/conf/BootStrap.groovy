@@ -1,5 +1,6 @@
-import cinnamon.LuceneJob
-import cinnamon.index.SearchableDomain
+import cinnamon.authentication.LdapConfig
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import grails.plugin.springsecurity.SecurityFilterPosition
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.util.Environment
@@ -17,6 +18,24 @@ class BootStrap {
             log.warn("merge config file by hand from ${configFile.absolutePath}")
             def configScript = new ConfigSlurper().parse(configFile.text)
             grailsApplication.config.merge(configScript)
+        }
+
+        File ldapConfigFile = new File("${System.env.CINNAMON_HOME_DIR}/ldap-config.xml")
+        try {
+            if (ldapConfigFile.exists()) {
+                ObjectMapper mapper = new XmlMapper();
+                LdapConfig ldapConfig = mapper.readValue(ldapConfigFile, LdapConfig.class)
+                StringWriter sw = new StringWriter();
+                mapper.writerWithDefaultPrettyPrinter().writeValue(sw, ldapConfig)
+                log.info("Using ldap-config.xml:\n" + sw)
+                LdapConfig.config = ldapConfig
+            }
+            else {
+                log.warn("${ldapConfigFile.absolutePath} does not exist. Using empty LDAP config.")
+            }
+        }
+        catch (Exception e) {
+            log.warn("Failed to load / parse the ldapConfig file at ${ldapConfigFile.absolutePath}.")
         }
 
         try {
@@ -38,7 +57,7 @@ class BootStrap {
         luceneService.initialize()
 
     }
-    
+
     def destroy = {
 //        luceneService.closeIndexes()
     }

@@ -1,0 +1,14 @@
+<ldapConfig>
+    <host>localhost</host>
+    <port>10389</port>
+    <bindDnFormatString>cn=%s,cn=Users,dc=localhost</bindDnFormatString>
+    <searchBaseDnFormatString>cn=retrieval-users,cn=Users,dc=localhost</searchBaseDnFormatString>
+    <searchFilter>(&amp;(objectclass=*))</searchFilter>
+    <searchAttribute>member</searchAttribute>
+    <groupMappings>
+        <groupMapping>
+            <ldapGroup>authors</ldapGroup>
+            <cinnamonGroup>group.authors</cinnamonGroup>
+        </groupMapping>
+    </groupMappings>
+</ldapConfig>

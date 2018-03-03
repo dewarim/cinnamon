@@ -87,8 +87,15 @@ but change the following steps:
     
 ### Authentication: LDAP logins
 
+Note: Work in progress.
 Note: Code for LDAP authentication requires licensing for commercial use beyond testing.
 
 * Change database to allow LDAP logins
     
         ALTER TABLE public.users ADD login_type VARCHAR(64) DEFAULT 'CINNAMON' NOT NULL;
+        
+* Edit ldap-config.xml (see: [ldap-confing.example.xml](../ldap-config.exampl.xml)) in CINNAMON_HOME_DIR
+  (that is, into the same directory as cinnamon-config.groovy). If you do not need or want LDAP connectivity,
+  you do not need to do anything beyond the previous database change.
+  
+  
