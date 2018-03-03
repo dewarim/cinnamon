@@ -66,6 +66,8 @@ but change the following steps:
 
 ## changes to 3.7
 
+### Lucene: improve indexing of folders and objects
+
 * Stop the server.
 * Delete your Lucene index after applying the following changes.
 * Store value of owner and acl fields in index:
@@ -83,4 +85,10 @@ but change the following steps:
     insert into index_jobs select id,false,'cinnamon.ObjectSystemData',id from objects;
     insert into index_jobs select id,false,'cinnamon.Folder',id from folders;
     
-* Test!    
+### Authentication: LDAP logins
+
+Note: Code for LDAP authentication requires licensing for commercial use beyond testing.
+
+* Change database to allow LDAP logins
+    
+        ALTER TABLE public.users ADD login_type VARCHAR(64) DEFAULT 'CINNAMON' NOT NULL;
