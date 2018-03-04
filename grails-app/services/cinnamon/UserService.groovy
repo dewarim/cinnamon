@@ -260,8 +260,8 @@ class UserService implements ApplicationContextAware{
         return session.ticket
     }
 
-    UserAccount createUserAcccount(String username, List<String> cinnamonGroups,LoginType loginType) {
-        
+    UserAccount createUserAcccount(String username, List<String> cinnamonGroups,LoginType loginType, String language) {
+        UiLanguage uiLanguage = UiLanguage.findByIsoCode(language) 
         bindLateBeans()
         
         UserAccount user = null
@@ -269,7 +269,7 @@ class UserService implements ApplicationContextAware{
             String randomPwd = UUID.randomUUID().toString()
             user = new UserAccount(username, randomPwd, username, '')
             user.email = username + "@invalid"
-            user.language = UiLanguage.findByIsoCode('und')
+            user.language = uiLanguage ?: UiLanguage.findByIsoCode('und')
             user.sudoable = true
             user.sudoer = false
             user.changeTracking = true
@@ -301,6 +301,7 @@ class UserService implements ApplicationContextAware{
                 log.warn("Could not find user group: "+name)
             }
         }
+        
         return user
     }
 

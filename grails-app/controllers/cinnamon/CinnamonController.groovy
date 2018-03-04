@@ -113,7 +113,7 @@ class CinnamonController extends BaseController {
             def repository = params.repository ?: request.serverName
             String pwd = params.pwd
             def machine = params.machine ?: 'unknown'
-            def language = params.language
+            String language = params.language
             def failed = ""
             ['user', 'pwd'].each {
                 if (!params."${it}") {
@@ -140,7 +140,7 @@ class CinnamonController extends BaseController {
                 if(result.isValidUser()) {
                     List<String> cinnamonGroups = new ArrayList<>()
                     result.getGroupMappings().forEach{LdapConfig.GroupMapping mapping -> cinnamonGroups.add(mapping.getCinnamonGroup())}
-                    user = userService.createUserAcccount(username,cinnamonGroups,LoginType.LDAP)
+                    user = userService.createUserAcccount(username,cinnamonGroups,LoginType.LDAP, language)
                 }
                 
                 if(!user){
