@@ -204,7 +204,6 @@ class UserAccountController extends BaseController {
             flash.message = message(code: 'user.delete.success', args: [user.name.encodeAsHTML()])
         }
         catch (RuntimeException e) {
-//            log.debug("failed to delete user: ",e)
             flash.message = message(code: 'user.delete.failed', args: [message(code: e.getMessage())])
             return redirect(controller: 'userAccount', action: 'deleteAsk', params: [showTransferLink: true])
         }
@@ -267,68 +266,14 @@ class UserAccountController extends BaseController {
             return redirect(action: 'create')
         }
 
-        // create home/, searches/, carts/, config/ in .../users/<username>-Folder:
-        def folderPath = findAllByPath('/system/users/', true)
-        log.debug "folderPath = ${folderPath.dump()}"
-
-        def defaultAcl = Acl.findByName(Constants.ACL_DEFAULT)
-        def defaultType = FolderType.findByName(Constants.FOLDER_TYPE_DEFAULT)
-        def userFolder = new Folder(user.name, defaultAcl, folderPath[-1], findAdminUser(), defaultType)
-        userFolder.save(flush: true)
-        log.debug "created user folder '${userFolder.dump()}'"
-
-        ['home', 'searches', 'carts', 'config'].each {
-            def folder = new Folder(it, defaultAcl, userFolder, user, defaultType)
-            folder.save()
-            log.debug "created folder '${folder.dump()}'"
-        }
+        // create folders for user:
+        folderService.createHomeFolders(user)
 
         // create user-group:
         groupService.createUserGroup(user)
         userService.addUserToUsersGroup(user)
 
         redirect(action: 'show', params: [id: user.id])
-    }
-
-    /**
-     * Groovy version of FolderDAOHibernate.findAllByPath()
-     */
-    protected List<Folder> findAllByPath(String path, Boolean createMissingFolders) {
-        def parent = folderService.findRootFolder()
-
-        List<Folder> ret = new ArrayList<Folder>()
-        path.split("/").each() { seg ->
-            if (seg.length() > 0) {
-                def folders = Folder.findAllWhere(parent: parent, name: seg)
-
-                if (folders.size() == 0) { // create missing folders
-                    if (createMissingFolders) {
-                        Folder f = new Folder(name: seg,
-                                owner: findAdminUser(),
-                                parent: parent,
-                                type: FolderType.findByName(Constants.FOLDER_TYPE_DEFAULT),
-                                acl: Acl.findByName(Constants.ACL_DEFAULT))
-                        f.save(flush: true)
-                        folders = [f]
-                    }
-                    else {
-                        throw new RuntimeException("Invalid path '$path'")
-                    }
-                }
-                Folder folder = folders[0]
-                parent = folder
-                ret << folder
-            }
-        }
-        return ret
-    }
-
-    protected UserAccount findAdminUser() {
-        def user = UserAccount.findByName('admin')
-        if (user == null) {
-            throw new RuntimeException('Dandelion cannot use the Cinnamon Server without a user "admin".')
-        }
-        return user
     }
 
     @Secured(["hasRole('_superusers')"])

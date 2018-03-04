@@ -1,5 +1,8 @@
 package cinnamon
 
+import cinnamon.authentication.LdapConfig
+import cinnamon.authentication.LoginType
+import cinnamon.authentication.UnboundIdLdapConnector
 import cinnamon.global.PermissionName
 import grails.plugin.springsecurity.annotation.Secured
 
@@ -10,6 +13,8 @@ import cinnamon.global.ConfThreadLocal
 import cinnamon.global.Conf
 import humulus.HashMaker
 import cinnamon.i18n.UiLanguage
+
+import javax.naming.ldap.LdapReferralException
 
 // Name was chosen after the main servlet path of the v2 Cinnamon server (/cinnamon/cinnamon)
 
@@ -104,31 +109,55 @@ class CinnamonController extends BaseController {
     @Secured(['IS_AUTHENTICATED_ANONYMOUSLY'])
     def connect() {
         try {
-            def username = params.user
-            def repository = params.repository
-            def pwd = params.pwd
+            String username = params.user
+            def repository = params.repository ?: request.serverName
+            String pwd = params.pwd
             def machine = params.machine ?: 'unknown'
             def language = params.language
             def failed = ""
-            ['user', 'repository', 'pwd'].each {
+            ['user', 'pwd'].each {
                 if (!params."${it}") {
                     failed += "Request parameter ${it} is not set.\n"
                 }
             }
-            if(failed.length() > 0){
+            if (failed.length() > 0) {
                 renderErrorXml(failed)
                 return
             }
 
             def user = UserAccount.findByName(username)
             if (!user) {
-                log.debug("user $username not found")
-                renderErrorXml("error.user.not.found")
-                return
+                log.debug("user $username not found - try ldap connector.")
+
+                UnboundIdLdapConnector connector = new UnboundIdLdapConnector();
+                if(!connector.isInitialized()){
+                    log.debug("LdapConnector is not configured properly. Do you have a ldap-config.xml file in '${System.env.CINNAMON_HOME_DIR}'?")
+                    renderErrorXml("error.user.not.found")
+                    return
+                }
+
+                UnboundIdLdapConnector.LdapResult result = connector.connect(username,pwd)
+                if(result.isValidUser()) {
+                    List<String> cinnamonGroups = new ArrayList<>()
+                    result.getGroupMappings().forEach{LdapConfig.GroupMapping mapping -> cinnamonGroups.add(mapping.getCinnamonGroup())}
+                    user = userService.createUserAcccount(username,cinnamonGroups,LoginType.LDAP)
+                }
+                
+                if(!user){
+                    renderErrorXml("error.user.not.found.and.ldap.create.failed")
+                    return
+                }
             }
-            if (!HashMaker.compareWithHash(pwd, user.pwd)) {
-                renderErrorXml("error.wrong.password")
-                return
+
+            switch (user.loginType) {
+                case LoginType.LDAP: if (!isValidLdapUser(username, pwd)) {
+                    renderErrorXml("error.ldap.authentication.failed")
+                    return
+                }; break;
+                default: if (!HashMaker.compareWithHash(pwd, user.pwd)) {
+                    renderErrorXml("error.wrong.password")
+                    return
+                }
             }
 
             def uiLanguage = user.language
@@ -153,6 +182,14 @@ class CinnamonController extends BaseController {
         }
     }
 
+    private UnboundIdLdapConnector.LdapResult isValidLdapUser(String username, String password){
+        UnboundIdLdapConnector connector = new UnboundIdLdapConnector()
+        if(!connector.isInitialized()){
+            return false;
+        }
+        return connector.connect(username,password)
+    }
+    
     @Secured(['IS_AUTHENTICATED_ANONYMOUSLY'])
     def disconnect(String ticket) {
         if (ticket) {
@@ -174,7 +211,7 @@ class CinnamonController extends BaseController {
             }
             log.debug("reached legacy filter with command: ${myAction}")
             log.debug("params:$params")
-            log.debug("header-ticket:"+request.getHeader('ticket'))
+            log.debug("header-ticket:" + request.getHeader('ticket'))
             def user = userService.user
             log.debug("user: $user")
             if (user) {
@@ -213,7 +250,7 @@ class CinnamonController extends BaseController {
                 case 'forksession': forward(controller: 'cinnamon', action: 'forkSession'); break
                 case 'getacls': forward(controller: 'acl', action: 'listXml'); break
                 case 'getconfigentry': forward(controller: 'configEntry', action: 'getConfigEntryXml'); break
-                case 'getcontent': forward(controller: 'osd', action: 'getContentXml'); break                                                
+                case 'getcontent': forward(controller: 'osd', action: 'getContentXml'); break
                 case 'getfolder': forward(controller: 'folder', action: 'fetchFolderXml'); break
                 case 'getfolderbypath': forward(controller: 'folder', action: 'fetchFolderByPath'); break
                 case 'getfoldermeta': forward(controller: 'folder', action: 'getFolderMeta'); break
@@ -243,8 +280,8 @@ class CinnamonController extends BaseController {
                 case 'listgroups': forward(controller: 'group', action: 'listXml'); break
                 case 'listindexgroups': forward(controller: 'indexGroup', action: 'listXml'); break
                 case 'listindexitems': forward(controller: 'indexItem', action: 'listXml'); break
-                case 'listlanguages': forward(controller: 'language', action: 'listXml'); break                                                
-                case 'listlifecycles': forward(controller: 'lifeCycle', action: 'listLifeCyclesXml'); break                
+                case 'listlanguages': forward(controller: 'language', action: 'listXml'); break
+                case 'listlifecycles': forward(controller: 'lifeCycle', action: 'listLifeCyclesXml'); break
                 case 'listmessages': forward(controller: 'message', action: 'listXml'); break
                 case 'listmetasettypes': forward(controller: 'metasetType', action: 'listXml'); break
                 case 'listpermissions': forward(controller: 'permission', action: 'listXml'); break
@@ -262,12 +299,16 @@ class CinnamonController extends BaseController {
                 case 'searchfolders': forward(controller: 'search', action: 'searchFolders'); break
                 case 'setchangedstatus': forward(controller: 'cinnamon', action: 'setChangedStatus'); break
                 case 'setconfigentry': forward(controller: 'configEntry', action: 'setConfigEntryXml'); break
-                case 'setcontent': forward(controller: 'osd', action: 'saveContentXml'); break                
+                case 'setcontent': forward(controller: 'osd', action: 'saveContentXml'); break
                 case 'setmeta': forward(controller: 'osd', action: 'saveMetadataXml'); break
                 case 'setmetaset': forward(controller: 'metaset', action: 'saveMetaset'); break
                 case 'setpassword': forward(controller: 'userAccount', action: 'changePassword'); break
-                case 'setsummary': if(params.type?.equals('osd')){forward(controller: 'osd', action: 'setSummaryXml')}
-                    else{forward(controller: 'folder', action: 'setSummaryXml')};
+                case 'setsummary': if (params.type?.equals('osd')) {
+                    forward(controller: 'osd', action: 'setSummaryXml')
+                }
+                else {
+                    forward(controller: 'folder', action: 'setSummaryXml')
+                };
                     break
                 case 'setsysmeta': forward(controller: 'osd', action: 'updateSysMetaXml'); break
                 case 'startrendertask': forward(controller: 'renderServer', action: 'createRenderTask'); break
@@ -299,40 +340,40 @@ class CinnamonController extends BaseController {
      *            <li>ticket=current session ticket</li>
      * @return a Response containing
      *         <pre>
-     *         {@code
+     * {@code
      *         <connection>
      *            <ticket>$ticket</ticket>
      *         </connection>
-     *         }
+     *}
      *         </pre>
      *         or an XML error message.
      */
     def forkSession(String ticket) {
-        try{
+        try {
             Session session = Session.findByTicket(ticket)
-            if(! session){
+            if (!session) {
                 log.warn("unknown session ticket for forkSession: '$ticket'")
-                throw new CinnamonException("error.unknown.ticket")    
+                throw new CinnamonException("error.unknown.ticket")
             }
-            String repository = ticket.split("@")[1]            
+            String repository = ticket.split("@")[1]
             Session forkedSession = session.copy(repository);
             forkedSession.save()
             renderTicket(forkedSession.ticket)
-          
+
         } catch (Exception e) {
-            log.debug("failed to fork session:",e)
+            log.debug("failed to fork session:", e)
             renderExceptionXml(e.message)
         }
     }
-    
-    private renderTicket(myTicket){
-        render(contentType: 'application/xml'){
-            connection{
+
+    private renderTicket(myTicket) {
+        render(contentType: 'application/xml') {
+            connection {
                 ticket(myTicket)
             }
         }
     }
-    
+
     def test() {
         log.debug("reached test method")
         render(text: 'test method')
@@ -354,7 +395,7 @@ class CinnamonController extends BaseController {
      * Unless the system administrator needs to debug a specific task, administrator accounts should
      * always have the sudoable field set to false.
      *
-     * @param user_id= id of the user who you want to impersonate
+     * @param user_id = id of the user who you want to impersonate
      * @return XML document with the ticket of the user's session.
      */
     def sudo(Long user_id) {
@@ -405,32 +446,32 @@ class CinnamonController extends BaseController {
     def setChangedStatus(String type, Long id, Boolean contentChanged, Boolean metadataChanged) {
         try {
             def user = userService.user
-            if(user.changeTracking){
+            if (user.changeTracking) {
                 renderExceptionXml("Only users without changeTracking are allowed to use setChangedStatus.")
                 return
             }
-            if(type?.equals('object')) {
+            if (type?.equals('object')) {
                 def osd = fetchAndFilterOsd(id, [PermissionName.WRITE_OBJECT_SYS_METADATA])
                 boolean changed = false
-                if(params.containsKey('contentChanged') && contentChanged != null) {
+                if (params.containsKey('contentChanged') && contentChanged != null) {
                     osd.contentChanged = contentChanged
-                    changed=true
+                    changed = true
                 }
-                if(params.containsKey('metadataChanged') && metadataChanged != null){
+                if (params.containsKey('metadataChanged') && metadataChanged != null) {
                     osd.metadataChanged = metadataChanged
-                    changed=true
+                    changed = true
                 }
-                if(!changed){
+                if (!changed) {
                     renderExceptionXml("Failed to set changed flags: missing parameter(s)")
                     return
                 }
             }
-            if(type?.equals('folder')){
+            if (type?.equals('folder')) {
                 def folder = fetchAndFilterFolder(id, [PermissionName.EDIT_FOLDER])
-                if(params.containsKey('metadataChanged') && metadataChanged != null) {
+                if (params.containsKey('metadataChanged') && metadataChanged != null) {
                     folder.metadataChanged = metadataChanged
                 }
-                else{
+                else {
                     renderExceptionXml("Failed to set metadataChanged flag: missing parameter metadataChanged")
                     return
                 }
@@ -446,5 +487,5 @@ class CinnamonController extends BaseController {
 
 
     }
-    
+
 }

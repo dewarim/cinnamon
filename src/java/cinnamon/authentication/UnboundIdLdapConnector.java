@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 /**
  * LDAP connector using the UnboundId LDAP SDK licensed under LGPL 2.1
  * See: https://www.ldap.com/unboundid-ldap-sdk-for-java
- * 
+ * <p>
  * Copied from Cinnamon-4 project.
  * This class is licensed under LGPL 2.1 for non-commercial or test use.
  * Commercial use requires separate license if actively used for LDAP login.
@@ -28,8 +28,16 @@ public class UnboundIdLdapConnector {
 
     private static final Logger log = LoggerFactory.getLogger(UnboundIdLdapConnector.class);
 
+    /**
+     * Loaded once at start by BootStrap. If no ldap-config.xml is found, this remains an empty object.
+     */
+    public static LdapConfig config = new LdapConfig();
 
     LdapConfig ldapConfig;
+
+    public UnboundIdLdapConnector() {
+        this.ldapConfig = config;
+    }
 
     public UnboundIdLdapConnector(LdapConfig ldapConfig) {
         this.ldapConfig = ldapConfig;
@@ -38,7 +46,7 @@ public class UnboundIdLdapConnector {
     public LdapResult connect(String username, String password) {
         LDAPConnection conn = null;
         try {
-            log.debug("Connecting to {}:{} with '{}' for user '{}'", 
+            log.debug("Connecting to {}:{} with '{}' for user '{}'",
                     ldapConfig.getHost(), ldapConfig.getPort(), getBaseDn(username), username);
             conn = new LDAPConnection(ldapConfig.getHost(), ldapConfig.getPort(), getBaseDn(username), password);
             log.debug("connection: " + conn);
@@ -82,6 +90,10 @@ public class UnboundIdLdapConnector {
 
     private String getSearchBaseDn(String groupName) {
         return String.format(ldapConfig.getSearchBaseDnFormatString(), groupName);
+    }
+
+    public boolean isInitialized() {
+        return ldapConfig != null && ldapConfig.getHost() != null && ldapConfig.getPort() > 0;
     }
 
     public static void main(String[] args) throws IOException {

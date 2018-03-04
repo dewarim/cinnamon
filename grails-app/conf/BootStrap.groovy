@@ -1,4 +1,5 @@
 import cinnamon.authentication.LdapConfig
+import cinnamon.authentication.UnboundIdLdapConnector
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import grails.plugin.springsecurity.SecurityFilterPosition
@@ -28,7 +29,7 @@ class BootStrap {
                 StringWriter sw = new StringWriter();
                 mapper.writerWithDefaultPrettyPrinter().writeValue(sw, ldapConfig)
                 log.info("Using ldap-config.xml:\n" + sw)
-                LdapConfig.config = ldapConfig
+                UnboundIdLdapConnector.config = ldapConfig
             }
             else {
                 log.warn("${ldapConfigFile.absolutePath} does not exist. Using empty LDAP config.")

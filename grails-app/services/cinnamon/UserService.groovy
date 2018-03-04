@@ -1,20 +1,30 @@
 package cinnamon
 
+import cinnamon.authentication.LoginType
 import cinnamon.global.Constants
 import cinnamon.global.ConfThreadLocal
 import cinnamon.exceptions.CinnamonException
 import cinnamon.global.Conf
 import grails.plugin.springsecurity.userdetails.GrailsUser
 import cinnamon.i18n.UiLanguage
+import grails.util.Holders
+import org.springframework.context.ApplicationContext
+import org.springframework.context.ApplicationContextAware
+
+import javax.annotation.PostConstruct
 
 /**
  *
  */
-class UserService {
+class UserService implements ApplicationContextAware{
 
+    ApplicationContext applicationContext
+    
     def springSecurityService
     def healthService
     def infoService
+    def folderServiceBean
+    def groupServiceBean
 
     Boolean isSuperuser(UserAccount user) {
         def auth = springSecurityService.authentication
@@ -28,8 +38,7 @@ class UserService {
     UserAccount getUser() {
         def principal = springSecurityService.getPrincipal();
 //        log.debug("principal: $principal")
-        if (principal instanceof GrailsUser)
-        {
+        if (principal instanceof GrailsUser) {
             // Note: if it works with getUsername and not with getId,
             // you may have a problem of accessing the right user in the wrong database...
             log.debug("id: ${principal.getId()}")
@@ -81,7 +90,7 @@ class UserService {
 
     void transferGroupMembership(UserAccount source, UserAccount target) {
         def groupUsers = CmnGroupUser.findAllByUserAccount(source)
-        groupUsers.each {gu ->
+        groupUsers.each { gu ->
             if (CmnGroupUser.findByUserAccountAndCmnGroup(target, gu.cmnGroup)) {
                 // simply delete old user's CmnGroupUser object as both
                 // old and new are in the same group
@@ -96,7 +105,7 @@ class UserService {
     }
 
     void transferFolderOwnership(UserAccount source, UserAccount target) {
-        Folder.findAllByOwner(source).each {folder ->
+        Folder.findAllByOwner(source).each { folder ->
             log.debug("transfer folder ownership of ${folder.name} to user ${target.name}")
             folder.owner = target
         }
@@ -125,19 +134,19 @@ class UserService {
      * @param target The new user who replaces the source user in all cases.
      */
     void transferOsdOwnership(UserAccount source, UserAccount target) {
-        ObjectSystemData.findAllByOwner(source).each {osd ->
+        ObjectSystemData.findAllByOwner(source).each { osd ->
             log.debug("transfer object ownership of #${osd.id} to user ${target.name}")
             osd.owner = target
         }
-        ObjectSystemData.findAllByModifier(source).each {osd ->
+        ObjectSystemData.findAllByModifier(source).each { osd ->
             log.debug("transfer modifier label of #${osd.id} to user ${target.name}")
             osd.modifier = target
         }
-        ObjectSystemData.findAllByCreator(source).each {osd ->
+        ObjectSystemData.findAllByCreator(source).each { osd ->
             log.debug("transfer creator label of #${osd.id} to user ${target.name}")
             osd.creator = target
         }
-        ObjectSystemData.findAllByLocker(source).each {osd ->
+        ObjectSystemData.findAllByLocker(source).each { osd ->
             log.debug("transfer lock_owner label of #${osd.id} to user ${target.name}")
             osd.locker = target
         }
@@ -145,7 +154,7 @@ class UserService {
 
     void removeSessions(UserAccount source) {
         log.debug("remove sessions of user ${source.name}")
-        cinnamon.Session.findAllByUser(source).each {userSession ->
+        cinnamon.Session.findAllByUser(source).each { userSession ->
             userSession.delete()
         }
     }
@@ -193,7 +202,7 @@ class UserService {
 
     public List getUsersPermissions(user, acl) {
         if (user.verifySuperuserStatus()) {
-            return Permission.list().collect {it.name};
+            return Permission.list().collect { it.name };
         }
 
         log.debug("groupUsers for user " + user.getName() + ": " + user.getGroupUsers().size());
@@ -234,11 +243,11 @@ class UserService {
         if (userAccount == null) {
             userAccount = getUser()
         }
-        Session session = Session.find("from Session s where s.user=:user order by expires desc", 
+        Session session = Session.find("from Session s where s.user=:user order by expires desc",
                 [user: userAccount], [max: 1])
         if (!session || session.expires < new Date()) {
             def uiLanguage = userAccount.language
-            if(uiLanguage == null){
+            if (uiLanguage == null) {
                 // a user *should* have at least the 'undetermined' language (und), 
                 // but it seems like that's not always the case.
                 uiLanguage = UiLanguage.findByIsoCode('und')
@@ -249,5 +258,62 @@ class UserService {
             session.save()
         }
         return session.ticket
+    }
+
+    UserAccount createUserAcccount(String username, List<String> cinnamonGroups,LoginType loginType) {
+        
+        bindLateBeans()
+        
+        UserAccount user = null
+        try {
+            String randomPwd = UUID.randomUUID().toString()
+            user = new UserAccount(username, randomPwd, username, '')
+            user.email = username + "@invalid"
+            user.language = UiLanguage.findByIsoCode('und')
+            user.sudoable = true
+            user.sudoer = false
+            user.changeTracking = true
+            user.loginType = loginType
+            if (!user.validate()) {
+                return null
+            }
+            user.save(flush: true)
+        }
+        catch (Exception e) {
+            log.debug("failed to save user:", e)
+            return null
+        }
+
+        // create folders for user:
+        folderServiceBean.createHomeFolders(user)
+
+        // create user-group:
+        groupServiceBean.createUserGroup(user)
+        addUserToUsersGroup(user)
+
+        cinnamonGroups.forEach { name ->
+            CmnGroup group = CmnGroup.findByName(name)
+            if (group) {
+                CmnGroupUser groupUser = new CmnGroupUser(group, user)
+                groupUser.save()
+            }
+            else{
+                log.warn("Could not find user group: "+name)
+            }
+        }
+        return user
+    }
+
+    UserAccount findAdminUser() {
+        def user = UserAccount.findByName('admin')
+        if (user == null) {
+            throw new RuntimeException('Dandelion cannot use the Cinnamon Server without a user "admin".')
+        }
+        return user
+    }
+    
+    void bindLateBeans(){
+        folderServiceBean = applicationContext.getBean('folderService')
+        groupServiceBean = applicationContext.getBean('groupService')
     }
 }

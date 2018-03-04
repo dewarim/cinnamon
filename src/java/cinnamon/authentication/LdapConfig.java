@@ -5,10 +5,6 @@ import java.util.List;
 
 public class LdapConfig {
 
-    /**
-     * Loaded once at start by BootStrap. If no ldap-config.xml is found, this remains an empty object.
-     */
-    public static LdapConfig config = new LdapConfig();
 
     /**
      * The LDAP server host's address.

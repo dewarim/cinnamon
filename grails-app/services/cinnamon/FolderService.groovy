@@ -583,5 +583,72 @@ class FolderService {
 
         return rootFolder;
     }
+
+    /**
+     * Groovy version of FolderDAOHibernate.findAllByPath()
+     */
+    List<Folder> findAllByPath(String path, Boolean createMissingFolders) {
+        def parent = findRootFolder()
+
+        List<Folder> ret = new ArrayList<Folder>()
+        path.split("/").each() { seg ->
+            if (seg.length() > 0) {
+                def folders = Folder.findAllWhere(parent: parent, name: seg)
+
+                if (folders.size() == 0) { // create missing folders
+                    if (createMissingFolders) {
+                        Folder f = new Folder(name: seg,
+                                owner: userService.findAdminUser(),
+                                parent: parent,
+                                type: FolderType.findByName(Constants.FOLDER_TYPE_DEFAULT),
+                                acl: Acl.findByName(Constants.ACL_DEFAULT))
+                        f.save(flush: true)
+                        folders = [f]
+                    }
+                    else {
+                        throw new RuntimeException("Invalid path '$path'")
+                    }
+                }
+                Folder folder = folders[0]
+                parent = folder
+                ret << folder
+            }
+        }
+        return ret
+    }
+
+    void createHomeFolders(UserAccount user) {
+        // create home/, searches/, carts/, config/ in .../users/<username>-Folder:
+        def folderPath = findAllByPath('/system/users/', true)
+        log.debug "folderPath = ${folderPath.dump()}"
+
+        def defaultAcl = Acl.findByName(Constants.ACL_DEFAULT)
+        def defaultType = FolderType.findByName(Constants.FOLDER_TYPE_DEFAULT)
+        Folder userFolder = null
+        Folder existsCheck = Folder.findByNameAndParent(user.name,folderPath[-1])
+        if(existsCheck){
+            userFolder = existsCheck
+            log.debug "found user folder '${userFolder.dump()}'"
+        }
+        else {
+            userFolder = new Folder(user.name, defaultAcl, folderPath[-1], userService.findAdminUser(), defaultType)
+            userFolder.save(flush: true)
+            log.debug "created user folder '${userFolder.dump()}'"
+        }
+
+        // if user was deleted and is re-created, his folders may still be around
+        // this most likely happens during testing. (we cannot simply delete the folders, they may contain objects)
+        ['home', 'searches', 'carts', 'config'].each {
+            Folder f = Folder.findByNameAndParent(it,userFolder)
+            if (f) {
+                log.debug("Folder ${f} already exists.")
+            }
+            else {
+                def folder = new Folder(it, defaultAcl, userFolder, user, defaultType)
+                folder.save()
+                log.debug "created folder '${folder.dump()}'"
+            }
+        }
+    }
 }
 
