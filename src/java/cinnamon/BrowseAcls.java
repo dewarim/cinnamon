@@ -1,5 +1,6 @@
 package cinnamon;
 
+import cinnamon.global.Constants;
 import cinnamon.global.PermissionName;
 import org.apache.log4j.Logger;
 
@@ -77,7 +78,7 @@ public class BrowseAcls {
             synchronized (userAclsWithBrowsePermissionCache) {
                 long startTime = System.currentTimeMillis();
                 log.info("Generating object acls list with browse permissions for user " + user);
-                userAclsWithBrowsePermissionCache.put(userId, generateObjectAclSet(user));
+                userAclsWithBrowsePermissionCache.put(userId, generateObjectAclSet(browsePermission, user));
                 long endTime = System.currentTimeMillis();
                 log.info("object acl list generated in "+ (endTime-startTime) + " ms" );
             }
@@ -91,7 +92,7 @@ public class BrowseAcls {
             synchronized (ownerAclsWithBrowsePermissionCache) {
                 long startTime = System.currentTimeMillis();
                 log.info("Generating owner acls list with browse permissions for user " + user);
-                ownerAclsWithBrowsePermissionCache.put(userId, generateOwnerAclIdSet(user));
+                ownerAclsWithBrowsePermissionCache.put(userId, generateOwnerAclIdSet(browsePermission, user));
                 long endTime = System.currentTimeMillis();
                 log.info("owner acl list generated in "+ (endTime-startTime) + " ms" );
 
@@ -100,7 +101,7 @@ public class BrowseAcls {
         return ownerAclsWithBrowsePermissionCache.get(userId);
     }
 
-    static private Set<Long> generateObjectAclSet(UserAccount user) {
+    static private Set<Long> generateObjectAclSet(Permission permission, UserAccount user) {
         if (user.verifySuperuserStatus()) {
             // Superusers are exempt from permission checking, so they automatically have BrowsePermission on all objects.
             return acls.stream().map(Acl::getId).collect(Collectors.toSet());
@@ -109,7 +110,7 @@ public class BrowseAcls {
 
         for (Acl acl : acls) {
             // compute browse permissions for acls
-            boolean checkAclResult = checkObjectAclEntries(acl, browsePermission, user);
+            boolean checkAclResult = checkObjectAclEntries(acl, permission, user);
             if (checkAclResult) {
                 aclIds.add(acl.getId());
             }
@@ -140,56 +141,24 @@ public class BrowseAcls {
         return false;
     }
 
-    static private Set<Long> generateOwnerAclIdSet(UserAccount user) {
+    static private Set<Long> generateOwnerAclIdSet(Permission permission, UserAccount user) {
         if (user.verifySuperuserStatus()) {
             // Superusers are exempt from permission checking, so they automatically have BrowsePermission on all objects.
             return acls.stream().map(Acl::getId).collect(Collectors.toSet());
         }
-
-        Set<Long> aclIds = new HashSet<>();
-        for (Acl acl : acls) {
-            // compute browse permissions for acls
-            boolean checkAclResult = checkOwnerAclEntries(acl, browsePermission,  user);
-            if (checkAclResult) {
-                aclIds.add(acl.getId());
-            }
-
-        }
-        return aclIds;
-    }
-
-
-    /**
-     * AliasEntries: there exist two special groups that can be bound to an ACL:
-     * _owner and _everyone. The permissions granted by those groups are resolved
-     * dynamically for each object (for example, if the user is the owner of an object, he
-     * will receive the permissions from the owner group.)
-     * The _everyone group exists so that we can define default permissions for all users,
-     * regardless of which individual group they may be in (for example, everyone should
-     * be able to _read_ a global configuration object, but we do not want to add the
-     * authors, editors and reviewers groups to the configuration object's ACL to define
-     * the same browse permission for all of them in individual AclEntry objects).
-     *
-     */
-
-    static boolean checkOwnerAclEntries(Acl acl, Permission permission, UserAccount user) {
-        // create Union of Sets: user.groups and acl.groups => iterate over each group for permitlevel.
-
-        // 2. query acl for usergroup.
-        Set<AclEntry> directEntries = new HashSet<>();
-        directEntries.addAll(acl.getUserEntries(user));
-
-        Set<AclEntry> aclEntries = new HashSet<>();
-        aclEntries.addAll(getGroupMatches2(directEntries, acl));
-        
-        Optional<AclEntry> ownerAclEntry = aclEntries.stream().filter(aclEntry -> aclEntry.getGroup().getName().equals(CmnGroup.ALIAS_OWNER)).findFirst();
-        if(ownerAclEntry.isPresent()){
-            if (ownerAclEntry.get().findPermission(permission)) {
-                return true;
+         
+        Map<String,String> params = new HashMap<>();
+        params.put("name",Constants.ALIAS_OWNER);
+        List<AclEntry> ownerEntries = AclEntry.findAll("from AclEntry ae where ae.group.name=:name",params);
+        Set<Long> ownerAclIdsWithBrowsePermission = new HashSet<>();
+        for(AclEntry entry : ownerEntries){
+            if(entry.findPermission(permission)){
+                ownerAclIdsWithBrowsePermission.add(entry.getAcl().id);
             }
         }
-        return false;
+        return ownerAclIdsWithBrowsePermission;
     }
+
 
     static Set<AclEntry> getGroupMatches2(Set<AclEntry> directEntries, Acl acl) {
         Set<AclEntry> aclentries = new HashSet<>();
