@@ -127,7 +127,7 @@ class CinnamonController extends BaseController {
 
             def user = UserAccount.findByName(username)
             if (!user) {
-                log.debug("user $username not found - try ldap connector.")
+                log.debug("user $username not found - trying ldap connector.")
 
                 UnboundIdLdapConnector connector = new UnboundIdLdapConnector();
                 if(!connector.isInitialized()){
@@ -148,7 +148,22 @@ class CinnamonController extends BaseController {
                     return
                 }
             }
-
+            
+            if(user.accountExpired){
+                renderErrorXml("error.user.account.expired")
+                return;
+            }
+            
+            if(user.accountLocked){
+                renderErrorXml("error.user.account.locked")
+                return
+            }
+            
+            if(!user.activated){
+                renderErrorXml("error.user.account.not.active")
+                return
+            }
+            
             switch (user.loginType) {
                 case LoginType.LDAP: if (!isValidLdapUser(username, pwd)) {
                     renderErrorXml("error.ldap.authentication.failed")

@@ -19,8 +19,15 @@ echo "Unknown user"
     # <error><code>error.user.not.found.and.ldap.create.failed</code><message>error.user.not.found.and.ldap.create.failed</message></error>
 
 echo ""
+echo "Deactivated user"
+    curl -d user=joe -d pwd=joe12345  http://localhost:8080/cinnamon/cinnamon/connect   
+
+    # expected:
+    # <error><code>error.user.account.not.active</code><message>error.user.account.not.active</message></error>
+
+echo ""
 echo "LDAP user"
-    curl -d "user=John Doe" -d "pwd=Dohn.Joe_1" http://localhost:8080/cinnamon/cinnamon/connect
+    curl -d "user=John Doe" -d "pwd=Dohn.Joe_1" -d "language=mul" http://localhost:8080/cinnamon/cinnamon/connect
     
     # expected:
     # if previously unknown, a new user should be created.
