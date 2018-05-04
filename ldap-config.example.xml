@@ -7,7 +7,7 @@
     <searchAttribute>member</searchAttribute>
     <groupMappings>
         <groupMapping>
-            <ldapGroup>authors</ldapGroup>
+            <externalGroup>authors</externalGroup>
             <cinnamonGroup>group.authors</cinnamonGroup>
         </groupMapping>
     </groupMappings>

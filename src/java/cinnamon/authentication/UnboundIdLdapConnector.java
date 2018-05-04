@@ -52,7 +52,7 @@ public class UnboundIdLdapConnector {
             log.debug("connection: " + conn);
             final LDAPConnection connection = conn;
             List<LdapConfig.GroupMapping> groupMappings = ldapConfig.getGroupMappings().stream()
-                    .filter(groupMapping -> searchForGroup(connection, groupMapping.getLdapGroup(), username))
+                    .filter(groupMapping -> searchForGroup(connection, groupMapping.getExternalGroup(), username))
                     .collect(Collectors.toList());
 
             return new LdapResult(!groupMappings.isEmpty(), groupMappings);

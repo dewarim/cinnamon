@@ -31,7 +31,7 @@ public class LdapConfig {
      * Example:
      * cn=Users,dc=cinnamon,dc=dewarim,dc=coom
      * 
-     * The query will be pre-pended with cn=$ldapGroup from groupMappings.
+     * The query will be pre-pended with cn=$externalGroup from groupMappings.
      * Example:
      * cn=retrieval-users,cn=Users,dc=localhost
      */
@@ -111,15 +111,15 @@ public class LdapConfig {
 
     public static class GroupMapping {
 
-        private String ldapGroup;
+        private String externalGroup;
         private String cinnamonGroup;
 
-        public String getLdapGroup() {
-            return ldapGroup;
+        public String getExternalGroup() {
+            return externalGroup;
         }
 
-        public void setLdapGroup(String ldapGroup) {
-            this.ldapGroup = ldapGroup;
+        public void setExternalGroup(String externalGroup) {
+            this.externalGroup = externalGroup;
         }
 
         public String getCinnamonGroup() {
