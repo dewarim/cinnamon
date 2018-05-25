@@ -62,6 +62,18 @@ abstract class BaseController {
             }
         }
     }
+        
+    protected void renderErrorXml(String logMessage, String errorMessage, int statusCode){
+        LocalRepository.cleanUp()
+        log.info(logMessage)
+        response.status = statusCode
+        render(contentType: 'application/xml') {
+            error {
+                code(errorMessage)
+                "message"(message(code: errorMessage))
+            }
+        }
+    }
     
     protected void renderException(String msg) {
         LocalRepository.cleanUp()
