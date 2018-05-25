@@ -130,16 +130,16 @@ class CinnamonController extends BaseController {
                 log.debug("user $username not found - trying ldap connector.")
 
                 UnboundIdLdapConnector connector = new UnboundIdLdapConnector();
-                if(!connector.isInitialized()){
-                    log.debug("LdapConnector is not configured properly. Do you have a ldap-config.xml file in '${System.env.CINNAMON_HOME_DIR}'?")
+                if(!connector.initialized){
+                    log.info("LdapConnector is not configured properly. Do you have a ldap-config.xml file in '${System.env.CINNAMON_HOME_DIR}'?")
                     renderErrorXml("error.user.not.found")
                     return
                 }
 
                 UnboundIdLdapConnector.LdapResult result = connector.connect(username,pwd)
-                if(result.isValidUser()) {
+                if(result.validUser) {
                     List<String> cinnamonGroups = new ArrayList<>()
-                    result.getGroupMappings().forEach{LdapConfig.GroupMapping mapping -> cinnamonGroups.add(mapping.getCinnamonGroup())}
+                    result.groupMappings.forEach{ LdapConfig.GroupMapping mapping -> cinnamonGroups.add(mapping.cinnamonGroup)}
                     user = userService.createUserAcccount(username,cinnamonGroups,LoginType.LDAP, language)
                 }
                 
@@ -197,12 +197,15 @@ class CinnamonController extends BaseController {
         }
     }
 
-    private UnboundIdLdapConnector.LdapResult isValidLdapUser(String username, String password){
+    private boolean isValidLdapUser(String username, String password){
         UnboundIdLdapConnector connector = new UnboundIdLdapConnector()
-        if(!connector.isInitialized()){
-            return false;
+        if (connector.initialized) {
+            return connector.connect(username, password).validUser
         }
-        return connector.connect(username,password)
+        else {
+            log.info("LDAP connector seems uninitialized. Please check your ldap-config.xml (set host and port etc).")
+            return false 
+        }
     }
     
     @Secured(['IS_AUTHENTICATED_ANONYMOUSLY'])

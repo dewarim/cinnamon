@@ -33,10 +33,10 @@ public class UnboundIdLdapConnector {
      */
     public static LdapConfig config = new LdapConfig();
 
-    LdapConfig ldapConfig;
+    private LdapConfig ldapConfig;
 
     public UnboundIdLdapConnector() {
-        this.ldapConfig = config;
+        ldapConfig = config;
     }
 
     public UnboundIdLdapConnector(LdapConfig ldapConfig) {
@@ -44,15 +44,16 @@ public class UnboundIdLdapConnector {
     }
 
     public LdapResult connect(String username, String password) {
+        String escapedUsername = escapeUsername(username);
         LDAPConnection conn = null;
         try {
             log.debug("Connecting to {}:{} with '{}' for user '{}'",
-                    ldapConfig.getHost(), ldapConfig.getPort(), getBaseDn(username), username);
-            conn = new LDAPConnection(ldapConfig.getHost(), ldapConfig.getPort(), getBaseDn(username), password);
+                    ldapConfig.getHost(), ldapConfig.getPort(), getBaseDn(escapedUsername), escapedUsername);
+            conn = new LDAPConnection(ldapConfig.getHost(), ldapConfig.getPort(), getBaseDn(escapedUsername), password);
             log.debug("connection: " + conn);
             final LDAPConnection connection = conn;
             List<LdapConfig.GroupMapping> groupMappings = ldapConfig.getGroupMappings().stream()
-                    .filter(groupMapping -> searchForGroup(connection, groupMapping.getExternalGroup(), username))
+                    .filter(groupMapping -> searchForGroup(connection, groupMapping.getExternalGroup(), escapedUsername))
                     .collect(Collectors.toList());
 
             return new LdapResult(!groupMappings.isEmpty(), groupMappings);
@@ -69,23 +70,23 @@ public class UnboundIdLdapConnector {
         }
     }
 
-    private boolean searchForGroup(LDAPConnection connection, String ldapGroupName, String username) {
+    private boolean searchForGroup(LDAPConnection connection, String ldapGroupName, String escapedUsername) {
         try {
             SearchResultEntry searchResultEntry = connection.searchForEntry(getSearchBaseDn(ldapGroupName),
                     SearchScope.BASE, ldapConfig.getSearchFilter(), ldapConfig.getSearchAttribute());
 
             String[] attributeValues = searchResultEntry.getAttributeValues(ldapConfig.getSearchAttribute());
-            log.debug("looking at group '{}' with attributeValues '{}' starting with 'CN={},'", ldapGroupName, attributeValues, username);
-            return Arrays.stream(attributeValues).anyMatch(member -> member.startsWith("CN=" + username + ","));
+            log.debug("looking at group '{}' with attributeValues '{}' starting with 'CN={},'", ldapGroupName, attributeValues, escapedUsername);
+            return Arrays.stream(attributeValues).anyMatch(member -> member.startsWith("CN=" + escapedUsername + ","));
 
         } catch (LDAPSearchException e) {
-            log.debug(String.format("Failed to search for group %s for user %s", ldapGroupName, username), e);
+            log.debug(String.format("Failed to search for group %s for user %s", ldapGroupName, escapedUsername), e);
             return false;
         }
     }
 
     private String getBaseDn(String username) {
-        return String.format(ldapConfig.getBindDnFormatString(), escapeUsername(username));
+        return String.format(ldapConfig.getBindDnFormatString(), username);
     }
 
     private String escapeUsername(String username){
