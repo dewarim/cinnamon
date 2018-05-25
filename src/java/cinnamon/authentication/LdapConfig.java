@@ -48,7 +48,8 @@ public class LdapConfig {
      * attribute "member" which is a String starting with CN=$username, for example: "CN=John Doe"
      */
     private String searchAttribute = "member";
-
+    
+    private String defaultLanguageCode = "en";
 
     private List<GroupMapping> groupMappings = new ArrayList<>();
 
@@ -99,6 +100,14 @@ public class LdapConfig {
 
     public void setSearchAttribute(String searchAttribute) {
         this.searchAttribute = searchAttribute;
+    }
+
+    public String getDefaultLanguageCode() {
+        return this.defaultLanguageCode;
+    }
+
+    public void setDefaultLanguageCode(String defaultLanguageCode) {
+        this.defaultLanguageCode = defaultLanguageCode;
     }
 
     public List<GroupMapping> getGroupMappings() {

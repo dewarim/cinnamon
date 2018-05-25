@@ -280,7 +280,7 @@ class UserService implements ApplicationContextAware{
             user.save(flush: true)
         }
         catch (Exception e) {
-            log.debug("failed to save user:", e)
+            log.warn("failed to save new user:", e)
             return null
         }
 

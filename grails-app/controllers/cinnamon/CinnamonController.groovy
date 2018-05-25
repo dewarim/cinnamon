@@ -7,6 +7,7 @@ import cinnamon.global.PermissionName
 import grails.plugin.springsecurity.annotation.Secured
 
 import cinnamon.exceptions.CinnamonException
+import org.apache.http.HttpStatus
 import org.dom4j.Node
 import cinnamon.global.Constants
 import cinnamon.global.ConfThreadLocal
@@ -14,7 +15,7 @@ import cinnamon.global.Conf
 import humulus.HashMaker
 import cinnamon.i18n.UiLanguage
 
-import javax.naming.ldap.LdapReferralException
+import static org.apache.http.HttpStatus.SC_UNAUTHORIZED
 
 // Name was chosen after the main servlet path of the v2 Cinnamon server (/cinnamon/cinnamon)
 
@@ -125,14 +126,13 @@ class CinnamonController extends BaseController {
                 return
             }
 
-            def user = UserAccount.findByName(username)
+            UserAccount user = UserAccount.findByName(username)
             if (!user) {
                 log.debug("user $username not found - trying ldap connector.")
 
                 UnboundIdLdapConnector connector = new UnboundIdLdapConnector();
                 if(!connector.initialized){
-                    log.info("LdapConnector is not configured properly. Do you have a ldap-config.xml file in '${System.env.CINNAMON_HOME_DIR}'?")
-                    renderErrorXml("error.user.not.found")
+                    renderErrorXml("LdapConnector is not configured properly. Do you have a ldap-config.xml file in '${System.env.CINNAMON_HOME_DIR}'?","error.user.not.found", HttpStatus.SC_INTERNAL_SERVER_ERROR)
                     return
                 }
 
@@ -140,37 +140,38 @@ class CinnamonController extends BaseController {
                 if(result.validUser) {
                     List<String> cinnamonGroups = new ArrayList<>()
                     result.groupMappings.forEach{ LdapConfig.GroupMapping mapping -> cinnamonGroups.add(mapping.cinnamonGroup)}
-                    user = userService.createUserAcccount(username,cinnamonGroups,LoginType.LDAP, language)
+                    user = userService.createUserAcccount(username,cinnamonGroups,LoginType.LDAP, connector.defaultLanguageCode)
+                    log.info("Created user account via LDAP: "+user)
                 }
                 
                 if(!user){
-                    renderErrorXml("error.user.not.found.and.ldap.create.failed")
+                    renderErrorXml("no user found and ldap create failed","error.user.not.found.and.ldap.create.failed", SC_UNAUTHORIZED)
                     return
                 }
             }
             
             if(user.accountExpired){
-                renderErrorXml("error.user.account.expired")
+                renderErrorXml("account is expired", "error.user.account.expired", SC_UNAUTHORIZED)
                 return;
             }
             
             if(user.accountLocked){
-                renderErrorXml("error.user.account.locked")
+                renderErrorXml("account is locked","error.user.account.locked", SC_UNAUTHORIZED)
                 return
             }
             
             if(!user.activated){
-                renderErrorXml("error.user.account.not.active")
+                renderErrorXml("account is deactivated","error.user.account.not.active", SC_UNAUTHORIZED)
                 return
             }
             
             switch (user.loginType) {
                 case LoginType.LDAP: if (!isValidLdapUser(username, pwd)) {
-                    renderErrorXml("error.ldap.authentication.failed")
+                    renderErrorXml("ldap auth failed","error.ldap.authentication.failed",SC_UNAUTHORIZED)
                     return
                 }; break;
                 default: if (!HashMaker.compareWithHash(pwd, user.pwd)) {
-                    renderErrorXml("error.wrong.password")
+                    renderErrorXml("password does not match","error.wrong.password", SC_UNAUTHORIZED)
                     return
                 }
             }
@@ -192,7 +193,7 @@ class CinnamonController extends BaseController {
             render(contentType: 'application/xml', text: "<connection><ticket>${cinnamonSession.ticket}</ticket></connection>")
         }
         catch (Exception e) {
-            log.debug("failed to connect: ", e)
+            log.info("failed to connect: ", e)
             renderException(e.message)
         }
     }
@@ -200,6 +201,7 @@ class CinnamonController extends BaseController {
     private boolean isValidLdapUser(String username, String password){
         UnboundIdLdapConnector connector = new UnboundIdLdapConnector()
         if (connector.initialized) {
+            log.info("trying to validate ldapUser with username "+username)
             return connector.connect(username, password).validUser
         }
         else {

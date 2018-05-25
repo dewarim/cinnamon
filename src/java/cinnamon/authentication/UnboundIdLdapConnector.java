@@ -45,12 +45,13 @@ public class UnboundIdLdapConnector {
 
     public LdapResult connect(String username, String password) {
         String escapedUsername = escapeUsername(username);
+        log.info("LDAP username has been escaped to: "+escapedUsername);
         LDAPConnection conn = null;
         try {
-            log.debug("Connecting to {}:{} with '{}' for user '{}'",
+            log.info("Connecting to {}:{} with '{}' for user '{}'",
                     ldapConfig.getHost(), ldapConfig.getPort(), getBaseDn(escapedUsername), escapedUsername);
             conn = new LDAPConnection(ldapConfig.getHost(), ldapConfig.getPort(), getBaseDn(escapedUsername), password);
-            log.debug("connection: " + conn);
+            log.info("connection: " + conn);
             final LDAPConnection connection = conn;
             List<LdapConfig.GroupMapping> groupMappings = ldapConfig.getGroupMappings().stream()
                     .filter(groupMapping -> searchForGroup(connection, groupMapping.getExternalGroup(), escapedUsername))
@@ -76,11 +77,11 @@ public class UnboundIdLdapConnector {
                     SearchScope.BASE, ldapConfig.getSearchFilter(), ldapConfig.getSearchAttribute());
 
             String[] attributeValues = searchResultEntry.getAttributeValues(ldapConfig.getSearchAttribute());
-            log.debug("looking at group '{}' with attributeValues '{}' starting with 'CN={},'", ldapGroupName, attributeValues, escapedUsername);
+            log.info("looking at group '{}' with attributeValues '{}' starting with 'CN={},'", ldapGroupName, attributeValues, escapedUsername);
             return Arrays.stream(attributeValues).anyMatch(member -> member.startsWith("CN=" + escapedUsername + ","));
 
         } catch (LDAPSearchException e) {
-            log.debug(String.format("Failed to search for group %s for user %s", ldapGroupName, escapedUsername), e);
+            log.info(String.format("Failed to search for group %s for user %s", ldapGroupName, escapedUsername), e);
             return false;
         }
     }
@@ -115,6 +116,10 @@ public class UnboundIdLdapConnector {
         LdapResult result = ldapConnector.connect(username, password);
         mapper.writerWithDefaultPrettyPrinter().writeValue(System.out, result);
         System.out.println("\n");
+    }
+
+    public String getDefaultLanguageCode() {
+        return config.getDefaultLanguageCode();
     }
 
     @JacksonXmlRootElement(localName = "ldapResult")
