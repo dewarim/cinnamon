@@ -952,10 +952,12 @@ class OsdController extends BaseController {
      *      <li>acl_id</li>
      *      <li>summary</li>
      *           </ul>
+     * @deprecated (use getObjectById instead to retrieve the OSD.)          
      * @return XML-Response: <pre>{@code <sysMetaValue>$value</sysMetaValue>}</pre>
      *         If a null value is retrieved, an xml-error-doc is returned with the message:
      *         "error.result_value_is_null"
      */
+    @Deprecated
     def getSysMeta(Long id, String parameter) {
         try {
             String value
