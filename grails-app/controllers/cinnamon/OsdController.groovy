@@ -1048,6 +1048,7 @@ class OsdController extends BaseController {
             else {
                 log.debug("User wants to remove content of $id.")
                 osd.deleteContent(repositoryName)
+                osd.updateAccess(user)
             }
 
             render(contentType: 'application/xml') {
