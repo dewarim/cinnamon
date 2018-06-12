@@ -1107,12 +1107,12 @@ class OsdController extends BaseController {
             osd.fixLatestHeadAndBranch([])
             Format myFormat = Format.findByName(format)
             osd.locker = null
-            osd.save(flush: true)            
-            if (params.containsKey('file')) {
-                osdService.saveFileUpload(request, osd, user, myFormat.id, repositoryName, false)
-            }
+            osd.save(flush: true)
             if (metadata) {
                 osd.storeMetadata(metadata)
+            }
+            if (params.containsKey('file')) {
+                osdService.saveFileUpload(request, osd, user, myFormat.id, repositoryName, false)
             }
             log.debug("new osd: ${osd.toXML().asXML()}")
             log.debug("version of new osd: ${osd.cmnVersion}")
