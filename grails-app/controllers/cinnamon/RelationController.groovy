@@ -127,6 +127,7 @@ class RelationController extends BaseController {
      *
      * @param leftid id of "left object"
      * @param rightid id of "right object"
+     * @param name of relation type
      * @param metadata optional metadata in XML format, defaults to {@code <meta/>}
      * @return XML response with format:
      *         <pre>
