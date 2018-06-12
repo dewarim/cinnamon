@@ -40,6 +40,7 @@ class CinnamonTikaService {
         String xhtml = ""
         try {
             metaset = parseFile(new File(osd.fullContentPath), metaset)
+            metaset.save()
         }
         catch (Exception e) {
             log.warn("Failed to extract data with tika.", e);
