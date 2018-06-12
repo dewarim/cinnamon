@@ -444,8 +444,8 @@ class OsdService {
         else {
             // remove any image thumbnails on the content     
             metasetService.unlinkMetaset(osd, osd.fetchMetaset(Constants.METASET_THUMBNAIL))
+            metasetService.unlinkMetaset(osd, osd.fetchMetaset(Constants.METASET_TIKA))
 
-//            acquireLock(osd, user)
             File tempFile = File.createTempFile('cinnamon_upload_', null)
             file.transferTo(tempFile)
             storeContent(osd, file.contentType, formatId, tempFile, repositoryName)
