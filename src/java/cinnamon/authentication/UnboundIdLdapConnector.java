@@ -46,11 +46,16 @@ public class UnboundIdLdapConnector {
     public LdapResult connect(String username, String password) {
         String escapedUsername = escapeUsername(username);
         log.info("LDAP username has been escaped to: "+escapedUsername);
+        String actualPassword = password;
+        if(ldapConfig.useStaticBindPassword()){
+            actualPassword = ldapConfig.getStaticBindPassword();
+        }
+
         LDAPConnection conn = null;
         try {
             log.info("Connecting to {}:{} with '{}' for user '{}'",
                     ldapConfig.getHost(), ldapConfig.getPort(), getBaseDn(escapedUsername), escapedUsername);
-            conn = new LDAPConnection(ldapConfig.getHost(), ldapConfig.getPort(), getBaseDn(escapedUsername), password);
+            conn = new LDAPConnection(ldapConfig.getHost(), ldapConfig.getPort(), getBaseDn(escapedUsername), actualPassword);
             log.info("connection: " + conn);
             final LDAPConnection connection = conn;
             List<LdapConfig.GroupMapping> groupMappings = ldapConfig.getGroupMappings().stream()
@@ -93,7 +98,7 @@ public class UnboundIdLdapConnector {
     private String escapeUsername(String username){
         return username.replace(",","\\,");
     }
-    
+
     private String getSearchBaseDn(String groupName) {
         return String.format(ldapConfig.getSearchBaseDnFormatString(), groupName);
     }
