@@ -102,6 +102,10 @@ public class UnboundIdLdapConnector {
             log.info("found group {} for {}, now looking for DN with searchAttributeDn {}", ldapGroupName, username, searchAttributeDn);
             SearchResultEntry dnSearchResult = connection.searchForEntry(getSearchBaseDn(ldapGroupName),
                     SearchScope.BASE, ldapConfig.getSearchFilter(), searchAttributeDn);
+            if(dnSearchResult == null){
+                log.warn("No result found while searching for distinguishedName with {} for {}", ldapGroupName, username);
+                return Optional.empty();
+            }
             String[] dnAttributeValues = dnSearchResult.getAttributeValues(searchAttributeDn);
             switch (dnAttributeValues.length) {
                 case 0:
@@ -126,7 +130,10 @@ public class UnboundIdLdapConnector {
         try {
             SearchResultEntry searchResultEntry = connection.searchForEntry(getSearchBaseDn(ldapGroupName),
                     SearchScope.BASE, ldapConfig.getSearchFilter(), ldapConfig.getSearchAttributeForGroup());
-
+            if(searchResultEntry == null){
+                log.warn("No result found while searching for group with {} for {}", ldapGroupName, username);
+                return false;
+            }
             String[] attributeValues = searchResultEntry.getAttributeValues(ldapConfig.getSearchAttributeForGroup());
             log.info("looking at group '{}' with attributeValues '{}' starting with 'CN={},'", ldapGroupName, attributeValues, ldapGroupName);
             return Arrays.stream(attributeValues).anyMatch(member -> member.startsWith("CN=" + ldapGroupName + ","));
