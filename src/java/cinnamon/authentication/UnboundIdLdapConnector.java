@@ -46,13 +46,12 @@ public class UnboundIdLdapConnector {
 
     public LdapResult connect(String username, String password) {
         String escapedUsername = escapeUsername(username);
-        log.info("LDAP username has been escaped to: "+escapedUsername);
+        log.info("LDAP username has been escaped to: " + escapedUsername);
         String actualPassword = password;
-        if(ldapConfig.useStaticBindPassword()){
+        if (ldapConfig.useStaticBindPassword()) {
             actualPassword = ldapConfig.getStaticBindPassword();
             log.info("Using staticBindPassword.");
-        }
-        else{
+        } else {
             log.info("staticBindPassword not found or empty - using user supplied password.");
         }
 
@@ -61,7 +60,7 @@ public class UnboundIdLdapConnector {
             log.info("Connecting to {}:{} with '{}' for user '{}'",
                     ldapConfig.getHost(), ldapConfig.getPort(), getBaseDn(escapedUsername), escapedUsername);
             conn = new LDAPConnection(ldapConfig.getHost(), ldapConfig.getPort(), getBaseDn(escapedUsername), actualPassword);
-            log.info("connection: " + conn);
+            log.info("connection: {}", conn);
             final LDAPConnection connection = conn;
             List<LdapConfig.GroupMapping> groupMappings = ldapConfig.getGroupMappings().stream()
                     .filter(groupMapping -> searchForGroup(connection, groupMapping.getExternalGroup(), escapedUsername))
@@ -69,13 +68,13 @@ public class UnboundIdLdapConnector {
 
             if (!groupMappings.isEmpty()) {
                 // get distinguished name and try to connect anew with the given user's password.
-                log.info("Found group mappings for user {}, now trying to extract DN", username);
-                Optional<String> dnOpt = searchForDistinguishedName(connection, ldapConfig.getSearchAttributeForDn(), username);
+                log.info("Found group mappings for user {}, now trying to extract DN", escapedUsername);
+                Optional<String> dnOpt = searchForDistinguishedName(connection, ldapConfig.getSearchAttributeForDn(), escapedUsername);
                 if (!dnOpt.isPresent()) {
                     return new LdapResult("Could not find distinguishedName for user.");
                 }
                 String distinguishedName = dnOpt.get();
-                log.info("Trying to login with the user {} and DN {}", username, distinguishedName);
+                log.info("Trying to login with the user {} and DN {}", escapedUsername, distinguishedName);
                 LDAPConnection dnConnection = new LDAPConnection(ldapConfig.getHost(), ldapConfig.getPort(), distinguishedName, password);
                 if (dnConnection.isConnected()) {
                     return new LdapResult(true, groupMappings, ldapConfig.getDefaultLanguageCode());
@@ -99,13 +98,17 @@ public class UnboundIdLdapConnector {
     private Optional<String> searchForDistinguishedName(LDAPConnection connection, String ldapGroupName, String username) {
         try {
             String searchAttributeDn = ldapConfig.getSearchAttributeForDn();
-            log.info("found group {} for {}, now looking for DN with searchAttributeDn {}", ldapGroupName, username, searchAttributeDn);
-            SearchResultEntry dnSearchResult = connection.searchForEntry(getSearchBaseDn(ldapGroupName),
-                    SearchScope.BASE, ldapConfig.getSearchFilter(), searchAttributeDn);
-            if(dnSearchResult == null){
-                log.warn("No result found while searching for distinguishedName with {} for {}", ldapGroupName, username);
+            String searchFilter      = String.format(ldapConfig.getSearchFilter(), username);
+            log.info("found group {} for {}, now looking for DN with searchAttributeDn {} and filter {}", ldapGroupName, username, searchAttributeDn, searchFilter);
+            SearchResultEntry dnSearchResult = connection.searchForEntry(getSearchBaseDn(ldapGroupName), SearchScope.SUB, searchFilter);
+            if (dnSearchResult == null) {
+                log.warn("No result found while searching for distinguishedName '{}' for {} with searchFilter {}", ldapGroupName, username, ldapConfig.getSearchAttributeForDn());
                 return Optional.empty();
             }
+            StringBuilder buffer = new StringBuilder();
+            dnSearchResult.toString(buffer);
+            log.info("Search for DN returned: {}", buffer);
+
             String[] dnAttributeValues = dnSearchResult.getAttributeValues(searchAttributeDn);
             switch (dnAttributeValues.length) {
                 case 0:
@@ -113,7 +116,7 @@ public class UnboundIdLdapConnector {
                     return Optional.empty();
 
                 case 1:
-                    log.info("Success - Found DN '{}' for user {}", username);
+                    log.info("Success - Found DN '{}' for user {}", dnAttributeValues[0], username);
                     return Optional.of(dnAttributeValues[0]);
 
                 default:
@@ -121,22 +124,34 @@ public class UnboundIdLdapConnector {
                     return Optional.empty();
             }
         } catch (LDAPSearchException e) {
-            log.info(String.format("Failed to search for group %s for user %s", ldapGroupName, username), e);
+            log.info(String.format("Failed to search for DN %s for user %s", ldapGroupName, username), e);
             return Optional.empty();
         }
     }
 
     private boolean searchForGroup(LDAPConnection connection, String ldapGroupName, String username) {
         try {
-            SearchResultEntry searchResultEntry = connection.searchForEntry(getSearchBaseDn(ldapGroupName),
-                    SearchScope.BASE, ldapConfig.getSearchFilter(), ldapConfig.getSearchAttributeForGroup());
-            if(searchResultEntry == null){
-                log.warn("No result found while searching for group with {} for {}", ldapGroupName, username);
+            String searchBaseDn            = getSearchBaseDn(ldapGroupName);
+            String searchFilter            = String.format(ldapConfig.getSearchFilter(), username);
+            String searchAttributeForGroup = ldapConfig.getSearchAttributeForGroup();
+
+            log.info("Searching for user {} with searchBaseDn {} and searchFilter {}", username, searchBaseDn, searchFilter);
+            SearchResultEntry searchResultEntry = connection.searchForEntry(searchBaseDn, SearchScope.SUB, searchFilter);
+            if (searchResultEntry == null) {
+                log.warn("No result found ");
                 return false;
             }
-            String[] attributeValues = searchResultEntry.getAttributeValues(ldapConfig.getSearchAttributeForGroup());
+            StringBuilder buffer = new StringBuilder();
+            searchResultEntry.toString(buffer);
+            log.info("Search for group returned: {}", buffer);
+
+            log.info("Found searchResultEntry. Now reading attributeValues with searchAttributeForGroup: {}", searchAttributeForGroup);
+            String[] attributeValues = searchResultEntry.getAttributeValues(searchAttributeForGroup);
             log.info("looking at group '{}' with attributeValues '{}' starting with 'CN={},'", ldapGroupName, attributeValues, ldapGroupName);
-            return Arrays.stream(attributeValues).anyMatch(member -> member.startsWith("CN=" + ldapGroupName + ","));
+            return Arrays.stream(attributeValues).anyMatch(member -> {
+                log.debug("Check if {} startsWith CN={}", member, ldapGroupName);
+                return member.startsWith("CN=" + ldapGroupName + ",");
+            });
         } catch (LDAPSearchException e) {
             log.debug(String.format("Failed to search for group %s for user %s", ldapGroupName, username), e);
             return false;
@@ -147,8 +162,8 @@ public class UnboundIdLdapConnector {
         return String.format(ldapConfig.getBindDnFormatString(), username);
     }
 
-    private String escapeUsername(String username){
-        return username.replace(",","\\,");
+    private String escapeUsername(String username) {
+        return username.replace(",", "\\,");
     }
 
     private String getSearchBaseDn(String groupName) {
@@ -166,11 +181,11 @@ public class UnboundIdLdapConnector {
             username = args[0];
             password = args[1];
         }
-        XmlMapper mapper = new XmlMapper();
+        XmlMapper  mapper     = new XmlMapper();
         LdapConfig ldapConfig = mapper.readValue(new File("temp/ldap-config.xml"), LdapConfig.class);
 
         UnboundIdLdapConnector ldapConnector = new UnboundIdLdapConnector(ldapConfig);
-        LdapResult result = ldapConnector.connect(username, password);
+        LdapResult             result        = ldapConnector.connect(username, password);
         mapper.writerWithDefaultPrettyPrinter().writeValue(System.out, result);
         System.out.println("\n");
     }
