@@ -36,7 +36,7 @@ class BootStrap {
             }
         }
         catch (Exception e) {
-            log.warn("Failed to load / parse the ldapConfig file at ${ldapConfigFile.absolutePath}.")
+            log.warn("Failed to load / parse the ldapConfig file at ${ldapConfigFile.absolutePath}.", e)
         }
 
         try {
