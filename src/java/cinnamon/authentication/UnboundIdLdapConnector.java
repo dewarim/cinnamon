@@ -234,6 +234,14 @@ public class UnboundIdLdapConnector {
         public void setErrorMessage(String errorMessage) {
             this.errorMessage = errorMessage;
         }
+
+        public String getDefaultLanguageCode() {
+            return defaultLanguageCode;
+        }
+
+        public void setDefaultLanguageCode(String defaultLanguageCode) {
+            this.defaultLanguageCode = defaultLanguageCode;
+        }
     }
 
 }

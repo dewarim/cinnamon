@@ -142,6 +142,7 @@ class CinnamonController extends BaseController {
                     result.groupMappings.forEach{ LdapConfig.GroupMapping mapping -> cinnamonGroups.add(mapping.cinnamonGroup)}
                     user = userService.createUserAcccount(username,cinnamonGroups,LoginType.LDAP, connector.defaultLanguageCode)
                     log.info("Created user account via LDAP: "+user)
+                    language = result.defaultLanguageCode
                 }
                 
                 if(!user){
