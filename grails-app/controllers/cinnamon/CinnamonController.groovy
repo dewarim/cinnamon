@@ -140,15 +140,15 @@ class CinnamonController extends BaseController {
                 if(result.validUser) {
                     List<String> cinnamonGroups = new ArrayList<>()
                     result.groupMappings.forEach{ LdapConfig.GroupMapping mapping -> cinnamonGroups.add(mapping.cinnamonGroup)}
-                    user = userService.createUserAcccount(username,cinnamonGroups,LoginType.LDAP, connector.defaultLanguageCode)
+                    user = userService.createUserAcccount(username,cinnamonGroups,LoginType.LDAP, result.defaultLanguageCode)
                     log.info("Created user account via LDAP: "+user)
-                    language = result.defaultLanguageCode
                 }
                 
                 if(!user){
                     renderErrorXml("no user found and ldap create failed","error.user.not.found.and.ldap.create.failed", SC_UNAUTHORIZED)
                     return
                 }
+                log.info("Found user account "+user)
             }
             
             if(user.accountExpired){
@@ -177,14 +177,18 @@ class CinnamonController extends BaseController {
                 }
             }
 
+            log.info("user.language: "+user.language)
             def uiLanguage = user.language
             if (language) {
+                log.info("language param is set to "+language+" - will use this instead of user's language "+uiLanguage)
                 def lang = UiLanguage.findByIsoCode(language)
+                log.info("UILanguage "+language+" is: "+lang)
                 if (lang) {
                     uiLanguage = lang
                 }
             }
             if (uiLanguage == null) {
+                log.info("No uiLanguage found, trying for 'und' (undetermined)")
                 uiLanguage = UiLanguage.findByIsoCode('und')
             }
             def cinnamonSession = new Session(repository, user, machine, uiLanguage)
