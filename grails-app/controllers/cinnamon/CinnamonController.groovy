@@ -114,7 +114,6 @@ class CinnamonController extends BaseController {
             def repository = params.repository ?: request.serverName
             String pwd = params.pwd
             def machine = params.machine ?: 'unknown'
-            String language = params.language
             def failed = ""
             ['user', 'pwd'].each {
                 if (!params."${it}") {
@@ -177,21 +176,7 @@ class CinnamonController extends BaseController {
                 }
             }
 
-            log.info("user.language: "+user.language)
-            def uiLanguage = user.language
-            if (language) {
-                log.info("language param is set to "+language+" - will use this instead of user's language "+uiLanguage)
-                def lang = UiLanguage.findByIsoCode(language)
-                log.info("UILanguage "+language+" is: "+lang)
-                if (lang) {
-                    uiLanguage = lang
-                }
-            }
-            if (uiLanguage == null) {
-                log.info("No uiLanguage found, trying for 'und' (undetermined)")
-                uiLanguage = UiLanguage.findByIsoCode('und')
-            }
-            def cinnamonSession = new Session(repository, user, machine, uiLanguage)
+            def cinnamonSession = new Session(repository, user, machine)
             cinnamonSession.lifetime = new Date().time + ConfThreadLocal.conf.getSessionExpirationTime(repository)
             cinnamonSession.save()
             log.debug("connect was successful, rendering response")
@@ -452,7 +437,7 @@ class CinnamonController extends BaseController {
             }
 
             // create session for target user:
-            Session session = new Session(repositoryName, alias, "--- sudo by ${user.name} ---", user.language)
+            Session session = new Session(repositoryName, alias, "--- sudo by ${user.name} ---")
             session.save()
             log.debug("session.ticket:" + session.ticket)
 

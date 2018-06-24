@@ -98,4 +98,8 @@ Note: Code for LDAP authentication requires licensing for commercial use beyond 
   (that is, into the same directory as cinnamon-config.groovy). If you do not need or want LDAP connectivity,
   you do not need to do anything beyond the previous database change.
   
-  
+## changes to 3.8.x
+
+* Change database to remove ui_language_id from sessions table:
+
+    alter table sessions drop column ui_language_id;  
