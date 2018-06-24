@@ -68,7 +68,7 @@ public class UnboundIdLdapConnector {
 
             if (!groupMappings.isEmpty()) {
                 // get distinguished name and try to connect anew with the given user's password.
-                log.info("Found group mappings for user {}, now trying to extract DN", escapedUsername);
+                log.debug("Found group mappings for user {}, now trying to extract DN", escapedUsername);
                 Optional<String> dnOpt = searchForDistinguishedName(connection, ldapConfig.getSearchAttributeForDn(), escapedUsername);
                 if (!dnOpt.isPresent()) {
                     return new LdapResult("Could not find distinguishedName for user.");
@@ -107,7 +107,7 @@ public class UnboundIdLdapConnector {
             }
             StringBuilder buffer = new StringBuilder();
             dnSearchResult.toString(buffer);
-            log.info("Search for DN returned: {}", buffer);
+            log.debug("Search for DN returned: {}", buffer);
 
             String[] dnAttributeValues = dnSearchResult.getAttributeValues(searchAttributeDn);
             switch (dnAttributeValues.length) {
@@ -124,7 +124,7 @@ public class UnboundIdLdapConnector {
                     return Optional.empty();
             }
         } catch (LDAPSearchException e) {
-            log.info(String.format("Failed to search for DN %s for user %s", ldapGroupName, username), e);
+            log.warn(String.format("Failed to search for DN %s for user %s", ldapGroupName, username), e);
             return Optional.empty();
         }
     }
@@ -143,17 +143,17 @@ public class UnboundIdLdapConnector {
             }
             StringBuilder buffer = new StringBuilder();
             searchResultEntry.toString(buffer);
-            log.info("Search for group returned: {}", buffer);
+            log.debug("Search for group returned: {}", buffer);
 
-            log.info("Found searchResultEntry. Now reading attributeValues with searchAttributeForGroup: {}", searchAttributeForGroup);
+            log.debug("Found searchResultEntry. Now reading attributeValues with searchAttributeForGroup: {}", searchAttributeForGroup);
             String[] attributeValues = searchResultEntry.getAttributeValues(searchAttributeForGroup);
-            log.info("looking at group '{}' with attributeValues '{}' starting with 'CN={},'", ldapGroupName, attributeValues, ldapGroupName);
+            log.debug("looking at group '{}' with attributeValues '{}' starting with 'CN={},'", ldapGroupName, attributeValues, ldapGroupName);
             return Arrays.stream(attributeValues).anyMatch(member -> {
                 log.debug("Check if {} startsWith CN={}", member, ldapGroupName);
                 return member.startsWith("CN=" + ldapGroupName + ",");
             });
         } catch (LDAPSearchException e) {
-            log.debug(String.format("Failed to search for group %s for user %s", ldapGroupName, username), e);
+            log.warn(String.format("Failed to search for group %s for user %s", ldapGroupName, username), e);
             return false;
         }
     }
