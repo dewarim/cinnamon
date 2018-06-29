@@ -41,7 +41,8 @@ class CinnamonController extends BaseController {
 
                     }
                 }
-                version(Constants.SERVER_VERSION)
+                version(grailsApplication.metadata['app.version'])
+                build(grailsApplication.metadata['app.buildNumber'])
             }
         }
     }
