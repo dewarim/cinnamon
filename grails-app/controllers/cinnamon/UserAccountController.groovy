@@ -1,5 +1,6 @@
 package cinnamon
 
+import cinnamon.authentication.LoginType
 import org.dom4j.Element
 import org.dom4j.Document
 import org.dom4j.DocumentHelper
@@ -305,6 +306,10 @@ class UserAccountController extends BaseController {
         def user = userService.user
         if (!user) {
             renderErrorXml("invalid user")
+            return
+        }
+        if(user.loginType != LoginType.CINNAMON){
+            renderErrorXml("LDAP- and other non-Cinnamon accounts cannot change their password via this method.")
             return
         }
         if (password?.length() < Constants.MINIMUM_PASSWORD_LENGTH) {
