@@ -159,10 +159,26 @@ class UserAccountController extends BaseController {
             group.save()
         }
 
-        bindData(user, params, [include: ['name', 'fullname', 'description', 'email', 'pwd']])
+        bindData(user, params, [include: ['name', 'fullname', 'description', 'email']])
         if (user.description == null) {
             user.description = '';
         }
+
+        /*
+         * do not automatically use bindData on pwd: it may be empty because admin does not know user's password.
+         */
+        String password = params.pwd
+        if(password && password.trim().length() > 0){
+            if(user.loginType != LoginType.CINNAMON){
+                flash.message = message(code:"user.password.denied.logintype")
+                render(view: 'edit', model: [user:user])
+                return
+            }
+            else {
+                user.pwd = password
+            }
+        }
+
         user.language = UiLanguage.get(params.'language.id')
         if (user.validate() && user.save(flush: true)) {
             flash.message = message(code: "user.update.success")
