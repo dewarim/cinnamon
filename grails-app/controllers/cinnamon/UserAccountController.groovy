@@ -27,8 +27,7 @@ class UserAccountController extends BaseController {
         if (CmnGroup.findAllWhere(parent: group).size() > 0) {
             hasSubGroups = true
             log.debug("group has subgroups")
-        }
-        else {
+        } else {
             log.debug("group has no subgroups")
         }
 
@@ -100,10 +99,10 @@ class UserAccountController extends BaseController {
     @Secured(["hasRole('_superusers')"])
     def edit() {
         if (flash.user) {
-            [user: flash.user]
-        }
-        else {
-            [user: UserAccount.get(params.id)]
+            [user: flash.user, pwdChangeAllowed: flash.user.loginType == LoginType.CINNAMON]
+        } else {
+            def user = UserAccount.get(params.id)
+            [user: user, pwdChangeAllowed: user.loginType == LoginType.CINNAMON]
         }
     }
 
@@ -136,8 +135,7 @@ class UserAccountController extends BaseController {
                 flash.message = message(code: 'user.update.fail.deactivate')
                 redirect(action: 'edit', params: [id: user.id])
                 return
-            }
-            else if (!params.name?.equals(user.name)) {
+            } else if (!params.name?.equals(user.name)) {
                 log.debug('Preventing user from changing admin\'s name.')
                 flash.message = message(code: 'user.update.fail.rename')
                 redirect(action: 'edit', params: [id: user.id])
@@ -168,13 +166,12 @@ class UserAccountController extends BaseController {
          * do not automatically use bindData on pwd: it may be empty because admin does not know user's password.
          */
         String password = params.pwd
-        if(password && password.trim().length() > 0){
-            if(user.loginType != LoginType.CINNAMON){
-                flash.message = message(code:"user.password.denied.logintype")
-                render(view: 'edit', model: [user:user])
+        if (password && password.trim().length() > 0) {
+            if (user.loginType != LoginType.CINNAMON) {
+                flash.message = message(code: "user.password.denied.logintype")
+                render(view: 'edit', model: [user: user, pwdChangeAllowed:false])
                 return
-            }
-            else {
+            } else {
                 user.pwd = password
             }
         }
@@ -183,8 +180,7 @@ class UserAccountController extends BaseController {
         if (user.validate() && user.save(flush: true)) {
             flash.message = message(code: "user.update.success")
             redirect(action: 'show', params: [id: user.id])
-        }
-        else {
+        } else {
             flash.user = user
             redirect(action: 'edit', params: [id: user.id])
         }
@@ -324,7 +320,7 @@ class UserAccountController extends BaseController {
             renderErrorXml("invalid user")
             return
         }
-        if(user.loginType != LoginType.CINNAMON){
+        if (user.loginType != LoginType.CINNAMON) {
             renderErrorXml("LDAP- and other non-Cinnamon accounts cannot change their password via this method.")
             return
         }

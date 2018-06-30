@@ -85,8 +85,14 @@
                         <label for="pwd"><g:message code="user.password"/></label>
                     </td>
                     <td class="value ${hasErrors(bean: user, field: 'pwd', 'errors')}">
-                        <input type="password" name="pwd" id="pwd" value=""/>
+                        <input type="password" name="pwd" id="pwd" value=""
+                            <g:if test="${!pwdChangeAllowed}">disabled="disabled" title="<g:message code="user.password.denied.logintype"/>"</g:if>
+                        />
                     </td>
+                </tr>
+                <tr class="prop">
+                    <td class="name"><g:message code="user.login.type"/></td>
+                    <td class="value">${fieldValue(bean:user,field:'loginType')}</td>
                 </tr>
 
                 <tr class="prop">

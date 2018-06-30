@@ -81,6 +81,10 @@
                         class="value"><g:checkBox name="changeTracking" disabled="true"
                                                   value="${user.changeTracking}"/></td>
             </tr>
+            <tr class="prop">
+                <td class="name"><g:message code="user.login.type"/></td>
+                <td class="value">${fieldValue(bean:user,field:'loginType')}</td>
+            </tr>
             <!-- link to the list of group -->
             <tr class="prop">
                 <td colspan="2" class="name left">
