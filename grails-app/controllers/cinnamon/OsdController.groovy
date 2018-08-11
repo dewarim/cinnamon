@@ -4,6 +4,7 @@ import cinnamon.index.IndexAction
 import cinnamon.references.Link
 import cinnamon.references.LinkType
 import cinnamon.utils.ParamParser
+import org.apache.commons.codec.digest.DigestUtils
 import org.dom4j.DocumentHelper
 import org.dom4j.Element
 import grails.plugin.springsecurity.annotation.Secured
@@ -13,6 +14,8 @@ import cinnamon.relation.Relation
 import cinnamon.i18n.Language
 import cinnamon.exceptions.CinnamonException
 import org.dom4j.Document
+
+import static javax.servlet.http.HttpServletResponse.SC_NOT_MODIFIED
 
 /**
  *
@@ -52,8 +55,8 @@ class OsdController extends BaseController {
             ObjectSystemData osd = fetchAndFilterOsd(params.osd)
             UserAccount user = userService.user
             osd.locker = null
-            render(template: mapTemplate('/folder/lockStatus'), model: [user: user, osd: osd,
-                    superuserStatus: userService.isSuperuser(user)])
+            render(template: mapTemplate('/folder/lockStatus'), model: [user           : user, osd: osd,
+                                                                        superuserStatus: userService.isSuperuser(user)])
         }
         catch (Exception e) {
             renderException(e.message)
@@ -65,8 +68,8 @@ class OsdController extends BaseController {
             ObjectSystemData osd = fetchAndFilterOsd(params.osd)
             UserAccount user = userService.user
             osdService.acquireLock(osd, user)
-            render(template: mapTemplate('/folder/lockStatus'), model: [user: user, osd: osd,
-                    superuserStatus: userService.isSuperuser(user)])
+            render(template: mapTemplate('/folder/lockStatus'), model: [user           : user, osd: osd,
+                                                                        superuserStatus: userService.isSuperuser(user)])
 
         }
         catch (Exception e) {
@@ -82,7 +85,7 @@ class OsdController extends BaseController {
 
             render(template: mapTemplate('/osd/listRelations'),
                     model: [leftRelations: leftRelations, rightRelations: rightRelations,
-                            osd: osd
+                            osd          : osd
                     ]
             )
         }
@@ -100,9 +103,9 @@ class OsdController extends BaseController {
             def permissions = loadUserPermissions(osd.acl)
             def user = userService.user
             render(template: mapTemplate("/osd/objectDetails"),
-                    model: [osd: osd, permissions: permissions,
+                    model: [osd            : osd, permissions: permissions,
                             superuserStatus: userService.isSuperuser(user),
-                            hasRelations: hasRelations])
+                            hasRelations   : hasRelations])
         }
         catch (Exception e) {
             log.debug("failed to fetchObjectDetails: ", e)
@@ -223,13 +226,13 @@ class OsdController extends BaseController {
             renderException(e.message)
         }
     }
-    
-    def editContent(Long osd){
-        try{
+
+    def editContent(Long osd) {
+        try {
             def obj = fetchAndFilterOsd(osd)
             render(template: mapTemplate('/osd/editContent'), model: [osd: obj])
         }
-        catch (Exception e){
+        catch (Exception e) {
             renderException(e.message)
         }
     }
@@ -256,8 +259,7 @@ class OsdController extends BaseController {
                     case 'acl': fetchAndFilterOsd(params.osd, [PermissionName.SET_ACL]).acl = Acl.get(id); break;
                 }
                 fetchObjectDetails()
-            }
-            else {
+            } else {
                 render(status: 401, text: message(code: 'error.illegal.parameter', args: [params.fieldName?.encodeAsHTML()]))
             }
         } catch (Exception e) {
@@ -295,7 +297,7 @@ class OsdController extends BaseController {
             return redirect(controller: 'osd', action: 'create', params: [folder: folder.id])
         }
     }
-    
+
     def saveContent(Long formatId) {
         ObjectSystemData osd = null
         try {
@@ -318,7 +320,7 @@ class OsdController extends BaseController {
             redirect(controller: 'osd', action: 'setContent', params: [folder: params.folder, osd: params.osd])
         }
     }
-    
+
     def saveContentJson(Long formatId) {
         ObjectSystemData osd = null
         try {
@@ -330,16 +332,16 @@ class OsdController extends BaseController {
 
             log.debug("set content on object #${osd.id}")
             // TODO: i18n "ok"
-            render(contentType: "application/json"){
-                result(msg:message(code: "upload.success"))
+            render(contentType: "application/json") {
+                result(msg: message(code: "upload.success"))
             }
         }
         catch (RuntimeException e) {
             LocalRepository.cleanUp()
             log.debug("Failed to set content on object ${osd?.id}: ", e)
             flash.message = message(code: e.message)
-            render(contentType: "application/json"){
-                result(msg:e.message)
+            render(contentType: "application/json") {
+                result(msg: e.message)
             }
         }
     }
@@ -358,14 +360,14 @@ class OsdController extends BaseController {
             log.debug("version of new osd: ${osd.cmnVersion}")
             def osdList = folderService.getObjects(user, osd.parent, repositoryName, params.versions)
             def folderContentTemplate = folderService.fetchFolderTemplate(osd.parent.type.config)
-            render(template: folderContentTemplate, model: [folder: osd.parent,
-                    osdList: osdList,
-                    folders: fetchChildFolders(osd.parent),
-                    permissions: loadUserPermissions(osd.parent.acl),
-                    superuserStatus: userService.isSuperuser(user),
-                    triggerOsd: osd,
-                    selectedVersion: params.versions,
-                    versions: [all: 'folder.version.all', head: 'folder.version.head', branch: 'folder.version.branch']
+            render(template: folderContentTemplate, model: [folder         : osd.parent,
+                                                            osdList        : osdList,
+                                                            folders        : fetchChildFolders(osd.parent),
+                                                            permissions    : loadUserPermissions(osd.parent.acl),
+                                                            superuserStatus: userService.isSuperuser(user),
+                                                            triggerOsd     : osd,
+                                                            selectedVersion: params.versions,
+                                                            versions       : [all: 'folder.version.all', head: 'folder.version.head', branch: 'folder.version.branch']
             ])
         }
         catch (RuntimeException e) {
@@ -383,12 +385,12 @@ class OsdController extends BaseController {
             log.debug("selected folder: ${selectedFolder}")
             Folder targetFolder = Folder.get(selectedFolder)
             def user = userService.user
-            if(! params.delete){
+            if (!params.delete) {
                 if (!targetFolder) {
-                    throw new RuntimeException('error.folder.not.found')          
+                    throw new RuntimeException('error.folder.not.found')
                 }
-                if(!folderService.checkPermissions(targetFolder, user, [PermissionName.CREATE_OBJECT])) {
-                        throw new RuntimeException('error.access.denied')
+                if (!folderService.checkPermissions(targetFolder, user, [PermissionName.CREATE_OBJECT])) {
+                    throw new RuntimeException('error.access.denied')
                 }
             }
 
@@ -408,15 +410,13 @@ class OsdController extends BaseController {
                 msgList.addAll(convertMsgMap(msgMap))
                 msgMap = folderService.deleteList(folderList, repository, true)
                 msgList.addAll(convertMsgMap(msgMap))
-            }
-            else if (params.move) {
+            } else if (params.move) {
                 log.debug("*** will move objects into folder: ${selectedFolder}")
                 msgMap = osdService.moveToFolder(idList, selectedFolder, repository, versionType, user)
                 msgList.addAll(convertMsgMap(msgMap))
                 msgMap = folderService.moveToFolder(folderList, selectedFolder, repository, user)
                 msgList.addAll(convertMsgMap(msgMap))
-            }
-            else if (params.copy) {
+            } else if (params.copy) {
                 log.debug("*** will copy objects into folder: ${selectedFolder}")
                 msgMap = copyService.copyObjectsToFolder(idList, selectedFolder, repository, versionType, user)
                 msgList.addAll(convertMsgMap(msgMap))
@@ -440,8 +440,7 @@ class OsdController extends BaseController {
         msgMap.each { String k, List v ->
             if (v.size() == 1) {
                 msgList.add(message(code: v.get(0), args: [k]))
-            }
-            else {
+            } else {
                 msgList.add(message(code: v.get(0), args: [k, message(code: v.get(1))]))
             }
         }
@@ -474,7 +473,7 @@ class OsdController extends BaseController {
         }
     }
 
-    protected void addLinksToObjectQuery(String parentId, Document doc, Validator val, Boolean withMetadata, Boolean 
+    protected void addLinksToObjectQuery(String parentId, Document doc, Validator val, Boolean withMetadata, Boolean
             includeSummary) {
         Folder parent = Folder.get(parentId);
         Element root = doc.rootElement;
@@ -482,7 +481,7 @@ class OsdController extends BaseController {
         log.debug("Found " + links.size() + " links.");
         for (Link link : links) {
             Optional<Link> validatedLink = linkService.validateLink(link, val, withMetadata)
-            if(validatedLink.present) {
+            if (validatedLink.present) {
                 Element osdNode = link.osd.toXmlElement(root, includeSummary);
                 if (withMetadata) {
                     osdNode.add(ParamParser.parseXml(link.osd.metadata, null));
@@ -531,13 +530,13 @@ class OsdController extends BaseController {
             ObjectSystemData osd = new ObjectSystemData(params, user, false)
             (new Validator(user)).validateCreate(osd.parent)
             osd.save()
-            log.debug("osd after save: "+osd)
+            log.debug("osd after save: " + osd)
 
-            if(params.metadata){
+            if (params.metadata) {
                 osd.storeMetadata(params.metadata)
             }
-            
-            if(params.preid){
+
+            if (params.preid) {
                 // TODO: should probably not copy all metadata...
                 // but that is currently the legacy behaviour.
                 osd.storeMetadata(osd.predecessor.metadata)
@@ -574,8 +573,7 @@ class OsdController extends BaseController {
             ObjectSystemData osd = ObjectSystemData.get(id);
             if (osd == null) {
                 throw new CinnamonException("error.object.not.found");
-            }
-            else {
+            } else {
                 (new Validator(userService.user)).checkBrowsePermission(osd);
                 osd.toXmlElement(root, include_summary)
             }
@@ -642,7 +640,7 @@ class OsdController extends BaseController {
             log.debug("Failed to unlock #$id.", e)
             renderExceptionXml(e.message)
         }
-    } 
+    }
 
     /**
      * Set summary on an OSD.
@@ -653,7 +651,7 @@ class OsdController extends BaseController {
      *         <success>success.set.summary</success>
      *}
      * or an error message if something went wrong.
-     * 
+     *
      */
     def setSummaryXml(Long id, String content) {
         try {
@@ -720,8 +718,8 @@ class OsdController extends BaseController {
             copy.setModifier(user)
             copy.setCreator(user)
             copy.setLocker(null)
-            copy.save(flush:true)
-            
+            copy.save(flush: true)
+
             copy.fixLatestHeadAndBranch([])
             osdService.copyRelations(osd, copy)
             // execute the new LifeCycleState if necessary.
@@ -807,7 +805,7 @@ class OsdController extends BaseController {
                 success('success.delete.all_versions')
             }
         }
-        catch (Exception e) {            
+        catch (Exception e) {
             renderExceptionXml('Failed to delete object', e)
         }
     }
@@ -836,8 +834,7 @@ class OsdController extends BaseController {
                 List<String> metasetNames = metasets.split(",")
                 log.debug("metasetnames: ${metasetNames}")
                 xml = osd.getMetadata(metasetNames)
-            }
-            else {
+            } else {
                 xml = osd.getMetadata()
             }
             render(contentType: 'application/xml', text: xml)
@@ -886,7 +883,7 @@ class OsdController extends BaseController {
             renderExceptionXml('Failed to do getObjectsById', e)
         }
     }
-    
+
     /**
      * The getobjectswithmetadata command retrieves some or all objects in the folder with the given id
      * and returns their metadata and system metadata.
@@ -952,7 +949,7 @@ class OsdController extends BaseController {
      *      <li>acl_id</li>
      *      <li>summary</li>
      *           </ul>
-     * @deprecated (use getObjectById instead to retrieve the OSD.)          
+     * @deprecated ( use getObjectById instead to retrieve the OSD. )
      * @return XML-Response: <pre>{@code <sysMetaValue>$value</sysMetaValue>}</pre>
      *         If a null value is retrieved, an xml-error-doc is returned with the message:
      *         "error.result_value_is_null"
@@ -1044,8 +1041,7 @@ class OsdController extends BaseController {
                 if (contentPath) {
                     ContentStore.deleteFileInRepository(contentPath, repositoryName)
                 }
-            }
-            else {
+            } else {
                 log.debug("User wants to remove content of $id.")
                 osd.deleteContent(repositoryName)
                 osd.updateAccess(user)
@@ -1103,7 +1099,7 @@ class OsdController extends BaseController {
             }
             new Validator(user).validateCreate(osd.parent)
             osd.predecessor = pre
-            osd.cmnVersion = osd.createNewVersionLabel()             
+            osd.cmnVersion = osd.createNewVersionLabel()
             osd.fixLatestHeadAndBranch([])
             Format myFormat = Format.findByName(format)
             osd.locker = null
@@ -1116,7 +1112,7 @@ class OsdController extends BaseController {
             }
             log.debug("new osd: ${osd.toXML().asXML()}")
             log.debug("version of new osd: ${osd.cmnVersion}")
-            
+
             render(contentType: 'application/xml') {
                 objectId(osd.id.toString())
             }
@@ -1157,7 +1153,7 @@ class OsdController extends BaseController {
             osd.storeMetadata(metadata, policy);
             osd.updateAccess(user);
             render(contentType: 'application/xml') {
-                cinnamon{
+                cinnamon {
                     success('success.set.metadata')
                 }
             }
@@ -1255,9 +1251,9 @@ class OsdController extends BaseController {
                 case 'procstate': validator.validateSetSysMeta(osd);
                     osd.procstate = value
                     break
-                case 'acl_id':validator.validateSetObjectAcl(osd)
+                case 'acl_id': validator.validateSetObjectAcl(osd)
                     Acl acl = Acl.get(value)
-                    if (! acl) {
+                    if (!acl) {
                         throw new CinnamonException("error.acl.not_found");
                     }
                     osd.acl = acl
@@ -1265,7 +1261,7 @@ class OsdController extends BaseController {
                 default: throw new CinnamonException("Parameter " + parameter + " is invalid on objects.")
             }
             osd.updateAccess(user)
-            render(contentType: 'application/xml'){
+            render(contentType: 'application/xml') {
                 success('success.set.sys_meta')
             }
         }
@@ -1299,8 +1295,8 @@ class OsdController extends BaseController {
                 throw new RuntimeException('error.content.not.found')
             }
             def attachmentName = resultfile ?: "${osd.name.encodeAsURL()}${osd.determineExtension()}"
-            render file:data, contentType: osd.format.contenttype, filename: attachmentName
-            
+            render file: data, contentType: osd.format.contenttype, filename: attachmentName
+
         }
         catch (Exception e) {
             LocalRepository.cleanUp()
@@ -1315,25 +1311,78 @@ class OsdController extends BaseController {
      * @return success-xml
      */
     @Secured(["hasRole('_superusers')"])
-    def reindex(Long id, Boolean convert_content_to_metaset){
-        try{
+    def reindex(Long id, Boolean convert_content_to_metaset) {
+        try {
             ObjectSystemData osd = fetchAndFilterOsd(id?.toString())
-            if(osd){
-                if(convert_content_to_metaset){
+            if (osd) {
+                if (convert_content_to_metaset) {
                     cinnamonTikaService.parse(osd)
 
                 }
                 LocalRepository.addIndexable(osd, IndexAction.UPDATE)
             }
             render(contentType: 'application/xml') {
-                cinnamon{
+                cinnamon {
                     success('success.reindex.osd')
                 }
             }
         }
-        catch (Exception e){
+        catch (Exception e) {
             renderExceptionXml(e.message)
         }
 
     }
+
+    def isCurrent(Long id, String hash) {
+        try {
+            if (!id) {
+                log.debug("id '$id' is invalid.")
+                throw new RuntimeException("error.osd.not.found")
+            }
+
+            ObjectSystemData osd = fetchAndFilterOsd(id)
+            if (osd) {
+                log.debug("found osd:" + osd);
+            } else {
+                log.debug("osd $osd was filtered / not found")
+                throw new RuntimeException("error.osd.not.found")
+            }
+
+            if (!osd.contentSize) {
+                throw new RuntimeException("osd.no.content")
+            }
+
+            if (osd.contentHash) {
+                log.debug("osd has contentHash: " + osd.contentHash)
+                if (osd.contentHash.equals(hash)) {
+                    render(contentType: 'application/xml', status: SC_NOT_MODIFIED) {
+                        cinnamon {
+                            successful('true')
+                            status('CONTENT IS CURRENT')
+                        }
+                    }
+                } else {
+                    File data = osd.getContentAsFile(repositoryName)
+                    def attachmentName = "${osd.name.encodeAsURL()}${osd.determineExtension()}"
+                    render file: data, contentType: osd.format.contenttype, filename: attachmentName
+                }
+            } else {
+                // generate content hash
+                File data = osd.getContentAsFile(repositoryName)
+                def attachmentName = "${osd.name.encodeAsURL()}${osd.determineExtension()}"
+                String sha256Hex = DigestUtils.sha256Hex(new FileInputStream(data))
+                osd.contentHash = sha256Hex
+                log.debug("contentHash: " + osd.contentHash)
+                render file: data, contentType: osd.format.contenttype, filename: attachmentName
+            }
+
+        }
+        catch (Exception e) {
+            log.info("isCurrent failed: ", e)
+            renderException(e.message)
+
+        }
+    }
+
+
 }

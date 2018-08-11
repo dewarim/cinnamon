@@ -85,7 +85,6 @@ log4j = {
             'org.apache.tomcat.util',
             'org.apache.coyote',
             'org.apache.commons.beanutils',
-//            'org.springframework',
             'org.hibernate',
             'org.apache.naming.SelectorContext',
             'net.sf.ehcache',
@@ -108,61 +107,56 @@ log4j = {
             'asset.pipeline.fs.FileSystemAssetResolver',
             'grails.plugin.springsecurity.web.access.intercept.AnnotationFilterInvocationDefinition'
 
-    info 'org.codehaus.groovy.grails.context',
+    error 'org.quartz.core.QuartzSchedulerThread',
+            'org.codehaus.groovy.grails.context',
             'org.codehaus.groovy.grails.io',
             'org.codehaus.groovy.grails.web',
             'cinnamon.global.ConfThreadLocal',
-            'org.quartz.core.QuartzSchedulerThread',
-            'grails.plugins.quartz.listeners.SessionBinderJobListener'
-
-    debug 'org.dom4j.io.SaxReader'
-    debug 'cinnamon.utils.ParamParser'
-    
-    info 'grails.plugins.twitterbootstrap.BootstrapResources'
-    info 'cinnamon.RequestTicketAuthenticationFilter'
-    debug 'cinnamon.debug.ProviderManager'
-    debug 'cinnamon.CinnamonUserDetailsService'
-    info 'grails.app.filters.cinnamon.filters.PageFilters'
-    debug 'cinnamon.data'
-    debug 'cinnamon.OsdController'
-    debug 'cinnamon.index.LuceneService'
-    info 'cinnamon.index.LuceneJob'
-//    debug 'cinnamon.index.LuceneJob'
-    info 'cinnamon.workflow.TransitionActor'
-    info 'cinnamon.workflow'
-    info 'cinnamon.index'
-    info 'cinnamon.index.ResultCollector'
-//    debug 'cinnamon.index.indexer.DefaultIndexer'
-//    debug 'cinnamon.index.indexer.DescendingStringIndexer'
-//    debug 'cinnamon.index.indexer'
-//    debug 'cinnamon.index.IndexItem'
-    info 'cinnamon.index.indexer.DefaultIndexer'
-    info 'cinnamon.index.indexer.DescendingStringIndexer'
-    info 'cinnamon.index.indexer'
-    info 'cinnamon.index.IndexItem'
-    info 'org.quartz.core.JobRunShell'
-    debug    'cinnamon.index.indexer.ParentFolderPathIndexer',
-            'cinnamon.PreAuthenticatedAuthenticationProvider'
-    info 'grails.app.domain.cinnamon.index'
-    info 'grails.app.domain.cinnamon.index.IndexItem'
-    info 'org.springframework'
-    info 'org.springframework.security'
-    info 'cinnamon.CinnamonUserDetailsService'
-    info 'grails.app.filters.cinnamon.filters'
-    info 'grails.app.services.cinnamon.UserService'
-    info 'grails.plugin.springsecurity.web.filter.GrailsRememberMeAuthenticationFilter'
-    info 'grails.plugin.springsecurity.web.filter.GrailsAnonymousAuthenticationFilter'
-    info 'grails.plugin.springsecurity.web.access.intercept.AnnotationFilterInvocationDefinition'
-    info 'cinnamon.tika.CinnamonTikaService'
-    info 'cinnamon.Validator',
-            'cinnamon.servlet.ResponseFilter',
-            'grails.app.services.cinnamon.FolderService',
-            'grails.app.controllers.cinnamon',
-            'grails.app.services.cinnamon'
-            'grails.app.domain.cinnamon'
-
+            'grails.plugins.quartz.listeners.SessionBinderJobListener',
+            'org.quartz.core.JobRunShell'
+//
+//    debug 'org.dom4j.io.SaxReader'
+//    debug 'cinnamon.utils.ParamParser'
+//
+//    info 'grails.plugins.twitterbootstrap.BootstrapResources'
+//    info 'cinnamon.RequestTicketAuthenticationFilter'
+//    debug 'cinnamon.debug.ProviderManager'
+//    debug 'cinnamon.CinnamonUserDetailsService'
+//    info 'grails.app.filters.cinnamon.filters.PageFilters'
+//    debug 'cinnamon.data'
+//    debug 'cinnamon.OsdController'
+//    debug 'cinnamon.index.LuceneService'
+//    info 'cinnamon.index.LuceneJob'
+//    info 'cinnamon.index'
+//    info 'grails.app.domain.cinnamon.index'
+//    info 'grails.app.domain.cinnamon.index.indexer'
+//    info 'cinnamon.index.indexer'
+//    info 'org.quartz.core.JobRunShell'
+//    info    'cinnamon.index.indexer.ParentFolderPathIndexer',
+//            'cinnamon.PreAuthenticatedAuthenticationProvider'
+//    info 'org.springframework'
+//    info 'org.springframework.security'
+//    info 'cinnamon.CinnamonUserDetailsService'
+//    info 'grails.app.filters.cinnamon.filters'
+//    info 'grails.app.services.cinnamon.UserService'
+//    info 'grails.plugin.springsecurity.web.filter.GrailsRememberMeAuthenticationFilter'
+//    info 'grails.plugin.springsecurity.web.filter.GrailsAnonymousAuthenticationFilter'
+//    info 'grails.plugin.springsecurity.web.access.intercept.AnnotationFilterInvocationDefinition'
+//    info 'cinnamon.tika.CinnamonTikaService'
+//    debug 'cinnamon.Validator',
+//            'cinnamon.servlet.ResponseFilter',
+//            'grails.app.services.cinnamon.FolderService',
+//            'grails.app.controllers.cinnamon',
+//            'grails.app.services.cinnamon'
+//            'grails.app.domain.cinnamon'
+//    debug 'grails.app.controllers.cinnamon'
+//    info 'cinnamon.index.Repository'
+//    debug 'BootStrap'
+//    debug 'grails.app.services.cinnamon.FolderService'
+//    info 'cinnamon.authentication.UnboundIdLdapConnector'
+//
     root {
-        info 'stdout'
+        debug 'stdout'
     }
 }
 

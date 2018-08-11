@@ -1,6 +1,7 @@
 package cinnamon
 
 import cinnamon.references.Link
+import org.apache.commons.codec.digest.DigestUtils
 import org.dom4j.Document
 import org.dom4j.DocumentHelper
 import org.dom4j.Element
@@ -308,6 +309,9 @@ class OsdService {
                 osd.contentPath.length() == 0) {
             throw new CinnamonException("error.storing.upload");
         }
+
+        String sha256Hex = DigestUtils.sha256Hex(new FileInputStream(osd.getContentAsFile(repositoryName)))
+        osd.contentHash = sha256Hex
     }
 
     Map<String, List> deleteList(idList, String repository, VersionType versionType) {
@@ -442,8 +446,10 @@ class OsdService {
             throw new RuntimeException('error.missing.content')
         }
         else {
-            // remove any image thumbnails on the content     
+            // remove any image thumbnails on the content
+            log.info("remove metaset thumbnail")
             metasetService.unlinkMetaset(osd, osd.fetchMetaset(Constants.METASET_THUMBNAIL))
+            log.info("remove metaset tika")
             metasetService.unlinkMetaset(osd, osd.fetchMetaset(Constants.METASET_TIKA))
 
             File tempFile = File.createTempFile('cinnamon_upload_', null)
@@ -451,6 +457,7 @@ class OsdService {
             storeContent(osd, file.contentType, formatId, tempFile, repositoryName)
             osd.updateAccess(user)
             osd.save()
+            log.info("parse new metaset")
             cinnamonTikaService.parse(osd)
         }
     }
