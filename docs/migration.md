@@ -102,4 +102,11 @@ Note: Code for LDAP authentication requires licensing for commercial use beyond 
 
 * Change database to remove ui_language_id from sessions table:
 
-    alter table sessions drop column ui_language_id;  
+        alter table sessions drop column ui_language_id;
+    
+## changes to 3.8.0.33
+
+* Change database to add content hash to objects table:
+
+        alter table objects add column content_hash varchar(128);           
+      
