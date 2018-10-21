@@ -15,7 +15,10 @@ import cinnamon.i18n.Language
 import cinnamon.exceptions.CinnamonException
 import org.dom4j.Document
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
 import static javax.servlet.http.HttpServletResponse.SC_NOT_MODIFIED
+import static javax.servlet.http.HttpServletResponse.SC_NO_CONTENT
+import static javax.servlet.http.HttpServletResponse.SC_OK
 
 /**
  *
@@ -1331,6 +1334,26 @@ class OsdController extends BaseController {
             renderExceptionXml(e.message)
         }
 
+    }
+
+    @Secured(['IS_AUTHENTICATED_ANONYMOUSLY'])
+    def exists(Long id, String accessToken) {
+        try {
+            if (id == null || accessToken == null || !accessToken.equals(infoService.config.reaperAccessToken)) {
+                response.status = SC_BAD_REQUEST;
+                return;
+            }
+            ObjectSystemData osd = ObjectSystemData.get(id)
+            if (osd == null) {
+                response.status = SC_NO_CONTENT;
+            } else {
+                response.status = SC_OK;
+            }
+        }
+        catch (Exception e) {
+            log.info("exists failed: ", e)
+            renderException(e.message)
+        }
     }
 
     def isCurrent(Long id, String hash) {

@@ -220,3 +220,5 @@ templates = [
                 'osdList': '/osd/osdList'
         ]
 ]
+
+reaperAccessToken = 'REAPER_ACCESS_TOKEN'
