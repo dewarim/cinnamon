@@ -4,6 +4,8 @@ import cinnamon.index.IndexAction
 import cinnamon.references.Link
 import cinnamon.references.LinkType
 import cinnamon.utils.ParamParser
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import org.apache.commons.codec.digest.DigestUtils
 import org.dom4j.DocumentHelper
 import org.dom4j.Element
@@ -1337,18 +1339,31 @@ class OsdController extends BaseController {
     }
 
     @Secured(['IS_AUTHENTICATED_ANONYMOUSLY'])
-    def exists(Long id, String accessToken) {
+    def checkObjectsExist(String ids) {
+        log.debug("Parameters: " + params)
         try {
-            if (id == null || accessToken == null || !accessToken.equals(infoService.config.reaperAccessToken)) {
-                response.status = SC_BAD_REQUEST;
-                return;
+            if(ids == null || ids.isEmpty()){
+                return render(status: SC_BAD_REQUEST, text: "no ids given")
             }
-            ObjectSystemData osd = ObjectSystemData.get(id)
-            if (osd == null) {
-                response.status = SC_NO_CONTENT;
-            } else {
-                response.status = SC_OK;
+            ObjectMapper objectMapper = new XmlMapper();
+            CinnamonIdList idList = objectMapper.readValue(ids, CinnamonIdList.class)            ;
+            if(idList == null){
+                return render(status: SC_BAD_REQUEST, text: "could not parse CinnamonIdList.");
             }
+
+            if (idList.getAccessToken() == null || ! idList.getAccessToken().equals(infoService.config.reaperAccessToken)) {
+                return render(status: SC_BAD_REQUEST, text: "invalid accessToken")
+            }
+            def existingIds = new CinnamonIdList();
+            idList.getIds().each { myId ->
+                ObjectSystemData osd = ObjectSystemData.get(myId)
+                if (osd != null) {
+                    existingIds.getIds().add(myId)
+                }
+            }
+
+            return render(status:SC_OK, contentType: 'application/xml', text:objectMapper.writeValueAsString(existingIds))
+
         }
         catch (Exception e) {
             log.info("exists failed: ", e)
