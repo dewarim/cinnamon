@@ -16,10 +16,10 @@ import javax.annotation.PostConstruct
 /**
  *
  */
-class UserService implements ApplicationContextAware{
+class UserService implements ApplicationContextAware {
 
     ApplicationContext applicationContext
-    
+
     def springSecurityService
     def healthService
     def infoService
@@ -69,7 +69,7 @@ class UserService implements ApplicationContextAware{
      * @param target new owner of assets
      */
     void transferAssets(UserAccount source, UserAccount target) {
-        transferGroupMembership(source, target)
+        removeGroupMembership(source)
         // refreshAclCache for target?
         transferFolderOwnership(source, target)
         transferOsdOwnership(source, target)
@@ -88,19 +88,26 @@ class UserService implements ApplicationContextAware{
         return conf.getField(xpath, 'false').equals('true')
     }
 
-    void transferGroupMembership(UserAccount source, UserAccount target) {
+//    void transferGroupMembership(UserAccount source, UserAccount target) {
+//        def groupUsers = CmnGroupUser.findAllByUserAccount(source)
+//        groupUsers.each { gu ->
+//            if (CmnGroupUser.findByUserAccountAndCmnGroup(target, gu.cmnGroup)) {
+//                // simply delete old user's CmnGroupUser object as both
+//                // old and new are in the same group
+//                gu.delete()
+//            }
+//            else {
+//                // take over groupUser from other user.
+//                log.debug("transfer group ${gu.cmnGroup.name} to user ${target.name}")
+//                gu.userAccount = target
+//            }
+//        }
+//    }
+
+    void removeGroupMembership(UserAccount source) {
         def groupUsers = CmnGroupUser.findAllByUserAccount(source)
         groupUsers.each { gu ->
-            if (CmnGroupUser.findByUserAccountAndCmnGroup(target, gu.cmnGroup)) {
-                // simply delete old user's CmnGroupUser object as both
-                // old and new are in the same group
-                gu.delete()
-            }
-            else {
-                // take over groupUser from other user.
-                log.debug("transfer group ${gu.cmnGroup.name} to user ${target.name}")
-                gu.userAccount = target
-            }
+            gu.delete()
         }
     }
 
@@ -178,8 +185,7 @@ class UserService implements ApplicationContextAware{
         tokenCal.setTime(user.tokenAge);
         if (!(today.get(Calendar.DAY_OF_MONTH) == (tokenCal.get(Calendar.DAY_OF_MONTH)))) {
             user.tokensToday = 0;
-        }
-        else {
+        } else {
             user.tokensToday++;
         }
 
@@ -260,10 +266,10 @@ class UserService implements ApplicationContextAware{
         return session.ticket
     }
 
-    UserAccount createUserAcccount(String username, List<String> cinnamonGroups,LoginType loginType, String language) {
-        UiLanguage uiLanguage = UiLanguage.findByIsoCode(language) 
+    UserAccount createUserAcccount(String username, List<String> cinnamonGroups, LoginType loginType, String language) {
+        UiLanguage uiLanguage = UiLanguage.findByIsoCode(language)
         bindLateBeans()
-        
+
         UserAccount user = null
         try {
             String randomPwd = UUID.randomUUID().toString()
@@ -296,12 +302,11 @@ class UserService implements ApplicationContextAware{
             if (group) {
                 CmnGroupUser groupUser = new CmnGroupUser(group, user)
                 groupUser.save()
-            }
-            else{
-                log.warn("Could not find user group: "+name)
+            } else {
+                log.warn("Could not find user group: " + name)
             }
         }
-        
+
         return user
     }
 
@@ -312,8 +317,8 @@ class UserService implements ApplicationContextAware{
         }
         return user
     }
-    
-    void bindLateBeans(){
+
+    void bindLateBeans() {
         folderServiceBean = applicationContext.getBean('folderService')
         groupServiceBean = applicationContext.getBean('groupService')
     }

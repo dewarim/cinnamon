@@ -13,4 +13,10 @@ class GroupService {
         gu.save(flush: true)
         return group
     }
+
+    void deleteUserGroup(UserAccount user){
+        String groupName = "_${user.id}_${user.name}"
+        def group = CmnGroup.findByName(groupName)
+        group.delete(flush: true)
+    }
 }
