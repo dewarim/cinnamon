@@ -1042,7 +1042,9 @@ class OsdController extends BaseController {
                     throw new CinnamonException('error.format.not.found')
                 }
                 String contentPath = osd.contentPath
+                log.debug("saveFileUpload starting")
                 osdService.saveFileUpload(request, osd, user, myFormat.id, repositoryName)
+                log.debug("saveFileUpload finished")
                 if (contentPath) {
                     ContentStore.deleteFileInRepository(contentPath, repositoryName)
                 }
@@ -1110,9 +1112,11 @@ class OsdController extends BaseController {
             osd.locker = null
             osd.save(flush: true)
             if (metadata) {
+                log.debug("version::storeMetadata")
                 osd.storeMetadata(metadata)
             }
             if (params.containsKey('file')) {
+                log.debug("version::saveFileUpload")
                 osdService.saveFileUpload(request, osd, user, myFormat.id, repositoryName, false)
             }
             log.debug("new osd: ${osd.toXML().asXML()}")
@@ -1299,7 +1303,7 @@ class OsdController extends BaseController {
             if (osd.contentSize == null || osd.contentSize == 0L) {
                 throw new RuntimeException('error.content.not.found')
             }
-            if(!osd.contentHash) {
+            if (!osd.contentHash) {
                 // generate content hash
                 String sha256Hex = DigestUtils.sha256Hex(new FileInputStream(data))
                 osd.contentHash = sha256Hex
@@ -1349,16 +1353,16 @@ class OsdController extends BaseController {
     def checkObjectsExist(String ids) {
         log.debug("Parameters: " + params)
         try {
-            if(ids == null || ids.isEmpty()){
+            if (ids == null || ids.isEmpty()) {
                 return render(status: SC_BAD_REQUEST, text: "no ids given")
             }
             ObjectMapper objectMapper = new XmlMapper();
-            CinnamonIdList idList = objectMapper.readValue(ids, CinnamonIdList.class)            ;
-            if(idList == null){
+            CinnamonIdList idList = objectMapper.readValue(ids, CinnamonIdList.class);
+            if (idList == null) {
                 return render(status: SC_BAD_REQUEST, text: "could not parse CinnamonIdList.");
             }
 
-            if (idList.getAccessToken() == null || ! idList.getAccessToken().equals(infoService.config.reaperAccessToken)) {
+            if (idList.getAccessToken() == null || !idList.getAccessToken().equals(infoService.config.reaperAccessToken)) {
                 return render(status: SC_BAD_REQUEST, text: "invalid accessToken")
             }
             def existingIds = new CinnamonIdList();
@@ -1369,7 +1373,7 @@ class OsdController extends BaseController {
                 }
             }
 
-            return render(status:SC_OK, contentType: 'application/xml', text:objectMapper.writeValueAsString(existingIds))
+            return render(status: SC_OK, contentType: 'application/xml', text: objectMapper.writeValueAsString(existingIds))
 
         }
         catch (Exception e) {

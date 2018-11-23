@@ -300,16 +300,17 @@ class OsdService {
         if (!format) {
             throw new RuntimeException('error.missing.format')
         }
-
+        log.debug("copy data from temporary storage to repository")
         def uploadedFile = new UploadedFile(file.absolutePath, UUID.randomUUID().toString(), osd.name, contentType, file.length())
         def contentPath = ContentStore.upload(uploadedFile, repositoryName);
+        log.debug("parse data with Apache Tika")
         cinnamonTikaService.parse(osd)
         osd.setContentPathAndFormat(contentPath, format, repositoryName);
         if (osd.contentPath != null &&
                 osd.contentPath.length() == 0) {
             throw new CinnamonException("error.storing.upload");
         }
-
+        log.debug("calculate sha256hex value of new content")
         String sha256Hex = DigestUtils.sha256Hex(new FileInputStream(osd.getContentAsFile(repositoryName)))
         osd.contentHash = sha256Hex
     }
@@ -447,11 +448,11 @@ class OsdService {
         }
         else {
             // remove any image thumbnails on the content
-            log.info("remove metaset thumbnail")
+            log.info("remove metaset thumbnail (if any exist)")
             metasetService.unlinkMetaset(osd, osd.fetchMetaset(Constants.METASET_THUMBNAIL))
             log.info("remove metaset tika")
             metasetService.unlinkMetaset(osd, osd.fetchMetaset(Constants.METASET_TIKA))
-
+            log.debug("transfer data to tempFile")
             File tempFile = File.createTempFile('cinnamon_upload_', null)
             file.transferTo(tempFile)
             storeContent(osd, file.contentType, formatId, tempFile, repositoryName)
