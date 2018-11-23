@@ -1299,6 +1299,13 @@ class OsdController extends BaseController {
             if (osd.contentSize == null || osd.contentSize == 0L) {
                 throw new RuntimeException('error.content.not.found')
             }
+            if(!osd.contentHash) {
+                // generate content hash
+                String sha256Hex = DigestUtils.sha256Hex(new FileInputStream(data))
+                osd.contentHash = sha256Hex
+            }
+            log.debug("contentHash: " + osd.contentHash)
+
             def attachmentName = resultfile ?: "${osd.name.encodeAsURL()}${osd.determineExtension()}"
             render file: data, contentType: osd.format.contenttype, filename: attachmentName
 
