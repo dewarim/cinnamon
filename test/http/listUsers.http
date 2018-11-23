@@ -1,0 +1,4 @@
+# for manual testing / development
+
+GET http://localhost:8080/cinnamon/userAccount/listUsers
+ticket: b6437050-cd5c-49bd-8bb6-666b48aab095@demo

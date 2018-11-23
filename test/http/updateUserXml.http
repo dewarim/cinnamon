@@ -1,0 +1,52 @@
+# for manual testing / development
+
+# Change email:
+### Send POST request with body as parameters
+POST http://localhost:8080/cinnamon/userAccount/updateUser
+ticket: b6437050-cd5c-49bd-8bb6-666b48aab095@demo
+Content-Type: application/xml
+
+<UpdateUserAccountRequest>
+            <id>47807</id>
+            <name>b0000</name>
+            <fullname>big name</fullname>
+            <loginType>CINNAMON</loginType>
+            <activated>true</activated>
+            <locked>false</locked>
+            <uiLanguageId>51</uiLanguageId>
+            <email>new-email@invalid</email>
+            <password>foo</password>
+</UpdateUserAccountRequest>
+
+###
+
+GET http://localhost:8080/cinnamon/userAccount/listUsers
+ticket: b6437050-cd5c-49bd-8bb6-666b48aab095@demo
+
+###
+
+# change email again:
+POST http://localhost:8080/cinnamon/userAccount/updateUser
+ticket: b6437050-cd5c-49bd-8bb6-666b48aab095@demo
+Content-Type: application/xml
+
+<UpdateUserAccountRequest>
+            <id>47807</id>
+            <name>a1111</name>
+            <fullname></fullname>
+            <loginType>CINNAMON</loginType>
+            <activated>true</activated>
+            <locked>false</locked>
+            <uiLanguageId></uiLanguageId>
+            <email>other-email@invalid</email>
+            <password>bar</password>
+</UpdateUserAccountRequest>
+
+###
+
+# for checking:
+
+GET http://localhost:8080/cinnamon/userAccount/listUsers
+ticket: b6437050-cd5c-49bd-8bb6-666b48aab095@demo
+
+###

@@ -1,0 +1,13 @@
+# for manual testing / development
+
+### Send POST request with body as parameters
+POST http://localhost:8080/cinnamon/userAccount/deleteXml
+ticket: b6437050-cd5c-49bd-8bb6-666b48aab095@demo
+Content-Type: application/xml
+
+<DeleteUserAccountRequest>
+<userId>59467</userId>
+<assetReceiverId>4</assetReceiverId>
+</DeleteUserAccountRequest>
+
+###

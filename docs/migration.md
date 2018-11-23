@@ -109,4 +109,9 @@ Note: Code for LDAP authentication requires licensing for commercial use beyond 
 * Change database to add content hash to objects table:
 
         alter table objects add column content_hash varchar(128);           
-      
+
+## changes to 3.8.0.71
+
+* Remove description column from users table:
+
+        alter table user drop column description      

@@ -50,6 +50,7 @@ grails.project.dependency.resolution = {
         compile 'org.codehaus.woodstox:woodstox-core-asl:4.4.1'
         // unboundId sdk used under LGPL 2.1 license
         compile 'com.unboundid:unboundid-ldapsdk:4.0.4'
+        compile 'com.dewarim.cinnamon:cinnamon-model:0.1'
     }
 
     plugins {
