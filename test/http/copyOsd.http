@@ -1,0 +1,26 @@
+# for manual testing / development
+
+### copy an object
+POST http://localhost:8080/cinnamon/osd/copy
+ticket: b6437050-cd5c-49bd-8bb6-666b48aab095@demo
+Content-Type: application/x-www-form-urlencoded
+
+sourceid=59363&targetfolderid=40808
+
+### fetch source meta:
+
+POST http://localhost:8080/cinnamon/osd/getOsdMeta
+ticket: b6437050-cd5c-49bd-8bb6-666b48aab095@demo
+Content-Type: application/x-www-form-urlencoded
+
+id=59363
+
+### fetch target meta; adjust id depending on the output of the copy api call
+
+POST http://localhost:8080/cinnamon/osd/getOsdMeta
+ticket: b6437050-cd5c-49bd-8bb6-666b48aab095@demo
+Content-Type: application/x-www-form-urlencoded
+
+id=59478
+
+###
