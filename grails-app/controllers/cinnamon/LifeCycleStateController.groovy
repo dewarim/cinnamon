@@ -273,8 +273,9 @@ class LifeCycleStateController extends BaseController{
          */
         try {
             ObjectSystemData osd = ObjectSystemData.get(id)
+            def user = userService.user
             if(osd){
-                new Validator(userService.user).validateSetSysMeta(osd);
+                new Validator(user).validateSetSysMeta(osd);
 
                 LifeCycleState lifeCycleState;
                 if(state_name){
@@ -289,6 +290,7 @@ class LifeCycleStateController extends BaseController{
 
                 osd.state.exitState(osd, lifeCycleState)
                 lifeCycleState.enterState(osd, lifeCycleState) // if this fails, rollback occurs.
+                osd.updateAccess(user)
                 render(contentType: 'application/xml') {
                     success('success.change_lifecycle')
                 }
