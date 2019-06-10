@@ -30,8 +30,7 @@ class BootStrap {
                 mapper.writerWithDefaultPrettyPrinter().writeValue(sw, ldapConfig)
                 log.info("Using ldap-config.xml:\n" + sw)
                 UnboundIdLdapConnector.config = ldapConfig
-            }
-            else {
+            } else {
                 log.warn("${ldapConfigFile.absolutePath} does not exist. Using empty LDAP config.")
             }
         }
