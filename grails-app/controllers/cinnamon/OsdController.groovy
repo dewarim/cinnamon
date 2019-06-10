@@ -1096,6 +1096,7 @@ class OsdController extends BaseController {
         try {
             def user = userService.user
             ObjectSystemData pre = fetchAndFilterOsd(preid, [PermissionName.VERSION_OBJECT])
+            log.debug("found predecessor: "+pre.id)
             ObjectSystemData osd = new ObjectSystemData(pre, user);
             osd.root = pre.root
             if (name) {
@@ -1104,12 +1105,16 @@ class OsdController extends BaseController {
             if (parentid) {
                 osd.parent = Folder.get(parentid)
             }
+            log.debug("validate create")
             new Validator(user).validateCreate(osd.parent)
             osd.predecessor = pre
+            log.debug("create new version label")
             osd.cmnVersion = osd.createNewVersionLabel()
+            log.debug("fix latestHeadAndBranch")
             osd.fixLatestHeadAndBranch([])
             Format myFormat = Format.findByName(format)
             osd.locker = null
+            log.debug("save object")
             osd.save(flush: true)
             if (metadata) {
                 log.debug("version::storeMetadata")
@@ -1126,7 +1131,7 @@ class OsdController extends BaseController {
                 objectId(osd.id.toString())
             }
         }
-        catch (RuntimeException e) {
+        catch (Exception e) {
             log.debug("Failed to version object:", e)
             renderException(e.message)
         }
