@@ -89,9 +89,9 @@ class MetasetController extends BaseController{
 
             Metaset metaset = metasetService.createOrUpdateMetaset(metasetOwner, metasetType, content, writePolicy);
             LocalRepository.addIndexable(metasetOwner, IndexAction.UPDATE)
-            def doc = DocumentHelper.createDocument()
-            doc.add(Metaset.asElement('meta', metaset))
-            render(contentType: 'application/xml', text: doc.asXML())
+            render(contentType: 'application/xml') {
+                success('success.save.metaset')
+            }
         }
         catch (Exception e) {
             renderExceptionXml('Failed to saveMetaset.', e)
