@@ -16,7 +16,6 @@
   <maxTokensPerDay>3</maxTokensPerDay>
    
   <startIndexServer>true</startIndexServer>
-  <startWorkflowServer>false</startWorkflowServer>
 
   <sql_user>cinnamon</sql_user>
   <sql_pwd>cinnamon</sql_pwd>
