@@ -243,6 +243,7 @@ class CinnamonController extends BaseController {
                 case 'checktranslation': forward(controller: 'translation', action: 'checkTranslation'); break
                 case 'connect': forward(action: 'connect'); break
                 case 'copy': forward(controller: 'osd', action: 'copy'); break
+                case 'copytoexisting': forward(controller: 'osd', action: 'copyToExisting'); break
                 case 'create': forward(controller: 'osd', action: 'createOsd'); break
                 case 'createfolder': forward(controller: 'folder', action: 'createXml'); break
                 case 'createlink': forward(controller: 'link', action: 'createLink'); break

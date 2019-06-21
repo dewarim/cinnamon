@@ -1,0 +1,26 @@
+# for manual testing / development
+
+### copy an object
+POST http://localhost:8080/cinnamon/osd/copyToExisting
+ticket: b6437050-cd5c-49bd-8bb6-666b48aab095@demo
+Content-Type: application/x-www-form-urlencoded
+
+sourceid=48938&targetid=59363&copymetasets=tika&copycontent=true
+
+### fetch source meta:
+
+POST http://localhost:8080/cinnamon/osd/getOsdMeta
+ticket: b6437050-cd5c-49bd-8bb6-666b48aab095@demo
+Content-Type: application/x-www-form-urlencoded
+
+id=48938
+
+### fetch target meta;
+
+POST http://localhost:8080/cinnamon/osd/getOsdMeta
+ticket: b6437050-cd5c-49bd-8bb6-666b48aab095@demo
+Content-Type: application/x-www-form-urlencoded
+
+id=59363
+
+###
