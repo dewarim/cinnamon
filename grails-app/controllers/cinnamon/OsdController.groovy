@@ -19,8 +19,8 @@ import org.dom4j.Document
 
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
 import static javax.servlet.http.HttpServletResponse.SC_NOT_MODIFIED
-import static javax.servlet.http.HttpServletResponse.SC_NO_CONTENT
 import static javax.servlet.http.HttpServletResponse.SC_OK
+import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED
 
 /**
  *
@@ -1459,6 +1459,10 @@ class OsdController extends BaseController {
             if (!source || !target) {
                 renderErrorXml("Could not find source or target or missing required permissions for source: " + requiredSourcePermissions.join(",")
                         + " or for target: " + requiredTargetPermissions.join(","))
+                return;
+            }
+            if(target.locker != userService.user){
+                renderErrorXml("error.must.own.lock.on.target","error.must.own.lock.on.target", SC_UNAUTHORIZED)
                 return;
             }
             if (source.id.equals(target.id)) {
