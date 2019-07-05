@@ -1461,7 +1461,7 @@ class OsdController extends BaseController {
                         + " or for target: " + requiredTargetPermissions.join(","))
                 return;
             }
-            if(target.locker != userService.user){
+            if(userService.user.id == target.locker?.id){
                 renderErrorXml("error.must.own.lock.on.target","error.must.own.lock.on.target", SC_UNAUTHORIZED)
                 return;
             }
