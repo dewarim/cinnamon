@@ -18,6 +18,7 @@ import cinnamon.exceptions.CinnamonException
 import org.dom4j.Document
 
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST
+import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND
 import static javax.servlet.http.HttpServletResponse.SC_NOT_MODIFIED
 import static javax.servlet.http.HttpServletResponse.SC_OK
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED
@@ -526,7 +527,7 @@ class OsdController extends BaseController {
      *  </ul>
      * @return a Response which contains:
      *         <pre>
-     * {@code <objectId>   $id_of_new_object</objectId>}
+     * {@code <objectId>    $id_of_new_object</objectId>}
      *         </pre>
      */
     def createOsd() {
@@ -606,6 +607,10 @@ class OsdController extends BaseController {
     def lockXml(Long id) {
         try {
             ObjectSystemData osd = ObjectSystemData.get(id)
+            if (osd == null) {
+                renderErrorXml("Object not found with id "+id.encodeAsHtml(), "error.object.not.found", SC_NOT_FOUND)
+                return;
+            }
             def user = userService.user
             (new Validator(user)).validateLock(osd, user)
             osd.locker = user
@@ -750,7 +755,7 @@ class OsdController extends BaseController {
      * @param id the id of the object that should be deleted.
      * @return XML-Response:
      *         <pre>
-     * {@code <success>   success.delete.object</success> }
+     * {@code <success>    success.delete.object</success> }
      *         </pre> if successful, an XML-error-node if unsuccessful.
      */
     def deleteXml(Long id) {
@@ -788,7 +793,7 @@ class OsdController extends BaseController {
      * @param id = object id
      * @return a HTTP response containing
      *         <pre>
-     * {@code <success>   success.delete.all_versions</success>}
+     * {@code <success>    success.delete.all_versions</success>}
      *         </pre> if successful, an XML-error-node if unsuccessful.
      */
     def deleteAllVersions(Long id) {
@@ -856,7 +861,7 @@ class OsdController extends BaseController {
      * BROWSE_OBJECT
      *
      * @param ids xml document containing a list of object ids accessible via XPath //ids/id,
-     *        for example: <pre>{@code <ids>   <id>2170</id><id>22182</id></ids}</pre>
+     *        for example: <pre>{@code <ids>    <id>2170</id><id>22182</id></ids}</pre>
      * @return XML-Response:
      *         List of XML serialized objects.
      */
@@ -955,7 +960,7 @@ class OsdController extends BaseController {
      *      <li>summary</li>
      *           </ul>
      * @deprecated (usegetObjectByIdinsteadtoretrievetheOSD.)
-     * @return XML-Response: <pre>{@code <sysMetaValue>   $value</sysMetaValue>}</pre>
+     * @return XML-Response: <pre>{@code <sysMetaValue>    $value</sysMetaValue>}</pre>
      *         If a null value is retrieved, an xml-error-doc is returned with the message:
      *         "error.result_value_is_null"
      */
@@ -1139,7 +1144,7 @@ class OsdController extends BaseController {
 
     /**
      * The saveMeta command sets the metadata to the specified value.
-     * If no metadata parameter is specified, the metadata is set to {@code <meta /   >}.
+     * If no metadata parameter is specified, the metadata is set to {@code <meta /    >}.
      * <h2>Needed permissions</h2>
      * WRITE_OBJECT_CUSTOM_METADATA
      *
@@ -1155,7 +1160,7 @@ class OsdController extends BaseController {
      *}
      *         if successful, xml-error-doc if unsuccessful.
      *         The response document may include additional elements as children of the root element
-     *         (for example, {@code <warnings /   >}
+     *         (for example, {@code <warnings /    >}
      */
     def saveMetadataXml(Long id, String metadata, String write_policy) {
         try {
@@ -1461,8 +1466,8 @@ class OsdController extends BaseController {
                         + " or for target: " + requiredTargetPermissions.join(","))
                 return;
             }
-            if(userService.user.id == target.locker?.id){
-                renderErrorXml("error.must.own.lock.on.target","error.must.own.lock.on.target", SC_UNAUTHORIZED)
+            if (userService.user.id != target.locker?.id) {
+                renderErrorXml("error.must.own.lock.on.target", "error.must.own.lock.on.target", SC_UNAUTHORIZED)
                 return;
             }
             if (source.id.equals(target.id)) {
@@ -1492,8 +1497,8 @@ class OsdController extends BaseController {
                 }
             }
         }
-        catch (Exception e){
-            log.info("copyToExisting failed: ", e)
+        catch (Exception e) {
+            log.error("copyToExisting failed: ", e)
             renderException(e.message)
         }
     }
