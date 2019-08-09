@@ -259,7 +259,7 @@ class OsdService {
         def validator = new Validator(user)
         try {
             log.debug("validate browse permission on: ${osd.name} (acl: ${osd.acl.name})")
-            validator.validatePermission(osd.acl, PermissionName.BROWSE_OBJECT)
+            validator.validatePermissionByName(osd.acl, PermissionName.BROWSE_OBJECT)
         }
         catch (Exception e) {
             log.debug("user does not have browse permission.", e)

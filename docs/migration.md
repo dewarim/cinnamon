@@ -115,3 +115,9 @@ Note: Code for LDAP authentication requires licensing for commercial use beyond 
 * Remove description column from users table:
 
         alter table user drop column description      
+
+## changes to 3.8.9.16
+
+* Add a new permission:
+
+        insert into permissions(id,name, obj_version) values (1,'_change_lifecycle_state',0);        

@@ -211,7 +211,7 @@ class LifeCycleStateController extends BaseController{
             def user = userService.user
             ObjectSystemData osd = ObjectSystemData.get(id)
             if(osd){
-                new Validator(user).validatePermission(osd.acl, PermissionName.READ_OBJECT_SYS_METADATA)
+                new Validator(user).validatePermissionByName(osd.acl, PermissionName.READ_OBJECT_SYS_METADATA)
                 LifeCycleState state = osd.state
                 if(state == null){
                     throw new CinnamonException("error.no_lifecycle_set")
@@ -275,7 +275,7 @@ class LifeCycleStateController extends BaseController{
             ObjectSystemData osd = ObjectSystemData.get(id)
             def user = userService.user
             if(osd){
-                new Validator(user).validateSetSysMeta(osd);
+                new Validator(user).validatePermissionByName(osd.getAcl(), PermissionName.CHANGE_LIFECYCLE_STATE);
 
                 LifeCycleState lifeCycleState;
                 if(state_name){
@@ -323,7 +323,7 @@ class LifeCycleStateController extends BaseController{
         try {
             ObjectSystemData osd = ObjectSystemData.get(id)
             if(osd){
-                new Validator(userService.user).validateSetSysMeta(osd);
+                new Validator(userService.user).validatePermissionByName(osd.getAcl(), PermissionName.CHANGE_LIFECYCLE_STATE);
                 osd.state.exitState(osd, null);
                 osd.state = null
             }
@@ -367,7 +367,7 @@ class LifeCycleStateController extends BaseController{
             if(osd == null){
                 throw new CinnamonException("error.object.not.found");
             }
-            new Validator(userService.user).validateSetSysMeta(osd);
+            new Validator(userService.user).validatePermissionByName(osd.getAcl(), PermissionName.CHANGE_LIFECYCLE_STATE);
             LifeCycleState lifeCycleState;
             if(lifecycle_state_id){
                 lifeCycleState = LifeCycleState.get(lifecycle_state_id)

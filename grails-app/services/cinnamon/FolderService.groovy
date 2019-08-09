@@ -353,7 +353,7 @@ class FolderService {
         def validator = new Validator(user)
         try {
             log.debug("validate browse permission on: ${folder.name} (acl: ${folder.acl.name})")
-            validator.validatePermission(folder.acl, PermissionName.BROWSE_FOLDER)
+            validator.validatePermissionByName(folder.acl, PermissionName.BROWSE_FOLDER)
         }
         catch (Exception e) {
             log.debug("user does not have browse permission.", e)
