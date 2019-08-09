@@ -834,4 +834,22 @@ class FolderController extends BaseController {
         }
 
     }
+
+    @Secured(["hasRole('_superusers')"])
+    def renderIndexedXml(Long id, Boolean includeSummary){
+        try {
+            Folder folder = Folder.get(id)
+            if (folder) {
+                def sysMeta = folder.getSystemMetadata(true, includeSummary, true)
+                render(contentType: 'application/xml', text: sysMeta)
+            }
+            else{
+                renderErrorXml("folder not found", "folder.not.found", 404);
+            }
+        }
+        catch (Exception e) {
+            log.debug("failed to render indexed xml",e)
+            renderExceptionXml(e.message)
+        }
+    }
 }

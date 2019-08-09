@@ -2,12 +2,14 @@ package cinnamon.references
 
 import cinnamon.Acl
 import cinnamon.Folder
+import cinnamon.LocalRepository
 import cinnamon.ObjectSystemData
 import cinnamon.UserAccount
 import cinnamon.Validator
 import cinnamon.exceptions.CinnamonConfigurationException
 import cinnamon.exceptions.CinnamonException
 import cinnamon.global.PermissionName
+import cinnamon.index.IndexAction
 import cinnamon.utils.ParamParser
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -27,6 +29,7 @@ class LinkService {
         if (link == null) {
             link = new Link(LinkType.OBJECT, resolver, owner, parent, null, osd, acl);
             link.save()
+            LocalRepository.addIndexable(osd, IndexAction.UPDATE)
         }
         return link
     }
@@ -36,6 +39,7 @@ class LinkService {
         if (link == null) {
             link = new Link(LinkType.FOLDER, resolver, owner, parent, folder, null, acl);
             link.save()
+            LocalRepository.addIndexable(folder, IndexAction.UPDATE)
         }
         return link
     }
@@ -62,11 +66,8 @@ class LinkService {
             if (newOsd == null || newOsd.root != link.osd.root) {
                 throw new CinnamonException("error.param.object_id");
             }
-            if (link.resolver == LinkResolver.LATEST_HEAD) {
-                // we cannot set an object on a link that is dynamically resolved
-                // to return the latestHead object.
-                throw new CinnamonException("error.cannot.set.latest.head");
-            }
+            LocalRepository.addIndexable(link.osd, IndexAction.UPDATE)
+            LocalRepository.addIndexable(newOsd, IndexAction.UPDATE)
             link.osd = newOsd;
         }
         return link;
@@ -107,30 +108,13 @@ class LinkService {
         def link
         switch (linkType) {
             case LinkType.OBJECT:
-                links = updateObjectLinks(Link.findAllByParentAndOsdIsNotNull(parent));
+                links = Link.findAllByParentAndOsdIsNotNull(parent);
                 break;
             case LinkType.FOLDER:
                 links = Link.findAllByParentAndFolderIsNotNull(parent)
                 break;
             default:
                 throw new CinnamonConfigurationException("You tried to query for links of an unknown LinkType.");
-        }
-        return links;
-    }
-
-    Collection<Link> updateObjectLinks(Collection<Link> links) {
-        for (Link link : links) {
-            if (link.resolver == LinkResolver.LATEST_HEAD) {
-                ObjectSystemData osd = link.osd;
-                if (!osd.latestHead) {
-                    def latest = ObjectSystemData.findByRootAndLatestHead(osd.root, true)
-                    if (latest == null) {
-                        log.error("Could not find exactly one latestHead object for #" + osd.id);
-                    }
-                    // update osd to latestHead:
-                    link.osd = latest;
-                }
-            }
         }
         return links;
     }

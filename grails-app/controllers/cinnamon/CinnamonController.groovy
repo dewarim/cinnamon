@@ -305,6 +305,8 @@ class CinnamonController extends BaseController {
                     forward(controller: 'folder', action: 'reindex')
                 }
                     break
+                case 'renderindexedosd':forward(controller: 'osd', action: 'renderIndexedXml');break
+                case 'renderindexedfolder':forward(controller: 'folder', action: 'renderIndexedXml');break
                 case 'searchobjects': forward(controller: 'search', action: 'searchObjectsXml'); break
                 case 'searchobjectids': forward(controller: 'search', action: 'searchObjectsXmlIdOnly'); break
                 case 'searchfolders': forward(controller: 'search', action: 'searchFolders'); break

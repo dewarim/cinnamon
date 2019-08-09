@@ -1359,6 +1359,23 @@ class OsdController extends BaseController {
 
     }
 
+    @Secured(["hasRole('_superusers')"])
+    def renderIndexedXml(Long id, Boolean includeSummary){
+        try {
+            ObjectSystemData osd = ObjectSystemData.get(id)
+            if (osd) {
+                def sysMeta = osd.getSystemMetadata(true, includeSummary, true)
+                render(contentType: 'application/xml', text: sysMeta)
+            }
+            else{
+                renderErrorXml("object not found", "object.not.found", 404);
+            }
+        }
+        catch (Exception e) {
+            renderExceptionXml(e.message)
+        }
+    }
+
     @Secured(['IS_AUTHENTICATED_ANONYMOUSLY'])
     def checkObjectsExist(String ids) {
         log.debug("Parameters: " + params)

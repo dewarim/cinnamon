@@ -195,7 +195,8 @@ class LuceneJob {
 
     void doIndex(Indexable indexable, ContentContainer content, Repository repository, Document doc) {
         ContentContainer metadata = new ContentContainer(indexable, indexable.metadata.bytes);
-        String sysMeta = indexable.getSystemMetadata(true, true)
+        String sysMeta = indexable.getSystemMetadata(true, true, true )
+//        log.debug("structure:\n"+sysMeta)
         ContentContainer systemMetadata = new ContentContainer(indexable, sysMeta.bytes);
         for (IndexItem item : IndexItem.list()) {
             /*

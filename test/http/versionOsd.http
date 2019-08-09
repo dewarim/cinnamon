@@ -1,0 +1,7 @@
+POST http://localhost:8080/cinnamon/osd/newVersionXml
+ticket: b6437050-cd5c-49bd-8bb6-666b48aab095@demo
+Content-Type: application/x-www-form-urlencoded
+
+preid=1706
+
+###

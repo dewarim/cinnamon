@@ -1,6 +1,7 @@
 package cinnamon
 
 import cinnamon.global.PermissionName
+import cinnamon.index.IndexAction
 import cinnamon.references.Link
 import cinnamon.references.LinkResolver
 import cinnamon.references.LinkService
@@ -22,7 +23,6 @@ class LinkController extends BaseController {
      * <li>acl_id= the acl of the link</li>
      * <li>owner_id= the owner of the link</li>
      * <li>type= one of FOLDER or OBJECT, to determine the type of linked object.</li>
-     * <li>[resolver]= how the link should be resolved: defaults to FIXED, may be LATEST_HEAD for type=OBJECT</li>
      * <li>parent_id= the id of the folder with which to associate the new link object</li>
      * <li>ticket=session ticket</li>
      * </ul>
@@ -81,12 +81,7 @@ class LinkController extends BaseController {
             Folder folder
             String typeName = params.type
             Validator validator = new Validator(userService.user)
-            LinkResolver resolver
-            if (params.containsKey("resolver")) {
-                resolver = LinkResolver.valueOf(params.resolver)
-            } else {
-                resolver = LinkResolver.FIXED
-            }
+            resolver = LinkResolver.FIXED
 
             Link link;
             LinkType linkType = LinkType.valueOf(typeName);
@@ -310,10 +305,11 @@ class LinkController extends BaseController {
             Validator validator = new Validator(userService.user)
             if (link.getType().equals(LinkType.FOLDER)) {
                 validator.validatePermission(link.getAcl(), PermissionName.DELETE_FOLDER);
+                LocalRepository.addIndexable(link.osd, IndexAction.UPDATE)
             } else {
                 validator.validatePermission(link.getAcl(), PermissionName.DELETE_OBJECT);
+                LocalRepository.addIndexable(link.osd, IndexAction.UPDATE)
             }
-
             link.delete()
             def doc = DocumentHelper.createDocument()
             doc.addElement("success").addText("success.delete.link");
