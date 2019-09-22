@@ -243,7 +243,11 @@ class UserAccountController extends BaseController {
         try {
             user = new UserAccount(params.name, params.pwd, params.fullname, params.description ?: '')
             user.email = params.email
-            user.language = UiLanguage.findByIsoCode('und')
+            def language = UiLanguage.get(params."language.id")
+            if(language == null){
+                language = UiLanguage.findByIsoCode('und')
+            }
+            user.language = language
             user.sudoable = params.containsKey('sudoable')
             user.sudoer = params.containsKey('sudoer')
             user.changeTracking = params.containsKey('changeTracking')
