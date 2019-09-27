@@ -143,6 +143,18 @@ class LuceneService {
                 browsableIds.add(id);
             }
         }
+        if(domain == SearchableDomain.OSD) {
+            log.debug("check if OSDs found by search really exist:")
+            Set<Long> existingIds = new HashSet<>();
+            while (!browsableIds.isEmpty()) {
+                def first1000 = browsableIds.take(1000)
+                def existingOsds = ObjectSystemData.findAll("from ObjectSystemData o where o.id in (:ids)", [ids: first1000.asList()])
+                existingOsds.forEach{osd -> existingIds.add(osd.id)}
+                browsableIds = browsableIds.drop(1000)
+            }
+            log.debug("Existence check result: ${existingIds.size()} / ${browsableIds.size()} exist.")
+            return existingIds;
+        }
         return browsableIds;
     }
 

@@ -36,28 +36,6 @@ class LuceneResult {
     Map<String, Set<Long>> itemIdMap = new HashMap<String, Set<Long>>()
     Map<Long, Map<String, String>> idFieldMap = new HashMap<>()
 
-    /**
-     * A raw list of search result items from all domain classes found.
-     * @param itemService the itemService which is called to filter on user/item access permission
-     * @return the (filtered) list of items found by Lucene.
-     */
-    List filterResults(ItemService itemService) {
-        def itemList = []
-        itemIdMap.each { domainClass, idSet ->
-            if (idSet?.size() > 0) {
-                idSet.each { id ->
-                    def item = itemService.fetchItem(domainClass, id)
-                    if (item) {
-                        itemList.add(item)
-                    }
-                    else {
-                        log.debug("filtered item: $domainClass @ $id")
-                    }
-                }
-            }
-        }
-        return itemList
-    }
 
     /**
      * Filter the search results (which may already be filtered by the ResultCollector) by optional SearchableDomain

@@ -248,7 +248,7 @@ class LifeCycleStateController extends BaseController{
      * <h2>Needed permissions</h2>
      * WRITE_OBJECT_SYS_METADATA
      * @param id the id of the OSD whose state should be changed
-     * @param lifecycle_state_id the id of the target lifecycle state<
+     * @param lifecycle_state_id the id of the target lifecycle state
      * @param state_name = the optional name of a target lifecycle state of the current lifecycle 
      * (may be used instead of the lifecycle_state_id)
      * @return a CinnamonException on failure or 

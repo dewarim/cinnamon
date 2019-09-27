@@ -17,7 +17,6 @@
  */
 package cinnamon
 
-import cinnamon.global.PermissionName
 import cinnamon.index.SearchableDomain
 import cinnamon.interfaces.Accessible
 import cinnamon.interfaces.Ownable
@@ -34,63 +33,11 @@ class ItemService {
 
     def grailsApplication
 
-    Integer countItems(className) {
-        def items = grailsApplication.getDomainClass(className).clazz.findAll("""from $className a
-         """.replaceAll('\n', ' ')
-                , [:])
-        return items.size()
-    }
-
-    List fetchItems(String className, Map params) {
-        def items
-        if (params.sort) {
-            log.debug("sorting by $params.sort")
-            def clacks = grailsApplication.getDomainClass(className).clazz
-            def sortProperty = ''
-            if (grailsApplication.getDomainClass(className).hasProperty(params.sort)) {
-                if (params.order?.equals('desc')) {
-                    sortProperty = "order by a.${params.sort} desc"
-                }
-                else {
-                    sortProperty = "order by a.${params.sort} asc"
-                }
-            }
-            def query = """from $className a
-          $sortProperty
-         """.replaceAll('\n', ' ')
-
-            items = clacks.findAll(query, [:], [offset: params.offset, max: params.max])
-        }
-        else {
-            items = grailsApplication.getDomainClass(className).clazz.findAll("""from $className a
-         """.replaceAll('\n', ' ')
-                    , [:], params)
-        }
-        return items
-    }
-
-    def fetchItem(String className, id) {
-        if (id == null) {
-            return null
-        }
-        def item = grailsApplication.getDomainClass(className).clazz.find("""from $className a where a.id=:id
-         """.replaceAll('\n', ' ')
-                , [id: Long.valueOf(id)])
-        return item
-    }
-
-    def fetchItem(SearchableDomain domain, id) {
-        return fetchItem(domain.name, id)
-    }
-
     def fetchItemsFromIdList(String className, Collection<Long> ids) {
         if (ids == null || ids.isEmpty()) {
             return null
         }
-        def item = grailsApplication.getDomainClass(className).clazz.findAll("""from $className a where a.id in (:ids)
-         """.replaceAll('\n', ' ')
-                , [ids: ids.asList()])
-        return item
+        return grailsApplication.getDomainClass(className).clazz.findAll("from $className a where a.id in (:ids)", [ids: ids.asList()])
     }
 
     Map filterItemIdMap(itemIdMap, SearchableDomain domain) {
@@ -113,8 +60,7 @@ class ItemService {
                     itemMap.put(domainClass, itemSet)
                 }
                 itemSet.addAll(itemList)
-            }
-            else {
+            } else {
                 log.debug("no idSet for $domainClass")
             }
         }
@@ -148,14 +94,13 @@ class ItemService {
                     }
                 }
                 itemSet.addAll(itemList)
-            }
-            else {
+            } else {
                 log.debug("no idSet for $domainClass")
             }
         }
         return itemSet
     }
-    
+
     /*
      * PostgreSQL driver will only accept 2^15 elements in a parameter list.
      * So we limit results to this amount - future versions may use batch queries to
