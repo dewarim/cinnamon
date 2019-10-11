@@ -111,7 +111,7 @@ class ItemService {
         if (idSet.size() > 32767) {
             def reducedSet = new HashSet()
             reducedSet.addAll(idSet.asList().subList(0, 32767))
-            idSet = reducedSet
+            return reducedSet
         }
         return idSet
     }
