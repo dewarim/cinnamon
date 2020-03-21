@@ -70,7 +70,7 @@ grails.project.dependency.resolution = {
         compile(':spring-security-core:2.0.0')
         compile ":rest-client-builder:2.1.1"
         compile(":twitter-bootstrap:3.2.0.2") { excludes 'svn' }
-        compile ":cinnamon-db:3.8.16"
+        compile ":cinnamon-db:3.8.17"
         runtime ':tika-parser:1.13.1'
         compile ":remote-pagination:0.4.8"
         compile ":geb:${gebPluginVersion}"
@@ -82,8 +82,7 @@ grails.project.dependency.resolution = {
 
 grails.project.fork = [
         test   : [maxMemory: 4096, minMemory: 2048, debug: false, maxPerm: 256, daemon: true], // configure settings for 
-        // the 
-        // test-app JVM
+        // the test-app JVM
         run    : [maxMemory: 4096, minMemory: 2048, debug: false, maxPerm: 256], // configure settings for the run-app JVM
         war    : [maxMemory: 4096, minMemory: 2048, debug: false, maxPerm: 256], // configure settings for the run-war JVM
         console: [maxMemory: 768, minMemory: 2048, debug: false, maxPerm: 256]// configure settings for the Console UI

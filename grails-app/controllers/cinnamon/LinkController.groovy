@@ -3,8 +3,6 @@ package cinnamon
 import cinnamon.global.PermissionName
 import cinnamon.index.IndexAction
 import cinnamon.references.Link
-import cinnamon.references.LinkResolver
-import cinnamon.references.LinkService
 import cinnamon.references.LinkType
 import cinnamon.utils.ParamParser
 import grails.plugin.springsecurity.annotation.Secured
@@ -45,7 +43,6 @@ class LinkController extends BaseController {
      *                      <parentId></parentId>
      *                      <aclId></aclId>
      *                      <ownerId></ownerId>
-     *                      <resolver>FIXED</resolver>
      *                      <type>OBJECT</type>
      *                  </reference>
      *              </object>
@@ -59,7 +56,6 @@ class LinkController extends BaseController {
      *                      <parentId></parentId>
      *                      <aclId></aclId>
      *                      <ownerId></ownerId>
-     *                      <resolver>FIXED</resolver>
      *                      <type>FOLDER</type>
      *                  </reference>
      *              </folder>
@@ -81,7 +77,6 @@ class LinkController extends BaseController {
             Folder folder
             String typeName = params.type
             Validator validator = new Validator(userService.user)
-            resolver = LinkResolver.FIXED
 
             Link link;
             LinkType linkType = LinkType.valueOf(typeName);
@@ -91,14 +86,14 @@ class LinkController extends BaseController {
                     throw new RuntimeException("error.param.id");
                 }
                 validator.validatePermissionByName(folder.getAcl(), PermissionName.BROWSE_FOLDER);
-                link = linkService.createLink(folder, parent, acl, owner, resolver);
+                link = linkService.createLink(folder, parent, acl, owner);
             } else {
                 osd = ObjectSystemData.get(params.id);
                 if (osd == null) {
                     throw new RuntimeException("error.param.id");
                 }
                 validator.validatePermissionByName(osd.getAcl(), PermissionName.BROWSE_OBJECT);
-                link = linkService.createLink(osd, parent, acl, owner, resolver);
+                link = linkService.createLink(osd, parent, acl, owner);
             }
 
             def doc = DocumentHelper.createDocument()
@@ -121,7 +116,6 @@ class LinkController extends BaseController {
      * <li>link_id= if of the link object </li>
      * <li>[acl_id]= new acl id for the link</li>
      * <li>[owner_id]= new owner for the link</li>
-     * <li>[resolver]= how the link should be resolved: defaults to FIXED, may be LATEST_HEAD for type=OBJECT</li>
      * <li>[parent_id]= the id of the folder with which to associate the new link object</li>
      * <li>[object_id]= the id of another version of the linked object (gives error if object.root is different).</li>
      * <li>ticket=session ticket</li>
@@ -145,7 +139,6 @@ class LinkController extends BaseController {
      *                      <parentId></parentId>
      *                      <aclId></aclId>
      *                      <ownerId></ownerId>
-     *                      <resolver>FIXED</resolver>
      *                      <type>FOLDER</type>
      *                  </reference>
      *              </object>
@@ -160,7 +153,6 @@ class LinkController extends BaseController {
      *                      <parentId></parentId>
      *                      <aclId></aclId>
      *                      <ownerId></ownerId>
-     *                      <resolver>FIXED</resolver>
      *                      <type>FOLDER</type>
      *                  </reference>
      *              </folder>
@@ -222,7 +214,6 @@ class LinkController extends BaseController {
      *                      <parentId></parentId>
      *                      <aclId></aclId>
      *                      <ownerId></ownerId>
-     *                      <resolver>FIXED</resolver>
      *                      <type>FOLDER</type>
      *                  </reference>
      *              </object>
@@ -237,7 +228,6 @@ class LinkController extends BaseController {
      *                      <parentId></parentId>
      *                      <aclId></aclId>
      *                      <ownerId></ownerId>
-     *                      <resolver>FIXED</resolver>
      *                      <type>FOLDER</type>
      *                  </reference>
      *              </folder>

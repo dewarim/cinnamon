@@ -11,23 +11,23 @@ import org.dom4j.DocumentHelper
 import org.dom4j.Element
 
 @Secured(["hasRole('_superusers')"])
-class LifeCycleStateController extends BaseController{
+class LifeCycleStateController extends BaseController {
 
-    def create () {
+    def create() {
         LifeCycleState lcs = new LifeCycleState()
         def copyStates = lifeCycleStateService.fetchCopyStates(null)
-        render(template: 'create', model: [lcs: lcs, copyStates: copyStates,
-                 stateClasses:Holders.config.lifeCycleStateClasses,
+        render(template: 'create', model: [lcs         : lcs, copyStates: copyStates,
+                                           stateClasses: Holders.config.lifeCycleStateClasses,
         ])
     }
 
-    def index () {
+    def index() {
         setListParams()
         params.sort = params.sort ?: 'id'
         [lcsList: LifeCycleState.list(params)]
     }
 
-    def save () {
+    def save() {
         LifeCycleState lcs = new LifeCycleState()
         try {
             updateFields(lcs)
@@ -39,9 +39,9 @@ class LifeCycleStateController extends BaseController{
         catch (Exception e) {
             log.debug("failed to save lcs: ", e)
             render(status: 503, template: 'create',
-                    model: [lcs: lcs,
-                            copyStates: lifeCycleStateService.fetchCopyStates(lcs),
-                            stateClasses:Holders.config.lifeCycleStateClasses,
+                    model: [lcs         : lcs,
+                            copyStates  : lifeCycleStateService.fetchCopyStates(lcs),
+                            stateClasses: Holders.config.lifeCycleStateClasses,
                             errorMessage: e.getLocalizedMessage().encodeAsHTML()])
             return
         }
@@ -49,23 +49,23 @@ class LifeCycleStateController extends BaseController{
         render(template: 'list_table', model: [lcsList: LifeCycleState.list(params)])
     }
 
-    def list () {
+    def list() {
         redirect(action: 'index')
     }
 
-    def edit () {
+    def edit() {
         def lcs = LifeCycleState.get(Long.parseLong(params.id))
-        render(template: 'edit', model: [lcs: lcs,
-                stateClasses:Holders.config.lifeCycleStateClasses,
-                copyStates: lifeCycleStateService.fetchCopyStates(lcs)
+        render(template: 'edit', model: [lcs         : lcs,
+                                         stateClasses: Holders.config.lifeCycleStateClasses,
+                                         copyStates  : lifeCycleStateService.fetchCopyStates(lcs)
         ])
     }
 
-    def cancelEdit () {
+    def cancelEdit() {
         render(template: 'row', model: [lcs: LifeCycleState.get(Long.parseLong(params.id))])
     }
 
-    def delete () {
+    def delete() {
         LifeCycleState lcs = LifeCycleState.get(params.id)
         try {
             if (ObjectSystemData.findByState(lcs)) {
@@ -73,8 +73,8 @@ class LifeCycleStateController extends BaseController{
             }
             def references = LifeCycleState.findAll(
                     "from LifeCycleState lcs where (lcs != :LCS1) and (lcs.lifeCycleStateForCopy = :LCS2)",
-                    [LCS1:lcs, LCS2:lcs])
-            if(references.size() > 0){
+                    [LCS1: lcs, LCS2: lcs])
+            if (references.size() > 0) {
                 throw new RuntimeException('error.object.in.use')
             }
             LifeCycle lifeCycle = lcs.lifeCycle
@@ -103,8 +103,8 @@ class LifeCycleStateController extends BaseController{
         try {
             // class is instantiated not for use but to check if it is can be instantiated at all.
             //noinspection GroovyUnusedAssignment
-            IState stateClass = (IState) Class.forName(params.stateClass, true, Thread.currentThread().contextClassLoader ).newInstance()
-            lcs.stateClass = (Class<? extends IState>) Class.forName(params.stateClass, true, Thread.currentThread().contextClassLoader )
+            IState stateClass = (IState) Class.forName(params.stateClass, true, Thread.currentThread().contextClassLoader).newInstance()
+            lcs.stateClass = (Class<? extends IState>) Class.forName(params.stateClass, true, Thread.currentThread().contextClassLoader)
         }
         catch (ClassCastException e) {
             throw new RuntimeException("error.not.iState.class")
@@ -117,7 +117,7 @@ class LifeCycleStateController extends BaseController{
         }
     }
 
-    def update () {
+    def update() {
         LifeCycleState lcs = LifeCycleState.get(params.id)
         try {
             updateFields(lcs)
@@ -126,19 +126,19 @@ class LifeCycleStateController extends BaseController{
         catch (Exception e) {
             log.debug("failed to save lcs: " + e.getLocalizedMessage())
             render(template: 'edit',
-                    model: [lcs: lcs,
-                            copyStates: lifeCycleStateService.fetchCopyStates(lcs),
+                    model: [lcs         : lcs,
+                            copyStates  : lifeCycleStateService.fetchCopyStates(lcs),
                             errorMessage: e.getLocalizedMessage()])
             return
         }
         render(template: 'row', model: [lcs: lcs])
     }
 
-    def updateList () {
+    def updateList() {
         setListParams()
-        render(template: 'list_table', model:[lcsList:LifeCycleState.list(params)])
+        render(template: 'list_table', model: [lcsList: LifeCycleState.list(params)])
     }
-    
+
     //----------------------- XML API --------------------------
 
     /**
@@ -149,7 +149,7 @@ class LifeCycleStateController extends BaseController{
      * contains the requested lifecycle state object (or an error message if it could not be found).<br>
      *     Example:
      * <pre>
-     *  {@code
+     * {@code
      *          <states>
      *            <lifecycleState>
      *              <id>543</id>
@@ -161,26 +161,24 @@ class LifeCycleStateController extends BaseController{
      *              <lifeCycleStateForCopy>7</lifeCycleStateForCopy> (may be empty)
      *            </lifecycleState>
      *          </states>
-     *  }
+     *}
      * </pre>
      */
     def getLifeCycleState(Long id) {
         try {
             LifeCycleState lifeCycleState;
-            if(id){
+            if (id) {
                 lifeCycleState = LifeCycleState.get(id)
-            }
-            else{
+            } else {
                 throw new CinnamonException("error.param.lcs.id");
             }
 
-            if(lifeCycleState){
+            if (lifeCycleState) {
                 def doc = DocumentHelper.createDocument()
                 Element root = doc.addElement('states')
                 lifeCycleState.toXmlElement(root)
                 render(contentType: 'application/xml', text: doc.asXML())
-            }
-            else{
+            } else {
                 throw new CinnamonException("error.object.not.found");
             }
         }
@@ -199,7 +197,7 @@ class LifeCycleStateController extends BaseController{
      * @return XML response containing the allowed exit states.
      */
     @Secured(["isAuthenticated()"])
-    def getNextStates(Long id) {        
+    def getNextStates(Long id) {
         try {
             /*
              * get OSD
@@ -210,10 +208,10 @@ class LifeCycleStateController extends BaseController{
              */
             def user = userService.user
             ObjectSystemData osd = ObjectSystemData.get(id)
-            if(osd){
+            if (osd) {
                 new Validator(user).validatePermissionByName(osd.acl, PermissionName.READ_OBJECT_SYS_METADATA)
                 LifeCycleState state = osd.state
-                if(state == null){
+                if (state == null) {
                     throw new CinnamonException("error.no_lifecycle_set")
                 }
 
@@ -223,17 +221,16 @@ class LifeCycleStateController extends BaseController{
 
                 def doc = DocumentHelper.createDocument()
                 Element root = doc.addElement('lifecycle-states')
-                states.each{LifeCycleState lcs ->
-                    if(lcs.openForEntry(osd)){
+                states.each { LifeCycleState lcs ->
+                    if (lcs.openForEntry(osd)) {
                         lcs.toXmlElement(root);
                     }
-                }                        
+                }
                 render(contentType: 'application/xml', text: doc.asXML())
-            }
-            else{
+            } else {
                 throw new CinnamonException("error.object.not.found");
-            }           
-            
+            }
+
         }
         catch (Exception e) {
             renderExceptionXml('Failed to ', e)
@@ -254,9 +251,9 @@ class LifeCycleStateController extends BaseController{
      * @return a CinnamonException on failure or 
      * the following XML content:
      *  <pre>
-     *  {@code
+     * {@code
      *   <success>success.changed_state</success>
-     *  }
+     *}
      *  </pre>
      */
     @Secured(["isAuthenticated()"])
@@ -274,18 +271,20 @@ class LifeCycleStateController extends BaseController{
         try {
             ObjectSystemData osd = ObjectSystemData.get(id)
             def user = userService.user
-            if(osd){
-                new Validator(user).validatePermissionByName(osd.getAcl(), PermissionName.CHANGE_LIFECYCLE_STATE);
+            if (osd) {
+                new Validator(user).validateAgainstAcl(osd, Permission.findByName(PermissionName.CHANGE_LIFECYCLE_STATE));
 
                 LifeCycleState lifeCycleState;
-                if(state_name){
+                if (state_name) {
                     lifeCycleState = LifeCycleState.findByNameAndLifeCycle(state_name, osd.state.lifeCycle);
-                    if(! lifeCycleState){
+                    if (!lifeCycleState) {
                         throw new CinnamonException("error.param.state_name")
                     }
-                }
-                else{
+                } else {
                     lifeCycleState = LifeCycleState.get(lifecycle_state_id)
+                    if(!lifeCycleState){
+                        throw new CinnamonException("error.param.lifecycle_state_id.invalid")
+                    }
                 }
 
                 osd.state.exitState(osd, lifeCycleState)
@@ -295,8 +294,7 @@ class LifeCycleStateController extends BaseController{
                     success('success.change_lifecycle')
                 }
 
-            }
-            else{
+            } else {
                 throw new CinnamonException("error.object.not.found");
             }
         }
@@ -316,18 +314,17 @@ class LifeCycleStateController extends BaseController{
      * <pre>
      *  <success>success.detach_lifecycle</success>
      * </pre>
-     * }
+     *}
      */
     @Secured(["isAuthenticated()"])
     def detachLifeCycle(Long id) {
         try {
             ObjectSystemData osd = ObjectSystemData.get(id)
-            if(osd){
+            if (osd) {
                 new Validator(userService.user).validatePermissionByName(osd.getAcl(), PermissionName.CHANGE_LIFECYCLE_STATE);
                 osd.state.exitState(osd, null);
                 osd.state = null
-            }
-            else{
+            } else {
                 throw new CinnamonException("error.object.not.found");
             }
             render(contentType: 'application/xml') {
@@ -354,9 +351,9 @@ class LifeCycleStateController extends BaseController{
      * <pre>
      * {@code
      *  <success>success.attach_lifecycle</success>
-     * }
+     *}
      * </pre>
- 
+
      * @param cmd a Map of HTTP request parameters
      */
     @Secured(["isAuthenticated()"])
@@ -364,18 +361,16 @@ class LifeCycleStateController extends BaseController{
         try {
             LifeCycle lifeCycle = LifeCycle.get(lifecycle_id)
             ObjectSystemData osd = ObjectSystemData.get(id)
-            if(osd == null){
+            if (osd == null) {
                 throw new CinnamonException("error.object.not.found");
             }
             new Validator(userService.user).validatePermissionByName(osd.getAcl(), PermissionName.CHANGE_LIFECYCLE_STATE);
             LifeCycleState lifeCycleState;
-            if(lifecycle_state_id){
+            if (lifecycle_state_id) {
                 lifeCycleState = LifeCycleState.get(lifecycle_state_id)
-            }
-            else if(lifeCycle.defaultState){
+            } else if (lifeCycle.defaultState) {
                 lifeCycleState = lifeCycle.defaultState;
-            }
-            else{
+            } else {
                 throw new CinnamonException("error.undefined.lifecycle_state");
             }
             lifeCycleState.enterState(osd, lifeCycleState);
@@ -385,6 +380,6 @@ class LifeCycleStateController extends BaseController{
         }
         catch (Exception e) {
             renderExceptionXml('Failed to ', e)
-        }       
+        }
     }
 }

@@ -24,20 +24,20 @@ class LinkService {
 
     private transient Logger log = LoggerFactory.getLogger(this.getClass());
 
-    Link createLink(ObjectSystemData osd, Folder parent, Acl acl, UserAccount owner, LinkResolver resolver) {
+    Link createLink(ObjectSystemData osd, Folder parent, Acl acl, UserAccount owner) {
         def link = Link.findByOsdAndParent(osd, parent)
         if (link == null) {
-            link = new Link(LinkType.OBJECT, resolver, owner, parent, null, osd, acl);
+            link = new Link(LinkType.OBJECT, owner, parent, null, osd, acl);
             link.save()
             LocalRepository.addIndexable(osd, IndexAction.UPDATE)
         }
         return link
     }
 
-    Link createLink(Folder folder, Folder parent, Acl acl, UserAccount owner, LinkResolver resolver) {
+    Link createLink(Folder folder, Folder parent, Acl acl, UserAccount owner) {
         def link = Link.findByFolderAndParent(folder, parent)
         if (link == null) {
-            link = new Link(LinkType.FOLDER, resolver, owner, parent, folder, null, acl);
+            link = new Link(LinkType.FOLDER, owner, parent, folder, null, acl);
             link.save()
             LocalRepository.addIndexable(folder, IndexAction.UPDATE)
         }
@@ -56,10 +56,6 @@ class LinkService {
         if (params.containsKey("owner_id")) {
             UserAccount owner = UserAccount.get(ParamParser.parseLong(params.get("owner_id"), "error.param.owner_id"));
             link.owner = owner;
-        }
-        if (params.containsKey("resolver")) {
-            LinkResolver resolver = LinkResolver.valueOf(params.get("resolver"));
-            link.resolver = resolver;
         }
         if (params.containsKey("object_id") && link.type == LinkType.OBJECT) {
             ObjectSystemData newOsd = ObjectSystemData.get(params.get("object_id"));
