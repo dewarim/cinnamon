@@ -57,6 +57,7 @@ public class MicroserviceChangeTrigger implements ITrigger {
             HttpResponse httpResponse = httpClient.execute(requestCopy.build())
             if (httpResponse.statusLine.statusCode != HttpStatus.SC_OK) {
                 poBox.endProcessing = true
+                poBox.response.status = httpResponse.statusLine.statusCode
             }
             addResponseHeader(httpResponse, poBox.response, url)
         }

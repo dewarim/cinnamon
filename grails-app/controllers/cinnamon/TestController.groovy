@@ -49,6 +49,31 @@ class TestController {
         render(text:"")
     }
 
+    // test trigger that denies versioning of objects with uneven id
+    /*
+     needs:
+     INSERT INTO public.change_triggers (id, active, obj_version, ranking, change_trigger_type_id, action,
+      pre_trigger, post_trigger, config, controller) VALUES (9, true, 1, 200, 2, 'newVersionXml', true, false,
+       '<config><remoteServer>http://localhost:8080/cinnamon/test/microserviceChangeTriggerFilterRequest</remoteServer></config>', 'osd');
+
+     call like:
+         curl -vv  --header "ticket:${TICKET}" -d "preid=59654&status=false" http://localhost:8080/cinnamon/cinnamon/legacy?command=version
+     */
+    def microserviceChangeTriggerFilterRequest(Boolean status) {
+        log.info("microservice received status: " + status)
+
+        if(status){
+            response.setStatus(200)
+            response.setHeader("microservice-pre-test", "OKAY")
+            render(text:"<cinnamon><result>OKAY</result></cinnamon>")
+        }
+        else{
+            response.setStatus(400)
+            response.setHeader("microservice-pre-test", "NOPE")
+            render(text:"<cinnamon><result>NOT OKAY</result></cinnamon>")
+        }
+    }
+
     def microserviceChangeTriggerPostRequestTest(String msg) {
         log.info("microserviceChangeTriggerPostRequestTest received: " + (msg?.encodeAsHTML()))
         log.debug("Params: " + params)
