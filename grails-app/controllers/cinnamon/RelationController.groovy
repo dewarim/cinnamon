@@ -146,25 +146,29 @@ class RelationController extends BaseController {
     @Secured(["isAuthenticated()"])
     def createXml(String name, Long leftid, Long rightid, String metadata) {
         try {
+            def user = userService.user
             ObjectSystemData left = ObjectSystemData.get(leftid)
             ObjectSystemData right = ObjectSystemData.get(rightid)
             RelationType type = RelationType.findByName(name)
             Relation relation = Relation.findByTypeAndLeftOSDAndRightOSD(type, left, right)
             if (!relation) {
                 relation = new Relation(type, left, right, metadata)
+                new Validator(user).validateAddRelation(relation)
                 relation.save()
                 // update because Indexers may index relations.
                 LocalRepository.addIndexable(left, IndexAction.UPDATE)
                 LocalRepository.addIndexable(right, IndexAction.UPDATE)
+                /*
+                 * Update relations, because it is possible that some
+                 * other process has changed the OSDs while the user was busy
+                 * selecting the new relation type or that the client
+                 * has used the wrong versions.
+                 *
+                 * Note: this is probably obsolete as we do not use LatestHeadResolver any longer.
+                 */
+                relationService.updateRelations(left);
+                relationService.updateRelations(right);
             }
-            /*
-             * Update relations, because it is possible that some
-             * other process has changed the OSDs while the user was busy
-             * selecting the new relation type or that the client
-             * has used the wrong versions.
-             */
-            relationService.updateRelations(left);
-            relationService.updateRelations(right);
             def doc = DocumentHelper.createDocument()
             def root = doc.addElement('relations')
             relation.toXmlElement(root, true)
@@ -193,6 +197,8 @@ class RelationController extends BaseController {
             if (! relation){
                 throw new CinnamonException('error.object.not.found')
             }
+            def user = userService.user
+            new Validator(user).validateDeleteRelation(relation)
             ObjectSystemData left = relation.leftOSD
             ObjectSystemData right = relation.rightOSD
             relation.delete()

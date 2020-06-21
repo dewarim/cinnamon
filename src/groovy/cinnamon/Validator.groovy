@@ -429,6 +429,25 @@ class Validator implements ResultValidator {
         return found;
     }
 
+    void validateAddRelation(Relation relation ){
+        def parentOsd = relation.leftOSD
+        def childOsd = relation.rightOSD
+
+        log.debug("verify ADD_CHILD_RELATION on "+parentOsd.acl)
+        validatePermissionByName(parentOsd.acl, PermissionName.ADD_CHILD_RELATION)
+        log.debug("verify ADD_PARENT_RELATION on "+childOsd.acl)
+        validatePermissionByName(childOsd.acl, PermissionName.ADD_PARENT_RELATION)
+    }
+    
+    void validateDeleteRelation(Relation relation ){
+        def parentOsd = relation.leftOSD
+        def childOsd = relation.rightOSD
+        log.debug("verify REMOVE_CHILD_RELATION on "+parentOsd.acl)
+        validatePermissionByName(parentOsd.acl, PermissionName.REMOVE_CHILD_RELATION)
+        log.debug("verify REMOVE_PARENT_RELATION on "+childOsd.acl)
+        validatePermissionByName(childOsd.acl, PermissionName.REMOVE_PARENT_RELATION)
+    }
+
     void validateUpdateFolder(Map cmd, Folder folder) {
         if (user.verifySuperuserStatus()) {
             return;    // superusers are not subject to permissions
