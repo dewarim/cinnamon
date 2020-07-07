@@ -45,7 +45,9 @@ grails.project.dependency.resolution = {
         compile 'javax.mail:mail:1.4.7'
         test "org.gebish:geb-spock:${gebPluginVersion}"
 
-        runtime 'org.apache.httpcomponents:httpclient:4.5.1'
+        runtime 'org.apache.httpcomponents:httpclient:4.5.12'
+        runtime 'org.apache.httpcomponents:httpmime:4.5.12'
+        runtime 'org.apache.httpcomponents:httpcore:4.4.13'
         compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.9.2'
         compile 'org.codehaus.woodstox:woodstox-core-asl:4.4.1'
         // unboundId sdk used under LGPL 2.1 license

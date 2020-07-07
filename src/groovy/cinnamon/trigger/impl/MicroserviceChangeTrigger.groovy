@@ -1,5 +1,6 @@
 package cinnamon.trigger.impl
 
+import cinnamon.HttpClientGenerator
 import cinnamon.PoBox
 import cinnamon.servlet.HttpServletResponseCopier
 import cinnamon.servlet.ResponseFilter
@@ -15,6 +16,7 @@ import org.apache.http.impl.client.HttpClientBuilder
 import org.apache.http.protocol.HTTP
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+
 
 /**
  *
@@ -50,7 +52,19 @@ public class MicroserviceChangeTrigger implements ITrigger {
 
             // content_len must not be set according to RequestContent.process 
             requestCopy.removeHeaders(HTTP.CONTENT_LEN)
-            
+            requestCopy.removeHeaders(HTTP.TARGET_HOST)
+
+            /*
+            // experimental:
+            requestCopy.addHeader(HTTP.CONTENT_TYPE, MediaType.APPLICATION_XML_VALUE)
+            XmlMapper xmlMapper = new XmlMapper();
+            xmlMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+            def entity = new BasicHttpEntity();
+            entity.setContentType(MediaType.APPLICATION_XML_VALUE)
+            entity.setContent(new ByteArrayInputStream(xmlMapper.writeValueAsBytes(poBox.params)))
+            requestCopy.setEntity(entity);
+             */
+
             for (Map.Entry entry : poBox.params) {
                 requestCopy.addParameter(entry.key.toString(), entry.value.toString())
             }
@@ -79,7 +93,7 @@ public class MicroserviceChangeTrigger implements ITrigger {
                 return poBox;
             }
             def request = poBox.request
-            HttpClient httpClient = HttpClientBuilder.create().build()
+            HttpClient httpClient = HttpClientGenerator.createHttpClient()
             def requestCopy = RequestBuilder.create("POST")
             requestCopy.setUri(url)
             def headerNames = request.headerNames
@@ -93,17 +107,18 @@ public class MicroserviceChangeTrigger implements ITrigger {
 
             // content_len must not be set according to RequestContent.process 
             requestCopy.removeHeaders(HTTP.CONTENT_LEN)
+            requestCopy.removeHeaders(HTTP.TARGET_HOST)
 
             for (Map.Entry entry : poBox.params) {
                 requestCopy.addParameter(entry.key.toString(), entry.value.toString())
             }
-            
+
             HttpServletResponseCopier responseCopier = ResponseFilter.localResponseCopier.get()
             if (responseCopier) {
                 responseCopier.flushBuffer()
                 requestCopy.addParameter("cinnamon-response", new String(responseCopier.copy, "UTF-8"))
             }
-            
+
             HttpResponse httpResponse = httpClient.execute(requestCopy.build())
             addResponseHeader(httpResponse, poBox.response, url)
 
@@ -121,6 +136,7 @@ public class MicroserviceChangeTrigger implements ITrigger {
         if (remoteServerNode?.size() > 0) {
             return remoteServerNode[0]?.text
         }
+        null
     }
 
     void addResponseHeader(HttpResponse remoteResponse, myResponse, url) {
@@ -129,8 +145,7 @@ public class MicroserviceChangeTrigger implements ITrigger {
             def entity = remoteResponse.entity
             String responseContent = IOUtils.toString(entity.content)
             myResponse.addHeader("microservice-response", responseContent)
-        }
-        else {
+        } else {
             myResponse.addHeader("microservice-response", "<no-content/>")
         }
     }
