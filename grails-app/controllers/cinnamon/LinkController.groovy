@@ -93,14 +93,14 @@ class LinkController extends BaseController {
                 if (folder == null) {
                     throw new RuntimeException("error.param.id");
                 }
-                validator.validatePermissionByName(folder.getAcl(), PermissionName.BROWSE_FOLDER);
+                validator.validatePermissionByName(folder.getAcl(), PermissionName.BROWSE_FOLDER, folder);
                 link = linkService.createLink(folder, parent, acl, owner, resolver);
             } else {
                 osd = ObjectSystemData.get(params.id);
                 if (osd == null) {
                     throw new RuntimeException("error.param.id");
                 }
-                validator.validatePermissionByName(osd.getAcl(), PermissionName.BROWSE_OBJECT);
+                validator.validatePermissionByName(osd.getAcl(), PermissionName.BROWSE_OBJECT, osd);
                 link = linkService.createLink(osd, parent, acl, owner, resolver);
             }
 
@@ -260,10 +260,10 @@ class LinkController extends BaseController {
             Validator validator = new Validator(userService.user)
             if (link.getType() == LinkType.FOLDER) {
                 validator.validatePermissionByName(link.getAcl(), PermissionName.BROWSE_FOLDER);
-                validator.validatePermissionByName(link.getFolder().getAcl(), PermissionName.BROWSE_FOLDER);
+                validator.validatePermissionByName(link.folder.acl, PermissionName.BROWSE_FOLDER, link.folder);
             } else {
                 validator.validatePermissionByName(link.getAcl(), PermissionName.BROWSE_OBJECT);
-                validator.validatePermissionByName(link.getOsd().getAcl(), PermissionName.BROWSE_OBJECT);
+                validator.validatePermissionByName(link.osd.acl, PermissionName.BROWSE_OBJECT, link.osd);
             }
 
             def doc = DocumentHelper.createDocument()

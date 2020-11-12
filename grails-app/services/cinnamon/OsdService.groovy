@@ -254,19 +254,19 @@ class OsdService {
         }
         delete(osd, repository);
     }
-
-    Boolean mayBrowseObject(ObjectSystemData osd, user) {
-        def validator = new Validator(user)
-        try {
-            log.debug("validate browse permission on: ${osd.name} (acl: ${osd.acl.name})")
-            validator.validatePermissionByName(osd.acl, PermissionName.BROWSE_OBJECT)
-        }
-        catch (Exception e) {
-            log.debug("user does not have browse permission.", e)
-            return false
-        }
-        return true
-    }
+// commented out: unused?
+//    Boolean mayBrowseObject(ObjectSystemData osd, user) {
+//        def validator = new Validator(user)
+//        try {
+//            log.debug("validate browse permission on: ${osd.name} (acl: ${osd.acl.name})")
+//            validator.validatePermissionByName(osd.acl, PermissionName.BROWSE_OBJECT)
+//        }
+//        catch (Exception e) {
+//            log.debug("user does not have browse permission.", e)
+//            return false
+//        }
+//        return true
+//    }
 
     void acquireLock(osd, user) {
         if (osd.locker) {

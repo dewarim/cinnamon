@@ -408,13 +408,21 @@ class Validator implements ResultValidator {
     void validatePermission(Acl acl, Permission permission) {
         if (!check_acl_entries(acl, permission, null)) {
             throw new CinnamonException("error.missing.permission." + permission.getName());
-            // TODO: parameterize correctly
+        }
+    }
+    void validatePermission(Acl acl, Permission permission, Ownable ownable) {
+        if (!check_acl_entries(acl, permission, ownable)) {
+            throw new CinnamonException("error.missing.permission." + permission.getName());
         }
     }
 
     void validatePermissionByName(Acl acl, String permissionName) {
         Permission permission = fetchPermission(permissionName);
         validatePermission(acl, permission);
+    }
+    void validatePermissionByName(Acl acl, String permissionName, Ownable ownable) {
+        Permission permission = fetchPermission(permissionName);
+        validatePermission(acl, permission, ownable);
     }
 
     Boolean containsOneOf(Map cmd, Object... alternatives) {
@@ -434,18 +442,18 @@ class Validator implements ResultValidator {
         def childOsd = relation.rightOSD
 
         log.debug("verify ADD_CHILD_RELATION on "+parentOsd.acl)
-        validatePermissionByName(parentOsd.acl, PermissionName.ADD_CHILD_RELATION)
+        validatePermissionByName(parentOsd.acl, PermissionName.ADD_CHILD_RELATION, parentOsd)
         log.debug("verify ADD_PARENT_RELATION on "+childOsd.acl)
-        validatePermissionByName(childOsd.acl, PermissionName.ADD_PARENT_RELATION)
+        validatePermissionByName(childOsd.acl, PermissionName.ADD_PARENT_RELATION, childOsd)
     }
     
     void validateDeleteRelation(Relation relation ){
         def parentOsd = relation.leftOSD
         def childOsd = relation.rightOSD
         log.debug("verify REMOVE_CHILD_RELATION on "+parentOsd.acl)
-        validatePermissionByName(parentOsd.acl, PermissionName.REMOVE_CHILD_RELATION)
+        validatePermissionByName(parentOsd.acl, PermissionName.REMOVE_CHILD_RELATION, parentOsd)
         log.debug("verify REMOVE_PARENT_RELATION on "+childOsd.acl)
-        validatePermissionByName(childOsd.acl, PermissionName.REMOVE_PARENT_RELATION)
+        validatePermissionByName(childOsd.acl, PermissionName.REMOVE_PARENT_RELATION, childOsd)
     }
 
     void validateUpdateFolder(Map cmd, Folder folder) {

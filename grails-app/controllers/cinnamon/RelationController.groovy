@@ -166,8 +166,8 @@ class RelationController extends BaseController {
                  *
                  * Note: this is probably obsolete as we do not use LatestHeadResolver any longer.
                  */
-                relationService.updateRelations(left);
-                relationService.updateRelations(right);
+//                relationService.updateRelations(left);
+//                relationService.updateRelations(right);
             }
             def doc = DocumentHelper.createDocument()
             def root = doc.addElement('relations')

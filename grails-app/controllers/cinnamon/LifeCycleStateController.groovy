@@ -209,7 +209,7 @@ class LifeCycleStateController extends BaseController {
             def user = userService.user
             ObjectSystemData osd = ObjectSystemData.get(id)
             if (osd) {
-                new Validator(user).validatePermissionByName(osd.acl, PermissionName.READ_OBJECT_SYS_METADATA)
+                new Validator(user).validatePermissionByName(osd.acl, PermissionName.READ_OBJECT_SYS_METADATA, osd)
                 LifeCycleState state = osd.state
                 if (state == null) {
                     throw new CinnamonException("error.no_lifecycle_set")
@@ -282,7 +282,7 @@ class LifeCycleStateController extends BaseController {
                     }
                 } else {
                     lifeCycleState = LifeCycleState.get(lifecycle_state_id)
-                    if(!lifeCycleState){
+                    if (!lifeCycleState) {
                         throw new CinnamonException("error.param.lifecycle_state_id.invalid")
                     }
                 }
@@ -321,7 +321,7 @@ class LifeCycleStateController extends BaseController {
         try {
             ObjectSystemData osd = ObjectSystemData.get(id)
             if (osd) {
-                new Validator(userService.user).validatePermissionByName(osd.getAcl(), PermissionName.CHANGE_LIFECYCLE_STATE);
+                new Validator(userService.user).validatePermissionByName(osd.getAcl(), PermissionName.CHANGE_LIFECYCLE_STATE, osd);
                 osd.state.exitState(osd, null);
                 osd.state = null
             } else {
@@ -364,7 +364,7 @@ class LifeCycleStateController extends BaseController {
             if (osd == null) {
                 throw new CinnamonException("error.object.not.found");
             }
-            new Validator(userService.user).validatePermissionByName(osd.getAcl(), PermissionName.CHANGE_LIFECYCLE_STATE);
+            new Validator(userService.user).validatePermissionByName(osd.getAcl(), PermissionName.CHANGE_LIFECYCLE_STATE, osd);
             LifeCycleState lifeCycleState;
             if (lifecycle_state_id) {
                 lifeCycleState = LifeCycleState.get(lifecycle_state_id)
