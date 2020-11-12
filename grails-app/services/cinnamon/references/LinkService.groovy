@@ -150,11 +150,11 @@ class LinkService {
         try {
             switch (link.type) {
                 case LinkType.FOLDER:
-                    validator.validatePermissionByName(link.acl, PermissionName.BROWSE_FOLDER)
+                    validator.validatePermissionByName(link.acl, PermissionName.BROWSE_FOLDER, link)
                     validator.validatePermissionByName(link.folder.acl, PermissionName.BROWSE_FOLDER, link.folder)
                     break
                 case LinkType.OBJECT:
-                    validator.validatePermissionByName(link.acl, PermissionName.BROWSE_OBJECT);
+                    validator.validatePermissionByName(link.acl, PermissionName.BROWSE_OBJECT, link);
                     validator.validatePermissionByName(link.osd.acl, PermissionName.BROWSE_OBJECT, link.osd);
                     if (withMetadata) {
                         val.validatePermissionByName(link.osd.acl, PermissionName.READ_OBJECT_CUSTOM_METADATA, link.osd)

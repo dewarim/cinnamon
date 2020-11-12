@@ -181,9 +181,9 @@ class LinkController extends BaseController {
             }
 
             Validator validator = new Validator(userService.user);
-            validator.validatePermissionByName(link.getAcl(), PermissionName.WRITE_OBJECT_SYS_METADATA);
+            validator.validatePermissionByName(link.getAcl(), PermissionName.WRITE_OBJECT_SYS_METADATA, link);
             if (params.containsKey("acl_id")) {
-                validator.validatePermissionByName(link.getAcl(), PermissionName.SET_ACL);
+                validator.validatePermissionByName(link.getAcl(), PermissionName.SET_ACL, link);
             }
 
             link = linkService.updateLink(link, params);
@@ -259,10 +259,10 @@ class LinkController extends BaseController {
 
             Validator validator = new Validator(userService.user)
             if (link.getType() == LinkType.FOLDER) {
-                validator.validatePermissionByName(link.getAcl(), PermissionName.BROWSE_FOLDER);
+                validator.validatePermissionByName(link.getAcl(), PermissionName.BROWSE_FOLDER, link);
                 validator.validatePermissionByName(link.folder.acl, PermissionName.BROWSE_FOLDER, link.folder);
             } else {
-                validator.validatePermissionByName(link.getAcl(), PermissionName.BROWSE_OBJECT);
+                validator.validatePermissionByName(link.getAcl(), PermissionName.BROWSE_OBJECT, link);
                 validator.validatePermissionByName(link.osd.acl, PermissionName.BROWSE_OBJECT, link.osd);
             }
 
@@ -307,10 +307,10 @@ class LinkController extends BaseController {
 
             Validator validator = new Validator(userService.user)
             if (link.getType().equals(LinkType.FOLDER)) {
-                validator.validatePermissionByName(link.getAcl(), PermissionName.DELETE_FOLDER);
+                validator.validatePermissionByName(link.getAcl(), PermissionName.DELETE_FOLDER, link);
                 LocalRepository.addIndexable(link.osd, IndexAction.UPDATE)
             } else {
-                validator.validatePermissionByName(link.getAcl(), PermissionName.DELETE_OBJECT);
+                validator.validatePermissionByName(link.getAcl(), PermissionName.DELETE_OBJECT, link);
                 LocalRepository.addIndexable(link.osd, IndexAction.UPDATE)
             }
             link.delete()

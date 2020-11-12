@@ -416,10 +416,6 @@ class Validator implements ResultValidator {
         }
     }
 
-    void validatePermissionByName(Acl acl, String permissionName) {
-        Permission permission = fetchPermission(permissionName);
-        validatePermission(acl, permission);
-    }
     void validatePermissionByName(Acl acl, String permissionName, Ownable ownable) {
         Permission permission = fetchPermission(permissionName);
         validatePermission(acl, permission, ownable);
