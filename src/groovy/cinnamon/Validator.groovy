@@ -66,24 +66,24 @@ class Validator implements ResultValidator {
         return allowedObjects;
     }
 
-    /**
-     * Filter a collection of OSDs depending on whether the user may read its custom metadata.
-     * @param objects a collection of objects to be filtered.
-     * @return List of OSDs the user has a READ_OBJECT_CUSTOM_METADATA-permission for.
-     */
-    public List<ObjectSystemData> filterForCustomMetadata(Collection<ObjectSystemData> objects) {
-        List<ObjectSystemData> allowedObjects = new ArrayList<ObjectSystemData>();
-        Permission browseObject = fetchPermission(PermissionName.READ_OBJECT_CUSTOM_METADATA);
-        for (ObjectSystemData osd : objects) {
-            if (check_acl_entries(osd.getAcl(), browseObject, osd)) {
-                allowedObjects.add(osd);
-            }
-            else {
-                log.debug(String.format("No read_object_custom_metadata permission found for OSD %d", osd.getId()));
-            }
-        }
-        return allowedObjects;
-    }
+//    /**
+//     * Filter a collection of OSDs depending on whether the user may read its custom metadata.
+//     * @param objects a collection of objects to be filtered.
+//     * @return List of OSDs the user has a READ_OBJECT_CUSTOM_METADATA-permission for.
+//     */
+//    public List<ObjectSystemData> filterForCustomMetadata(Collection<ObjectSystemData> objects) {
+//        List<ObjectSystemData> allowedObjects = new ArrayList<ObjectSystemData>();
+//        Permission browseObject = fetchPermission(PermissionName.READ_OBJECT_CUSTOM_METADATA);
+//        for (ObjectSystemData osd : objects) {
+//            if (check_acl_entries(osd.getAcl(), browseObject, osd)) {
+//                allowedObjects.add(osd);
+//            }
+//            else {
+//                log.debug(String.format("No read_object_custom_metadata permission found for OSD %d", osd.getId()));
+//            }
+//        }
+//        return allowedObjects;
+//    }
 
     List<Folder> filterUnbrowsableFolders(Collection<Folder> folders) {
         if (folders == null || folders.size() == 0) {
@@ -343,6 +343,7 @@ class Validator implements ResultValidator {
 
         log.debug("descending into groupMatches2");
         aclEntries.addAll(getGroupMatches2(direct_entries, acl));
+        log.debug("descend into findAliasEntries")
         aclEntries.addAll(findAliasEntries(acl, user, ownable));
 
         log.debug("checking all aclentries for permission");
@@ -572,6 +573,7 @@ class Validator implements ResultValidator {
 
             CmnGroup parent = ae.getGroup().getParent();
             while (parent != null) {
+                log.debug("Checking parent group "+parent.name)
                 // look if the parent has a relevant aclentry for this acl:
                 AclEntry a = AclEntry.find("from AclEntry ae where ae.group=:parent and acl=:acl", [group: parent, acl: acl])
                 if (!aclentries.add(a)) {
