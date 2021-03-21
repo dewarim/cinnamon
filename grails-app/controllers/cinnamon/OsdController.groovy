@@ -527,7 +527,7 @@ class OsdController extends BaseController {
      *  </ul>
      * @return a Response which contains:
      *         <pre>
-     * {@code <objectId>    $id_of_new_object</objectId>}
+     * {@code <objectId>     $id_of_new_object</objectId>}
      *         </pre>
      */
     def createOsd() {
@@ -608,7 +608,7 @@ class OsdController extends BaseController {
         try {
             ObjectSystemData osd = ObjectSystemData.get(id)
             if (osd == null) {
-                renderErrorXml("Object not found with id "+id.encodeAsHtml(), "error.object.not.found", SC_NOT_FOUND)
+                renderErrorXml("Object not found with id " + id.encodeAsHtml(), "error.object.not.found", SC_NOT_FOUND)
                 return;
             }
             def user = userService.user
@@ -755,7 +755,7 @@ class OsdController extends BaseController {
      * @param id the id of the object that should be deleted.
      * @return XML-Response:
      *         <pre>
-     * {@code <success>    success.delete.object</success> }
+     * {@code <success>     success.delete.object</success> }
      *         </pre> if successful, an XML-error-node if unsuccessful.
      */
     def deleteXml(Long id) {
@@ -793,7 +793,7 @@ class OsdController extends BaseController {
      * @param id = object id
      * @return a HTTP response containing
      *         <pre>
-     * {@code <success>    success.delete.all_versions</success>}
+     * {@code <success>     success.delete.all_versions</success>}
      *         </pre> if successful, an XML-error-node if unsuccessful.
      */
     def deleteAllVersions(Long id) {
@@ -861,7 +861,7 @@ class OsdController extends BaseController {
      * BROWSE_OBJECT
      *
      * @param ids xml document containing a list of object ids accessible via XPath //ids/id,
-     *        for example: <pre>{@code <ids>    <id>2170</id><id>22182</id></ids}</pre>
+     *        for example: <pre>{@code <ids>     <id>2170</id><id>22182</id></ids}</pre>
      * @return XML-Response:
      *         List of XML serialized objects.
      */
@@ -960,7 +960,7 @@ class OsdController extends BaseController {
      *      <li>summary</li>
      *           </ul>
      * @deprecated (usegetObjectByIdinsteadtoretrievetheOSD.)
-     * @return XML-Response: <pre>{@code <sysMetaValue>    $value</sysMetaValue>}</pre>
+     * @return XML-Response: <pre>{@code <sysMetaValue>     $value</sysMetaValue>}</pre>
      *         If a null value is retrieved, an xml-error-doc is returned with the message:
      *         "error.result_value_is_null"
      */
@@ -1144,7 +1144,7 @@ class OsdController extends BaseController {
 
     /**
      * The saveMeta command sets the metadata to the specified value.
-     * If no metadata parameter is specified, the metadata is set to {@code <meta /    >}.
+     * If no metadata parameter is specified, the metadata is set to {@code <meta /     >}.
      * <h2>Needed permissions</h2>
      * WRITE_OBJECT_CUSTOM_METADATA
      *
@@ -1160,7 +1160,7 @@ class OsdController extends BaseController {
      *}
      *         if successful, xml-error-doc if unsuccessful.
      *         The response document may include additional elements as children of the root element
-     *         (for example, {@code <warnings /    >}
+     *         (for example, {@code <warnings /     >}
      */
     def saveMetadataXml(Long id, String metadata, String write_policy) {
         try {
@@ -1315,8 +1315,18 @@ class OsdController extends BaseController {
             }
             if (!osd.contentHash) {
                 // generate content hash
-                String sha256Hex = DigestUtils.sha256Hex(new FileInputStream(data))
-                osd.contentHash = sha256Hex
+                FileInputStream fis = null;
+                try {
+                    fis = new FileInputStream(data)
+                    String sha256Hex = DigestUtils.sha256Hex(fis)
+                    osd.contentHash = sha256Hex
+                }
+                finally {
+                    if (fis != null) {
+                        fis.close();
+                    }
+                }
+
             }
             log.debug("contentHash: " + osd.contentHash)
 
@@ -1360,14 +1370,13 @@ class OsdController extends BaseController {
     }
 
     @Secured(["hasRole('_superusers')"])
-    def renderIndexedXml(Long id, Boolean includeSummary){
+    def renderIndexedXml(Long id, Boolean includeSummary) {
         try {
             ObjectSystemData osd = ObjectSystemData.get(id)
             if (osd) {
                 def sysMeta = osd.getSystemMetadata(true, includeSummary, true)
                 render(contentType: 'application/xml', text: sysMeta)
-            }
-            else{
+            } else {
                 renderErrorXml("object not found", "object.not.found", 404);
             }
         }
