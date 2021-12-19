@@ -13,7 +13,7 @@ class BootStrap {
     def luceneService
 
     def init = { servletContext ->
-
+        log.info("CINNAMON_HOME_DIR: "+System.env.CINNAMON_HOME_DIR)
         if (!grailsApplication.config.configLoaded) {
             def configFile = new File("${System.env.CINNAMON_HOME_DIR}/cinnamon-config.groovy")
             log.warn("merge config file by hand from ${configFile.absolutePath}")
