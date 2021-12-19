@@ -4,6 +4,7 @@ import cinnamon.index.IndexJob
 import org.apache.lucene.analysis.Analyzer
 import org.apache.lucene.analysis.standard.StandardAnalyzer
 import org.apache.lucene.analysis.miscellaneous.LimitTokenCountAnalyzer
+import org.apache.lucene.search.BooleanQuery
 import org.apache.lucene.store.Directory
 import org.apache.lucene.store.SimpleFSDirectory
 import org.apache.lucene.store.SingleInstanceLockFactory
@@ -28,6 +29,7 @@ class LuceneService {
     static Repository repository
 
     void initialize() {
+        BooleanQuery.maxClauseCount = 10000;
         Analyzer standardAnalyzer = new StandardAnalyzer()
         String name = infoService.repositoryName
         log.debug("create repository object for ${name}")
