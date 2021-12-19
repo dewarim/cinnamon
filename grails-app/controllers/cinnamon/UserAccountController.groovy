@@ -1,15 +1,15 @@
 package cinnamon
 
 import cinnamon.authentication.LoginType
-import cinnamon.exceptions.CinnamonException
-import com.dewarim.cinnamon.model.request.user.CreateUserAccountRequest
-import com.dewarim.cinnamon.model.request.user.DeleteUserAccountRequest
-import com.dewarim.cinnamon.model.request.user.UpdateUserAccountRequest
-import com.dewarim.cinnamon.model.response.GenericResponse
-import com.dewarim.cinnamon.model.response.UserInfo
-import com.dewarim.cinnamon.model.response.UserWrapper
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.dataformat.xml.XmlMapper
+//import cinnamon.exceptions.CinnamonException
+//import com.dewarim.cinnamon.model.request.user.CreateUserAccountRequest
+//import com.dewarim.cinnamon.model.request.user.DeleteUserAccountRequest
+//import com.dewarim.cinnamon.model.request.user.UpdateUserAccountRequest
+//import com.dewarim.cinnamon.model.response.GenericResponse
+//import com.dewarim.cinnamon.model.response.UserInfo
+//import com.dewarim.cinnamon.model.response.UserWrapper
+//import com.fasterxml.jackson.databind.ObjectMapper
+//import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import org.dom4j.Element
 import org.dom4j.Document
 import org.dom4j.DocumentHelper
@@ -324,171 +324,171 @@ class UserAccountController extends BaseController {
 
     //---------------------------------------------------
     // Cinnamon XML Server API
-    @Secured(["hasRole('_superusers')"])
-    def createXml() {
-        try {
-            log.debug("create user xml")
-            ObjectMapper mapper = new XmlMapper();
-            CreateUserAccountRequest userRequest = mapper.readValue(request.inputStream, CreateUserAccountRequest.class)
-            userRequest = userRequest.validateRequest().orElseThrow(new Supplier<Exception>() {
-                @Override
-                Exception get() {
-                    return new CinnamonException("invalid CreateUserAccountRequest object");
-                }
-            })
-            UserAccount user = new UserAccount(userRequest.name, userRequest.password, userRequest.fullname, '');
-            user.language = UiLanguage.findById(userRequest.languageId)
-            user.changeTracking = userRequest.changeTracking
-            user.email = userRequest.email
-            user.loginType = LoginType.valueOf(userRequest.loginType ?: LoginType.CINNAMON.name())
-            if (!user.validate()) {
-                def errors = new StringBuilder()
-                user.errors.allErrors.each { error -> errors.append(error.toString()) }
-                throw new CinnamonException("Failed to validate user account:\n" + errors)
-            }
-            user.save(flush: true)
-            log.debug("userId: " + user.id)
-            buildUserAccount(user)
-            UserInfo userInfo = new UserInfo(user.id, user.name, user.loginType.name(), user.activated,
-                    user.accountLocked, user.language.id, user.email, user.fullname, user.changeTracking);
-            UserWrapper userWrapper = new UserWrapper(userInfo)
-            userWrapper.users.add(userInfo)
-            render(contentType: "application/xml", text: mapper.writeValueAsString(userWrapper))
-
-        }
-        catch (Exception e) {
-            log.debug("failed to create user: ", e)
-            renderExceptionXml(e.message)
-        }
-    }
-
-    @Secured(["hasRole('_superusers')"])
-    def deleteXml() {
-        try {
-            log.debug("delete user xml")
-            ObjectMapper mapper = new XmlMapper();
-            DeleteUserAccountRequest userRequest = mapper.readValue(request.inputStream, DeleteUserAccountRequest.class)
-            userRequest = userRequest.validateRequest().orElseThrow(new Supplier<Throwable>() {
-                @Override
-                Throwable get() {
-                    return new CinnamonException("invalid DeleteUserAccountRequest object");
-                }
-            })
-            log.debug("request: " + userRequest)
-            UserAccount user = UserAccount.get(userRequest.userId)
-            UserAccount target = UserAccount.get(userRequest.assetReceiverId)
-            doTransferAssets(user, target)
-            doDeleteChecks(user)
-            String username = user.name
-            user.delete()
-            groupService.deleteUserGroup(user)
-            GenericResponse genericResponse = new GenericResponse(
-                    message(code: "user.delete.success", args: [username]).toString(), true)
-            render(contentType: "application/xml",
-                    text: mapper.writeValueAsString(genericResponse))
-
-        }
-        catch (Exception e) {
-            log.debug("failed to create user: ", e)
-            renderExceptionXml(e.message)
-        }
-    }
-
-    def listUsers() {
-        def users = []
-        UserAccount.list().each { user ->
-            UserInfo userInfo = new UserInfo(user.id, user.name, user.loginType.name(), user.activated,
-                    user.accountLocked, user.language?.id, user.email, user.fullname, user.changeTracking);
-            users.add(userInfo);
-        }
-        UserWrapper wrapper = new UserWrapper(users);
-        render(contentType: "application/xml", text: new XmlMapper().writeValueAsString(wrapper));
-    }
-
-    @Secured(["hasRole('_superusers')"])
-    def updateUser() {
-        try {
-            ObjectMapper mapper = new XmlMapper();
-            UpdateUserAccountRequest updateRequest = mapper
-                    .readValue(request.inputStream, UpdateUserAccountRequest.class)
-                    .validateRequest().orElseThrow(new Supplier<Throwable>() {
-                @Override
-                Throwable get() {
-                    return new CinnamonException("invalid.request");
-                }
-            });
-
-            UserAccount user = UserAccount.get(updateRequest.id)
-            if (!user) {
-                throw new CinnamonException("user.not.found")
-            }
-
-            if (updateRequest.name?.length() == 0) {
-                // do not allow empty username.
-                updateRequest.name = user.name
-            }
-
-            user.activated = updateRequest.activated
-            user.changeTracking = updateRequest.changeTracking
-
-
-            if (user.name.equals(Constants.USER_SUPERADMIN_NAME)) {
-                /*
-                 * Prevent admin from being deactivated or renamed:
-                 */
-                user.setActivated(true)
-                updateRequest.setName(user.name)
-            }
-
-            // if the name was changed, also change the user's personal group name
-            if (!user.name.equals(updateRequest.getName())) {
-                String groupName = "_${user.id}_${user.name}"
-                CmnGroup group = CmnGroup.findByName(groupName)
-                if (group == null) {
-                    // create user-group:
-                    group = groupService.createUserGroup(user)
-                    userService.addUserToUsersGroup(user)
-
-                }
-                group.name = "_${user.id}_${updateRequest.name}"
-                group.save()
-            }
-
-            user.name = updateRequest.name
-            user.fullname = updateRequest.fullname
-            user.email = updateRequest.email
-
-            /*
-             * do not automatically use bindData on pwd: it may be empty because admin does not know user's password.
-             */
-            String password = updateRequest.password
-            if (password && password.trim().length() > 0) {
-                if (user.loginType != LoginType.CINNAMON) {
-                    throw new CinnamonException("user.password.denied.logintype");
-                } else {
-                    user.pwd = password
-                }
-            }
-
-            user.language = UiLanguage.get(updateRequest.uiLanguageId)
-            if (user.validate() && user.save(flush: true)) {
-                UserInfo userInfo = new UserInfo(user.id, user.name, user.loginType.name(), user.activated,
-                        user.accountLocked, user.language?.id, user.email, user.fullname, user.changeTracking)
-                UserWrapper wrapper = new UserWrapper(userInfo)
-                render(contentType: "application/xml", text:new XmlMapper().writeValueAsString(wrapper))
-            } else {
-                def errors = new StringBuilder()
-                user.errors.allErrors.each { error -> errors.append(error.toString()) }
-                throw new CinnamonException("Failed to update user account:\n" + errors)
-            }
-
-        }
-        catch (Exception e) {
-            log.debug("failed to update user: ", e)
-            renderExceptionXml(e.message)
-        }
-    }
-
+//    @Secured(["hasRole('_superusers')"])
+//    def createXml() {
+//        try {
+//            log.debug("create user xml")
+//            ObjectMapper mapper = new XmlMapper();
+//            CreateUserAccountRequest userRequest = mapper.readValue(request.inputStream, CreateUserAccountRequest.class)
+//            userRequest = userRequest.validateRequest().orElseThrow(new Supplier<Exception>() {
+//                @Override
+//                Exception get() {
+//                    return new CinnamonException("invalid CreateUserAccountRequest object");
+//                }
+//            })
+//            UserAccount user = new UserAccount(userRequest.name, userRequest.password, userRequest.fullname, '');
+//            user.language = UiLanguage.findById(userRequest.languageId)
+//            user.changeTracking = userRequest.changeTracking
+//            user.email = userRequest.email
+//            user.loginType = LoginType.valueOf(userRequest.loginType ?: LoginType.CINNAMON.name())
+//            if (!user.validate()) {
+//                def errors = new StringBuilder()
+//                user.errors.allErrors.each { error -> errors.append(error.toString()) }
+//                throw new CinnamonException("Failed to validate user account:\n" + errors)
+//            }
+//            user.save(flush: true)
+//            log.debug("userId: " + user.id)
+//            buildUserAccount(user)
+//            UserInfo userInfo = new UserInfo(user.id, user.name, user.loginType.name(), user.activated,
+//                    user.accountLocked, user.language.id, user.email, user.fullname, user.changeTracking);
+//            UserWrapper userWrapper = new UserWrapper(userInfo)
+//            userWrapper.users.add(userInfo)
+//            render(contentType: "application/xml", text: mapper.writeValueAsString(userWrapper))
+//
+//        }
+//        catch (Exception e) {
+//            log.debug("failed to create user: ", e)
+//            renderExceptionXml(e.message)
+//        }
+//    }
+//
+//    @Secured(["hasRole('_superusers')"])
+//    def deleteXml() {
+//        try {
+//            log.debug("delete user xml")
+//            ObjectMapper mapper = new XmlMapper();
+//            DeleteUserAccountRequest userRequest = mapper.readValue(request.inputStream, DeleteUserAccountRequest.class)
+//            userRequest = userRequest.validateRequest().orElseThrow(new Supplier<Throwable>() {
+//                @Override
+//                Throwable get() {
+//                    return new CinnamonException("invalid DeleteUserAccountRequest object");
+//                }
+//            })
+//            log.debug("request: " + userRequest)
+//            UserAccount user = UserAccount.get(userRequest.userId)
+//            UserAccount target = UserAccount.get(userRequest.assetReceiverId)
+//            doTransferAssets(user, target)
+//            doDeleteChecks(user)
+//            String username = user.name
+//            user.delete()
+//            groupService.deleteUserGroup(user)
+//            GenericResponse genericResponse = new GenericResponse(
+//                    message(code: "user.delete.success", args: [username]).toString(), true)
+//            render(contentType: "application/xml",
+//                    text: mapper.writeValueAsString(genericResponse))
+//
+//        }
+//        catch (Exception e) {
+//            log.debug("failed to create user: ", e)
+//            renderExceptionXml(e.message)
+//        }
+//    }
+//
+//    def listUsers() {
+//        def users = []
+//        UserAccount.list().each { user ->
+//            UserInfo userInfo = new UserInfo(user.id, user.name, user.loginType.name(), user.activated,
+//                    user.accountLocked, user.language?.id, user.email, user.fullname, user.changeTracking);
+//            users.add(userInfo);
+//        }
+//        UserWrapper wrapper = new UserWrapper(users);
+//        render(contentType: "application/xml", text: new XmlMapper().writeValueAsString(wrapper));
+//    }
+//
+//    @Secured(["hasRole('_superusers')"])
+//    def updateUser() {
+//        try {
+//            ObjectMapper mapper = new XmlMapper();
+//            UpdateUserAccountRequest updateRequest = mapper
+//                    .readValue(request.inputStream, UpdateUserAccountRequest.class)
+//                    .validateRequest().orElseThrow(new Supplier<Throwable>() {
+//                @Override
+//                Throwable get() {
+//                    return new CinnamonException("invalid.request");
+//                }
+//            });
+//
+//            UserAccount user = UserAccount.get(updateRequest.id)
+//            if (!user) {
+//                throw new CinnamonException("user.not.found")
+//            }
+//
+//            if (updateRequest.name?.length() == 0) {
+//                // do not allow empty username.
+//                updateRequest.name = user.name
+//            }
+//
+//            user.activated = updateRequest.activated
+//            user.changeTracking = updateRequest.changeTracking
+//
+//
+//            if (user.name.equals(Constants.USER_SUPERADMIN_NAME)) {
+//                /*
+//                 * Prevent admin from being deactivated or renamed:
+//                 */
+//                user.setActivated(true)
+//                updateRequest.setName(user.name)
+//            }
+//
+//            // if the name was changed, also change the user's personal group name
+//            if (!user.name.equals(updateRequest.getName())) {
+//                String groupName = "_${user.id}_${user.name}"
+//                CmnGroup group = CmnGroup.findByName(groupName)
+//                if (group == null) {
+//                    // create user-group:
+//                    group = groupService.createUserGroup(user)
+//                    userService.addUserToUsersGroup(user)
+//
+//                }
+//                group.name = "_${user.id}_${updateRequest.name}"
+//                group.save()
+//            }
+//
+//            user.name = updateRequest.name
+//            user.fullname = updateRequest.fullname
+//            user.email = updateRequest.email
+//
+//            /*
+//             * do not automatically use bindData on pwd: it may be empty because admin does not know user's password.
+//             */
+//            String password = updateRequest.password
+//            if (password && password.trim().length() > 0) {
+//                if (user.loginType != LoginType.CINNAMON) {
+//                    throw new CinnamonException("user.password.denied.logintype");
+//                } else {
+//                    user.pwd = password
+//                }
+//            }
+//
+//            user.language = UiLanguage.get(updateRequest.uiLanguageId)
+//            if (user.validate() && user.save(flush: true)) {
+//                UserInfo userInfo = new UserInfo(user.id, user.name, user.loginType.name(), user.activated,
+//                        user.accountLocked, user.language?.id, user.email, user.fullname, user.changeTracking)
+//                UserWrapper wrapper = new UserWrapper(userInfo)
+//                render(contentType: "application/xml", text:new XmlMapper().writeValueAsString(wrapper))
+//            } else {
+//                def errors = new StringBuilder()
+//                user.errors.allErrors.each { error -> errors.append(error.toString()) }
+//                throw new CinnamonException("Failed to update user account:\n" + errors)
+//            }
+//
+//        }
+//        catch (Exception e) {
+//            log.debug("failed to update user: ", e)
+//            renderExceptionXml(e.message)
+//        }
+//    }
+//
     def listXml() {
         Document doc = DocumentHelper.createDocument()
         Element root = doc.addElement("users");

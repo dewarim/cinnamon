@@ -33,7 +33,8 @@ grails.project.dependency.resolution = {
         runtime('org.apache.lucene:lucene-misc:6.3.0')
         runtime('org.apache.lucene:lucene-analyzers-common:6.3.0')
         runtime('org.apache.lucene:lucene-queryparser:6.3.0')
-        runtime 'postgresql:postgresql:9.1-901.jdbc4'
+//        runtime 'postgresql:postgresql:9.1-901.jdbc4'
+        runtime 'org.postgresql:postgresql:42.3.1'
         runtime 'xml-apis:xml-apis:1.4.01'
         compile('dom4j:dom4j:1.6.1') {
             exclude 'xml-apis'
@@ -52,7 +53,7 @@ grails.project.dependency.resolution = {
         compile 'org.codehaus.woodstox:woodstox-core-asl:4.4.1'
         // unboundId sdk used under LGPL 2.1 license
         compile 'com.unboundid:unboundid-ldapsdk:4.0.4'
-        compile 'com.dewarim.cinnamon:cinnamon-model:0.1'
+//        compile 'com.dewarim.cinnamon:cinnamon-model:0.1'
     }
 
     plugins {
