@@ -141,10 +141,12 @@ public class MicroserviceChangeTrigger implements ITrigger {
 
     void addResponseHeader(HttpResponse remoteResponse, myResponse, url) {
         myResponse.addHeader("microservice-url", url)
-        if (remoteResponse.entity.contentLength > 0) {
-            def entity = remoteResponse.entity
-            String responseContent = IOUtils.toString(entity.content)
-            myResponse.addHeader("microservice-response", responseContent)
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        remoteResponse.entity?.writeTo(os)
+        String remoteContent = new String(os.toByteArray());
+        log.debug("remoteResponse: " + remoteContent)
+        if (remoteContent.length() > 0) {
+            myResponse.addHeader("microservice-response", remoteContent)
         } else {
             myResponse.addHeader("microservice-response", "<no-content/>")
         }
