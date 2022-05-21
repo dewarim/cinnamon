@@ -112,6 +112,11 @@ public class MicroserviceChangeTrigger implements ITrigger {
             for (Map.Entry entry : poBox.params) {
                 requestCopy.addParameter(entry.key.toString(), entry.value.toString())
             }
+            if (poBox.lastInsertId != null) {
+                requestCopy.addHeader("cinnamon-last-insert-id", String.valueOf(poBox.lastInsertId))
+            } else {
+                log.info("last-insert-id is null")
+            }
 
             HttpServletResponseCopier responseCopier = ResponseFilter.localResponseCopier.get()
             if (responseCopier) {
@@ -124,7 +129,7 @@ public class MicroserviceChangeTrigger implements ITrigger {
 
         }
         catch (Exception e) {
-            log.debug("Failed to execute microserviceChangeTrigger.", e);
+            log.warn("Failed to execute microserviceChangeTrigger.", e);
         }
         return poBox;
 

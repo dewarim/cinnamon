@@ -17,7 +17,8 @@ import grails.gsp.PageRenderer
 
 @Secured(["isAuthenticated()"])
 class FolderController extends BaseController {
-    
+
+    InfoService infoService;
     PageRenderer groovyPageRenderer;
 
     @Secured(["isAuthenticated()"])
@@ -680,6 +681,7 @@ class FolderController extends BaseController {
                                 type: folderType, acl: acl, summary: summary ?: '<summary />'
             )
             folder.save()
+            infoService.setLastInsertId(folder.myId());
 
             def doc = DocumentHelper.createDocument()
             Element root = doc.addElement("folders");
