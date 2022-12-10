@@ -9,6 +9,10 @@ import cinnamon.debug.PreAuthAuthProvider
 import cinnamon.debug.ProviderManager
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 
+import cinnamon.PatchedAnnotationFilterInvocationDefinition
+import grails.plugin.springsecurity.SpringSecurityUtils
+
+
 // Place your Spring DSL code here
 beans = {
     
@@ -52,6 +56,16 @@ beans = {
         authenticationDetailsSource = ref('cinnamonAuthenticationDetailsSource')
         customProvider = ref('preauthAuthProvider') // customProvider will be added to authenticationManager during afterPropertiesSet. 
     }
-    
+
+    def conf = SpringSecurityUtils.securityConfig
+    objectDefinitionSource(PatchedAnnotationFilterInvocationDefinition) {
+        application = ref('grailsApplication')
+        grailsUrlConverter = ref('grailsUrlConverter')
+        responseMimeTypesApi = ref('responseMimeTypesApi')
+        boolean lowercase = conf.controllerAnnotations.lowercase
+        if (conf.rejectIfNoRule instanceof Boolean) {
+            rejectIfNoRule = conf.rejectIfNoRule
+        }
+    }
 
 }
